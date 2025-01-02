@@ -22,10 +22,9 @@ class Serie(models.Model):
     casting = models.CharField(max_length=255, blank=True, null=True)
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True)  # This field type is a guess.
     description = models.TextField(blank=True, null=True)
-    # season need to be an array of integers
-    # season = models.PositiveSmallIntegerField
     ongoing = models.BooleanField(blank=True, null=True)
-    serie_poster = models.ImageField(upload_to='posters/', blank=True, null=True)
+    serie_poster = models.URLField(blank=True, null=True)
+    # length = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

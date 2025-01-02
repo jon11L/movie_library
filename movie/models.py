@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
+
 
 # Create your models here.
 class Movie(models.Model):
@@ -20,16 +22,17 @@ class Movie(models.Model):
     release_date = models.DateField(blank=True, null=True)
     country_of_origin = models.CharField(max_length=255, blank=True, null=True)
     production = models.CharField(max_length=255, blank=True, null=True)
-    casting = models.CharField(max_length=255, blank=True, null=True)
+    casting = ArrayField(models.CharField(max_length=255), blank=True, null=True)
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True) 
-    description = models.TextField(blank=True, null=True)
-    genre = models.TextField(blank=True, null=True)  # This field type is a guess.
+    length = models.FloatField(blank=True, null=True)
+    description = models.TextField(max_length=1000, blank=True, null=True)
+    genre = ArrayField(models.CharField(max_length=255), blank=True, null=True)  # This field an array of strings, i want 
+    film_poster = models.URLField(blank=True, null=True)
 
     # Time stamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # film_poster = models.ImageField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -38,3 +41,7 @@ class Movie(models.Model):
     
     def __str__(self):
         return self.title
+    
+
+
+
