@@ -1,6 +1,6 @@
 # cache
 __pycache__/
-*.pyc
+*.py[cod]
 
 # Environment variables
 .movievenv
