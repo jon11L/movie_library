@@ -1,3 +1,10 @@
 from django.shortcuts import render
 
+# from models import Movie
+# from user_library.models import WatchedMovie, WatchList, LikedMovie
+
 # Create your views here.
+def base_view(request):
+    # if movie:
+    #   movies = Movie.objects.all()[:5]
+    return render(request, 'movie/basic.html')

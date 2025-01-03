@@ -1,4 +1,15 @@
+# cache
+__pycache__/
+*.pyc
+
+# Environment variables
 .movievenv
 movievenv
 
 .env
+
+# IDE files
+.vscode/
+
+# medial files
+/media/
