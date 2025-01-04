@@ -4,17 +4,20 @@ from .models import Profile
 
 # unregister Group (not needed at the moment)
 admin.site.unregister(Group)
-
+admin.site.unregister(User)
 
 # Mix profile info into the User info
-# class UserMixin(admin.StackedInline):
-#     model = Profile
+class ProfileInline(admin.StackedInline):
+    model = Profile
 
-# class UserAdmin(admin.ModelAdmin):
-#     model = User
-    # inlines = [UserMixin]
+class UserAdmin(admin.ModelAdmin):
+    model = User
+    list_display = ('username', 'email', 'is_staff')
+    # fields = ['username']
+    inlines = [ProfileInline]
 
 
-# Register your models here.
+# re register the USer edited for admin display
+admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
 

@@ -1,9 +1,25 @@
 {% extends 'base.html' %}
 
     {% block content %}
-    
-    <h1>Welcome to your Movie library</h1>
-    <p>Here you will be able to save the movie you want to watch, you have watched</p>
-    <p> You can write notes to your favorit movies, maybe a critic, a small do not forget note</p>
+    <div class="container-fluid">
+        <div class="card">
+            <div class=" ms-auto mb-2 me-auto  ">
+                <h1>Welcome to your Movie library</h1>
+            </div>
+                <div class=" ms-auto mb-2 me-5">
+                    {% if movies_count %}
+                    {{ movies_count }} movies to decide from 
+                    {% else %}
+                    <p>No movies found</p>
+                    {% endif %}
+                </div>
+        </div>
+        <div>
 
-    {% endblock %}
+            <br>
+            <p>Here you will be able to save the movie you want to watch, you have watched</p>
+            <p> You can write notes to your favorit movies, maybe a critic, a small do not forget note</p>
+            
+        </div>
+        {% endblock %}
+    </div>

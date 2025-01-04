@@ -5,34 +5,6 @@ from movie.models import Movie
 from serie.models import Serie
 
 # Create your models here.
-class LikedMovie(models.Model):
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_movies')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    liked_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
-
-    def __str__(self):
-        return f"{self.user.username} liked {self.movie.title}"
-    
-
-
-class LikedSerie(models.Model):
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
-    serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
-    liked_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
-
-    def __str__(self):
-        return f"{self.user.username} liked {self.serie.title}"
-
-
-
 class WatchedMovie(models.Model):
 
     class Rating(models.IntegerChoices):
@@ -69,7 +41,7 @@ class WatchedMovie(models.Model):
 class WatchList(models.Model):
 
     class Status(models.TextChoices):
-        PLANNED = 'planned', 'Planned to Watch'
+        PLANNED = 'plan', 'Plan to Watch'
         WATCHING = 'watching', 'Currently Watching'
         FINISHED = 'finished', 'Finished Watching'
         DROPPED = 'dropped', 'Dropped'
@@ -88,3 +60,29 @@ class WatchList(models.Model):
     def __str__(self):
         return f"{self.user.username} added {self.movie.title} to watchlist"
     
+
+class LikedMovie(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_movies')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    liked_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.movie.title}"
+
+
+class LikedSerie(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
+    serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
+    liked_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.serie.title}"
+
