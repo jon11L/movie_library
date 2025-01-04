@@ -25,6 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls', namespace='main')),
     path('user/', include('user.urls', namespace='user')),
-    path('movie/', include('movie.urls', namespace='movie'))
+    path('movie/', include('movie.urls', namespace='movie')),
+    path('serie/', include('serie.urls', namespace='serie'))
+    
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

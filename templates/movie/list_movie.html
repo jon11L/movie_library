@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+
+    <div>
+
+        <h1>Here are the movies available:</h1>
+        
+        <div class="row ">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+                {% if movies %}
+                    {% for movie in movies %}
+                        <div class="card" style="width: 22rem ;">
+                        
+                            <img src="..." class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ movie.title }}</h5>
+                                <p class="card-text"> Description: {{ movie.description }}</p>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Year: {{ movie.release_date }}</li>
+                                    <li class="list-group-item">Genre: {{ movie.genre }}</li>
+                                    <li class="list-group-item">Length: {{ movie.length }}min</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                {% else %}
+                    <p>No movies found...</p>
+                {% endif %}
+        </div>
+        <br>
+        
+    </div>
+
+    {% endblock %}
+</body>
+</html>
