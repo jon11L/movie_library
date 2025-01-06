@@ -1,3 +1,5 @@
+{% load static %}
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
 
@@ -23,20 +25,24 @@
         </div>
 
         <!-- Right-aligned dropdown menu -->
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!-- ms-auto pushes this to the right -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
+              {% if user.is_authenticated %}
+                {{ user.username }}
+              {% else %}
+                Sign up / Login
+              {% endif %}
               <!-- place user name here instead of Drop down -->
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               {% if user.is_authenticated %}
-                <li><a class="dropdown-item" href="#">Your profile</a></li>
-                <li><a class="dropdown-item" href="#">Edit your profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a></li>
+                <li><a class="dropdown-item" href="">Edit your profile</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Log out</a></li>
+                <li><a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a></li>
               {% else %}
-              <li><a class="dropdown-item" href="http://127.0.0.1:8000/admin/login/?next=/admin/">Login</a></li>
+              <li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
               {% endif %}
             </ul>
           </li>

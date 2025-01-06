@@ -30,7 +30,7 @@ class Profile(models.Model):
             today = datetime.today().date()
             birthdate = self.date_of_birth
 
-            # handle leap years
+            # check if birthday already happened this year or not.
             age = today.year - birthdate.year
             if today.month < birthdate.month and today.day < birthdate.day:
                 age -= 1

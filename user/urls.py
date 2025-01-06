@@ -23,6 +23,8 @@ from . import views
 app_name = 'user'
 
 urlpatterns = [
-    # path('login/', views.user_login, namespace='login'),
     # path('register/', views.register, )
+    path('login/', views.login_user, name='login'),
+    path('logout/', views.logout_user, name='logout'),
+    path('profile/<int:pk>', views.profile_page, name='profile_page')
 ]

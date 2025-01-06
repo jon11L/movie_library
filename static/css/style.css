@@ -1,0 +1,29 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+    #container {
+        width: 90%;
+    }
+    
+    h1 {
+        font-size: 200%;
+    }
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+    :root {
+        scroll-behavior: smooth;
+    }
+}
+
+
+img {
+    /* size: 200px; */
+    width: 20%;
+    height: auto;
+}

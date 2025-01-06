@@ -15,3 +15,9 @@ class UserEditProfileForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'background_image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+class loginForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    password = forms.CharField(widget=forms.PasswordInput())
+    # remember_me = forms.BooleanField(required=False)
+    

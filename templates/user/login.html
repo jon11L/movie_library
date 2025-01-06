@@ -2,4 +2,29 @@
 
 {% block content %}
 
+<h4 style="margin: 20px 260px 10px 260px; padding-top: 450px; text-align: center;">enter your username and password</h4>
+
+<div style="margin: 20px 260px; padding: 20px 260px; text-align: left;">
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3" style="width: 80%; margin: 0 auto;">
+            <input type="text" class="form-control" placeholder="Enter Your Username" name="username">
+        </div>
+        <div class="mb-4" style="width: 80%; margin: 0 auto;">
+            <input type="password" class="form-control" placeholder="Enter Your Password" name="password">
+        </div>
+        
+        <div style="text-align: center; padding-top: 10px;">
+            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+                Log In
+            </button>
+            <a href="{% url 'main:home' %}" class="btn btn-secondary" style="display: inline-block; margin: 0 20px;">Go Back</a>
+        </div>
+        <div style="padding-top: 2px; margin-left: 20px;">
+            <p>Register here </p>
+        </div>
+    </form>
+</div>
+
 {% endblock %}
