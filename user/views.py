@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponse
 
 from .models import User, Profile
 
@@ -11,43 +13,44 @@ def login_user(request):
         if request.method == "GET":
             return render(request, 'user/login.html', {})
 
-            # TODO
-            # TODO check if user credentials match existing user
-            # TODO if not, render the login page
-            # TODO if yes, redirect to user's profile page
-            # TODO if user has admin rights, redirect to admin dashboard
-
         elif request.method == "POST":
             username = request.POST['username']
             password = request.POST['password']
 
             user = authenticate(request, username=username, password=password)
 
-            if user:
+            if user is not None:
                 login(request, user)
+                messages.success(request, ("You are now logged in!"))
                 return redirect(to='/')
             else:
 
                 print("User not found")
                 messages.error(request, ("User and password don't match. Please try again"))
-                return render(request, 'user/login.html', {})
+                return redirect('login')
     
     except Exception as e:
-        return f"An error occurred:\n\n {e}"
+        print(f"An error occurred:\n\n {e}")
+        return HttpResponse("An error occurred while trying to authenticate the user.  Please try again")
+
+
 
 def logout_user(request):
     logout(request)
+    messages.success(request, ("You are now logged out!"))
     return redirect(to='/')
 
 
+
+@login_required
 def profile_page(request, pk):
-    # TODO if user is authenticated, render user's profile page
+
     if request.user.is_authenticated:
-        current_user = Profile.objects.get(user=request.user)
-        # current_user_rofile = 
+        # fetch the profile being requested
+        profile = Profile.objects.get(user_id=pk)
     
         context = {
-            'user': current_user,
+            'user': profile,
             # 'current_user_rofile': current_user_rofile,
             # 'user_id': pk
         }

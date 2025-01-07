@@ -7,7 +7,9 @@
 <div class="container text-align">
     <div class="row g-0">
         <div class="col-8">
-            <img src=" {{user.profile_picture.url}} " class="img-fluid rounded-start " style="max-width: 30%;" alt="No photo found">
+            {% if user.profile_picture %}
+                <img src=" {{ user.profile_picture.url }} " class="img-fluid rounded-start " style="max-width: 30%;" alt="Profile photo">
+            {% endif %}
             <h5 class="card-title">{{ user.user.username }}</h5>
             <p class="card-text">{{ user.bio }}</p>
             <p class="card-text">{{ user.date_of_birth }}</p>

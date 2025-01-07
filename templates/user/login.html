@@ -2,6 +2,10 @@
 
 {% block content %}
 
+{% if user.is_authenticated %}
+    <h2>You are already connected, {{ user.username }}!</h2>
+{% else %}
+
 <h4 style="margin: 20px 260px 10px 260px; padding-top: 450px; text-align: center;">enter your username and password</h4>
 
 <div style="margin: 20px 260px; padding: 20px 260px; text-align: left;">
@@ -26,5 +30,7 @@
         </div>
     </form>
 </div>
+
+{% endif %}
 
 {% endblock %}
