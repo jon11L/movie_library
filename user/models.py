@@ -40,6 +40,41 @@ class Profile(models.Model):
             print("No age found ?")
             return None
 
+    def last_update(self):
+        ''' display the last time an update was performed in a nicer format'''
+        try:
+            if self.updated_at:
+                now = datetime.now(self.updated_at.tzinfo)
+            # get the time difference between now and updated_at
+                elapsed_time = now - self.updated_at
+                
+                minute = elapsed_time.seconds // 60
+                hour = elapsed_time.seconds // 3600
+                month = elapsed_time.days // 30.5
+                # days = hours // 24
+                if month == 1:
+                    return f"{month} month ago "
+                elif month > 0:
+                    return f"{month} months ago "
+                elif elapsed_time.days == 1:
+                    return f"{elapsed_time.days} day ago"
+                elif elapsed_time.days > 0:
+                    return f"{elapsed_time.days} days ago"
+                elif hour == 1:
+                    return f"{hour} hour ago"
+                elif hour > 0:
+                    return f"{hour} hours ago"
+                elif minute == 1:
+                    return f"{minute} minute ago"
+                elif minute > 0:
+                    return f"{minute} minutes ago"
+                elif elapsed_time.seconds > 0:
+                    return f"{elapsed_time.seconds} seconds ago"
+    
+        except Exception as e:
+            print("e")
+            return "issue with the update"
+
 # create Profile when a new User is created
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -47,3 +82,4 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
 
 post_save.connect(create_profile, sender=User)
+

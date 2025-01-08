@@ -50,7 +50,7 @@ def profile_page(request, pk):
         profile = Profile.objects.get(user_id=pk)
     
         context = {
-            'user': profile,
+            'profile': profile,
             # 'current_user_rofile': current_user_rofile,
             # 'user_id': pk
         }

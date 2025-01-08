@@ -17,10 +17,10 @@ def list_movie(request):
         print(f" error :{e}")
 
 
-# def detail_movie(request, movie_id):
-#     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
-#     movie = Movie.objects.get(id=movie_id)
-#     return render(request,'movie/detail_movie.html', {'movie': movie})
+def detail_movie(request, pk):
+    ''' get the movie object from the database using the movie_id parameter in the URL request.'''
+    movie = Movie.objects.get(id=pk)
+    return render(request,'movie/detail_movie.html', {'movie': movie})
 
     # movie type the movie title, use the title to find the movie id and return the Movie id object
 

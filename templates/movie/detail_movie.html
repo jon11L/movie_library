@@ -4,17 +4,16 @@
 {% block content %}
 
 <div>
-
-    <h1>Here are the movies available:</h1>
-    
+   
     <div class="row ">
         <div class="col-sm-6 mb-3 mb-sm-0">
             {% if movie %}
                     <div class="card" style="width: 22rem ;">
-                    
+                        {% if user.profile_picture %}
                         <img src="..." class="card-img-top" alt="...">
+                        {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <h4 class="card-title">{{ movie.title }}</h4>
                             <p class="card-text"> Description: {{ movie.description }}</p>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">Year: {{ movie.release_date }}</li>
