@@ -5,35 +5,50 @@
 
 <div>
    
-    <div class="row ">
-        <div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="row">
+        <div class="col-sm-8 offset-md-2">
             {% if movie %}
-                    <div class="card" style="width: 22rem ;">
-                        {% if user.profile_picture %}
-                        <img src="..." class="card-img-top" alt="...">
-                        {% endif %}
-                        <div class="card-body">
-                            <h4 class="card-title">{{ movie.title }}</h4>
-                            <p class="card-text"> Description: {{ movie.description }}</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Year: {{ movie.release_date }}</li>
-                                <li class="list-group-item">Genre: {{ movie.genre }}</li>
-                                <li class="list-group-item">Length: {{ movie.length }}min</li>
-                                <li class="list-group-item">Rating score: {{ movie.rating }}min</li>
-                                <li class="list-group-item">Casting: {{ movie.casting }}min</li>
-                                <li class="list-group-item">Production: {{ movie.production }}</li>
-                                <li class="list-group-item">Writer: {{ movie.writer }}</li>
-                                <li class="list-group-item">Origin country: {{ movie.country_of_origin }}min</li>
-                            </ul>
-                        </div>
+                <div class="card">
+                    {% if user.profile_picture %}
+                    <img src="..." class="card-img-top" alt="...">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ movie.title }}</h4>
+                        <p class="card-text"> Description: {{ movie.description }}</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                            <li class="list-group-item"><strong>Genre:</strong>  {{ movie.genre }}</li>
+                            <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
+                            <li class="list-group-item"><strong>Rating score:</strong> {{ movie.rating }}/10</li>
+                            <li class="list-group-item"><strong>Casting:</strong> {{ movie.casting }}</li>
+                            <li class="list-group-item"><strong>Production:</strong> {{ movie.production }}</li>
+                            <li class="list-group-item"><strong>Writer:</strong> {{ movie.writer }}</li>
+                            <li class="list-group-item"><strong>Origin country:</strong> {{ movie.country_of_origin }}</li>
+                        </ul>
                     </div>
                 </div>
-                
+                <br><br>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{form.as_p }}
+                    <div class="card">
+                        <div class="row">
+                            <!-- <label for=""></label> -->
+                            <textarea class="form control":rows="3"></textarea>
+                            <button type="submit" class="btn btn-secondary">
+                                submit
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+        </div>
+                      
+    </div>
 
             {% else %}
                 <p>No movies found...</p>
             {% endif %}
-    </div>
     <br/>
     
 </div>

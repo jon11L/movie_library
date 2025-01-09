@@ -30,7 +30,7 @@ class Movie(models.Model):
     genre = models.JSONField(blank=True, null=True)  # This field an array of strings, i want 
     film_poster = models.URLField(blank=True, null=True)
 
-    # would serve to implement a check if a movie has a follow up, or part of a trilogy.
+    # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
 
     # Time stamp

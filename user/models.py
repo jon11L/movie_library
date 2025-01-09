@@ -40,18 +40,19 @@ class Profile(models.Model):
             print("No age found ?")
             return None
 
+
     def last_update(self):
         ''' display the last time an update was performed in a nicer format'''
         try:
             if self.updated_at:
                 now = datetime.now(self.updated_at.tzinfo)
-            # get the time difference between now and updated_at
+                # get the time difference between now and updated_at
                 elapsed_time = now - self.updated_at
-                
+
                 minute = elapsed_time.seconds // 60
                 hour = elapsed_time.seconds // 3600
                 month = elapsed_time.days // 30.5
-                # days = hours // 24
+
                 if month == 1:
                     return f"{month} month ago "
                 elif month > 0:
@@ -74,6 +75,7 @@ class Profile(models.Model):
         except Exception as e:
             print("e")
             return "issue with the update"
+
 
 # create Profile when a new User is created
 def create_profile(sender, instance, created, **kwargs):
