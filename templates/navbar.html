@@ -33,7 +33,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a></li>
-              <li><a class="dropdown-item" href="{% url 'user:edit_profile' request.user.id %}">Edit profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a></li>
             </ul>

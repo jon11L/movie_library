@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
 
 <div>
 
     <h1>Here are the movies available:</h1>
-    
+    <br><br>
     <div class="row ">
         <div class="col-sm-6 mb-3 mb-sm-0">
             {% if movies %}
@@ -15,12 +14,14 @@
                     
                         <img src="..." class="card-img-top" alt="...">
                         <div class="card-body">
-                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
+                                <h5 class="card-title">{{ movie.title }}</h5>
+                            </a>
                             <p class="card-text"> Description: {{ movie.description }}</p>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item">Year: {{ movie.release_date }}</li>
-                                <li class="list-group-item">Genre: {{ movie.genre }}</li>
-                                <li class="list-group-item">Length: {{ movie.length }}min</li>
+                                <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                                <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
+                                <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                             </ul>
                         </div>
                     </div>

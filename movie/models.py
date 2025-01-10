@@ -47,3 +47,10 @@ class Movie(models.Model):
     def __str__(self):
         return self.title
     
+
+
+    def render_genre(self):
+        '''Return movie genre as a comma-separated string.'''
+        if self.genre:
+            genre = ', '.join(self.genre)
+        return genre

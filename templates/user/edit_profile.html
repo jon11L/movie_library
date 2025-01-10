@@ -2,6 +2,30 @@
 
 {% block content %}
 
-<h1>Edit your profile here:</h1>
+<div class="col-md-6 offset-md-3">
+
+    <h1>Edit your profile here:</h1>
+
+    <form method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        {{ form.date_of_birth }}
+        {{ form.phone }}
+        {{ form.country }}
+        {{ form.city }}
+        {{ form.profile_picture }}
+        {{ form.bio }}
+
+
+        <div style="text-align: center; padding-top: 25px;">
+            <button type="submit" class="btn btn-outline-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+                Update
+            </button>
+            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0 45px;">Go Back</a>
+        </div>
+    </form>
+</div>
 
 {% endblock %}

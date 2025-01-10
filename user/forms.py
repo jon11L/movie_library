@@ -46,11 +46,32 @@ class EditProfileForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'bio': forms.Textarea(attrs={'class': 'form-control'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.fields['date_of_birth'].label = 'Date of Birth'
+        self.fields['date_of_birth'].help_text = '<small>Please use the format YYYY-MM-DD.</small>'
+
+        self.fields['phone'].label = 'Phone Number'
+        self.fields['phone'].help_text = '<small>Enter a valid phone number with country code.</small>'
+
+        self.fields['country'].label = 'Country'
+        self.fields['country'].help_text = '<small>Your current country of residence.</small>'
+
+        self.fields['city'].label = 'City'
+        self.fields['city'].help_text = '<small>Your current city of residence.</small>'
+
+        self.fields['profile_picture'].label = 'Profile Picture'
+        self.fields['profile_picture'].help_text = '<small>Upload an image file for your profile.</small>'
+
+        self.fields['bio'].label = 'Bio'
+        self.fields['bio'].help_text = '<small>Write a short bio about yourself.</small>'
 
 
-class loginForm(forms.Form):
-    username = forms.CharField(max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput())
+
+# class loginForm(forms.Form):
+#     username = forms.CharField(max_length=100)
+#     password = forms.CharField(widget=forms.PasswordInput())
     
 
 
