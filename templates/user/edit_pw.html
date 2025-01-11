@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+    <h4 style="padding: 100px 0 25px 0; text-align: center;">Update Password</h4>
+
+    <form method="POST" action="{% url 'user:update_user_pw' request.user.id %}">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <br><br>
+        <div class="mb-3">
+
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+            {% endif %}
+        {% endfor %}
+
+        </div>
+        
+        <div style="text-align: center; padding-top: 25px;">
+            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+                submit
+            </button>
+    </form>
+</div>
+
+
+{% endblock %}

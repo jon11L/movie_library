@@ -28,7 +28,7 @@ class Profile(models.Model):
         '''Return user's age.'''
         # calculate the age from date of birth to today.
         if self.date_of_birth:
-            print(f"User's date_of_birth: {self.date_of_birth}") # debug
+            # print(f"User's date_of_birth: {self.date_of_birth}") # debug
             today = datetime.today().date()
             birthdate = self.date_of_birth
             # check if birthday already happened this year or not.
@@ -70,7 +70,9 @@ class Profile(models.Model):
                 elif minute > 0:
                     return f"{minute} minutes ago"
                 elif elapsed_time.seconds > 0:
-                    return f"{elapsed_time.seconds} seconds ago"
+                    return f"less than a minute ago"
+                elif elapsed_time.seconds >= 0:
+                    return f"Just now"
     
         except Exception as e:
             print("e")

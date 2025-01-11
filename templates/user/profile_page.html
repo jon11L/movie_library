@@ -8,11 +8,12 @@
         {% if profile.profile_picture %}
             <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded-start " style="max-width: 30%;" alt="Profile photo">
         {% endif %}
-        <h5 class="card-title">{{ profile.user.username }}</h5>
+        <h5 class="card-title">{{ profile.user.username.capitalize }}</h5>
+        <br>
         <p class="card-text">{{ profile.bio }}</p>
         <p class="card-text">{{ profile.date_of_birth }}</p>
-        <p class="card-text">age: {{ profile.render_age }}</p>
-        <p class="card-text"><small class="text-body-secondary">Last updated {{ profile.last_update }}</small></p>
+        <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
+        <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
     </div>
     
     <div class="col-4">
@@ -20,13 +21,15 @@
         <div class="card mb-3" style="width: 18rem;">
             <div class="card-body">
                 <h5 class="card-title">Your content:</h5>
-                <p class="card-text">last actions:</p>
+
                 <p class="card-text">Movies watched: {{ user.watchedmovie }}</p>
-                <p class="card-text">last actions:</p>
+
                 <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
         </div>
+        <div class="card mb-3">
             <a class="" aria-current="page" href=""><strong>My watchlist</strong></a>
+        </div>
     </div>
 </div>
 
