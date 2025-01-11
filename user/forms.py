@@ -16,10 +16,12 @@ class RegisterForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
 
+        self.fields['last_name'].help_text = '<span class="form-text text-muted text-align:"><small>100 characters max. Letters and /-/ only for First and Last name .</small></span>'
+
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['username'].widget.attrs['placeholder'] = 'User Name'
         self.fields['username'].label = ''
-        self.fields['username'].help_text = '<span class="form-text text-muted"><small>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small></span>'
+        self.fields['username'].help_text = '<span class="form-text text-muted"><small>(Field required). 150 characters max. Letters, digits and @/./+/-/_ only.</small></span>'
 
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['placeholder'] = 'Password'
@@ -68,6 +70,34 @@ class EditProfileForm(forms.ModelForm):
         self.fields['bio'].help_text = '<small>Write a short bio about yourself.</small>'
 
 
+class UpdateUserForm(forms.ModelForm):
+    
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':"Enter your email"}))
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Enter your first name'}))
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Enter your last name'}))
+    
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+        widgets = {'username': forms.TextInput(attrs={'class': 'form-control'}),}
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateUserForm, self).__init__(*args, **kwargs)
+
+        self.fields['last_name'].help_text = '<span class="form-text text-muted text-align:"><small>100 characters max. Letters and /-/ only for First and Last name .</small></span>'
+
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['username'].widget.attrs['placeholder'] = 'User Name'
+        self.fields['username'].label = ''
+        self.fields['username'].help_text = '<span class="form-text text-muted"><small>(Field required). 150 characters max. Letters, digits and @/./+/-/_ only.</small></span>'
+
+
+
+
+
+
+
+        
 
 # class loginForm(forms.Form):
 #     username = forms.CharField(max_length=100)

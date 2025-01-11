@@ -2,30 +2,50 @@
 
 {% block content %}
 
-<div class="col-md-6 offset-md-3">
+
+<div style="margin: 10px -270px; padding: 50px 25px 0 0;">
+    <h5>To edit your user account</h5>
+        <p><small>(user-name, password, first and last name.)</small></p>
+            <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 0;">
+                <small>Update your account</small>
+            </a>
+            <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 0 ;">
+                <small>change password</small>
+            </a>
+
+</div>
+
+<div class="col-md-6 offset-md-3" style="margin: -150px 280px;">
 
     <h1>Edit your profile here:</h1>
 
     <form method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
         {% csrf_token %}
-
-        {{ form.as_p }}
-
-        {{ form.date_of_birth }}
-        {{ form.phone }}
-        {{ form.country }}
-        {{ form.city }}
-        {{ form.profile_picture }}
-        {{ form.bio }}
+        {% for field in form %}
+        <br>
+        <div class="mb-3">
 
 
-        <div style="text-align: center; padding-top: 25px;">
-            <button type="submit" class="btn btn-outline-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+            {% endif %}
+        {% endfor %}
+        </div>
+
+        <div style="padding-top: 25px;">
+            <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 100px 30px;">
                 Update
             </button>
-            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0 45px;">Go Back</a>
+            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 100px 30px;">
+                Go Back
+            </a>
         </div>
     </form>
+
 </div>
+
 
 {% endblock %}

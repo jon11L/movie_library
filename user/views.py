@@ -3,10 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
-
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 from .models import Profile
-from .forms import RegisterForm, EditProfileForm
+from .forms import RegisterForm, EditProfileForm, UpdateUserForm
 
 
 def register_user(request):
@@ -21,18 +23,19 @@ def register_user(request):
             user = form.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            # might not need to retrieve the username & pw
 
             try:
                 login(request, user)
 
                 messages.success(request,
                                 f"Account successfully created!    Hello, {username}! You are now logged in."
-                                f"    Click here to complete your profile"
+                                f"Click here to complete your profile"
                                 )
                 return redirect(to='main:home')
             except Exception as e:
                 print(f"An error occurred:\n\n {e}")
-                raise HttpResponse("An error occurred while trying to register the user.  Please try again")
+                raise HttpResponse("An error occurred while trying to register the user.\nPlease refresh the page and try again")
             
         else:
             messages.error(request, "It seems some fields entered was not valid, Please check and try again")
@@ -53,11 +56,12 @@ def login_user(request):
 
         if user is not None:
             login(request, user)
+            print(f"\n- User '{user.username}' logged in. \n")
             messages.success(request, (f"logged in! Hello {user.username}."))
             return redirect(to='main:home')
         else:
 
-            print("User not found")
+            print("\n - User not found OR credentials don't match. \n")
             messages.error(request, ("User and password don't match. Please try again"))
             return redirect(to='user:login')
 
@@ -72,28 +76,33 @@ def logout_user(request):
 
 
 def profile_page(request, pk):
-
+    ''' Returns the profile page of the user_id/pk requested
+        At the moment users can visit other user's profile, but this may be changed
+    '''
     if request.user.is_authenticated:
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
     
         context = {
             'profile': profile,
-
         }
         return render(request, 'user/profile_page.html', context=context)
-    # need to add a check if a user visit another user's profile. To allow it or not?
     
     else:
-        messages.success(request, ("You must be logged in to access this page"))
+        messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')
     
 
 
 def update_profile(request, pk):
-    ''' User can submit form to edit profile'''
+    ''' User can submit form to edit profile.
+        Only the user himself can access this page.
+        If someone tries to access another user's profile update page, they will be redirected to their own profile.
+        request.user.id must be same as the target profile.user_id OR user.id/pk. 
+    '''
 
     if request.user.id != pk:
+        print("\n* Unauthorised acces: user tried to access another User_Profile_update_page *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
         
@@ -101,24 +110,101 @@ def update_profile(request, pk):
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
         if request.method == 'GET':
-            form = EditProfileForm()
+            form = EditProfileForm(instance=profile)
 
-            return render(request, 'user/edit_profile.html', {})
+            return render(request, 'user/edit_profile.html', {'form': form})
 
         if request.method == 'POST':
             # update the profile with the new information
-            form = EditProfileForm(request.POST or None, instance=profile)
+            form = EditProfileForm(request.POST or None, request.FILES, instance=profile)
+
             if form.is_valid():
                 form.save()
 
-                # fetch the profile being requested
-            profile = Profile.objects.get(user_id=pk)
+                print(f"\n - User '{profile.user.username}' updated their Profile. \n")
+                messages.success(request, "Profile updated!")
+                return redirect(to=f'user:profile_page', pk=pk) 
+            
+            else:
+                messages.error(request, "Please correct the errors in the form.")
+                return render(request, 'user/edit_profile.html', {'form': form})
+        
+    else:
+        messages.error(request, ("You must be logged in to access this page"))
+        return redirect(to='user:login')
 
-            # context = {
-            #     'profile': profile,
-            # }
 
-            return redirect(to=f'user:profile_page') 
+
+def update_user(request, pk):
+    ''' User can submit form to edit profile'''
+
+    if request.user.id != pk:
+        print("\n* Unauthorised acces: user tried to access another User_update_page *\n")
+        messages.error(request, ("You are not authorized to acces this page."))
+        return redirect(to='user:profile_page', pk=request.user.id)
+        
+
+    if request.user.is_authenticated:
+        # fetch the profile being requested
+        current_user = User.objects.get(pk=pk)
+
+        if request.method == 'GET':
+            form = UpdateUserForm(instance=current_user)
+
+            return render(request, 'user/edit_user.html', {'form': form})
+
+        if request.method == 'POST':
+            # update the profile with the new information
+            form = UpdateUserForm(request.POST, instance=current_user)
+
+            if form.is_valid():
+                current_user = form.save()
+
+                print("User's credentials were updated.")
+                messages.success(request, "your credential was updated!")
+                return redirect(to=f'user:profile_page', pk=pk) 
+            else:
+                messages.error(request, "Please correct the errors in the form.")
+                return render(request, 'user/edit_user.html', {'form': form})
+        
+    else:
+        messages.error(request, ("You must be logged in to access this page"))
+        return redirect(to='user:login')
+
+
+def update_password(request, pk):
+    ''' User can request to change their password'''
+
+    if request.user.id != pk:
+        print("\n* Unauthorised acces: user tried to access another User's account setting *\n")
+        messages.error(request, ("You are not authorized to acces this page."))
+        return redirect(to='user:profile_page', pk=request.user.id)
+        
+    if request.user.is_authenticated:
+        # fetch the profile being requested
+        user = User.objects.get(pk=pk)
+
+        if request.method == 'GET':
+            form = PasswordChangeForm(user=user)
+
+            return render(request, 'user/edit_pw.html', {'form': form})
+
+        if request.method == 'POST':
+            # update the profile with the new information
+            form = PasswordChangeForm(user=request.user, data=request.POST)
+            # form = PasswordChangeForm(request.POST or None, request.FILES, instance=user)
+
+            if form.is_valid():
+                user = form.save() # save the new forms data and return the updated User
+
+                update_session_auth_hash(request, user) # refresh the session with the new password
+
+                messages.success(request, "your password was updated!")
+                return redirect(to=f'user:profile_page', pk=pk) 
+            else:
+                print("Something went wrong, password not matching?")
+                messages.error(request, "Failed. New password did not match.")
+                return render(request, 'user/edit_pw.html', {'form': form})
         
     else:
         messages.error(request, ("You must be logged in to access this page"))
