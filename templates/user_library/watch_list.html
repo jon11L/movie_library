@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+
+<div>
+
+    <h1 style="text-align: center;">Your watch list:</h1>
+
+    <br><br>
+    <div style="display: flex; width: 80%; margin-left: 150px;" >
+        {% if movies %}
+            {% for movie in movies %}
+                <div style="margin-right: 30px; width: 25%;" >
+                    <div class="card">
+
+                        <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                            {% if movie.film_poster %}
+                                <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                            {% else %}
+                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body">
+                            <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
+                                <h5 class="card-title" style="text-align: center;">{{ movie.title }}</h5>
+                            </a>
+                            <br>
+                            <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Released in:</strong> {{ movie.release_date.year }}</li>
+                                <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
+                                <li class="list-group-item"><strong>Rating:</strong> {{ movie.rating }}</li>
+                                <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
+                            </ul>
+                        </div>
+                    </div>
+                
+                </div>
+            {% endfor %}
+        {% else %}
+        <h5 style="text-align: center;">No movies liked yet...</h5>
+        {% endif %}
+        </div>
+    <br/>
+    
+</div>
+
+{% endblock %}

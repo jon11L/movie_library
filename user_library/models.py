@@ -77,6 +77,8 @@ class LikedMovie(models.Model):
     
     class Meta:
         db_table = 'liked_movies'
+        verbose_name = 'liked_movie'
+        verbose_name_plural = 'liked_movies'
         unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
 
     def __str__(self):

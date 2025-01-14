@@ -36,19 +36,18 @@
         <div class="ms-5">
             <br>
             <p class="card-text">Movies watched: {{ user.watchedmovie }}</p>
-            <a class="" aria-current="page" href=""><strong>My watchlist</strong></a>
+            <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" aria-current="page" href="{% url 'user_library:watch_list' request.user.id %}"><strong>My watchlist</strong></a>
+
+            {% if profile.user.liked_movies %}
             <br><br><a href="{% url 'user_library:liked_movies' request.user.id %}" class="btn btn-primary">Liked content</a>
+            {% else %}
+            <p>no content liked yet...</p>
+            {% endif %}
         </div>
     </div>
 
 
 </div>
-
-<!-- <div class="card-body ms-auto">
-    {% for movie in user.liked_movie.all %}
-    <p>{{ movie.title }}</p>
-    {% endfor %}
-</div> -->
 
 
 {% endblock %}

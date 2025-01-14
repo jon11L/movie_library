@@ -1,14 +1,24 @@
 from django.shortcuts import render, redirect
 
 from movie.models import Movie
+from serie.models import Serie
+
 # Create your views here.
 def home(request):
 
     if Movie:
+        movies = Movie.objects.order_by('-id')[:8] # display the amount of movies in the database
         movies_count = Movie.objects.count() # display the amount of movies in the database
+    if Serie:
+        series = Serie.objects.order_by('-id')[:8] # display the amount of movies in the database
+        series_count = Serie.objects.count() # display the amount of movies in the database
 
-        # if there are more than 5 movies, display only the first 5 movies
-        # last_movies = Movie.objects.get(pk=[5:]).order_by('
-        # last_movies = Movie.objects.
+    context = {
+        'movies': movies,
+        'movies_count': movies_count,
+        'series_count': series_count,
+        'series': series
 
-    return render(request, 'main/home.html', {'movies_count': movies_count})
+    }
+
+    return render(request, 'main/home.html', context=context)
