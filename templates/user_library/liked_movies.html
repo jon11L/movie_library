@@ -10,7 +10,7 @@
 
     <br><br>
     <div style="display: flex; width: 80%; margin-left: 150px;" >
-        {% if liked_movies %}
+        {% if movies %}
             {% for movie in movies %}
                 <div style="margin-right: 30px; width: 25%;" >
                     <div class="card">
@@ -41,9 +41,9 @@
                 </div>
             {% endfor %}
         {% else %}
-    </div>
-        <h5 style="text-align: center;": center;">No movies liked yet...</h5>
+        <h5 style="text-align: center;">No movies liked yet...</h5>
         {% endif %}
+        </div>
     <br/>
     
 </div>

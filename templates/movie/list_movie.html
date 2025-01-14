@@ -5,7 +5,7 @@
 
 <div>
 
-    <h1 style="text-align: center;">Here are the movies available:</h1>
+    <h1 style="text-align: center; margin-top: 2rem;">Here are the movies available:</h1>
     <br><br>
     <div style="display: flex; width: 80%; margin-left: 150px;" >
         {% if movies %}
@@ -29,6 +29,7 @@
                             <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                                <li class="list-group-item"><strong>Score:</strong> {{ movie.rating }}/10</li>
                                 <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
                                 <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                             </ul>
@@ -46,3 +47,4 @@
 </div>
 
 {% endblock %}
+

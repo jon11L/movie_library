@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
 
 from .models import Movie
-# from user_library.models import WatchedMovie, WatchList, LikedMovie
 
-from django.contrib import messages
+# from django.contrib import messages
 
-# Create your views here.
+
 def list_movie(request):
     try:
         if Movie:
@@ -22,10 +21,4 @@ def detail_movie(request, pk):
     movie = Movie.objects.get(id=pk)
     return render(request,'movie/detail_movie.html', {'movie': movie})
 
-    # movie type the movie title, use the title to find the movie id and return the Movie id object
 
-
-
-    # user_watched_movie = WatchedMovie.objects.filter(user=request.user, movie=movie).first()
-    # user_watchlist_movie = WatchList.objects.filter(user=request.user, movie=movie).first()
-    # user_liked_movie = LikedMovie.objects.filter(user=request.user, movie=movie).first()

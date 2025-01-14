@@ -19,11 +19,11 @@ class Serie(models.Model):
     release_date = models.DateField(blank=True, null=True)
     country_of_origin = models.CharField(max_length=255, blank=True, null=True)
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True)
+    length = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     genre = models.JSONField(blank=True, null=True) 
     ongoing = models.BooleanField(blank=True, null=True)
     serie_poster = models.URLField(blank=True, null=True)
-    length = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'serie'
@@ -38,9 +38,8 @@ class Serie(models.Model):
 class Season(models.Model):
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons')
     season_number = models.PositiveSmallIntegerField(blank=True, null=True)
-    episode = models.PositiveSmallIntegerField(blank=True, null=True)
     production = models.CharField(max_length=255, blank=True, null=True)
-    # director = models.CharField(max_length=255, blank=True, null=True)
+    director = models.CharField(max_length=255, blank=True, null=True)
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
