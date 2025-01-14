@@ -3,49 +3,53 @@
 {% block content %}
 
 
-<div style="margin: 10px -270px; padding: 50px 25px 0 0;">
-    <h5>To edit your user account</h5>
-        <p><small>(user-name, password, first and last name.)</small></p>
-            <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 0;">
-                <small>Update your account</small>
-            </a>
-            <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 0 ;">
-                <small>change password</small>
-            </a>
+<div class="" style="display: flex;">
+
+    <div class="card" style="text-align: center; background-color: #f5f5f5; border-right: solid darkgrey;">
+        <div style="margin: 50px 50px; padding-right: 20px;">
+            <h5>To edit your user account</h5>
+            <p><small>(user-name, password, first and last name.)</small></p>
+            <div class="row">
+                <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
+                    <small>Update your account</small>
+                </a>
+                <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
+                    <small>change password</small>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="col-md-6 offset-md-3" style="margin: 10px 100px;">
+        <h1 style="margin-bottom: 25px;">Edit your profile here:</h1>
+    
+        <form method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
+            {% csrf_token %}
+            {% for field in form %}
+
+            <div class="mb-2 ms-3">
+                <label for="{{ field.id_for_label }}">{{ field.label }}  {{ field }}</label>        
+                {% if field.help_text %}
+                    <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+    
+            <div style="padding-top: 25px;">
+                <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
+                    Update
+                </button>
+                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
+                    Go Back
+                </a>
+            </div>
+        </form>
+    
+    </div>
+    
 
 </div>
-
-<div class="col-md-6 offset-md-3" style="margin: -150px 280px;">
-
-    <h1>Edit your profile here:</h1>
-
-    <form method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
-        {% csrf_token %}
-        {% for field in form %}
-        <br>
-        <div class="mb-3">
-
-
-
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}
-                <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
-            {% endif %}
-        {% endfor %}
-        </div>
-
-        <div style="padding-top: 25px;">
-            <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 100px 30px;">
-                Update
-            </button>
-            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 100px 30px;">
-                Go Back
-            </a>
-        </div>
-    </form>
-
-</div>
-
 
 {% endblock %}
+

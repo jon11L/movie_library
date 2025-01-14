@@ -22,6 +22,7 @@ class Movie(models.Model):
     release_date = models.DateField(blank=True, null=True)
     country_of_origin = models.CharField(max_length=255, blank=True, null=True)
     production = models.CharField(max_length=255, blank=True, null=True)
+    # director = models.CharField(max_length=255, blank=True, null=True)
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True) 
@@ -54,3 +55,4 @@ class Movie(models.Model):
         if self.genre:
             genre = ', '.join(self.genre)
         return genre
+    

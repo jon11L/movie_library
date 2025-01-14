@@ -26,7 +26,9 @@ urlpatterns = [
     path('', include('main.urls', namespace='main')),
     path('user/', include('user.urls', namespace='user')),
     path('movie/', include('movie.urls', namespace='movie')),
-    path('serie/', include('serie.urls', namespace='serie'))
+    path('serie/', include('serie.urls', namespace='serie')),
+    path('user_library/', include('user_library.urls', namespace='user_library')),
+    
     
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

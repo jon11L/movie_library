@@ -1,16 +1,18 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 {% load static %}
 
+
 <div>
 
-    <h1 style="text-align: center;">Here are the movies available:</h1>
+    <h1 style="text-align: center;">Movies you liked:</h1>
+
     <br><br>
     <div style="display: flex; width: 80%; margin-left: 150px;" >
-        {% if movies %}
+        {% if liked_movies %}
             {% for movie in movies %}
-                <div style="margin-right: 25px;  max-width: 25%;" >
+                <div style="margin-right: 30px; width: 25%;" >
                     <div class="card">
 
                         <div class="card-img-top" style="text-align: center; margin-top: 25px;">
@@ -28,8 +30,9 @@
                             <br>
                             <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                                <li class="list-group-item"><strong>Released in:</strong> {{ movie.release_date.year }}</li>
                                 <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
+                                <li class="list-group-item"><strong>Rating:</strong> {{ movie.rating }}</li>
                                 <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                             </ul>
                         </div>
@@ -38,9 +41,9 @@
                 </div>
             {% endfor %}
         {% else %}
-        p>No movies found...</p>
-        {% endif %}
     </div>
+        <h5 style="text-align: center;": center;">No movies liked yet...</h5>
+        {% endif %}
     <br/>
     
 </div>
