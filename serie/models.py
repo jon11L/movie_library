@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Serie(models.Model):
@@ -19,7 +20,11 @@ class Serie(models.Model):
     release_date = models.DateField(blank=True, null=True)
     country_of_origin = models.CharField(max_length=255, blank=True, null=True)
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True)
-    length = models.IntegerField(blank=True, null=True)
+    length = models.IntegerField(
+        help_text="Average episode length in minutes",
+        validators=[MinValueValidator(1)],
+        blank=True, null=True
+        )
     description = models.TextField(blank=True, null=True)
     genre = models.JSONField(blank=True, null=True) 
     ongoing = models.BooleanField(blank=True, null=True)
@@ -29,6 +34,7 @@ class Serie(models.Model):
         db_table = 'serie'
         verbose_name = 'Serie'
         verbose_name_plural = 'Series'
+        # ordering = ['title']
 
     def __str__(self):
         return self.title
@@ -50,17 +56,25 @@ class Season(models.Model):
         unique_together = ('serie', 'season_number')
         verbose_name = 'Season'
         verbose_name_plural = 'Seasons'
+        ordering = ['serie', 'season_number']
 
     
     def __str__(self):
-        return f"{self.serie.title} - Season {self.season_number}"
+        return f"{self.season_number}"
     
 
 
 class Episode(models.Model):
 
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
-    episode_number = models.PositiveSmallIntegerField(blank=True, null=True)
+    season = models.ForeignKey(
+        Season,
+        on_delete=models.CASCADE,
+        related_name='episodes'
+        )
+    episode_number = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1)],
+        blank=True, null=True
+        )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     release_date = models.DateField(blank=True, null=True)
@@ -72,7 +86,8 @@ class Episode(models.Model):
         unique_together = ('season', 'episode_number')
         verbose_name = 'Episode'
         verbose_name_plural = 'Episodes'
+        ordering = ['season', 'episode_number']
 
 
     def __str__(self):
-        return f"{self.season} - Episode {self.episode_number}: {self.title}"
+        return f"{self.episode_number} - {self.title}"

@@ -34,6 +34,17 @@
                                 <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                             </ul>
                         </div>
+                        <br>
+                        <div>
+                            <p>TEST</p>
+                            <a href="{% url 'user_library:like_movie' movie.id %}">
+                                {% if movie in user.liked_movies.all %}
+                                Unlike
+                                {% else %}
+                                Like
+                                {% endif %}
+                            </a>
+                        </div>
                     </div>
                 
                 </div>

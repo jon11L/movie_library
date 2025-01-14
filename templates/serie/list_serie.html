@@ -9,29 +9,31 @@
     
     <br><br>
     <div style="display: flex; width: 80%; margin-left: 150px;" >
-        {% if series %}
-            {% for serie in series %}
+        {% if series_data %}
+            {% for data in series_data %}
                 <div style="margin-right: 25px; max-width: 25%;" >
                     <div class="card">
 
                         <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                            {% if serie.film_poster %}
-                                <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                            {% if data.serie.film_poster %}
+                                <img src=" {{ data.serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
                             {% else %}
                             <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                             {% endif %}
                         </div>
 
                         <div class="card-body">
-                            <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
-                                <h5 class="card-title" style="text-align: center;">{{ serie.title }}</h5>
+                            <a href="{% url 'serie:detail_serie' data.serie.id %}" style="text-decoration: none; color: #000;">
+                                <h5 class="card-title" style="text-align: center;">{{ data.serie.title }}</h5>
                             </a>
                             <br>
-                            <p class="card-text"><strong>Overview</strong>: {{ serie.description|slice:":100" }}...</p>
+                            <p class="card-text"><strong>Overview</strong>: {{ data.serie.description|slice:":100" }}...</p>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date }}</li>
-                                <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre }}</li>
-                                <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
+                                <li class="list-group-item"><strong>Total seasons: </strong>{{ data.last_season }}</li>
+                                <li class="list-group-item"><strong>last episode: </strong>{{ data.last_episode }}</li>
+                                <li class="list-group-item"><strong>First release:</strong> {{ data.serie.release_date }}</li>
+                                <li class="list-group-item"><strong>Genre:</strong> {{ data.serie.render_genre }}</li>
+                                <li class="list-group-item"><strong>Length:</strong> {{ data.serie.length }}min</li>
                             </ul>
                         </div>
                     </div>
@@ -39,7 +41,7 @@
                 </div>
             {% endfor %}
         {% else %}
-        p>No movies found...</p>
+        <p>No series found...</p>
         {% endif %}
     </div>
     <br/>

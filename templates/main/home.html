@@ -37,6 +37,7 @@
     <!-- Display last contents added in the database  -->
     <div>
 
+        <!-- Displaying the last movies added here -->
         <h3 style="text-align: center;">Last added movies:</h3>
         <br><br>
         <div style="display: flex; width: 80%; margin-left: 150px;" >
@@ -59,7 +60,7 @@
                                     <h5 class="card-title" style="text-align: center;">{{ movie.title }}</h5>
                                 </a>
                                 <br>
-                                <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
+                                <p class="card-text" style="max-height: 120px; "><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
                                     <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
@@ -80,7 +81,7 @@
 
 
     <div>
-
+        <!-- Displaying the last series added here -->
         <h3 style="text-align: center;">Last added series:</h3>
         <br><br>
         <div style="display: flex; width: 80%; margin-left: 150px;" >
@@ -122,3 +123,7 @@
     </div>
 
 {% endblock %}
+
+
+
+
