@@ -1,41 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load static %}
 
 
-<div class="row g-0">
-    <div class="col-8">
-        {% if profile.profile_picture %}
-            <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded-start " style="max-width: 30%;" alt="Profile photo">
-        {% endif %}
-        <h5 class="card-title">{{ profile.user.username.capitalize }}</h5>
-        <br>
-        <p class="card-text">{{ profile.bio }}</p>
-        <p class="card-text">{{ profile.date_of_birth }}</p>
-        <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
-        <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
-    </div>
-    
-    <div class="col-4">
+<div class="container-fluid" style="width: 80%;">   
 
-        <div class="card mb-3" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title">Your content:</h5>
+    <!-- perhaps remove the container -->
+    <div class="card mb-3">
+        <div class="row g-0 ms-4" style=" width: 70%;">
 
-                <p class="card-text">Movies watched: {{ user.watchedmovie }}</p>
+            <div class="col-md-2">
+                <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
+                <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
+            </div>
 
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+            <div class="col-md-4" style="text-align: center; margin-top: 25px;">
+                {% if profile.profile_picture %}
+                <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 20%;" alt="Profile photo">
+                {% else %}
+                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 20%;" alt="Profile photo">
+                {% endif %}
+                <h5 class="card-title" style="text-align: center;">{{ profile.user.username.capitalize }}</h5>
+            </div>
+
+            <div style="text-align: center;">
+                <p class="card-text">{{ profile.bio }}</p>
             </div>
         </div>
-        <div class="card mb-3">
+    </div>
+    
+    <!--  User's data, content such like watch list, liked movies -->
+    <div class="row">
+        <h5 class="card-title" style="text-align: center; margin: 50px 0px;"><strong>Your content:</strong></h5>
+        <div class="ms-5">
+            <br>
+            <p class="card-text">Movies watched: {{ user.watchedmovie }}</p>
             <a class="" aria-current="page" href=""><strong>My watchlist</strong></a>
+            <br><br><a href="{% url 'user_library:liked_movies' request.user.id %}" class="btn btn-primary">Liked content</a>
         </div>
     </div>
+
+
 </div>
 
-
 <!-- <div class="card-body ms-auto">
-    {% for movie in user.watch_list.all %}
+    {% for movie in user.liked_movie.all %}
     <p>{{ movie.title }}</p>
     {% endfor %}
 </div> -->

@@ -66,13 +66,11 @@ def login_user(request):
             return redirect(to='user:login')
 
 
-
 @login_required
 def logout_user(request):
     logout(request)
     messages.success(request, ("You are logged out!"))
     return redirect(to='/')
-
 
 
 def profile_page(request, pk):
@@ -92,7 +90,6 @@ def profile_page(request, pk):
         messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')
     
-
 
 def update_profile(request, pk):
     ''' User can submit form to edit profile.
@@ -116,7 +113,7 @@ def update_profile(request, pk):
 
         if request.method == 'POST':
             # update the profile with the new information
-            form = EditProfileForm(request.POST or None, request.FILES, instance=profile)
+            form = EditProfileForm(request.POST or None, request.FILES or None, instance=profile)
 
             if form.is_valid():
                 form.save()
@@ -134,7 +131,6 @@ def update_profile(request, pk):
         return redirect(to='user:login')
 
 
-
 def update_user(request, pk):
     ''' User can submit form to edit profile'''
 
@@ -143,7 +139,6 @@ def update_user(request, pk):
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
         
-
     if request.user.is_authenticated:
         # fetch the profile being requested
         current_user = User.objects.get(pk=pk)
@@ -192,7 +187,6 @@ def update_password(request, pk):
         if request.method == 'POST':
             # update the profile with the new information
             form = PasswordChangeForm(user=request.user, data=request.POST)
-            # form = PasswordChangeForm(request.POST or None, request.FILES, instance=user)
 
             if form.is_valid():
                 user = form.save() # save the new forms data and return the updated User
@@ -202,8 +196,8 @@ def update_password(request, pk):
                 messages.success(request, "your password was updated!")
                 return redirect(to=f'user:profile_page', pk=pk) 
             else:
-                print("Something went wrong, password not matching?")
-                messages.error(request, "Failed. New password did not match.")
+                print("Something went wrong, password not matching or too short")
+                messages.error(request, "Something went wrong, password not matching or too short.\nTry again.")
                 return render(request, 'user/edit_pw.html', {'form': form})
         
     else:

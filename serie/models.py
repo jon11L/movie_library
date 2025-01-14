@@ -40,10 +40,12 @@ class Season(models.Model):
     season_number = models.PositiveSmallIntegerField(blank=True, null=True)
     episode = models.PositiveSmallIntegerField(blank=True, null=True)
     production = models.CharField(max_length=255, blank=True, null=True)
-    casting = models.JSONField(blank=True, null=True)
+    # director = models.CharField(max_length=255, blank=True, null=True)
     writer = models.JSONField(blank=True, null=True)
+    casting = models.JSONField(blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
 
+# Maybe having to renove the episode field ( unnecessary, can sum up the episodes)
     class Meta:
         db_table = 'season'
         unique_together = ('serie', 'season_number')

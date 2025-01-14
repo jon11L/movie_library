@@ -7,12 +7,12 @@
    
     <div class="row">
         <div class="col-sm-8 offset-md-2">
-            {% if movie %}
+            {% if serie %}
                 <div class="card">
 
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                        {% if movie.film_poster %}
-                        <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% if serie.film_poster %}
+                        <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% else %}
                         <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% endif %}
@@ -20,19 +20,19 @@
                     <br>
                     
                     <div class="card-body">
-                        <h4 class="card-title" style="text-align: center;">{{ movie.title }}</h4>
+                        <h4 class="card-title" style="text-align: center;">{{ serie.title }}</h4>
                         <br>
-                        <p class="card-text"> Description: {{ movie.description }}</p>
+                        <p class="card-text"> Description: {{ serie.description }}</p>
                         <br>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
-                            <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
-                            <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
-                            <li class="list-group-item"><strong>Rating score:</strong> {{ movie.rating }}/10</li>
-                            <li class="list-group-item"><strong>Casting:</strong> {{ movie.casting }}</li>
-                            <li class="list-group-item"><strong>Production:</strong> {{ movie.production }}</li>
-                            <li class="list-group-item"><strong>Writer:</strong> {{ movie.writer }}</li>
-                            <li class="list-group-item"><strong>Origin country:</strong> {{ movie.country_of_origin }}</li>
+                            <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date }}</li>
+                            <li class="list-group-item"><strong>Genre:</strong>  {{ serie.render_genre }}</li>
+                            <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
+                            <li class="list-group-item"><strong>Rating score:</strong> {{ serie.rating }}/10</li>
+                            <li class="list-group-item"><strong>Casting:</strong> {{ serie.casting }}</li>
+                            <li class="list-group-item"><strong>Production:</strong> {{ serie.production }}</li>
+                            <li class="list-group-item"><strong>Writer:</strong> {{ serie.writer }}</li>
+                            <li class="list-group-item"><strong>Origin country:</strong> {{ serie.country_of_origin }}</li>
                         </ul>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
     </div>
 
             {% else %}
-                <p>No movies found...</p>
+                <p>No series found...</p>
             {% endif %}
     <br/>
     

@@ -94,18 +94,6 @@ class UpdateUserForm(forms.ModelForm):
 
 
 
-
-
-
-        
-
-# class loginForm(forms.Form):
-#     username = forms.CharField(max_length=100)
-#     password = forms.CharField(widget=forms.PasswordInput())
-    
-
-
-
 # form for the comment that user will be able to put on movies/series
 
 # class CommentForm(forms.ModelForm):

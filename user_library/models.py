@@ -20,8 +20,8 @@ class WatchedMovie(models.Model):
         TEN = 10, '10 - Masterpiece'
 
     class RewatchChoice(models.TextChoices):
-        NO = "no", "Once was enough."
         NEVER = "never", "Never again."
+        NO = "no", "Once was enough."
         MAYBE = "maybe", "Maybe in some years."
         WORTH = "worth", "It's Worth a rewatch."
         TOP = "totally", "Must rewatch it!"
@@ -33,9 +33,14 @@ class WatchedMovie(models.Model):
     watched_at = models.DateTimeField(auto_now_add=True) # track when added to watched list.
     personal_note = models.TextField(max_length=2000, blank=True, null=True)
 
+    class Meta:
+        db_table = 'watched_movies'
+        verbose_name = 'watched_movie'
+        verbose_name_plural = 'watched_movies'
+
     def __str__(self):
         return f"{self.user.username} watched {self.movie.title}"
-
+    
 
 
 class WatchList(models.Model):
@@ -53,8 +58,11 @@ class WatchList(models.Model):
     personal_note = models.TextField(max_length=500, blank=True, null=True)
     status = models.CharField(choices=Status.choices, blank=True, null=True)
 
+
     class Meta:
-        verbose_name = 'Watch List'
+        db_table = 'watch_list'
+        verbose_name = 'Watch_List'
+        verbose_name_plural = 'Watch_Lists'
         unique_together = ('user', 'movie')
 
     def __str__(self):
@@ -68,6 +76,7 @@ class LikedMovie(models.Model):
     liked_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+        db_table = 'liked_movies'
         unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
 
     def __str__(self):
@@ -75,12 +84,14 @@ class LikedMovie(models.Model):
 
 
 class LikedSerie(models.Model):
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
     liked_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+        db_table = 'liked_series'
+        verbose_name = 'liked_serie'
+        verbose_name_plural = 'liked_series'
         unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
 
     def __str__(self):

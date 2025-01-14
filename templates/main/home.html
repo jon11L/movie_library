@@ -1,28 +1,31 @@
 {% extends 'base.html' %}
 
     {% block content %}
-    <div class="container-fluid">
-        <div class="card">
-            <div class=" ms-auto mb-2 me-auto  ">
+    
+    <div class="container-fluid" style="text-align: center;">
+        <div class="card" style="margin: 0px 150px;">
+            <div class="ms-auto mb-2 me-auto" style="margin-top: 15px;">
+                <br>
                 <h1>Welcome to your Movie library</h1>
+                <br>
             </div>
-                <div class=" ms-auto mb-2 me-5">
-                    {% if movies_count %}
-                    {{ movies_count }} movies to decide from 
-                    {% else %}
-                    <p>No movies found</p>
-                    {% endif %}
-                </div>
         </div>
-        <div>
+        <br>
+        <div class=" ms-auto mb-2 me-5">
+            {% if movies_count %}
+            {{ movies_count }} movies to decide from 
+            {% else %}
+            <p>No movies found</p>
+            {% endif %}
+        </div>
 
+        <div>
             <br>
             <p>Here you will be able to save the movie you want to watch, you have watched</p>
             <p> You can add notes to your favorites movies.</p>
-            
         </div>
         <br>
-        <p>Last added content:</p>
+        <p><strong>Last added content:</strong></p>
         
         {% endblock %}
     </div>

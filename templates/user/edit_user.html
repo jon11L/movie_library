@@ -9,11 +9,12 @@
     <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
         {% csrf_token %}
         {{ form.as_p }}
-        
+    
         <div style="text-align: center; padding-top: 25px;">
             <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
                 submit
             </button>
+
     </form>
 </div>
 
