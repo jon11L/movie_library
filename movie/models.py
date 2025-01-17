@@ -56,7 +56,9 @@ class Movie(models.Model):
         '''
         if self.genre:
             genre = ', '.join(self.genre)
-        return genre
+            return genre
+        else:
+            return None
     
     
     def render_casting(self):
