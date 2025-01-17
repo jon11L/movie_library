@@ -2,17 +2,17 @@
 
 {% block content %}
 
-<div class="container-fluid" style="width: 50%;">   
-    <div class="card" style="align-items: center; padding-top: 100px;">
+<div class="container-fluid" style="width: 60%;">   
+    <div class="col-md-5 offset-md-4" style="align-items: center; margin-top: 100px;">
 
-        <h4 style="margin-right: 30px;">Update Password</h4>
+        <h4 style="text-align: center; margin-right: 30px; margin-bottom: 10px;">Update Password</h4>
 
         <form method="POST" action="{% url 'user:update_user_pw' request.user.id %}">
             {% csrf_token %}
 
             {% for field in form %}
-            <br><br>
-            <div class="mb-4">
+            <br>
+            <div class="mb-2" style="padding-top: 15px;">
 
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
@@ -27,7 +27,11 @@
                 <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
                     submit
                 </button>
+                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
+                    Go Back
+                </a>
         </form>
+
     </div>
 </div>
 

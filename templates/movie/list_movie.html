@@ -7,17 +7,18 @@
 
     <h1 style="text-align: center; margin-top: 2rem;">Here are the movies available:</h1>
     <br><br>
-    <div style="display: flex; width: 80%; margin-left: 150px;" >
+
+    <div style="display: flex; flex-wrap: wrap; width: 80%; margin-left: 150px;" >
         {% if movies %}
             {% for movie in movies %}
-                <div style="margin-right: 25px;  max-width: 25%;" >
-                    <div class="card">
+            <div class="card" style="flex: 1 1 calc(20% - 20px)">
+                <div style="margin-right: 25px;" >
 
                         <div class="card-img-top" style="text-align: center; margin-top: 25px;">
                             {% if movie.film_poster %}
                                 <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
                             {% else %}
-                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                             {% endif %}
                         </div>
 
@@ -34,9 +35,21 @@
                                 <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                             </ul>
                         </div>
-                    </div>
-                
+                        <br>
+                        <div>
+                            <form method="POST" action="{% url 'user_library:like_movie' movie.pk %}">
+                                {% csrf_token %}
+                                <button type="submit">
+                                    {% if request.user.id in liked_movie.user_id.all %}
+                                        Unlike
+                                    {% else %}
+                                        Like
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
                 </div>
+            </div>
             {% endfor %}
         {% else %}
         p>No movies found...</p>

@@ -51,8 +51,20 @@ class Movie(models.Model):
 
 
     def render_genre(self):
-        '''Return movie genre as a comma-separated string.'''
+        '''return the Movie.genre attribute in without quotes and [],
+        only comma-separated string.
+        '''
         if self.genre:
             genre = ', '.join(self.genre)
-        return genre
+            return genre
+        else:
+            return None
     
+    
+    def render_casting(self):
+        '''return the Movie.casting attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.casting:
+            casting = ', '.join(self.casting)
+        return casting

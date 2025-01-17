@@ -3,122 +3,158 @@
 {% block content %}
 {% load static %}
     
-    <div class="container-fluid" style="text-align: center;">
-        <div class="card" style="margin: 0px 150px;">
-            <div class="ms-auto mb-2 me-auto" style="margin-top: 15px;">
-                <br>
-                <h1>Welcome to your Movie library</h1>
-                <br>
-            </div>
-        </div>
-        <br>
-        <!-- Reference the amount of content in the Database -->
-        <div class=" ms-auto mb-2 me-5">
-            {% if movies_count %}
-            Currently {{ movies_count }} movies and
-            {% else %}
-            <p>No movies found</p>
-            {% endif %}
-            {% if series_count %}
-            {{ series_count }} series in the database 
-            {% else %}
-            <p>No series found</p>
-            {% endif %}
-        </div>
+<div class="container-fluid" style="text-align: center; width: 80%;">
 
-        <div>
-            <br>
-            <p>Here you will be able to save the movie you want to watch or already watched</p>
-            <p> You can add notes to your favorites movies.</p>
-        </div>
+    <div class="ms-auto mb-2 me-auto" style="margin-top: 15px;">
+        <br>
+        <h1>Welcome to your Movie library</h1>
         <br>
     </div>
 
-    <!-- Display last contents added in the database  -->
-    <div>
+    <!-- Reference the amount of content in the Database -->
+    <div class=" ms-auto mb-2 me-5">
+        {% if movies_count %}
+        <strong>Currently available in the Vault:</strong> {{ movies_count }} movies and
+        {% else %}
+        <p>No movies found</p>
+        {% endif %}
+        {% if series_count %}
+        {{ series_count }} series in the database 
+        {% else %}
+        <p>No series found</p>
+        {% endif %}
+    </div>
 
-        <h3 style="text-align: center;">Last added movies:</h3>
-        <br><br>
-        <div style="display: flex; width: 80%; margin-left: 150px;" >
+    <div>
+        <br>
+        <p>Here you will be able to save the movie you want to watch or already watched</p>
+        <p> You can add notes to your favorites movies.</p>
+    </div>
+    <br>
+    
+    <!---- Display last contents added in the database ----->
+    
+    <!-- Displaying the last movies added here -->
+    <h3 style="text-align: center;">Last added movies:</h3>
+    <br>
+    <div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
             {% if movies %}
-                {% for movie in movies %}
-                    <div style="margin-right: 25px;" >
-                        <div class="card">
-                            <p style="margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
-    
-                            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                                {% if movie.film_poster %}
-                                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+            {% for movie in movies %}
+
+            <!-- <div class="card" style="width: 285px; margin-bottom: 25px;">
+
+                <div style="display: flex; justify-content: space-between;">
+                    <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
+
+                        <form method="POST" action="{% url 'user_library:like_movie' movie.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if movie.pk in liked_movie %}
+                                    Unlike
                                 {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                                    Like
                                 {% endif %}
-                            </div>
-    
-                            <div class="card-body">
-                                <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
-                                    <h5 class="card-title" style="text-align: center;">{{ movie.title }}</h5>
-                                </a>
-                                <br>
-                                <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
-                                    <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
-                                    <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
-                                </ul>
-                            </div>
-                        </div>
-                    
-                    </div>
-                {% endfor %}
+                            </button>
+                        </form>
+
+                </div> -->
+            <div class="card" style="width: 285px; margin-bottom: 25px;">
+
+                <div style="display: flex; justify-content: space-between;">
+                    <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
+
+                        <form method="POST" action="{% url 'user_library:toogle_like' 'movie' movie.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if movie.id in user_liked_movies %}
+                                Unlike
+                                {% else %}
+                                Like
+                                {% endif %}
+                            </button>
+                        </form>
+
+                </div>
+
+                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                    {% if movie.film_poster %}
+                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                    {% endif %}
+                </div>
+
+                <div class="card-title" style="margin-top: 2rem; text-align: center;">
+                    <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
+                        <h5>{{ movie.title }}</h5>
+                    </a>
+                </div>
+                <div class="card-body" style="text-align: left;">
+                        <p style="height: 90px;"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date.year }}</li>
+                            <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
+                            <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
+                        </ul>
+                </div>
+            </div>
+
+
+            {% endfor %}
             {% else %}
             p>No movies found...</p>
             {% endif %}
         </div>
-        <br/>
-        
     </div>
-
-
-    <div>
-
-        <h3 style="text-align: center;">Last added series:</h3>
-        <br><br>
-        <div style="display: flex; width: 80%; margin-left: 150px;" >
-            {% if series %}
-                {% for serie in series %}
-                    <div style="margin-right: 25px;  max-width: 25%;" >
-                        <div class="card">
+    <br/>
+    <br/>
     
-                            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                                {% if serie.film_poster %}
-                                    <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
-                                {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                                {% endif %}
-                            </div>
     
-                            <div class="card-body">
-                                <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
-                                    <h5 class="card-title" style="text-align: center;">{{ serie.title }}</h5>
-                                </a>
-                                <br>
-                                <p class="card-text"><strong>Overview</strong>: {{ serie.description|slice:":100" }}...</p>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date }}</li>
-                                    <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre }}</li>
-                                    <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
-                                </ul>
-                            </div>
-                        </div>
-                    
-                    </div>
-                {% endfor %}
-            {% else %}
-            <p>No series found...</p>
-            {% endif %}
+    <!-- Displaying the last series added here -->
+    <h3 style="text-align: center;">Last added series:</h3>
+    <br>
+    <div style="display: flex; width: 80%; margin-left: 150px;" >
+        {% if series %}
+        {% for serie in series %}
+        <div style="margin-right: 25px;  max-width: 25%;" >
+            <div class="card">
+                
+                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                    {% if serie.film_poster %}
+                    <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
+                        <h5 class="card-title" style="text-align: center;">{{ serie.title }}</h5>
+                    </a>
+                    <br>
+                    <p class="card-text"><strong>Overview</strong>: {{ serie.description|slice:":100" }}...</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date }}</li>
+                        <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre }}</li>
+                        <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
+                    </ul>
+                </div>
+            </div>
+            
         </div>
-        <br/>
-        
+        {% endfor %}
+        {% else %}
+        <p>No series found...</p>
+        {% endif %}
     </div>
-
+    <br/>
+    
+</div>
+    
 {% endblock %}
+    
+    
+    
+    
+    
