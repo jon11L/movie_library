@@ -8,31 +8,39 @@ from user_library.models import Like
 def home(request):
 
     # Check if they are Movie datas and display them if so
-    if Movie:
-        movies = Movie.objects.order_by('-id')[:8] # display the amount of movies in the database
+    try:
+        movies = Movie.objects.order_by('-id')[:8] # retrieve the latest 8 content added 
         movies_count = Movie.objects.count() # display the amount of movies in the database
-    if Serie:
-        series = Serie.objects.order_by('-id')[:8] # display the amount of movies in the database
-        series_count = Serie.objects.count() # display the amount of movies in the database
+        series = Serie.objects.order_by('-id')[:8] 
+        series_count = Serie.objects.count() 
+
 
         # Get the user's like content 
         user_liked_movies = []
         user_liked_movies = Like.objects.filter(
-        user=request.user.id, content_type='movie'
-        ).values_list('object_id', flat=True)
+                                            user=request.user.id, content_type='movie'
+                                            ).values_list('object_id', flat=True)
+
+        user_liked_series = []
+        user_liked_series = Like.objects.filter(
+                                            user=request.user.id, content_type='serie'
+                                            ).values_list('object_id', flat=True)
+        
         print(f"\n user liked:\n\n{user_liked_movies}\n")
 
+        context = {
+            'movies': movies,
+            'movies_count': movies_count,
+            'series_count': series_count,
+            'series': series,
+            'user_liked_movies': user_liked_movies,
+            'user_liked_series': user_liked_series
+            
 
+        }
 
-
-    context = {
-        'movies': movies,
-        'movies_count': movies_count,
-        'series_count': series_count,
-        'series': series,
-        'user_liked_movies': user_liked_movies
-        
-
-    }
-
-    return render(request, 'main/home.html', context=context)
+        return render(request, 'main/home.html', context=context)
+    
+    except Exception as e:
+        print(f"An error occurred on the home page: {e}\n")
+        return redirect(to='main:home')

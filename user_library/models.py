@@ -71,35 +71,35 @@ class WatchList(models.Model):
         return f"{self.user.username} added {self.movie.title} to watchlist"
     
 
-class LikedMovie(models.Model):
+# class LikedMovie(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_movies')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    liked_at = models.DateTimeField(auto_now_add=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_movies')
+#     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+#     liked_at = models.DateTimeField(auto_now_add=True)
     
-    class Meta:
-        db_table = 'liked_movies'
-        verbose_name = 'liked_movie'
-        verbose_name_plural = 'liked_movies'
-        unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
+#     class Meta:
+#         db_table = 'liked_movies'
+#         verbose_name = 'liked_movie'
+#         verbose_name_plural = 'liked_movies'
+#         unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
 
-    def __str__(self):
-        return f"{self.user.username} liked {self.movie.title}"
+#     def __str__(self):
+#         return f"{self.user.username} liked {self.movie.title}"
 
 
-class LikedSerie(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
-    serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
-    liked_at = models.DateTimeField(auto_now_add=True)
+# class LikedSerie(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
+#     serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
+#     liked_at = models.DateTimeField(auto_now_add=True)
     
-    class Meta:
-        db_table = 'liked_series'
-        verbose_name = 'liked_serie'
-        verbose_name_plural = 'liked_series'
-        unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
+#     class Meta:
+#         db_table = 'liked_series'
+#         verbose_name = 'liked_serie'
+#         verbose_name_plural = 'liked_series'
+#         unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
 
-    def __str__(self):
-        return f"{self.user.username} liked {self.serie.title}"
+#     def __str__(self):
+#         return f"{self.user.username} liked {self.serie.title}"
 
 
 class Like(models.Model):
@@ -128,19 +128,3 @@ class Like(models.Model):
         return f"{self.user.username} liked {self.content_type} {self.object_id}"
 
 
-
-
-# from django.contrib.contenttypes.models import ContentType
-# from django.contrib.contenttypes.fields import GenericForeignKey
-
-# class MediaActivity(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     content_type = models.ForeignKey('content_type.Contentype', on_delete=models.CASCADE)
-#     object_id = models.PositiveIntegerField()
-#     content_object = GenericForeignKey('content_type', 'object_id')  # Combines the two fields above
-
-#     action = models.CharField(max_length=50)  # e.g., "watched", "liked"
-#     timestamp = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"{self.user.username} {self.action} {self.content_object}"

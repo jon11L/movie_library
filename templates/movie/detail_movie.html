@@ -4,11 +4,28 @@
 {% block content %}
 
 <div>
-   
+
     <div class="row">
         <div class="col-sm-8 offset-md-2">
             {% if movie %}
                 <div class="card">
+
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+                        <form method="POST" action="{% url 'user_library:toogle_like' 'movie' movie.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if user_liked_movies %}
+                                Unlike
+                                {% else %}
+                                Like
+                                {% endif %}
+                            </button>
+                        </form>
+                        
+                    </div>
+
+                    
 
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
                         {% if movie.film_poster %}
@@ -37,20 +54,7 @@
                     </div>
                 </div>
                 <br><br>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    {{form.as_p }}
-                    <div class="card">
-                        <div class="row">
-                            <!-- <label for=""></label> -->
-                            <textarea class="form control":rows="3"></textarea>
-                            <button type="submit" class="btn btn-secondary">
-                                submit
-                            </button>
-                        </div>
-                    </div>
 
-                </form>
         </div>
 
     </div>

@@ -8,51 +8,55 @@
     <h1 style="text-align: center; margin-top: 2rem;">Here are the movies available:</h1>
     <br><br>
 
-    <div style="display: flex; flex-wrap: wrap; width: 80%; margin-left: 150px;" >
+    <div style="display: flex; flex-wrap: wrap;  justify-content: space-between; width: 80%; margin-left: 150px;" >
         {% if movies %}
-            {% for movie in movies %}
-            <div class="card" style="flex: 1 1 calc(20% - 20px)">
-                <div style="margin-right: 25px;" >
+        {% for movie in movies %}
+        
+        <div class="card" style="width: 285px; margin-bottom: 25px;">
 
-                        <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                            {% if movie.film_poster %}
-                                <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+            <div style="display: flex; justify-content: space-between;">
+                <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
+
+                    <form method="POST" action="{% url 'user_library:toogle_like' 'movie' movie.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if movie.id in user_liked_movies %}
+                            Unlike
                             {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                            Like
                             {% endif %}
-                        </div>
+                        </button>
+                    </form>
 
-                        <div class="card-body">
-                            <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
-                                <h5 class="card-title" style="text-align: center;">{{ movie.title }}</h5>
-                            </a>
-                            <br>
-                            <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
-                                <li class="list-group-item"><strong>Score:</strong> {{ movie.rating }}/10</li>
-                                <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre }}</li>
-                                <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
-                            </ul>
-                        </div>
-                        <br>
-                        <div>
-                            <form method="POST" action="{% url 'user_library:like_movie' movie.pk %}">
-                                {% csrf_token %}
-                                <button type="submit">
-                                    {% if request.user.id in liked_movie.user_id.all %}
-                                        Unlike
-                                    {% else %}
-                                        Like
-                                    {% endif %}
-                                </button>
-                            </form>
-                        </div>
-                </div>
             </div>
-            {% endfor %}
+
+            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                {% if movie.film_poster %}
+                <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                {% else %}
+                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                {% endif %}
+            </div>
+
+            <div class="card-title" style="margin-top: 2rem; text-align: center;">
+                <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
+                    <h5>{{ movie.title }}</h5>
+                </a>
+            </div>
+            <div class="card-body" style="text-align: left;">
+                    <p style="height: 90px;"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date.year }}</li>
+                        <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
+                        <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
+                    </ul>
+            </div>
+        </div>
+
+
+        {% endfor %}
         {% else %}
-        p>No movies found...</p>
+        <p>No movies found...</p>
         {% endif %}
     </div>
     <br/>
