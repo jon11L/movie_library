@@ -39,7 +39,7 @@
             <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" aria-current="page" href="{% url 'user_library:watch_list' request.user.id %}"><strong>My watchlist</strong></a>
 
             {% if profile.user.liked_movies %}
-            <br><br><a href="{% url 'user_library:liked_movies' request.user.id %}" class="btn btn-primary">Liked content</a>
+            <br><br><a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-primary">Liked content</a>
             {% else %}
             <p>no content liked yet...</p>
             {% endif %}

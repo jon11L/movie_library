@@ -132,7 +132,7 @@ def update_profile(request, pk):
 
 
 def update_user(request, pk):
-    ''' User can submit form to edit profile'''
+    ''' User can submit form to edit their first_name, last_name and user_name'''
 
     if request.user.id != pk:
         print("\n* Unauthorised acces: user tried to access another User_update_page *\n")

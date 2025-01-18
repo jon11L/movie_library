@@ -29,10 +29,10 @@ class Profile(models.Model):
         '''Return user's age.'''
         # calculate the age from date of birth to today.
         if self.date_of_birth:
-            # print(f"User's date_of_birth: {self.date_of_birth}") # debug
             today = datetime.today().date()
             birthdate = self.date_of_birth
-            # check if birthday already happened this year or not.
+
+            # check if birthday's date already happened this year or not.
             age = today.year - birthdate.year
             if (today.month < birthdate.month) or (today.month == birthdate.month and today.day < birthdate.day):
                 age -= 1

@@ -21,9 +21,9 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-    path('liked/<int:pk>', views.add_to_liked_movie, name='like_movie'),
-    path('liked/<int:pk>/liked_movies', views.liked_movies_view, name='liked_movies'),
+    # path('liked/<int:pk>', views.add_to_liked_movie, name='like_movie'),
+    path('liked/<int:pk>/liked_content', views.user_liked_content_view, name='liked_view'),
     path('<int:pk>/watch_list', views.watch_list, name='watch_list'),
-    path('Like/<str:content_type>/<int:object_id>', views.toggle_like, name='toogle_like'),
+    path('Like/<str:content_type>/<int:object_id>', views.toggle_like, name='toogle_like')
 
 ]
