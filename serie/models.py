@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-# Create your models here.
+
 class Serie(models.Model):
 
     class Rating(models.IntegerChoices):
@@ -38,7 +38,19 @@ class Serie(models.Model):
 
     def __str__(self):
         return self.title
+    
 
+    
+    def render_genre(self):
+        '''return the Movie.genre attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.genre:
+            genre = ', '.join(self.genre)
+            return genre
+        else:
+            return None
+    
 
 
 class Season(models.Model):
@@ -50,7 +62,7 @@ class Season(models.Model):
     casting = models.JSONField(blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
 
-# Maybe having to renove the episode field ( unnecessary, can sum up the episodes)
+
     class Meta:
         db_table = 'season'
         unique_together = ('serie', 'season_number')
@@ -62,6 +74,23 @@ class Season(models.Model):
     def __str__(self):
         return f"{self.season_number}"
     
+
+    def render_casting(self):
+        '''return the Movie.casting attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.casting:
+            casting = ', '.join(self.casting)
+        return casting
+    
+
+    def render_writer(self):
+        '''return the Movie.wrtier attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.writer:
+            writer = ', '.join(self.writer)
+        return writer
 
 
 class Episode(models.Model):

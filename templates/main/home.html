@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-{% load static %}
     
 <div class="container-fluid" style="text-align: center; width: 85%;">
 
@@ -41,7 +41,7 @@
         <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
             {% if movies %}
             {% for movie in movies %}
- 
+
             <div class="card" style="width: 285px; margin-bottom: 25px;">
 
                 <div style="display: flex; justify-content: space-between;">

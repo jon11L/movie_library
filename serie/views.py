@@ -1,33 +1,54 @@
 from django.shortcuts import render
+from django.contrib import messages
 
-# Create your views here.
-from .models import Serie, Season, Episode
+from .models import Serie
+from user_library.models import Like
 
 
 def list_serie(request):
+    '''retrieve the series from newer to older and display them in the template
+    page's goal is to display up to 24 content pieces per page
+    '''
     try:
-        series_data = []
-        series = Serie.objects.all()[:24] # retrieve the last 24 series added in the Database
+        if Serie:
+            series_data = []
+            series = Serie.objects.order_by('-id')[:24] # retrieve the last 24 series added in the Database
 
-        for serie in series:
-            last_season = serie.seasons.order_by('-season_number').first()
-            last_episode = (last_season.episodes.order_by('-episode_number').first())
+            # load the extra information of a series from Season and Episode 
+            for serie in series:
+                last_season = serie.seasons.order_by('-season_number').first()
+                last_episode = last_season.episodes.order_by('-episode_number').first()
 
-            series_data.append({
-                'serie': serie,
-                'last_season': last_season,
-                'last_episode': last_episode
-            })
+                # Series_data contain the serie and Season,Episode information 
+                series_data.append({
+                    'serie': serie,
+                    'last_season': last_season,
+                    'last_episode': last_episode
+                })
 
-        context = {
-            'series_data': series_data,
-        }
+                print(f"Series_data:\n {series_data}\n") # debug print 
 
-        return render(request, 'serie/list_serie.html', context=context)
+            # Get the user's like content
+            user_liked_series = []
+            user_liked_series = Like.objects.filter(
+                                            user=request.user.id,
+                                            content_type='serie'
+                                            ).values_list('object_id', flat=True)
+
+            context = {
+                'series_data': series_data,
+                'user_liked_series': user_liked_series
+            }
+
+            return render(request, 'serie/list_serie.html', context=context)
+        
+        else:
+            return f'No series found in the database'
         
     except Exception as e:
+        messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :{e}")
-        return render(request, 'serie/list_serie.html', context={'error': str(e)})
+
 
 
 def detail_serie(request, pk):

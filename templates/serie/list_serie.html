@@ -5,14 +5,31 @@
 
 <div>
 
-    <h1 style="text-align: center;">Here are the series available:</h1>
+    <h1 style="text-align: center; margin-top: 2rem;">Here are the series available:</h1>
     
     <br><br>
-    <div style="display: flex; width: 80%; margin-left: 150px;" >
+    <div style="display: flex; flex-wrap: wrap;  justify-content: space-between; width: 80%; margin-left: 150px;" >
         {% if series_data %}
             {% for data in series_data %}
                 <div style="margin-right: 25px; max-width: 25%;" >
-                    <div class="card">
+                    <div class="card" style="width: 285px; margin-bottom: 25px;">
+
+                        <!-- Form for the Like button -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <p style=" margin: 15px 0px 0 15px;"><small>{{ data.serie.rating }}/10</small></p>
+            
+                                <form method="POST" action="{% url 'user_library:toogle_like' 'serie' data.serie.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit">
+                                        {% if data.serie.id in user_liked_series %}
+                                        Unlike
+                                        {% else %}
+                                        Like
+                                        {% endif %}
+                                    </button>
+                                </form>
+            
+                        </div>
 
                         <div class="card-img-top" style="text-align: center; margin-top: 25px;">
                             {% if data.serie.film_poster %}

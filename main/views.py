@@ -35,7 +35,6 @@ def home(request):
             'series': series,
             'user_liked_movies': user_liked_movies,
             'user_liked_series': user_liked_series
-            
 
         }
 

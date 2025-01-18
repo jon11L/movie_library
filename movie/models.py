@@ -68,3 +68,12 @@ class Movie(models.Model):
         if self.casting:
             casting = ', '.join(self.casting)
         return casting
+
+
+    def render_writer(self):
+        '''return the Movie.writer attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.writer:
+            writer = ', '.join(self.writer)
+        return writer
