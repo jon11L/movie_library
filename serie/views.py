@@ -53,5 +53,33 @@ def list_serie(request):
 
 def detail_serie(request, pk):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
-    serie = Serie.objects.get(id=pk)
-    return render(request,'serie/detail_serie.html', {'serie': serie})
+    try:
+        if Serie:
+        # retrieve the specified serie requested by user
+            serie = Serie.objects.get(id=pk)
+
+            # Check if user's like the serie
+            user_liked_serie = False
+            user_liked_serie = Like.objects.filter(
+                                            user=request.user.id,
+                                            content_type='serie',
+                                            object_id=serie.pk
+                                            ).values_list('object_id', flat=True)
+
+            print(f"user_liked :{user_liked_serie}") # debug print
+
+            context = {
+                'serie': serie,
+                'user_liked_serie': user_liked_serie
+
+                }
+            
+            return render(request,'serie/detail_serie.html', context=context)
+        
+        else:
+            return f'No series found in the database'
+        
+
+    except Exception as e:
+        messages.error(request, "the page seem to experience some issue, please try again later")
+        print(f" error :{e}")
