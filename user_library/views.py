@@ -8,20 +8,41 @@ from user.models import User
 from movie.models import Movie
 
 
-def user_liked_content_view(request):
+def user_liked_content_view(request, pk):
     '''retrieve the user's liked mvoie list from the database and display them in the template'''
 
     if request.user.is_authenticated:
         if request.method == "GET":
 
-        # fetch the profile being requested
-            user = User.objects.get(id=request.user.id)
+            movies= []
+            # fetch the profile being requested
+            user = User.objects.get(id=pk)
+            print(f" user: {user}\n")
+
+
             liked_content = Like.objects.filter(user=request.user)
-            # movies = [content.movie for content in liked_content]
+            print(f" liked_content: {liked_content}\n") #debug print
+
+            # filter the movies from the liked_content queryset
+            liked_movies = Like.objects.filter(user=request.user, content_type='movie').values_list('object_id', flat=True)
+            liked_series = Like.objects.filter(user=request.user, content_type='serie').values_list('object_id', flat=True)
+
+
+            print(f"liked_movies: {liked_movies}\n") #debug print
+            print(f"liked_series: {liked_series}\n") #debug print
+
+            for movie_id in liked_movies:
+                movie = Movie.objects.get(id=movie_id)
+                print(f"movie_id: {movie_id}\n") #debug print
+                movies.append(movie)
+                print(f"movie: {movie}\n") #debug print
+
+            print(f" movies: {movies}\n") #debug print
+
 
             context = {
                 'liked_content': liked_content,
-                # 'movies': movies,
+                'movies': movies,
                 'user': user
             }
 

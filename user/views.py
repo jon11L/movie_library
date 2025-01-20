@@ -9,6 +9,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from .models import Profile
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
+from user_library.models import Like
 
 
 def register_user(request):
@@ -73,6 +74,8 @@ def logout_user(request):
     return redirect(to='/')
 
 
+
+
 def profile_page(request, pk):
     ''' Returns the profile page of the user_id/pk requested
         At the moment users can visit other user's profile, but this may be changed
@@ -80,9 +83,15 @@ def profile_page(request, pk):
     if request.user.is_authenticated:
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
+
+        like = Like.objects.filter(user=pk)
+        print(f"like: {like}")
+    
     
         context = {
             'profile': profile,
+            'like': like,
+            
         }
         return render(request, 'user/profile_page.html', context=context)
     
@@ -90,6 +99,9 @@ def profile_page(request, pk):
         messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')
     
+
+
+
 
 def update_profile(request, pk):
     ''' User can submit form to edit profile.

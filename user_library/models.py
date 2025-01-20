@@ -71,37 +71,6 @@ class WatchList(models.Model):
         return f"{self.user.username} added {self.movie.title} to watchlist"
     
 
-# class LikedMovie(models.Model):
-
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_movies')
-#     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-#     liked_at = models.DateTimeField(auto_now_add=True)
-    
-#     class Meta:
-#         db_table = 'liked_movies'
-#         verbose_name = 'liked_movie'
-#         verbose_name_plural = 'liked_movies'
-#         unique_together = ('user', 'movie') # Prevents duplicate entries for the same user and movie
-
-#     def __str__(self):
-#         return f"{self.user.username} liked {self.movie.title}"
-
-
-# class LikedSerie(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_series')
-#     serie = models.ForeignKey(Serie, on_delete=models.CASCADE)
-#     liked_at = models.DateTimeField(auto_now_add=True)
-    
-#     class Meta:
-#         db_table = 'liked_series'
-#         verbose_name = 'liked_serie'
-#         verbose_name_plural = 'liked_series'
-#         unique_together = ('user', 'serie') # Prevents duplicate entries for the same user and movie
-
-#     def __str__(self):
-#         return f"{self.user.username} liked {self.serie.title}"
-
-
 class Like(models.Model):
 
     MOVIE = 'movie'
@@ -126,5 +95,4 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.user.username} liked {self.content_type} {self.object_id}"
-
 
