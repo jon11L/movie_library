@@ -10,6 +10,19 @@
             {% if serie %}
                 <div class="card">
 
+                    <div style="display: flex; flex-wrap: wrap; align-self: flex-end; margin-top: 15px; margin-right: 10px;">
+                        <form method="POST" action="{% url 'user_library:toogle_like' 'serie' serie.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if serie.id in user_liked_serie %}
+                                Unlike
+                                {% else %}
+                                Like
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
                         {% if serie.film_poster %}
                         <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">

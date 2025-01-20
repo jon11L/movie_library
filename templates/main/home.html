@@ -92,12 +92,12 @@
     <!-- Displaying the last series added here -->
     <h3 style="text-align: center;">Last added series:</h3>
     <br>
-    <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
+    <div style="display: flex; flex-wrap: wrap;">
         {% if series %}
         {% for serie in series %}
 
-        <div class="card" style="width: 285px; margin-bottom: 25px;">
-
+        <div class="card" style="width: 285px; margin-bottom: 25px; margin-right: 15px;">
+            
             <div style="display: flex; justify-content: space-between;">
                 <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.rating }}/10</small></p>
                 <form method="POST" action="{% url 'user_library:toogle_like' 'serie' serie.pk %}">
