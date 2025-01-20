@@ -4,50 +4,74 @@
 {% load static %}
 
 
-<div class="container-fluid" style="width: 80%;">   
-
-    <!-- perhaps remove the container -->
-    <div class="card mb-3">
-        <div style="display: flex; width: 70%; align-items: center;">
-
-            <div class="col-md-2" style="margin-left: 15px;">
-                <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
-                <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
-            </div>
-
-            <div class="col-md-4" style="text-align: center; margin-top: 25px;">
-                {% if profile.profile_picture %}
-                <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 50%;" alt="Profile photo">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 20%;" alt="Profile photo">
-                {% endif %}
-                <h5 class="card-title" style="text-align: center;">{{ profile.user.username.capitalize }}</h5>
-            </div>
-
-            <div style="text-align: center;">
-                <p class="card-text">{{ profile.bio }}</p>
-            </div>
-        </div>
-    </div>
-    
-    <!--  User's data, content such like watch list, liked movies -->
-    <div class="row" style="text-align: center;">
-        <h5 class="card-title" style=" margin: 0px 0px;"><strong>Your content:</strong></h5>
-        <div class="card-text">
-            <br>
-            <p class="card-text">Movies watched: {{ user.watchedmovie }}</p>
-            <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" aria-current="page" href="{% url 'user_library:watch_list' request.user.id %}"><strong>My watchlist</strong></a>
-
-            {% if profile.user.liked_movies %}
-            <br><br><a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-primary">Liked content</a>
-            {% else %}
-            <p>no content liked yet...</p>
-            {% endif %}
-            </div>
-        </div>
-    </div>
-
+<div>
+    <br>
+    <br>
 </div>
+
+<div class="container-fluid" style="width: 90%;">   
+    <div class="card text-center">
+        <div class="card-header">
+            <h5 class="card-title">{{ profile.user.username.capitalize }}</h5>
+        </div>
+
+
+        <div class="card-body">
+
+            <div style="display: flex; align-items: center;">
+
+                <div class="col-md-1" style="margin-left: 15px; margin-right: 40px;">
+                    <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
+                    <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
+                </div>
+                
+                <!--  profile picture -->
+                <div class="" style="margin-top: 25px; margin-right: 50px;">
+                    {% if profile.profile_picture %}
+                    <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 200px; height: 200px;" alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 20%;" alt="Profile photo">
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div style="text-align: center; margin-top: 25px; margin-bottom: 10px;">
+                        <h5 class="card-title" style="margin-bottom: 25px;">Special title treatment</h5>
+                        <p class="card-text" style="margin-bottom: 25px;">{{ profile.bio }}</p>
+                        <a href="#" class="btn btn-primary" style="background-color: rgb(75, 13, 13);">Watchlist:</a>
+                    </div>
+                </div>
+                <!--  User's data, content such like watch list, liked movies -->
+                <p class="card-text"><small>Movies watched: {{ user.watchedmovie }}</small></p>
+
+            </div>
+        </div>
+
+        <!-- Watchlist, liked content etc... -->
+        <div class="card-footer text-body-secondary d-flex">
+            <div style="margin-left: 150px; margin-right: 100px;">
+            </div>
+            <div style="margin-left: 100px; margin-right: 70px;">
+                <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" aria-current="page" href="{% url 'user_library:watch_list' request.user.id %}"><strong>My watchlist</strong></a>
+            </div>
+
+            <div style="margin-left: 100px; margin-right: 50px;">
+                {% if like %}
+                <br><br>
+                <a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-primary">Liked content</a>
+                {% else %}
+                <p>no content liked yet...</p>
+                {% endif %}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
 
 
 {% endblock %}

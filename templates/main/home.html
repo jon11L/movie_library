@@ -3,33 +3,30 @@
 
 {% block content %}
     
-<div class="container-fluid" style="text-align: center; width: 85%;">
+<div class="container-fluid" style="width: 85%;">
 
-    <div class="ms-auto mb-2 me-auto" style="margin-top: 15px;">
-        <br>
-        <h1>Welcome to your Movie library</h1>
-        <br>
-    </div>
+    <div class="ms-auto mb-2 me-auto" style="text-align: center; margin-top: 15px;">
 
-    <!-- Reference the amount of content in the Database -->
-    <div class=" ms-auto mb-2 me-5">
+        <h1 class="mt-1 mb-3">Welcome to your Movie library</h1>
+        <!-- Reference the amount of content in the Database -->
         {% if movies_count %}
         <strong>Currently available in the Vault:</strong> {{ movies_count }} movies and
         {% else %}
         <p>No movies found</p>
         {% endif %}
         {% if series_count %}
-        {{ series_count }} series in the database 
+        {{ series_count }} series
         {% else %}
         <p>No series found</p>
         {% endif %}
+        <div>
+            <br>
+            <p>Here you will be able to save the movie you want to watch or already watched</p>
+            <p> You can add notes to your favorites movies.</p>
+        </div>
+
     </div>
 
-    <div>
-        <br>
-        <p>Here you will be able to save the movie you want to watch or already watched</p>
-        <p> You can add notes to your favorites movies.</p>
-    </div>
     <br>
     
     <!---- Display last contents added in the database ----->
@@ -38,11 +35,11 @@
     <h3 style="text-align: center;">Last added movies:</h3>
     <br>
     <div>
-        <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
+        <div style="display: flex; flex-wrap: wrap;">
             {% if movies %}
             {% for movie in movies %}
 
-            <div class="card" style="width: 285px; margin-bottom: 25px;">
+            <div class="card" style="width: 285px; margin-bottom: 25px; margin-right: 15px;">
 
                 <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
