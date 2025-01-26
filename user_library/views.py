@@ -15,51 +15,45 @@ def user_liked_content_view(request, pk):
     if request.user.is_authenticated:
         if request.method == "GET":
 
-            # movies= []
-            # series= []
-            # fetch the profile being requested
             user = User.objects.get(id=pk)
             print(f" user: {user}\n")
 
-
             likes = Like.objects.filter(user=request.user)
-            print(f" liked_content: {likes}\n") #debug print
+            # print(f" liked_content: {likes}\n") #debug print
 
-
-            liked_content = []
+            liked_content = [] # intialize the list of liked content 
             for like in likes:
                 if like.content_type == "movie":
+
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append(movie)
+                        liked_content.append({'content': movie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
                         print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
+
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append(serie)
+                        liked_content.append({'content': serie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
                         print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
 
-
             total_like = likes.count() #count how many items has been liked
 
+            print(f"all liked content: {liked_content}")
 
             context = {
-                'likes': likes,
                 'liked_content': liked_content,
-                # 'movies': movies,
                 'total_like': total_like,
-                'user': user
             }
 
             return render(request, 'user_library/liked_content.html', context=context)
         
-        else:
-            return redirect('user:login')
-
+    else:
+        messages.error(request, "You must be logged in to view your liked content.")
+        return redirect('user:login')
 
 
 def watch_list(request, pk):
@@ -80,7 +74,6 @@ def watch_list(request, pk):
 
             return render(request, 'user_library/watch_list.html', context=context)
         
-
 
 def toggle_like(request, content_type: str, object_id: int):
     '''When triggered or called, this functin will check in the Like models data

@@ -29,12 +29,12 @@
                     {% if profile.profile_picture %}
                     <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 200px; height: 200px;" alt="Profile photo">
                     {% else %}
-                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 20%;" alt="Profile photo">
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 200px;" alt="Profile photo">
                     {% endif %}
                 </div>
 
                 <div>
-                    <div style="text-align: center; margin-top: 25px; margin-bottom: 10px;">
+                    <div style="text-align: left; margin-top: 25px; margin-bottom: 10px;">
                         <h5 class="card-title" style="margin-bottom: 25px;">Special title treatment</h5>
                         <p class="card-text" style="margin-bottom: 25px;">{{ profile.bio }}</p>
                     </div>
@@ -54,20 +54,19 @@
             </div>
 
 
-            <div style="margin-left: 100px; margin-right: 50px; margin-top: -50px;">
-                {% if like %}
+            <div style="margin-left: 100px; margin-right: 20px; margin-top: -50px;">
                 <br><br>
+                {% if like %}
                 <a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-secondary" style="background-color: rgb(127, 143, 231);">Liked content</a>
                 {% else %}
-                <p>no content liked yet...</p>
+                <p></p>
                 {% endif %}
             </div>
+            <p >{{ total_like }} likes</p>
 
         </div>
     </div>
 </div>
-
-
 
 
 

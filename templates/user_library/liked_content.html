@@ -11,39 +11,47 @@
 
 <br><br>
 {% if liked_content %}
-    {% for content in liked_content %}
+    {% for item in liked_content %}
 
 
-    <div style="display: flex; width: 80%; padding-left: 80px; padding-bottom: 15px;" >
+    <div style="width: 80%; margin: auto;" >
+        <div style="justify-items: center; padding-bottom: 50px;" >
+        
 
-        <div class="card w-25">
-
-            <div class="card-body">
-                <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                    <div class="card-title">
-                        <a href="{% url 'movie:detail_movie' content.id %}" style="text-decoration: none; color: #000;">
-                            <h5>{{ content.title }}</h5>
-                        </a>
-                    </div>
-                    <!--  Trigger the Like function, in this page automatically unlike -->
-                    <form method="POST" action="{% url 'user_library:toogle_like' 'movie' content.pk %}">
-                        {% csrf_token %}
-                        <button type="submit">
-                            Unlike
-                        </button>
-                    </form>
-                </div>
-
-
-                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                    {% if content.images_poster %}
-                        <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
-                    {% else %}
-                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                    {% endif %}
-                </div>
-            <p class="card-text"><strong>Overview</strong>: {{ content.description|slice:":40" }}...</p>
+            <div style=" margin-right: 30px;">
+                <p><strong>liked on:</strong> {{ item.liked_at }}</p>
             </div>
+
+            <div class="card w-25">
+
+                <div class="card-body">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                        <div class="card-title">
+                            <a href="{% url 'movie:detail_movie' item.content.id %}" style="text-decoration: none; color: #000;">
+                                <h5>{{ item.content.title }}</h5>
+                            </a>
+                        </div>
+                        <!--  Trigger the Like function, in this page automatically unlike -->
+                        <form method="POST" action="{% url 'user_library:toogle_like' 'movie' item.content.pk %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                Unlike
+                            </button>
+                        </form>
+                    </div>
+
+
+                    <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                        {% if item.content.images_poster %}
+                            <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                        {% else %}
+                        <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                        {% endif %}
+                    </div>
+                <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
