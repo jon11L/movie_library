@@ -6,48 +6,50 @@
 
 
 <div class="mt-4">
-    <h1 style="text-align: center;">{{ liked_content.count }} content liked:</h1>
+    <h1 style="text-align: center;">{{ total_like }} content liked:</h1>
 </div>
 
 <br><br>
 {% if liked_content %}
-{% for movie in movies %}
-<div style="display: flex; width: 80%; padding-left: 80px; padding-bottom: 15px;" >
+    {% for content in liked_content %}
 
-    <div class="card w-25">
 
-        <div class="card-body">
-            <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                <div class="card-title">
-                    <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
-                        <h5>{{ movie.title }}</h5>
-                    </a>
+    <div style="display: flex; width: 80%; padding-left: 80px; padding-bottom: 15px;" >
+
+        <div class="card w-25">
+
+            <div class="card-body">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                    <div class="card-title">
+                        <a href="{% url 'movie:detail_movie' content.id %}" style="text-decoration: none; color: #000;">
+                            <h5>{{ content.title }}</h5>
+                        </a>
+                    </div>
+                    <!--  Trigger the Like function, in this page automatically unlike -->
+                    <form method="POST" action="{% url 'user_library:toogle_like' 'movie' content.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            Unlike
+                        </button>
+                    </form>
                 </div>
-                <!--  Trigger the Like function, in this page automatically unlike -->
-                <form method="POST" action="{% url 'user_library:toogle_like' 'movie' movie.pk %}">
-                    {% csrf_token %}
-                    <button type="submit">
-                        Unlike
-                    </button>
-                </form>
-            </div>
 
 
-            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                {% if movie.film_poster %}
-                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                {% endif %}
+                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                    {% if content.images_poster %}
+                        <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                    {% endif %}
+                </div>
+            <p class="card-text"><strong>Overview</strong>: {{ content.description|slice:":40" }}...</p>
             </div>
-        <p class="card-text"><strong>Overview</strong>: {{ movie.description|slice:":40" }}...</p>
         </div>
     </div>
 
-</div>
-
-{% endfor %}
+    {% endfor %}
 {% else %}
+<p>TEST123</p>
 <h5 style="text-align: center;">No content liked yet...</h5>
 {% endif %}
 

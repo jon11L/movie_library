@@ -57,25 +57,34 @@
 
                 </div>
 
-                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                <div class="card-title" style="padding-top: 5px;">
+                    <div style="display: flex; justify-content: center;">
+                        <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
+                            <h5>{{ movie.title }} </h5>
+                        </a>
+                        {% if movie.length %}
+                        <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
+                        {% else %}
+                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <div class="card-img-top" style="text-align: center; margin-top: 10px; margin-bottom: 20px;">
                     {% if movie.film_poster %}
-                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo" style="width: max-content;">
                     {% else %}
                     <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                     {% endif %}
                 </div>
 
-                <div class="card-title" style="margin-top: 2rem; text-align: center;">
-                    <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
-                        <h5>{{ movie.title }}</h5>
-                    </a>
-                </div>
+
                 <div class="card-body" style="text-align: left;">
-                        <p style="height: 90px;"><strong>Overview</strong>: {{ movie.description|slice:":100" }}...</p>
+                        <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date.year }}</li>
                             <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
-                            <li class="list-group-item"><strong>Length:</strong> {{ movie.length }}min</li>
                         </ul>
                 </div>
             </div>

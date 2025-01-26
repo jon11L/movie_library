@@ -29,7 +29,7 @@ class Movie(models.Model):
     length = models.IntegerField(blank=True, null=True) # will display the Movie time in minutes
     description = models.TextField(max_length=1000, blank=True, null=True)
     genre = models.JSONField(blank=True, null=True)  # This field an array of strings, i want 
-    film_poster = models.URLField(blank=True, null=True)
+    image_poster = models.URLField(blank=True, null=True)
 
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
