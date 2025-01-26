@@ -83,11 +83,14 @@ def profile_page(request, pk):
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
         like = Like.objects.filter(user=pk)
-        print(f"like: {like}")
-    
+        # print(f"like: {like}") # debug print
+
+        total_like = like.count() #count how many items has been liked
+
         context = {
             'profile': profile,
             'like': like,
+            'total_like': total_like,
         }
 
         return render(request, 'user/profile_page.html', context=context)
