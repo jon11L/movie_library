@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from.models import WatchList, Like
 from user.models import User
 from movie.models import Movie
+from serie.models import Serie
 
 
 def user_liked_content_view(request, pk):
@@ -14,39 +15,50 @@ def user_liked_content_view(request, pk):
     if request.user.is_authenticated:
         if request.method == "GET":
 
-            movies= []
+            # movies= []
+            # series= []
             # fetch the profile being requested
             user = User.objects.get(id=pk)
             print(f" user: {user}\n")
 
 
-            liked_content = Like.objects.filter(user=request.user)
-            print(f" liked_content: {liked_content}\n") #debug print
-
-            # filter the movies from the liked_content queryset
-            liked_movies = Like.objects.filter(user=request.user, content_type='movie').values_list('object_id', flat=True)
-            liked_series = Like.objects.filter(user=request.user, content_type='serie').values_list('object_id', flat=True)
+            likes = Like.objects.filter(user=request.user)
+            print(f" liked_content: {likes}\n") #debug print
 
 
-            print(f"liked_movies: {liked_movies}\n") #debug print
-            print(f"liked_series: {liked_series}\n") #debug print
+            liked_content = []
+            for like in likes:
+                if like.content_type == "movie":
+                    try:
+                        movie = Movie.objects.get(id=like.object_id)
+                        liked_content.append(movie)
+                        print(f"movie: {movie}\n") #debug print
+                    except Movie.DoesNotExist:
+                        continue
+                elif like.content_type == "serie":
+                    try:
+                        serie = Serie.objects.get(id=like.object_id)
+                        liked_content.append(serie)
+                        print(f"serie: {serie}\n") #debug print
+                    except Serie.DoesNotExist:
+                        continue
 
-            for movie_id in liked_movies:
-                movie = Movie.objects.get(id=movie_id)
-                print(f"movie_id: {movie_id}\n") #debug print
-                movies.append(movie)
-                print(f"movie: {movie}\n") #debug print
 
-            print(f" movies: {movies}\n") #debug print
+            total_like = likes.count() #count how many items has been liked
 
 
             context = {
+                'likes': likes,
                 'liked_content': liked_content,
-                'movies': movies,
+                # 'movies': movies,
+                'total_like': total_like,
                 'user': user
             }
 
             return render(request, 'user_library/liked_content.html', context=context)
+        
+        else:
+            return redirect('user:login')
 
 
 
@@ -71,6 +83,11 @@ def watch_list(request, pk):
 
 
 def toggle_like(request, content_type: str, object_id: int):
+    '''When triggered or called, this functin will check in the Like models data
+    if an instance of this like between user/content_type/id exist or not 
+    if it does not, it will then create a new instance in the database,
+    if the instance already exists, it will delete the instance.
+    '''
 
     # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:

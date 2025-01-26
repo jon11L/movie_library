@@ -28,7 +28,7 @@ class Serie(models.Model):
     description = models.TextField(blank=True, null=True)
     genre = models.JSONField(blank=True, null=True) 
     ongoing = models.BooleanField(blank=True, null=True)
-    serie_poster = models.URLField(blank=True, null=True)
+    image_poster = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'serie'

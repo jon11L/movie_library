@@ -28,12 +28,13 @@ def register_user(request):
 
             try:
                 login(request, user)
-
                 messages.success(request,
                                 f"Account successfully created!    Hello, {username}! You are now logged in."
                                 f"Click here to complete your profile"
                                 )
+                
                 return redirect(to='main:home')
+            
             except Exception as e:
                 print(f"An error occurred:\n\n {e}")
                 raise HttpResponse("An error occurred while trying to register the user.\nPlease refresh the page and try again")
@@ -60,8 +61,8 @@ def login_user(request):
             print(f"\n- User '{user.username}' logged in. \n")
             messages.success(request, (f"logged in! Hello {user.username}."))
             return redirect(to='main:home')
+        
         else:
-
             print("\n - User not found OR credentials don't match. \n")
             messages.error(request, ("User and password don't match. Please try again"))
             return redirect(to='user:login')
@@ -74,8 +75,6 @@ def logout_user(request):
     return redirect(to='/')
 
 
-
-
 def profile_page(request, pk):
     ''' Returns the profile page of the user_id/pk requested
         At the moment users can visit other user's profile, but this may be changed
@@ -83,24 +82,19 @@ def profile_page(request, pk):
     if request.user.is_authenticated:
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
-
         like = Like.objects.filter(user=pk)
         print(f"like: {like}")
-    
     
         context = {
             'profile': profile,
             'like': like,
-            
         }
+
         return render(request, 'user/profile_page.html', context=context)
     
     else:
         messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')
-    
-
-
 
 
 def update_profile(request, pk):
@@ -110,12 +104,14 @@ def update_profile(request, pk):
         request.user.id must be same as the target profile.user_id OR user.id/pk. 
     '''
 
-    if request.user.id != pk:
+    if request.user.is_authenticated and request.user.id != pk:
+
         print("\n* Unauthorised acces: user tried to access another User_Profile_update_page *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
-        
-    if request.user.is_authenticated:
+
+
+    elif request.user.is_authenticated and request.user.id == pk:
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
         if request.method == 'GET':
@@ -146,12 +142,12 @@ def update_profile(request, pk):
 def update_user(request, pk):
     ''' User can submit form to edit their first_name, last_name and user_name'''
 
-    if request.user.id != pk:
+    if request.user.is_authenticated and request.user.id != pk:
         print("\n* Unauthorised acces: user tried to access another User_update_page *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
-        
-    if request.user.is_authenticated:
+
+    elif request.user.is_authenticated and request.user.id == pk:
         # fetch the profile being requested
         current_user = User.objects.get(pk=pk)
 
@@ -182,18 +178,17 @@ def update_user(request, pk):
 def update_password(request, pk):
     ''' User can request to change their password'''
 
-    if request.user.id != pk:
+    if request.user.is_authenticated and request.user.id != pk:
         print("\n* Unauthorised acces: user tried to access another User's account setting *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
-        
-    if request.user.is_authenticated:
+
+    elif request.user.is_authenticated and request.user.id == pk:
         # fetch the profile being requested
         user = User.objects.get(pk=pk)
 
         if request.method == 'GET':
             form = PasswordChangeForm(user=user)
-
             return render(request, 'user/edit_pw.html', {'form': form})
 
         if request.method == 'POST':
