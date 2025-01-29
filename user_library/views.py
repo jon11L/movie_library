@@ -27,7 +27,7 @@ def user_liked_content_view(request, pk):
 
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append({'content': movie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
                         print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
@@ -35,7 +35,7 @@ def user_liked_content_view(request, pk):
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content': serie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
                         print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
@@ -50,6 +50,14 @@ def user_liked_content_view(request, pk):
             }
 
             return render(request, 'user_library/liked_content.html', context=context)
+        
+
+            # user clicked the 'like' button
+        elif request.method == "POST":
+            # user clicked the 'unlike' button
+            if request.POST.get('like_button_clicked') == 'true':
+                print(f"like button clicked\n") # debugging
+            pass
         
     else:
         messages.error(request, "You must be logged in to view your liked content.")
