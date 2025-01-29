@@ -34,3 +34,29 @@ img {
     width: 20%;
     height: auto;
 }
+
+
+
+/*------- Like button ----- */
+.like-button {
+    transition: all 0.3s ease;
+}
+
+.like-button i {
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.like-button i.liked {
+    color: #ff4444;
+}
+
+.pulse {
+    animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

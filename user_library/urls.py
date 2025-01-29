@@ -24,6 +24,7 @@ urlpatterns = [
     # path('liked/<int:pk>', views.add_to_liked_movie, name='like_movie'),
     path('liked/<int:pk>/liked_content', views.user_liked_content_view, name='liked_view'),
     path('<int:pk>/watch_list', views.watch_list, name='watch_list'),
-    path('Like/<str:content_type>/<int:object_id>', views.toggle_like, name='toogle_like')
+    path('like/<str:content_type>/<int:object_id>/', views.toggle_like, name='toggle_like')
+    # path('Like/<int:pk>/<str:content_type>/<int:object_id>', views.toggle_like, name='toggle_like') # should user_id added to validate url path for ajax
 
 ]

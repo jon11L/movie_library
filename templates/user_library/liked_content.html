@@ -31,8 +31,8 @@
                                 <h5>{{ item.content.title }}</h5>
                             </a>
                         </div>
-                        <!--  Trigger the Like function, in this page automatically unlike -->
-                        <form method="POST" action="{% url 'user_library:toogle_like' 'movie' item.content.pk %}">
+                        <!--  Trigger the Like function, in this page all content displayed are liked. therefore automatically unlike -->
+                        <form method="POST" action="{% url 'user_library:toggle_like' 'movie' item.content.pk %}">
                             {% csrf_token %}
                             <button type="submit">
                                 Unlike
