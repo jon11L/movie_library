@@ -15,8 +15,9 @@
 	{% csrf_token %}
 	{% include 'navbar.html' %}
 
+	<div style="position: fixed; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
+
 	{% if messages %}
-	<div style="position: absolute; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
 		{% for message in messages %}
 		<div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %} alert-dismissible fade show"
 			style="width: fit-content;" 
@@ -25,9 +26,11 @@
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 			{% endfor %}
 		</div>
+		{% endif %}
+
+		<div id="message-container"> <!-- display the messages handled by AJAX // dynamic placeholder--> </div> 
+
     </div>
-	{% endif %}
-	<div id="message-container" style="position: fixed; top: 20px; right: 20px; display: none; z-index: 1000;"></div>
 	
 	{% block content %}
 	{% block extra_js %}

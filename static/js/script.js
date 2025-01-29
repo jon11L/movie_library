@@ -37,8 +37,10 @@ $(document).ready(function() {
             headers: {
                 'X-CSRFToken': getCSRFToken() // include CSRF token
             },
+
             success: function(response) {
                 console.log('Server responded:', response); // debug console
+
                 // Toggle button text and icon when the server responds successfully
                 const likeText = button.find('.like-text');
                 const icon = button.find('i');
@@ -56,11 +58,34 @@ $(document).ready(function() {
                 
                 // Add animation effect
                 button.addClass('pulse');
-                setTimeout(() => button.removeClass('pulse'), 500);
+                setTimeout(() => button.removeClass('pulse'), 700);
             },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
+
+            // Handle errors messages
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            
+                // Default error message
+                let errorMessage = "An error occurred.";
+                let errorType = "danger";  // Default to red alert
+            
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+            
+                    // If the error is "Login required", show a warning instead of danger
+                    if (xhr.status === 401) {
+                        errorType = "warning";  // Yellow alert for login required
+                    }
+                }
+            
+                // Show error message with the correct type
+                showMessage(errorMessage, errorType);
+
+                // Hide message after 3 seconds
+                setTimeout(() => messageContainer.fadeOut(), 3000);
             }
+
+
         });
     });
 });
