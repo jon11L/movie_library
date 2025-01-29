@@ -45,16 +45,19 @@
                 <div style="display: flex; justify-content: space-between;" id="like_button">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
 
-                        <form method="POST" class="" action="{% url 'user_library:toggle_like' 'movie' movie.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" style="background-color: rgb(137, 141, 251);" onclick="LoadLike()">
-                                {% if movie.id in user_liked_movies %}
-                                Unlike
-                                {% else %}
-                                Like
-                                {% endif %}
-                            </button>
-                        </form>
+                    <button class="like-button"
+                            data-type="movie"
+                            data-id="{{ movie.id }}"
+                            style="background-color: rgb(137, 141, 251);">
+                        <i class="fas fa-heart {% if movie.id in user_liked_movies %}liked{% endif %}"></i>
+                        <span class="like-text">
+                            {% if movie.id in user_liked_movies %}
+                            Unlike
+                            {% else %}
+                            Like
+                            {% endif %}
+                        </span>
+                    </button>
 
                 </div>
 
@@ -110,7 +113,7 @@
             
             <div style="display: flex; justify-content: space-between;" id="like_button">
                 <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.rating }}/10</small></p>
-                
+                    <!-- like button feature -->
                     <button class="like-button"
                             data-type="serie"
                             data-id="{{ serie.id }}"
@@ -157,10 +160,5 @@
     <br/>
     
 </div>
-
-
-<script>
-
-</script>
 
 {% endblock %}

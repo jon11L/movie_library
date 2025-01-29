@@ -11,16 +11,22 @@
             <div class="card">
                 
                 <div style="display: flex; flex-wrap: wrap; align-self: flex-end; margin-top: 15px; margin-right: 10px;">
-                    <form method="POST" action="{% url 'user_library:toggle_like' 'movie' movie.pk %}">
-                        {% csrf_token %}
-                        <button type="submit">
+
+                    <!-- like button feature -->
+                    <button class="like-button"
+                            data-type="movie"
+                            data-id="{{ movie.id }}"
+                            style="background-color: rgb(137, 141, 251);">
+                        <i class="fas fa-heart {% if movie.id in user_liked_movie %}liked{% endif %}"></i>
+                        <span class="like-text">
                             {% if movie.id in user_liked_movie %}
                             Unlike
                             {% else %}
                             Like
                             {% endif %}
-                        </button>
-                    </form>
+                        </span>
+                    </button>
+
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 20px;">

@@ -27,7 +27,7 @@ $(document).ready(function() {
         const objectId = button.data('id'); // e.g., '2'
 
         // Construct the URL dynamically
-        const url = `user_library/like/${contentType}/${objectId}/`;
+        const url = `/user_library/like/${contentType}/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
 
@@ -58,7 +58,7 @@ $(document).ready(function() {
                 
                 // Add animation effect
                 button.addClass('pulse');
-                setTimeout(() => button.removeClass('pulse'), 700);
+                setTimeout(() => button.removeClass('fa-spin-pulse'), 1500);
             },
 
             // Handle errors messages
@@ -72,7 +72,7 @@ $(document).ready(function() {
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
             
-                    // If the error is "Login required", show a warning instead of danger
+                    // If the error is "Login required / user not authenticated", show a warning instead of danger
                     if (xhr.status === 401) {
                         errorType = "warning";  // Yellow alert for login required
                     }

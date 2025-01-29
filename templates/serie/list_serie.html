@@ -18,16 +18,21 @@
                 <!-- Form for the Like button -->
                 <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ data.serie.rating }}/10</small></p>
-                    <form method="POST" action="{% url 'user_library:toggle_like' 'serie' data.serie.pk %}">
-                        {% csrf_token %}
-                        <button type="submit">
+                    
+                    <!-- like button feature -->
+                    <button class="like-button"
+                            data-type="serie"
+                            data-id="{{ data.serie.id }}"
+                            style="background-color: rgb(137, 141, 251);">
+                        <i class="fas fa-heart {% if data.serie.id in user_liked_series %}liked{% endif %}"></i>
+                        <span class="like-text">
                             {% if data.serie.id in user_liked_series %}
                             Unlike
                             {% else %}
                             Like
                             {% endif %}
-                        </button>
-                    </form>
+                        </span>
+                    </button>
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 25px;">
