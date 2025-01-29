@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 
 from movie.models import Movie
 from serie.models import Serie
@@ -15,7 +16,7 @@ def home(request):
         series_count = Serie.objects.count() 
 
 
-        # Get the user's like content 
+        # Get the user's like content (movies, series)
         user_liked_movies = []
         user_liked_movies = Like.objects.filter(
                                             user=request.user.id, content_type='movie'
@@ -27,6 +28,7 @@ def home(request):
                                             ).values_list('object_id', flat=True)
         
         print(f"\n user liked:\n\n{user_liked_movies}\n")
+        print(f"\n user liked:\n\n{user_liked_series}\n")
 
         context = {
             'movies': movies,
@@ -41,5 +43,6 @@ def home(request):
         return render(request, 'main/home.html', context=context)
     
     except Exception as e:
-        print(f"An error occurred on the home page: {e}\n")
+        print(f"An error occurred while loading the homepage: {e}\n")
+        messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')

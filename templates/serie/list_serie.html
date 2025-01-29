@@ -18,7 +18,7 @@
                 <!-- Form for the Like button -->
                 <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ data.serie.rating }}/10</small></p>
-                    <form method="POST" action="{% url 'user_library:toogle_like' 'serie' data.serie.pk %}">
+                    <form method="POST" action="{% url 'user_library:toggle_like' 'serie' data.serie.pk %}">
                         {% csrf_token %}
                         <button type="submit">
                             {% if data.serie.id in user_liked_series %}
