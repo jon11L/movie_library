@@ -10,7 +10,10 @@ from serie.models import Serie
 
 
 def user_liked_content_view(request, pk):
-    '''retrieve the user's liked mvoie list from the database and display them in the template'''
+    '''retrieve the user's liked contents from the database 
+    and display them in the template. 
+    
+    '''
 
     if request.user.is_authenticated:
         if request.method == "GET":
@@ -42,6 +45,8 @@ def user_liked_content_view(request, pk):
 
             total_like = likes.count() #count how many items has been liked
 
+            
+
             print(f"all liked content: {liked_content}")
 
             context = {
@@ -50,7 +55,7 @@ def user_liked_content_view(request, pk):
             }
 
             return render(request, 'user_library/liked_content.html', context=context)
-        
+
 
             # user clicked the 'like' button
         elif request.method == "POST":
@@ -58,7 +63,7 @@ def user_liked_content_view(request, pk):
             if request.POST.get('like_button_clicked') == 'true':
                 print(f"like button clicked\n") # debugging
             pass
-        
+
     else:
         messages.error(request, "You must be logged in to view your liked content.")
         return redirect('user:login')

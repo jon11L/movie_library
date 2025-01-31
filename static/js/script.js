@@ -25,10 +25,14 @@ $(document).ready(function() {
         const button = $(this);
         const contentType = button.data('type'); // e.g., 'serie'
         const objectId = button.data('id'); // e.g., '2'
+        const icon = button.find('i');
 
         // Construct the URL dynamically
         const url = `/user_library/like/${contentType}/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
+
+        // Disable button during request to prevent double-clicks
+        button.prop('disabled', true);
 
 
         $.ajax({
@@ -40,25 +44,25 @@ $(document).ready(function() {
 
             success: function(response) {
                 console.log('Server responded:', response); // debug console
-
-                // Toggle button text and icon when the server responds successfully
-                const likeText = button.find('.like-text');
-                const icon = button.find('i');
                 
+                
+                // Toggle button text and icon when the server responds successfully
                 if (response.liked) {
-                    likeText.text('Unlike');
-                    icon.addClass('liked');
-                } else {
-                    likeText.text('Like');
-                    icon.removeClass('liked');
+                    icon.removeClass('far fa-heart')
+                        .addClass('fa fa-heart liked');
+                        button.attr('data-liked', 'true');
+                    } else {
+                        icon.removeClass('fa fa-heart liked')
+                            .addClass('far fa-heart');
+                        button.attr('data-liked', 'false');
                 }
 
                 // Show success message
                 showMessage(response.message, "success");
                 
-                // Add animation effect
-                button.addClass('pulse');
-                setTimeout(() => button.removeClass('fa-spin-pulse'), 1500);
+                // Add animation effect    ----- does not seem to work, need to debug. ----
+                icon.addClass('pulse');
+                setTimeout(() => button.removeClass('pulse'), 1000);
             },
 
             // Handle errors messages
@@ -83,8 +87,13 @@ $(document).ready(function() {
 
                 // Hide message after 3 seconds
                 setTimeout(() => messageContainer.fadeOut(), 3000);
+            },
+            
+            complete: function() {
+                // Re-enable button after request completes
+                button.prop('disabled', false);
+                
             }
-
 
         });
     });
