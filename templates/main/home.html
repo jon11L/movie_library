@@ -30,7 +30,7 @@
 
     <br>
     
-    <!---- Display last contents added in the database ----->
+    <!---- Display last added contents in the database ----->
     
     <!-- Displaying the last movies added here -->
     <h3 style="text-align: center;">Last added movies:</h3>
@@ -40,17 +40,17 @@
             {% if movies %}
             {% for movie in movies %}
 
-            <div class="card" style="width: 285px; margin-bottom: 25px; margin-right: 15px;">
+            <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: auto; border: none;">
 
                 <div style="display: flex; justify-content: space-between;" id="like_button">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
-
+                    
+                    <!-- like button feature -->
                     <button class="like-button"
                             data-type="movie"
                             data-id="{{ movie.id }}"
                             data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
                         <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-
                     </button>
 
                 </div>
@@ -58,20 +58,23 @@
                 <div class="card-title" style="padding-top: 5px;">
                     <div style="display: flex; justify-content: center;">
                         <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
-                            <h5>{{ movie.title }} </h5>
+                            <h4>{{ movie.title }} </h4>
                         </a>
-                        {% if movie.length %}
-                        <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
-                        {% else %}
-                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
-                        {% endif %}
+
+                        <div style="color: grey;">
+                            {% if movie.length %}
+                            <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
+                            {% else %}
+                            <p style="margin-left: 8px;"><small>(N/a)</small></p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
 
                 <div class="card-img-top" style="text-align: center; margin-top: 10px; margin-bottom: 20px;">
-                    {% if movie.film_poster %}
-                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo" style="width: max-content;">
+                    {% if movie.image_poster %}
+                    <img src="{{ movie.image_poster.url }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
                     {% else %}
                     <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                     {% endif %}
@@ -81,7 +84,7 @@
                 <div class="card-body" style="text-align: left;">
                         <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date.year }}</li>
+                            <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
                             <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
                         </ul>
                 </div>
@@ -98,21 +101,40 @@
     <!-- Displaying the last series added here -->
     <h3 style="text-align: center;">Last added series:</h3>
     <br>
-    <div style="display: flex; flex-wrap: wrap;">
+
+    <div style="display: flex; flex-wrap: wrap; flex-direction: row;">
         {% if series %}
         {% for serie in series %}
 
-        <div class="card" style="width: 285px; margin-bottom: 25px; margin-right: 15px; border: none;">
+        <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: auto; border: none;">
             
             <div style="display: flex; justify-content: space-between;" id="like_button">
                 <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.rating }}/10</small></p>
-                    <!-- like button feature -->
-                    <button class="like-button"
-                            data-type="serie"
-                            data-id="{{ serie.id }}"
-                            data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
-                            <i class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                    </button>
+
+                <!-- like button feature -->
+                <button class="like-button"
+                        data-type="serie"
+                        data-id="{{ serie.id }}"
+                        data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
+                        <i class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                </button>
+            </div>
+
+            <div class="card-title" style="padding-top: 5px;">
+                <div style="display: flex; justify-content: center;">
+                    <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
+                        <h4>{{ serie.title }} </h4>
+                    </a>
+
+                    <div style="color: grey;">
+                        {% if serie.length %}
+                        <p style="margin-left: 8px;"><small>({{ serie.length }}min)</small></p>
+                        {% else %}
+                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
+                        {% endif %}
+                    </div>
+
+                </div>
             </div>
 
             <div class="card-img-top" style="text-align: center; margin-top: 25px;">
@@ -124,15 +146,10 @@
             </div>
 
             <div class="card-body" style="text-align: left;">
-                <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
-                    <h5 class="card-title" style="text-align: center;">{{ serie.title }}</h5>
-                </a>
-                <br>
-                <p class="card-text"><strong>Overview</strong>: {{ serie.description|slice:":100" }}...</p>
+                <p class="card-text" style="height: 70px;"><strong>Overview</strong>: {{ serie.description|slice:":80" }}...</p>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date.year }}</li>
+                    <li class="list-group-item"><strong>Released:</strong> {{ serie.release_date.year }}</li>
                     <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre }}</li>
-                    <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
                 </ul>
             </div>
             

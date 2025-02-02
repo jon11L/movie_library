@@ -1,11 +1,18 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.auth.decorators import user_passes_test
+
+from api_services.TMDB.base_client import TMDBClient
 
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like
 
-# Create your views here.
+
+def admin_check(user):
+    return user.is_superuser  # or user.is_staff for staff users
+
 def home(request):
 
     # Check if they are Movie datas and display them if so
@@ -46,3 +53,25 @@ def home(request):
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')
+    
+
+# Find a way to authorize the only for admin
+
+@user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
+def get_tmdb_access(request):
+    '''Make the first call to TMDB api to get the read access to the apis/datas.
+    If user is not admin, will be redirected to login page"
+    '''
+
+    if request.method == 'GET':
+        client = TMDBClient()
+        client_access = client.get_access()
+
+        if client_access:
+            messages.success(request, "request to read access TMDB api was successful")
+            # return render(request, 'main/tmdb_access.html', {'access_token': access})
+            return JsonResponse(client_access)
+        
+        else:
+            messages.error(request, "The request to read access TMDB api was not successful.")
+            return redirect(to='main:home')

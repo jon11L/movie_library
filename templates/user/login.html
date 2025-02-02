@@ -3,7 +3,11 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-    <h2>You are already connected, {{ user.username }}!</h2>
+<div style="text-align: center; margin-top: 20%;">
+    <h2 >You are already connected, {{ user.username }}!</h2>
+    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 30px 45px;">Home</a>
+
+</div>
 {% else %}
 
 

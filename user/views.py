@@ -75,6 +75,7 @@ def logout_user(request):
     return redirect(to='/')
 
 
+@login_required(login_url= "user:login")
 def profile_page(request, pk):
     ''' Returns the profile page of the user_id/pk requested
         At the moment users can visit other user's profile, but this may be changed

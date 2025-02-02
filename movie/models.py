@@ -17,11 +17,23 @@ class Movie(models.Model):
         NINE = 9, '9 - Excellent'
         TEN = 10, '10 - Masterpiece'
 
+    # External sources / for api references
+    # tmdb_id = models.IntegerField(unique=True)  # Add this
+    # imdb_id = models.CharField(max_length=20, blank=True, null=True)  # Add this
+    # original_title = models.CharField(max_length=255, blank=True, null=True)  # Add this
+    # vote_average = models.FloatField(blank=True, null=True)  # Add this for TMDB rating
+    # vote_count = models.IntegerField(blank=True, null=True)  # Add this
+    # popularity = models.FloatField(blank=True, null=True)  # Add this
+    # backdrop_path = models.URLField(blank=True, null=True)  # Add this
+    # imdb_rating = models.IntegerField(choices=Rating.choices, blank=True, null=True) 
+
+
+
     # Core Movie Details
     title = models.CharField(max_length=255)
     release_date = models.DateField(blank=True, null=True)
     country_of_origin = models.CharField(max_length=255, blank=True, null=True)
-    production = models.CharField(max_length=255, blank=True, null=True)
+    production = models.JSONField(max_length=255, blank=True, null=True)
     director = models.CharField(max_length=255, blank=True, null=True)
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
@@ -29,7 +41,9 @@ class Movie(models.Model):
     length = models.IntegerField(blank=True, null=True) # will display the Movie time in minutes
     description = models.TextField(max_length=1000, blank=True, null=True)
     genre = models.JSONField(blank=True, null=True)  # This field an array of strings, i want 
+    # budget = models.IntegerField(blank=True, null=True)
     image_poster = models.URLField(blank=True, null=True)
+    # released = models.BooleanField(blank=True, null=True)
 
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
