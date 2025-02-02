@@ -24,8 +24,8 @@
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                    {% if movie.film_poster %}
-                    <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                    {% if movie.image_poster %}
+                    <img src=" {{ movie.image_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                     {% else %}
                     <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                     {% endif %}

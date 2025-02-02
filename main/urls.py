@@ -22,5 +22,6 @@ app_name = 'main'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('tmdb_access', views.get_tmdb_access, name='tmdb_access')
 
 ]
