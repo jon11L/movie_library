@@ -1,13 +1,21 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+# from django.contrib.contenttypes.models import ContentType
+# from django.contrib.contenttypes.fields import GenericForeignKey
 
 from user.models import User 
 from movie.models import Movie
 from serie.models import Serie
 
-# Create your models here.
-class WatchedMovie(models.Model):
+
+class WatchedContent(models.Model):
+
+    MOVIE = 'movie'
+    SERIE = 'serie'
+
+    CONTENT_TYPE_CHOICES = [
+        (MOVIE, 'Movie'),
+        (SERIE, 'Serie'),
+    ]
 
     class Rating(models.IntegerChoices):
         ONE = 1, '1 - Terrible'
@@ -28,24 +36,39 @@ class WatchedMovie(models.Model):
         WORTH = "worth", "It's Worth a rewatch."
         TOP = "totally", "Must rewatch it!"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watched_movies')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watched_content')
+    content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES)
+    object_id = models.PositiveIntegerField()
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True)
     rewatch = models.CharField(choices=RewatchChoice.choices, blank=True, null=True)
-    watched_at = models.DateTimeField(auto_now_add=True) # track when added to watched list.
     personal_note = models.TextField(max_length=2000, blank=True, null=True)
 
+    # track time
+    watched_on = models.DateTimeField(auto_now_add=True) # track when added to watched list.
+
     class Meta:
-        db_table = 'watched_movies'
-        verbose_name = 'watched_movie'
-        verbose_name_plural = 'watched_movies'
+        db_table = 'watched_content'
+        verbose_name = 'watched_content'
+        verbose_name_plural = 'watched_contents'
+        unique_together = ('user', 'content_type', 'object_id')
+        ordering = ['-watched_on']
+
 
     def __str__(self):
-        return f"{self.user.username} watched {self.movie.title}"
+        return f"{self.user.username} watched {self.content_type}: '{self.object_id}'"
     
 
 
 class WatchList(models.Model):
+
+
+    MOVIE = 'movie'
+    SERIE = 'serie'
+
+    CONTENT_TYPE_CHOICES = [
+        (MOVIE, 'Movie'),
+        (SERIE, 'Serie'),
+    ]
 
     class Status(models.TextChoices):
         PLANNED = 'plan', 'Plan to Watch'
@@ -55,20 +78,24 @@ class WatchList(models.Model):
 
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watch_list')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    added_at = models.DateTimeField(auto_now_add=True)
+    content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
     personal_note = models.TextField(max_length=500, blank=True, null=True)
     status = models.CharField(choices=Status.choices, blank=True, null=True)
 
+    # track time    # track time
+    added_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'watch_list'
         verbose_name = 'Watch_List'
         verbose_name_plural = 'Watch_Lists'
-        unique_together = ('user', 'movie')
+        unique_together = ('user', 'content_type', 'object_id')
+        ordering = ['-added_on']
+
 
     def __str__(self):
-        return f"{self.user.username} added {self.movie.title} to watchlist"
+        return f"{self.user.username} added {self.content_type}: '{self.object_id}' to watchlist"
     
 
 class Like(models.Model):
@@ -86,13 +113,14 @@ class Like(models.Model):
     object_id = models.PositiveIntegerField()
 
     # Time stamp
-    liked_at = models.DateTimeField(auto_now_add=True)
+    liked_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "user_Like"
+        db_table = "like"
+        verbose_name = 'like'
+        verbose_name_plural = 'likes'
         unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-liked_at']
+        ordering = ['-liked_on']
 
     def __str__(self):
         return f"{self.user.username} liked {self.content_type} {self.object_id}"
-

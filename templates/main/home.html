@@ -43,7 +43,7 @@
             <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: auto; border: none;">
 
                 <div style="display: flex; justify-content: space-between;" id="like_button">
-                    <p style=" margin: 15px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
+                    <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
                     
                     <!-- like button feature -->
                     <button class="like-button"
@@ -55,13 +55,13 @@
 
                 </div>
 
-                <div class="card-title" style="padding-top: 5px;">
+                <div class="card-title" style="">
                     <div style="display: flex; justify-content: center;">
                         <a href="{% url 'movie:detail_movie' movie.id %}" style="text-decoration: none; color: #000;">
                             <h4>{{ movie.title }} </h4>
                         </a>
 
-                        <div style="color: grey;">
+                        <div style="color: lightblue;">
                             {% if movie.length %}
                             <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
                             {% else %}

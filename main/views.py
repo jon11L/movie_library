@@ -65,7 +65,7 @@ def get_tmdb_access(request):
 
     if request.method == 'GET':
         client = TMDBClient()
-        client_access = client.get_access()
+        client_access = client.get_authorization()
 
         if client_access:
             messages.success(request, "request to read access TMDB api was successful")
@@ -75,3 +75,10 @@ def get_tmdb_access(request):
         else:
             messages.error(request, "The request to read access TMDB api was not successful.")
             return redirect(to='main:home')
+        
+
+def search_movie(request):
+    query = request.GET.get('query', 'Avatar')  # Default search for testing
+    client = TMDBClient()
+    results = client.search_movies(query)
+    return JsonResponse(results)
