@@ -38,7 +38,7 @@ def user_liked_content_view(request, pk):
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.liked_on.strftime("%d %B %Y")})
                         print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue

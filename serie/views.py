@@ -26,7 +26,7 @@ def list_serie(request):
                     'last_episode': last_episode
                 })
 
-                print(f"Series_data:\n {series_data}\n") # debug print 
+            print(f"Series_data:\n {series_data}\n") # debug print 
 
             # Get the user's like content
             user_liked_series = []

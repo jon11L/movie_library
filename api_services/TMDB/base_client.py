@@ -43,30 +43,3 @@ class TMDBClient:
         except Exception as e:
             print(f"An error occurred while calling the TMDb API: {e}")
             return None
-        
-
-
-
-    def get_movie_details(self, movie_id):
-        ''' get movie details from the TMDB API using the movie_id parameter.'''
-
-        url = f"{self.BASE_URL}movie/{movie_id}"
-
-        headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {self.ACCESS_TOKEN}"
-        }
-
-        try:
-
-            response = requests.get(url, headers=headers)
-            # response = requests.get(f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={access_token}&language=en-US')
-
-            if response.status_code == 200:
-                return response.json()
-            else:
-                return None
-
-        except Exception as e:
-            print(f"Error getting movie details: {e}")
-            return None

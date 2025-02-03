@@ -25,6 +25,7 @@
 
 body {
     background-color: #f5f5f5; /* Light grey background */
+    margin-bottom: 50px;
 }
 
 
@@ -102,4 +103,18 @@ img {
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+
+/*-------- FOOTER --------- */
+#footer {
+    position: fixed;
+    flex-shrink: 0;
+    height: 50px;
+    text-align: center;
+    background-color: lightgrey;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 0px;
 }

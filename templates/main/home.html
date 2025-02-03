@@ -40,10 +40,10 @@
             {% if movies %}
             {% for movie in movies %}
 
-            <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: auto; border: none;">
+            <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
 
                 <div style="display: flex; justify-content: space-between;" id="like_button">
-                    <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.rating }}/10</small></p>
+                    <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
                     
                     <!-- like button feature -->
                     <button class="like-button"

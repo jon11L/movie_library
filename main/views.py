@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import user_passes_test
 
 from api_services.TMDB.base_client import TMDBClient
+from api_services.TMDB.fetch_movies import get_movie_details
 
 from movie.models import Movie
 from serie.models import Serie
@@ -55,7 +56,9 @@ def home(request):
         return redirect(to='main:home')
     
 
-# Find a way to authorize the only for admin
+
+
+# Find a way to authorize the only for admin  --- Below are test functions for the API calls with TMDB
 
 @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
 def get_tmdb_access(request):
@@ -75,10 +78,16 @@ def get_tmdb_access(request):
         else:
             messages.error(request, "The request to read access TMDB api was not successful.")
             return redirect(to='main:home')
-        
 
+
+
+# function to test API. and data retrieval
 def search_movie(request):
-    query = request.GET.get('query', 'Avatar')  # Default search for testing
-    client = TMDBClient()
-    results = client.search_movies(query)
-    return JsonResponse(results)
+    tmdb_id =  '650'  # Default search for testing
+    # client = TMDBClient()
+    movie_data = get_movie_details(tmdb_id)
+    # credit_data = client.get_movie_credits(query)
+    return JsonResponse({
+        'data': movie_data
+    })
+
