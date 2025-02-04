@@ -18,8 +18,10 @@ class TMDBClient:
         if not self.ACCESS_TOKEN:
             raise ValueError("TMDB API key not found")
 
-    def get_access(self):
 
+
+    def get_authorization(self):
+        ''' this function check the authorization of the user , validtiy of the api key '''
         suffixe_url = "authentication"
 
         try:

@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.http import JsonResponse
+
 
 
 from .models import Movie
 from user_library.models import Like
+from .services import add_movies_from_tmdb
 
 # from django.contrib import messages
 
@@ -46,8 +49,6 @@ def detail_movie(request, pk):
         # retrieve the specified movie requested by user
             movie = Movie.objects.get(id=pk)
 
-        # if request.user.is_authenticated:
-
             # Check if user's like the movie
             user_liked_movie = False
             user_liked_movie = Like.objects.filter(
@@ -60,8 +61,7 @@ def detail_movie(request, pk):
 
             context = {
                 'movie': movie,
-                'user_liked_movie': user_liked_movie
-
+                'user_liked_movie': user_liked_movie,
                 }
             
             return render(request,'movie/detail_movie.html', context=context)
@@ -69,8 +69,26 @@ def detail_movie(request, pk):
         else:
             return f'No movies found in the database'
         
-
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
 
+
+def import_movie(request, tmdb_id):
+    '''Import a movie in making a request to TMDB api and store it in the database'''
+    print(f"request importing a new movie")
+
+    if request.method == 'GET':
+        result = add_movies_from_tmdb(tmdb_id)
+        
+        # Determine appropriate HTTP status code
+        status_code = {
+            'added': 201,
+            'exists': 200,
+            'error': 404
+        }.get(result['status'], 400)
+        
+        return JsonResponse(result, status=status_code)
+
+
+        # return JsonResponse(result, status=200 if result['status'] == 'added' else 304)

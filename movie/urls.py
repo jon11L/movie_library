@@ -22,7 +22,8 @@ from . import views
 
 urlpatterns = [
     path('list_movie', views.list_movie, name='list_movie'),
-    path('detail_movie/<int:pk>', views.detail_movie, name='detail_movie')
+    path('detail_movie/<int:pk>', views.detail_movie, name='detail_movie'),
+    path('import_movie/<int:tmdb_id>', views.import_movie, name='import_movie')
 
 
     # path('add_movie', views.add_movie, name='add_movie'),
