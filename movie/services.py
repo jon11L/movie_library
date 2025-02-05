@@ -20,45 +20,49 @@ def add_movies_from_tmdb(tmdb_id):
                     'message': f'No movie found with TMDB ID: {tmdb_id}',
                 } # Handle failure case
 
-
-        # initialize dict for directors, rtiers and cast ...
-        director = []
-        writers = []
-        cast = []
-
-        # Extract credits from the combined response
-        credits_data = movie_data.get('credits', {})
-
-        if credits_data:
-            for person in credits_data.get("crew", []):
-                # append the directors for the  director field
-                if person["job"] == "Director":
-                    director.append(person["name"])
-
-                # append the writers for the  Writer field
-                if person["job"] in ["Writer", "Screenplay"]:
-                    writers.append(person["name"])
-
-        # Top 10 cast members (takes the name and role)
-        cast = [
-            {
-                "name": member["name"], 
-                "role": member["character"]
-            }
-            for member in credits_data.get("cast", [])[:10]
-        ]
-
+        # to place above in the function
         try:
             exisiting_movie = Movie.objects.get(tmdb_id=movie_data['id'])
             print(f"Movie already exists: movie {exisiting_movie.id}: {exisiting_movie.title}")
             return {
                 'status': 'exists', 
-                'movie_id': exisiting_movie.id, 
                 'tmdb_id': exisiting_movie.tmdb_id, 
+                'movie_id': exisiting_movie.id,
                 'title': exisiting_movie.title
             }
 
         except Movie.DoesNotExist:
+
+            print("passing datas into field for the new movie's instance") # debug print
+            
+            # initialize empty list, for future jsonfield reference ... 
+            director = []
+            writers = []
+            cast = []
+            origin_country = []
+
+            # Extract credits from the combined response
+            credits_data = movie_data.get('credits', {})
+
+            if credits_data:
+                for person in credits_data.get("crew", []):
+                    # append the directors for the  director field
+                    if person["job"] == "Director":
+                        director.append(person["name"])
+
+                    # append the writers for the  Writer field
+                    if person["job"] in ["Writer", "Screenplay"]:
+                        writers.append(person["name"])
+
+            # Top 10 cast members (takes the name and role)
+            cast = [
+                {
+                    "name": member["name"], 
+                    "role": member["character"]
+                }
+                for member in credits_data.get("cast", [])[:10]
+            ]
+
 
             movie = Movie.objects.create(
                 # External unique identifier
@@ -68,7 +72,7 @@ def add_movies_from_tmdb(tmdb_id):
                 original_title = movie_data.get("original_title"),
                 title=movie_data.get("title") or movie_data.get("original_title"),  # Use original_title if title is missing
                 release_date = movie_data.get("release_date"),
-                country_of_origin = movie_data.get("origin_country"),
+                origin_country = movie_data.get("origin_country"),
                 original_language = movie_data.get("original_language"),
                 production = [company["name"] for company in movie_data.get("production_companies", [])], # List of production companies
                 director = director,

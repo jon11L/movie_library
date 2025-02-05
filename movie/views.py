@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-
-
+from django.contrib.auth.decorators import user_passes_test
 
 from .models import Movie
 from user_library.models import Like
 from .services import add_movies_from_tmdb
+from api_services.TMDB.fetch_movies import fetch_popular_movies
 
-# from django.contrib import messages
+
+def admin_check(user):
+    return user.is_superuser  # or user.is_staff for staff users
+
 
 def list_movie(request):
     '''retrieve the movies from newer to older and display them in the template
@@ -40,7 +43,7 @@ def list_movie(request):
         print(f" error :{e}")
 
 
-def detail_movie(request, pk):
+def movie_overview(request, pk):
     ''' get the movie object from the database using the movie_id parameter in the URL request.
         will pass on with the necessary information such as 'Like' 
     '''
@@ -74,21 +77,76 @@ def detail_movie(request, pk):
         print(f" error :{e}")
 
 
+# @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
 def import_movie(request, tmdb_id):
     '''Import a movie in making a request to TMDB api and store it in the database'''
     print(f"request importing a new movie")
+    try:
+        if request.method == 'GET' and request.user.is_superuser:
+            result = add_movies_from_tmdb(tmdb_id)
 
-    if request.method == 'GET':
-        result = add_movies_from_tmdb(tmdb_id)
+            # Determine appropriate HTTP status code
+            status_code = {
+                'added': 201,
+                'exists': 200,
+                'error': 404
+            }.get(result['status'], 400)
+
+            return JsonResponse(result, status=status_code)
+
+        else:
+            print(f"Unauthorized access to 'import_movie' page.")
+            messages.error(request, "You are not authorized to import movies")
+            return redirect('main:home')
         
-        # Determine appropriate HTTP status code
-        status_code = {
-            'added': 201,
-            'exists': 200,
-            'error': 404
-        }.get(result['status'], 400)
+    except Exception as e:
+        messages.error(request, "the page seem to experience some issue, please try again later")
+        print(f" error :{e}")
+
+
+
+
+
+# @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
+def bulk_import_movies(request):
+    """
+    Bulk import strategy:
+    1. Fetch popular movies
+    3. Check if already in database / if so, pass.
+    3.  loop through each movie to query their data 
+    4. Import new movies 
+    """
+    try:
+        if request.user.is_superuser:
+            
+            page = 1
+            while True:
+                print(f"request importing bulk new movies") # debug print
+                popular_movies = fetch_popular_movies(page)
+
+                if not popular_movies:
+                    print(f" The query could not fetch a list of popular movies, check the url.")  # debug print
+                    return JsonResponse({'message': 'Bulk import failed, check Url'}, status=404)
+                
+                for movie in popular_movies['results']:
+                    tmdb_id = movie['id']
+                    print(f" passing tmdb_id: {tmdb_id}") # debug print
+
+                    # Check if movie exists
+                    if not Movie.objects.filter(tmdb_id=tmdb_id).exists():
+                        try:
+                            add_movies_from_tmdb(tmdb_id)
+                            print(f"Imported movie: {movie['title']}")  # not sure it is imported if already exist
+                        except Exception as e:
+                            print(f"Error importing {movie['title']}: {e}")
+
+                # Break if no more pages
+                if page > 1: # will run 2 pages
+                    break
+                page += 1
+            print(f"Imported list popular movies done! success")
+            return JsonResponse({'message': 'Bulk import successful'}, status=200)
         
-        return JsonResponse(result, status=status_code)
-
-
-        # return JsonResponse(result, status=200 if result['status'] == 'added' else 304)
+    except Exception as e:
+        messages.error(request, "the page seem to experience some issue, please try again later")
+        print(f" error :{e}")

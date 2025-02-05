@@ -12,12 +12,17 @@ class TMDBClient:
 
     def __init__(self):
         '''
-        Call the TMDb API to get the read access to their apis.
+        instantiate the ACCESS_TOKEN and HEADERS authorization for the TMDB API
+        in order get  access to their apis endpoints.
         '''
         self.ACCESS_TOKEN = os.getenv('TMDB_READ_ACCESS_KEY')
         if not self.ACCESS_TOKEN:
             raise ValueError("TMDB API key not found")
-
+        
+        self.HEADERS =  {
+                "accept": "application/json",
+                "Authorization": f"Bearer {self.ACCESS_TOKEN}"
+                }
 
 
     def get_authorization(self):
@@ -27,10 +32,7 @@ class TMDBClient:
         try:
             url = self.BASE_URL + suffixe_url
 
-            headers = {
-                "accept": "application/json",
-                "Authorization": f"Bearer {self.ACCESS_TOKEN}"
-                }
+            headers = self.HEADERS
 
             response = requests.get(url, headers=headers)
             time = datetime.datetime.now() # to add some logging purposes
@@ -43,3 +45,15 @@ class TMDBClient:
         except Exception as e:
             print(f"An error occurred while calling the TMDb API: {e}")
             return None
+
+
+
+    # def fetch_popular_movies(self, page=1):
+    #     """
+    #     Fetch paginated list of popular movies
+    #     """
+    #     url = f"{self.BASE_URL}/movie/popular?page={page}"
+
+    #     response = requests.get(url, params={'api_key': self.ACCESS_TOKEN})
+    #     return response.json()
+

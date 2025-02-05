@@ -6,19 +6,28 @@
 <div class="col-md-3 offset-md-4">
     <h4 style="padding: 100px 0 25px 0; text-align: center;">Update</h4>
 
-    <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-    
-        <div style="text-align: center; padding-top: 25px;">
-            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
-                submit
-            </button>
-            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
-                Go Back
-            </a>
-
-    </form>
+    <div>
+        <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
+            {% csrf_token %}
+            <!-- {{ form.as_p }} -->
+            {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <div class="form-text" style="color:antiquewhite; padding-top: 15px;">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+            {% endif %}
+            {% endfor %}
+        
+            <div style="text-align: center; padding-top: 25px;">
+                <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+                    submit
+                </button>
+                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
+                    Go Back
+                </a>
+                
+        </form>
+    </div>
 </div>
 
 

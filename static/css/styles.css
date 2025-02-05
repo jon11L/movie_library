@@ -15,7 +15,6 @@
 }
 
 
-
 @media (prefers-reduced-motion: no-preference) {
     :root {
         scroll-behavior: smooth;
@@ -24,8 +23,16 @@
 
 
 body {
-    background-color: #f5f5f5; /* Light grey background */
-    margin-bottom: 50px;
+    background-color: #171623; /* Light grey background */
+}
+
+
+h1, h3 {
+    color:antiquewhite ;
+}
+
+.card, .card-body, .list-group-item  {
+    background-color:rgb(191, 195, 188) ;
 }
 
 
@@ -107,13 +114,12 @@ img {
 
 
 /*-------- FOOTER --------- */
-#footer {
-    position: fixed;
+.footer {
+    position: relative;
     flex-shrink: 0;
-    height: 50px;
     text-align: center;
-    background-color: lightgrey;
-    bottom: 0px;
+    background-color: rgb(93, 93, 93);
+    bottom: 0;
     left: 0px;
     right: 0px;
     margin-bottom: 0px;

@@ -18,7 +18,7 @@ def home(request):
 
     # Check if they are Movie datas and display them if so
     try:
-        movies = Movie.objects.order_by('-id')[:8] # retrieve the latest 8 content added 
+        movies = Movie.objects.order_by('-release_date')[:8] # retrieve the latest 8 content added 
         movies_count = Movie.objects.count() # display the amount of movies in the database
         series = Serie.objects.order_by('-id')[:8] 
         series_count = Serie.objects.count() 
