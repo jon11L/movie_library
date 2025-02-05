@@ -9,12 +9,10 @@ from movie.models import Movie
 from serie.models import Serie
 
 
-def user_liked_content_view(request, pk):
+def liked_content_view(request, pk):
     '''retrieve the user's liked contents from the database 
     and display them in the template. 
-    
     '''
-
     if request.user.is_authenticated:
         if request.method == "GET":
 
@@ -30,7 +28,7 @@ def user_liked_content_view(request, pk):
 
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_at': like.liked_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_on': like.liked_on.strftime("%d %B %Y")})
                         print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue

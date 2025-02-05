@@ -50,22 +50,24 @@
                 </div>
                 <br><br>
 
-                <!-- Comment section -->
-                 <h4>Comments:</h4>
+            <!-- Comment section -->
+            <div>
+                <div style="justify-items: center;">
+                    <h3>Comments:</h3>
+                </div>
                 <form action="" method="POST">
                     {% csrf_token %}
                     {{form.as_p }}
-                    <div class="card">
-                        <div class="row">
-                            <!-- <label for=""></label> -->
-                            <textarea class="form control":rows="3"></textarea>
-                            <button type="submit" class="btn btn-secondary">
-                                submit
-                            </button>
-                        </div>
+                    <div class="row" style="width: 75%; margin: auto;">
+                        <!-- <label for=""></label> -->
+                        <textarea class="form control" rows="4" style="background-color: black; color: white; margin-bottom: 20px;"></textarea>
+                        <button type="submit" class="btn btn-secondary" style="width: auto; margin: auto;">
+                            submit
+                        </button>
                     </div>
-
                 </form>
+            </div>
+
         </div>
                       
     </div>

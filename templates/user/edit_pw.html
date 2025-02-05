@@ -2,28 +2,32 @@
 
 {% block content %}
 
-<div class="container-fluid" style="width: 60%;">   
+<div style="margin: auto;">   
     <div class="col-md-5 offset-md-4" style="align-items: center; margin-top: 100px;">
 
-        <h4 style="text-align: center; margin-right: 30px; margin-bottom: 10px;">Update Password</h4>
+        <h4 style="text-align: center; margin-right: 30px; margin-bottom: 10px; color:antiquewhite">Update Password</h4>
 
         <form method="POST" action="{% url 'user:update_user_pw' request.user.id %}">
             {% csrf_token %}
 
             {% for field in form %}
             <br>
-            <div class="mb-2" style="padding-top: 15px;">
+            <div class="mb-3" style="padding-top: 15px;">
 
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}" style="color:antiquewhite">{{ field.label }}</label>
                 {{ field }}
                 {% if field.help_text %}
-                    <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+                    <div class="form-text" style="color:antiquewhite; padding-top: 15px;">
+                        <small>
+                            {% autoescape off %}{{ field.help_text }}{% endautoescape %}
+                        </small>
+                    </div>
                 {% endif %}
             {% endfor %}
 
             </div>
 
-            <div style="text-align: center; padding-top: 25px;">
+            <div style="padding-top: 25px; margin-right: 80px;">
                 <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
                     submit
                 </button>
@@ -34,5 +38,6 @@
 
     </div>
 </div>
+
 
 {% endblock %}

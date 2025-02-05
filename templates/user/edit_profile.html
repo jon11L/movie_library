@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<div class="" style="display: flex;">
+<div style="display: flex;">
 
     <div class="card" style="text-align: center; background-color: #f5f5f5; border-right: solid darkgrey;">
         <div style="margin: 50px 50px; padding-right: 20px;">
@@ -24,14 +24,14 @@
     <div class="col-md-6 offset-md-3" style="margin: 10px 100px;">
         <h1 style="margin-bottom: 25px;">Edit your profile here:</h1>
     
-        <form method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
+        <form  style="color:antiquewhite" method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
             {% csrf_token %}
             {% for field in form %}
 
             <div class="mb-2 ms-3">
                 <label for="{{ field.id_for_label }}">{{ field.label }}  {{ field }}</label>        
                 {% if field.help_text %}
-                    <div class="form-text">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+                    <div class="form-text" style="color:antiquewhite">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
                 {% endif %}
             </div>
             {% endfor %}
