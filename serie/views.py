@@ -1,23 +1,21 @@
 from django.shortcuts import render
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 from .models import Serie
 from user_library.models import Like
 
 
-def list_serie(request, page):
+def list_serie(request):
     '''retrieve the series from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
 
-    if page == 0:
-        page = 1  # default page number to 1 if page number is 0
-    page -= 1 # as the first page need to consider taking the id's from 0.
     try:
         if Serie:
             series_data = []
-            # retrieve the series in order of the last added in the Database, and display 40 per pages. 
-            series = Serie.objects.order_by('-id')[0 + 40*page:40 + 40*page]
+
+            series = Serie.objects.all().order_by('-id')
 
             # load the extra information of a series from Season and Episode 
             for serie in series:
@@ -33,6 +31,11 @@ def list_serie(request, page):
 
             print(f"Series_data:\n {series_data}\n") # debug print 
 
+            # paginator implementation
+            p = Paginator(series_data, 20)
+            page = request.GET.get('page')
+            serie_list = p.get_page(page)
+
             # Get the user's like content
             user_liked_series = []
             user_liked_series = Like.objects.filter(
@@ -41,9 +44,8 @@ def list_serie(request, page):
                                             ).values_list('object_id', flat=True)
 
             context = {
-                'series_data': series_data,
                 'user_liked_series': user_liked_series,
-                'page': page + 1,  # add 1 to page number to display it in template
+                'serie_list' : serie_list,
             }
 
             return render(request, 'serie/list_serie.html', context=context)

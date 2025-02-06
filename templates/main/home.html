@@ -6,12 +6,12 @@
     
 <div class="container-fluid" style="width: 85%;">
 
-    <div class="ms-auto mb-2 me-auto" style="text-align: center; margin-top: 15px;">
+    <div class="ms-auto mb-2 me-auto" style="text-align: center; margin-top: 15px; color: antiquewhite;">
 
-        <h1 class="mt-1 mb-3">Welcome to your Movie library</h1>
+        <h1 class="mt-1 mb-3">Welcome to Vault7</h1>
         <!-- Reference the amount of content in the Database -->
         {% if movies_count %}
-        <strong>Currently available in the Vault:</strong> {{ movies_count }} movies and
+        <strong>Currently available in the library:</strong> {{ movies_count }} movies and
         {% else %}
         <p>No movies found</p>
         {% endif %}
@@ -22,10 +22,11 @@
         {% endif %}
         <div>
             <br>
-            <p>Here you will be able to save the movie you want to watch or already watched</p>
-            <p> You can add notes to your favorites movies.</p>
+            <p>Record your favorit movies and add notes to remember your thought about it</p>
+            <p>Save the new show you want to see in your watchlist, so you don't forget</p>
+            <p></p>
         </div>
-
+        
     </div>
 
     <br>
@@ -34,6 +35,7 @@
     
     <!-- Displaying the last movies added here -->
     <h3 style="text-align: center;">Last added movies:</h3>
+
     <br>
     <div>
         <div style="display: flex; flex-wrap: wrap;">

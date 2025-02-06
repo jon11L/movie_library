@@ -21,7 +21,7 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-    path('list_serie/<int:page>', views.list_serie, name='list_serie'),
+    path('list_serie/', views.list_serie, name='list_serie'),
     path('detail_serie/<int:pk>', views.detail_serie, name='detail_serie'),
 
 ]

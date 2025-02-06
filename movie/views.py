@@ -2,32 +2,38 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import user_passes_test
+from django.core.paginator import Paginator
 
 from .models import Movie
 from user_library.models import Like
 from .services import add_movies_from_tmdb
 from api_services.TMDB.fetch_movies import fetch_popular_movies
 
-#pagination
-from django.core.paginator import Paginator
+
 
 def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
-def list_movie(request, page):
+def list_movie(request): # , page     ----- was for the custom pagination
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
-    if page == 0:
-        page = 1  # default page number to 1 if page number is 0
-    page -= 1  # as the first page need to consider taking the id's from 0.
+    #--- custom pagination----
+    # if page == 0:
+    #     page = 1  # default page number to 1 if page number is 0
+    # page -= 1  # as the first page need to consider taking the id's from 0.
+
     try:
         if Movie:
-            # movies = Movie.objects.all()[:24] # will implement a 24 content per page
-            # movies = Movie.objects.order_by('-id')[:24]
-            movies = Movie.objects.order_by('-id')[0 + 40*page:40 + 40*page]
+
+            # movies = Movie.objects.order_by('-id')[0 + 40*page:40 + 40*page]
             
+            # paginator implementation
+            p = Paginator(Movie.objects.all().order_by('-id'), 20)
+            page = request.GET.get('page')
+            movie_list = p.get_page(page)
+
             # Get the user's like content
             user_liked_movies = []
             user_liked_movies = Like.objects.filter(
@@ -36,9 +42,8 @@ def list_movie(request, page):
                                             ).values_list('object_id', flat=True)
 
             context = {
-                'movies': movies,
                 'user_liked_movies': user_liked_movies,
-                'page': page + 1,
+                'movie_list' : movie_list,
                 }
 
             return render(request, 'movie/list_movie.html', context=context)
@@ -47,7 +52,7 @@ def list_movie(request, page):
             return f'No movies found in the database'
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
-        print(f" error :{e}")
+        print(f" error :\n\n{e}")
 
 
 
@@ -85,6 +90,8 @@ def movie_overview(request, pk):
         print(f" error :{e}")
 
 
+
+# only works when passing an id at the end of the url (movie/import_movie/5555)
 # @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
 def import_movie(request, tmdb_id):
     '''Import a movie in making a request to TMDB api and store it in the database'''
