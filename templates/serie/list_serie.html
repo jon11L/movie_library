@@ -9,46 +9,46 @@
     
     <br><br>
     <div style="display: flex; flex-wrap: wrap; width: 80%; margin-left: 150px;" >
-        {% if series_data %}
-        {% for data in series_data %}
+        {% if serie_list %}
+        {% for series_data in serie_list %}
 
         <div class="card" style="width: 285px; margin-bottom: 25px; margin-right: 15px;">
             <div class="card" style="width: 285px; margin-bottom: 25px;">
 
                 <!-- Form for the Like button -->
                 <div style="display: flex; justify-content: space-between;">
-                    <p style=" margin: 15px 0px 0 15px;"><small>{{ data.serie.rating }}/10</small></p>
+                    <p style=" margin: 15px 0px 0 15px;"><small>{{ series_data.serie.rating }}/10</small></p>
                     
                     <!-- like button feature -->
                     <button class="like-button"
                             data-type="serie"
-                            data-id="{{ data.serie.id }}"
-                            data-liked="{% if data.serie.id in user_liked_series %}true{% else %}false{% endif %}">
-                            <i class="{% if data.serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                            data-id="{{ series_data.serie.id }}"
+                            data-liked="{% if series_data.serie.id in user_liked_series %}true{% else %}false{% endif %}">
+                            <i class="{% if series_data.serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
 
                     </button>
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                    {% if data.serie.film_poster %}
-                        <img src=" {{ data.serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+                    {% if series_data.serie.film_poster %}
+                        <img src=" {{ series_data.serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
                     {% else %}
                     <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                     {% endif %}
                 </div>
 
                 <div class="card-body">
-                    <a href="{% url 'serie:detail_serie' data.serie.id %}" style="text-decoration: none; color: #000;">
-                        <h5 class="card-title" style="text-align: center;">{{ data.serie.title }}</h5>
+                    <a href="{% url 'serie:detail_serie' series_data.serie.id %}" style="text-decoration: none; color: #000;">
+                        <h5 class="card-title" style="text-align: center;">{{ series_data.serie.title }}</h5>
                     </a>
                     <br>
-                    <p class="card-text"><strong>Overview</strong>: {{ data.serie.description|slice:":100" }}...</p>
+                    <p class="card-text"><strong>Overview</strong>: {{ series_data.serie.description|slice:":100" }}...</p>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Total seasons: </strong>{{ data.last_season }}</li>
-                        <li class="list-group-item"><strong>last episode: </strong>{{ data.last_episode }}</li>
-                        <li class="list-group-item"><strong>First release:</strong> {{ data.serie.release_date }}</li>
-                        <li class="list-group-item"><strong>Genre:</strong> {{ data.serie.render_genre }}</li>
-                        <li class="list-group-item"><strong>Length:</strong> {{ data.serie.length }}min</li>
+                        <li class="list-group-item"><strong>Total seasons: </strong>{{ series_data.last_season }}</li>
+                        <li class="list-group-item"><strong>last episode: </strong>{{ series_data.last_episode }}</li>
+                        <li class="list-group-item"><strong>First release:</strong> {{ series_data.serie.release_date }}</li>
+                        <li class="list-group-item"><strong>Genre:</strong> {{ series_data.serie.render_genre }}</li>
+                        <li class="list-group-item"><strong>Length:</strong> {{ series_data.serie.length }}min</li>
                     </ul>
                 </div>
             </div>
@@ -61,17 +61,50 @@
     </div>
     <br/>
 
+
+    <!-- first page -->
+    <div style="display: flex; justify-content: center;">
+
+        {% if serie_list.has_previous %}
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px  10px;">
+            <a href="?page=1" style="text-decoration: none; color: antiquewhite">&laquo first</a>
+        </button>
+        <!-- previous page -->
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
+            <a href="?page={{ serie_list.previous_page_number }}" style="text-decoration: none; color: antiquewhite;">&laquo Previous page</a>
+        </button>
+        {% endif %}
+
     
-    <div style="display: flex; justify-content: space-between;">
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 30px;">
-            <a href="{% url 'serie:list_serie' page|add:-1 %}" style="text-decoration: none;">Previous Page</a>
+        <span class="current" style="color: antiquewhite; margin: 0px  10px 0px 10px;">
+            Page {{ serie_list.number }} of {{ serie_list.paginator.num_pages }}
+        </span>
+    
+        {% if serie_list.has_next %}
+        <!-- Next page -->
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
+            <a href="?page={{ serie_list.next_page_number }}" style="text-decoration: none; color: antiquewhite;">Next Page</a>
         </button>
 
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
-            <a href="{% url 'serie:list_serie' page|add:1 %}" style="text-decoration: none;">Next Page</a>
+        <!-- Last page -->
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
+            <a href="?page={{ serie_list.paginator.num_pages}}" style="text-decoration: none; color: antiquewhite;">Last Page</a>
         </button>
+        {% endif %}
+    
     </div>
     
+
 </div>
 
 {% endblock %}
+
+<!-- <div style="display: flex; justify-content: space-between;">
+    <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 30px;">
+        <a href="{% url 'serie:list_serie' page|add:-1 %}" style="text-decoration: none;">Previous Page</a>
+    </button>
+
+    <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
+        <a href="{% url 'serie:list_serie' page|add:1 %}" style="text-decoration: none;">Next Page</a>
+    </button>
+</div> -->

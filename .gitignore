@@ -3,8 +3,12 @@ __pycache__/
 *.py[cod]
 
 # Environment variables
-.movievenv
+.movievenv 
 movievenv
+
+/venv/
+.venv/
+venv
 
 .env
 
