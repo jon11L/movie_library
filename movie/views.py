@@ -8,19 +8,25 @@ from user_library.models import Like
 from .services import add_movies_from_tmdb
 from api_services.TMDB.fetch_movies import fetch_popular_movies
 
+#pagination
+from django.core.paginator import Paginator
 
 def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
-def list_movie(request):
+def list_movie(request, page):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
+    if page == 0:
+        page = 1  # default page number to 1 if page number is 0
+    page -= 1  # as the first page need to consider taking the id's from 0.
     try:
         if Movie:
             # movies = Movie.objects.all()[:24] # will implement a 24 content per page
-            movies = Movie.objects.order_by('-id')[:24]
+            # movies = Movie.objects.order_by('-id')[:24]
+            movies = Movie.objects.order_by('-id')[0 + 40*page:40 + 40*page]
             
             # Get the user's like content
             user_liked_movies = []
@@ -31,7 +37,8 @@ def list_movie(request):
 
             context = {
                 'movies': movies,
-                'user_liked_movies': user_liked_movies
+                'user_liked_movies': user_liked_movies,
+                'page': page + 1,
                 }
 
             return render(request, 'movie/list_movie.html', context=context)
@@ -41,6 +48,7 @@ def list_movie(request):
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :{e}")
+
 
 
 def movie_overview(request, pk):
@@ -119,7 +127,7 @@ def bulk_import_movies(request):
     try:
         if request.user.is_superuser:
             
-            page = 1
+            page = 278
             while True:
                 print(f"request importing bulk new movies") # debug print
                 popular_movies = fetch_popular_movies(page)
@@ -141,7 +149,7 @@ def bulk_import_movies(request):
                             print(f"Error importing {movie['title']}: {e}")
 
                 # Break if no more pages
-                if page > 1: # will run 2 pages
+                if page > 279: # will run 2 pages
                     break
                 page += 1
             print(f"Imported list popular movies done! success")

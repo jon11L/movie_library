@@ -60,6 +60,17 @@
         {% endif %}
     </div>
     <br/>
+
+    
+    <div style="display: flex; justify-content: space-between;">
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 30px;">
+            <a href="{% url 'serie:list_serie' page|add:-1 %}" style="text-decoration: none;">Previous Page</a>
+        </button>
+
+        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
+            <a href="{% url 'serie:list_serie' page|add:1 %}" style="text-decoration: none;">Next Page</a>
+        </button>
+    </div>
     
 </div>
 
