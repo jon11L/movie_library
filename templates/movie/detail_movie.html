@@ -9,50 +9,63 @@
         <div class="col-sm-8 offset-md-2">
             {% if movie %}
             <div class="card">
-                
-                <div style="display: flex; flex-wrap: wrap; align-self: flex-end; margin-top: 15px; margin-right: 10px;">
+                <div >
 
-                    <!-- like button feature -->
-                    <button class="like-button"
-                            data-type="movie"
-                            data-id="{{ movie.id }}"
-                            data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
-                            <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-
-                    </button>
-
-                </div>
-
-                <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                    {% if movie.image_poster %}
-                    <img src=" {{ movie.image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
-                    {% else %}
-                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                    {% if movie.banner_poster %}
+                    <img src=" {{ movie.banner_poster }} " class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
                     {% endif %}
                 </div>
-                <br>
+
+
+                <div style="display: flex; flex-wrap: wrap; justify-content:space-between ;">
+
+                    <p><small>{{ movie.render_vote_average }}/10</small></p>
+                    
+                    <div style="align-self: flex-end; margin-top: 15px; margin-right: 10px;">
+                        
+                        <!-- like button feature -->
+                        <button class="like-button"
+                        data-type="movie"
+                        data-id="{{ movie.id }}"
+                        data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
+                        <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        
+                    </button>
+                    
+                    </div>
                 
-                <div class="card-body">
-                    <h2 class="card-title" style="text-align: center;">{{ movie.title }}</h2>
+                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                        {% if movie.image_poster %}
+                        <img src=" {{ movie.image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% else %}
+                        <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% endif %}
+                    </div>
                     <br>
-                    <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
-                    <br>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
-                        <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
-                        <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li>
-                        <li class="list-group-item"><strong>Rating score:</strong> {{ movie.render_vote_average }}/10</li>
-                        <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li>
-                        <li class="list-group-item"><strong>Production:</strong> {{ movie.render_production }}</li>
-                        <li class="list-group-item"><strong>director:</strong> {{ movie.render_director }}</li>
-                        <li class="list-group-item"><strong>Writer:</strong> {{ movie.render_writer }}</li>
-                        <li class="list-group-item"><strong>Origin country:</strong> {{ movie.render_origin_country }}</li>
-                    </ul>
+                    
+                    <div class="card-body">
+                        <h2 class="card-title" style="text-align: center;">{{ movie.title }}</h2>
+                        <br>
+                        <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
+                        <br>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                            <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
+                            <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li>
+                            <li class="list-group-item"><strong>Rating score:</strong> {{ movie.render_vote_average }}/10</li>
+                            <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li>
+                            <li class="list-group-item"><strong>Production:</strong> {{ movie.render_production }}</li>
+                            <li class="list-group-item"><strong>director:</strong> {{ movie.render_director }}</li>
+                            <li class="list-group-item"><strong>Writer:</strong> {{ movie.render_writer }}</li>
+                            <li class="list-group-item"><strong>Origin country:</strong> {{ movie.render_origin_country }}</li>
+                            <li class="list-group-item"><strong>Spoken languages:</strong> {{ movie.render_spoken_languages }}</li>
+                        </ul>
+                    </div>
+                    
                 </div>
-
+                <br><br>
             </div>
-            <br><br>
-
+                
 
             <!-- Comment section -->
             <div>

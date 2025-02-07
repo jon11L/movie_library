@@ -41,6 +41,7 @@ def add_movies_from_tmdb(tmdb_id):
             cast = []
             origin_country = []
             youtube_trailer = []
+            spoken_languages = []
 
             # Extract credits from the combined response
             credits_data = movie_data.get('credits', {})
@@ -76,6 +77,9 @@ def add_movies_from_tmdb(tmdb_id):
                         }
                     )
 
+            languages = movie_data.get("spoken_languages", [])
+            spoken_languages = [language["english_name"] for language in languages]
+
             movie = Movie.objects.create(
                 # External unique identifier
                 tmdb_id = movie_data["id"],  # check if the movie is already existing in the database
@@ -97,6 +101,7 @@ def add_movies_from_tmdb(tmdb_id):
                 budget = movie_data.get("budget"),
                 revenue = movie_data.get("revenue"),
                 tagline = movie_data.get("tagline"),
+                spoken_languages = spoken_languages,
                 # Metrics
                 released = True if movie_data.get("status") == "Released" else False,
                 vote_count = movie_data.get("vote_count"),
