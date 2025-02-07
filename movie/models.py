@@ -34,7 +34,7 @@ class Movie(models.Model):
     image_poster = models.URLField(blank=True, null=True) # vertical poster ( made for list,dvd format..)
     banner_poster = models.URLField(blank=True, null=True) # banner image ( wide format)
     # trailers
-    trailer_youtube_id = models.CharField(max_length=11, blank=True, null=True)  # YouTube id of the movie's trailer // append this later for the links: https://www.youtube.com/watch?v=
+    trailers = models.JSONField(max_length=11, blank=True, null=True)  # YouTube id of the movie's trailer // append this later for the links: https://www.youtube.com/watch?v=
 
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)

@@ -23,6 +23,7 @@ app_name = 'main'
 urlpatterns = [
     path('', views.home, name='home'),
     path('tmdb_access', views.get_tmdb_access, name='tmdb_access'),
-    path('search_movie', views.search_movie, name='search_movie')
+    path('search_movie', views.search_movie, name='search_movie'),
+    path('about', views.about_page, name='about'),
 
 ]

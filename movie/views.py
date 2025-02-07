@@ -134,7 +134,7 @@ def bulk_import_movies(request):
     try:
         if request.user.is_superuser:
             
-            page = 278
+            page = 250
             while True:
                 print(f"request importing bulk new movies") # debug print
                 popular_movies = fetch_popular_movies(page)
@@ -156,7 +156,7 @@ def bulk_import_movies(request):
                             print(f"Error importing {movie['title']}: {e}")
 
                 # Break if no more pages
-                if page > 279: # will run 2 pages
+                if page > 250: # will run 2 pages
                     break
                 page += 1
             print(f"Imported list popular movies done! success")

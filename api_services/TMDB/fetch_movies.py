@@ -11,14 +11,15 @@ def get_movie_details(tmdb_id):
     '''
     tmdb_client = TMDBClient() # instance of TMDB to create the authorization and Token retrieval.
 
-    # append credits to the movie to get those extra datas 
-    url = f"{tmdb_client.BASE_URL}movie/{tmdb_id}?append_to_response=credits"
+    # append credits to the movie to get those extra datas about casting and videos for the youtube trailer id.
+    url = f"{tmdb_client.BASE_URL}movie/{tmdb_id}?append_to_response=videos,credits"
     headers = tmdb_client.HEADERS # send the headers with bearer Token
 
     try:
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
+            print("response api ok!")
             return response.json()
         else:
             return None
