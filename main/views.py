@@ -54,7 +54,10 @@ def home(request):
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')
-    
+
+
+def about_page(request):
+    return render(request, 'main/about.html')
 
 
 

@@ -40,6 +40,7 @@ def add_movies_from_tmdb(tmdb_id):
             writers = []
             cast = []
             origin_country = []
+            youtube_trailer = []
 
             # Extract credits from the combined response
             credits_data = movie_data.get('credits', {})
@@ -63,6 +64,17 @@ def add_movies_from_tmdb(tmdb_id):
                 for member in credits_data.get("cast", [])[:10]
             ]
 
+            # Extract trailer from the combined response
+            trailer_data = movie_data.get("videos", {}).get("results", [])
+
+            for trailer in trailer_data[:4]:
+                if trailer["type"] in ["Trailer", "Featurette"] and trailer['site'] == "YouTube":
+                    youtube_trailer.append(
+                        {
+                            "website": trailer["site"],
+                            "key": trailer["key"]
+                        }
+                    )
 
             movie = Movie.objects.create(
                 # External unique identifier
@@ -92,6 +104,7 @@ def add_movies_from_tmdb(tmdb_id):
                 # images
                 image_poster = f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
                 banner_poster = f"https://image.tmdb.org/t/p/w1280{movie_data.get('backdrop_path')}" if movie_data.get("backdrop_path") else None,
+                trailers = youtube_trailer
         )
 
             return {
@@ -108,3 +121,22 @@ def add_movies_from_tmdb(tmdb_id):
             'status': 'error',
             'message': f'An error occurred: {str(e)}'
         }
+
+
+
+# to add the trailer  add videos to query
+#  the result expected,   not always a trailer available, not always youtube
+
+    # "videos": {
+    #     "results": [
+    #         {
+    #             "iso_639_1": "en",
+    #             "iso_3166_1": "US",
+    #             "name": "Buy It on Digital February 18 and Own It on Blu-ray April 1",
+    #             "key": "obqiE9Rgs-k",
+    #             "site": "YouTube",
+    #             "size": 1080,
+    #             "type": "Teaser",
+    #             "official": true,
+    #             "published_at": "2025-02-03T17:00:05.000Z",
+    #             "id": "67a2078135d30975b603022f"
