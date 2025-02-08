@@ -3,17 +3,19 @@
 
 {% block content %}
 
-<div>
+<div style="padding-top: 80px;">
 
     <div class="row">
         <div class="col-sm-8 offset-md-2">
             {% if movie %}
             <div class="card">
-                <div >
-
+                
+                <div class="movie-card">
                     {% if movie.banner_poster %}
                     <img src=" {{ movie.banner_poster }} " class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
                     {% endif %}
+                </div>
+                <div>
                 </div>
 
 
@@ -25,12 +27,11 @@
                         
                         <!-- like button feature -->
                         <button class="like-button"
-                        data-type="movie"
-                        data-id="{{ movie.id }}"
-                        data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
-                        <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                        
-                    </button>
+                                data-type="movie"
+                                data-id="{{ movie.id }}"
+                                data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
+                            <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
                     
                     </div>
                 
