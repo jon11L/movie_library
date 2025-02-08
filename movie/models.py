@@ -23,7 +23,7 @@ class Movie(models.Model):
     revenue = models.BigIntegerField(blank=True, null=True)  # Movie's box office revenue
     released = models.BooleanField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
-    # spoken_language = models.CharField(blank=True, null=True) # take from the list of dict: ['spokent_languages'] "english_name"
+    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spokent_languages'] "english_name"
 
     # Metrics
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
@@ -145,3 +145,11 @@ class Movie(models.Model):
             trailer_link = f'https://www.youtube.com/watch?v={self.trailer_youtube_id}'
             return trailer_link
         return 'Trailer Not found'
+    
+
+    def render_spoken_languages(self):
+        ''' return the Movie.spoken_languages with a comma-separated string'''
+        if self.spoken_languages:
+            spoken_languages = ', '.join(self.spoken_languages)
+            return spoken_languages
+        pass
