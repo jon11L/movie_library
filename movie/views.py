@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.decorators import user_passes_test
+# from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 
 from .models import Movie
@@ -11,8 +11,8 @@ from api_services.TMDB.fetch_movies import fetch_popular_movies
 
 
 
-def admin_check(user):
-    return user.is_superuser  # or user.is_staff for staff users
+# def admin_check(user):
+#     return user.is_superuser  # or user.is_staff for staff users
 
 
 def list_movie(request): # , page     ----- was for the custom pagination
@@ -64,7 +64,6 @@ def movie_overview(request, pk):
         if Movie:
         # retrieve the specified movie requested by user
             movie = Movie.objects.get(id=pk)
-
             # Check if user's like the movie
             user_liked_movie = False
             user_liked_movie = Like.objects.filter(
@@ -74,7 +73,6 @@ def movie_overview(request, pk):
                                             ).values_list('object_id', flat=True)
 
             print(f"user_liked :{user_liked_movie}") # debug print
-
             context = {
                 'movie': movie,
                 'user_liked_movie': user_liked_movie,
@@ -88,7 +86,6 @@ def movie_overview(request, pk):
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
-
 
 
 # only works when passing an id at the end of the url (movie/import_movie/5555)
@@ -117,9 +114,6 @@ def import_movie(request, tmdb_id):
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
-
-
-
 
 
 # @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")

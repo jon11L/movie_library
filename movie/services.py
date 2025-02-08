@@ -145,3 +145,26 @@ def add_movies_from_tmdb(tmdb_id):
     #             "official": true,
     #             "published_at": "2025-02-03T17:00:05.000Z",
     #             "id": "67a2078135d30975b603022f"
+
+
+
+
+def add_series_from_tmdb(tmdb_id):
+    """
+    Fetches a single series and it'S content datas from TMDB API 
+    Check if the series already exists otherwise saves it in the database.
+    """
+    pass
+
+
+# take ["seasons"] number from Serie then loop through that number to call for season detail then same approach with episode
+# for episode take from Season or serie
+
+
+
+
+
+# to reach season :  
+# 
+# season_data = []
+# for len(season_data)
