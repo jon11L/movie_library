@@ -97,22 +97,14 @@ class Season(models.Model):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') # ["season_number"]
     name = models.CharField(max_length=255, blank=True, null=True)
-
     season_number = models.IntegerField(blank=True, null=True)
-    # Crew and staff
-    producer = models.JSONField(max_length=255, blank=True, null=True) # when ['job'] = Director    // no director in seasons but producer instead
-    # writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
-    casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] as main actors  ---/ guest stars [""guest_stars""] loop through 8 or so.... make a list of dict with key, main and guest star (inside each names and roles)
-
+    producer = models.JSONField(max_length=255, blank=True, null=True)
+    casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] [""guest_stars""] 
     description = models.TextField(blank=True, null=True) # ["overview"]
-    # image
     image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
-
     trailers = models.JSONField(max_length=11, blank=True, null=True) # ["videos", {}] ["results", []]
-
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -137,26 +129,6 @@ class Season(models.Model):
             return casting
         return 'N/a'
 
-
-    def render_director(self):
-        '''return the Movie.director attribute in without quotes and [],
-        only comma-separated string.
-        '''
-        if self.director:
-            director = ', '.join(self.director)
-            return director
-        return 'N/a'
-
-
-    def render_writer(self):
-        '''return the Movie.wrtier attribute in without quotes and [],
-        only comma-separated string.
-        '''
-        if self.writer:
-            writer = ', '.join(self.writer)
-            return writer
-        return 'N/a'
-    
 
     def render_trailer(self):
         ''' concatenates the field "trailers" to a base url'''
@@ -184,15 +156,13 @@ class Episode(models.Model):
         ) # ["runtime"]
 
     release_date = models.DateField(blank=True, null=True) # [""air_date""]
-    guest_star = models.JSONField(blank=True, null=True)
+    guest_star = models.JSONField(blank=True, null=True) # ["credits", {}] ["guest_stars", {}] 
     director = models.JSONField(blank=True, null=True)
     writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
     # image
     banner_poster = models.URLField(blank=True, null=True) # ["still_path"]
-
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -225,3 +195,24 @@ class Episode(models.Model):
             else:
                 return f'{hours}h{minutes}'
         return 'N/a'
+    
+
+    def render_director(self):
+        '''return the Movie.director attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.director:
+            director = ', '.join(self.director)
+            return director
+        return 'N/a'
+
+
+    def render_writer(self):
+        '''return the Movie.wrtier attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.writer:
+            writer = ', '.join(self.writer)
+            return writer
+        return 'N/a'
+    

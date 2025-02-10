@@ -21,6 +21,22 @@
     }
 }
 
+.navbar {
+    width: 100%;
+    height: 50px;
+    background-color: rgb(60, 18, 24);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position:fixed;
+    top:0;
+    z-index: 1030; /* to prevent the navbar getting covered up by other content */
+}
+
+.navbar-spacer {
+    height: 50px; /* Same as navbar height */
+}
 
 body {
     background-color: #171623; /* Light grey background */

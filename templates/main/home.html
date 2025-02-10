@@ -11,19 +11,19 @@
         <h1 class="mt-1 mb-3">Welcome to Vault7</h1>
         <!-- Reference the amount of content in the Database -->
         {% if movies_count %}
-        <strong>Currently available in the library:</strong> {{ movies_count }} movies and
-        {% else %}
-        <p>No movies found</p>
-        {% endif %}
-        {% if series_count %}
-        {{ series_count }} series
-        {% else %}
-        <p>No series found</p>
-        {% endif %}
+        <strong>
+            {{ movies_count }} movies {% else %}No movies{% endif %} and
+            {% if series_count %}
+            {{ series_count }} series
+            {% else %}
+            No series
+            {% endif %}
+            available in the library:
+        </strong>
         <div>
             <br>
-            <p>Record your favorit movies and add notes to remember your thought about it</p>
-            <p>Save the new show you want to see in your watchlist, so you don't forget</p>
+            <p>Save your favorit movies and TV shows. add your thoughts and critics to it in a note.</p>
+            <!-- <p>Save the new show you want to see in your watchlist, so you don't forget</p> -->
             <p></p>
         </div>
         

@@ -150,43 +150,44 @@ def bulk_import_series(request):
     Bulk import strategy:
     1. Fetch popular series
     3. Check if already in database / if so, pass.
-    3.  loop through each movie to query their data 
-    4. Import new movies 
+    3.  loop through each serie to query their data 
+    4. Import new series 
     """
     try:
         if request.user.is_superuser:
             
-            page = 1 # for now the page is decided here and line 153 to choose the amount (only temporary)
+            page = 17 # for now the page is decided here and line 153 to choose the amount (only temporary)
             while True:
-                print(f"request importing bulk new movies\n") # debug print
+                print(f"request importing list popular series page: {page}\n") # debug print
                 popular_series = fetch_popular_series(page)
 
                 if not popular_series:
-                    print(f" The query could not fetch a list of popular movies, check the url.")  # debug print
+                    print(f" The query could not fetch a list of popular series, check the url.")  # debug print
                     return JsonResponse({'message': 'Bulk import failed, check Url'}, status=404)
                 
-                print("\n Looping through the list of popular movies and pass the Ids to get the datas.\n")
+                print("\n Looping through the list of popular series and pass the Ids to get the datas.\n")
                 for tmdb_serie in popular_series['results']:
                     tmdb_id = tmdb_serie['id']
                     print(f" passing tmdb_id: {tmdb_id}") # debug print
 
-                    # Check if movie exists
+                    # Check if serie exists
                     if not Serie.objects.filter(tmdb_id=tmdb_id).exists():
                         try:
                             add_series_from_tmdb(tmdb_id)
-                            print(f"Imported movie: {tmdb_serie['title']}")  # not sure it is imported if already exist
+                            print(f"Imported serie: {tmdb_serie['name']}\n")  # not sure it is imported if already exist
                         except Exception as e:
-                            print(f"Error importing {tmdb_serie['title']}: {e}")
+                            print(f"Error importing {tmdb_serie['name']}: {e}")
                     else:
-                        print(f"{tmdb_serie['title']} already exists in DB.")
+                        print(f"{tmdb_serie['name']} already exists in DB.")
 
                 # Break if no more pages
-                if page > 1: # will run 2 pages
+                if page >= 17: # will run  pages
                     break
                 page += 1
-            print(f"Imported list popular movies done! success")
+            print(f"Imported list popular series done! success")
             return JsonResponse({'message': 'Bulk import successful'}, status=200)
         
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
+        return JsonResponse({'message': 'An error occurred', 'error': str(e)}, status=500)

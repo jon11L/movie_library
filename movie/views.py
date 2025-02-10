@@ -147,7 +147,7 @@ def bulk_import_movies(request):
     try:
         if request.user.is_superuser:
             
-            page = 1 # for now the page is decided here and line 153 to choose the amount (only temporary)
+            page = 34 # for now the page is decided here and line 153 to choose the amount (only temporary)
             while True:
                 print(f"request importing bulk new movies\n") # debug print
                 popular_movies = fetch_popular_movies(page)
@@ -172,7 +172,7 @@ def bulk_import_movies(request):
                         print(f"{tmdb_movie['title']} already exists in DB.")
 
                 # Break if no more pages
-                if page > 1: # will run 2 pages
+                if page >= 34: # will run 2 pages
                     break
                 page += 1
             print(f"Imported list popular movies done! success")
