@@ -22,9 +22,15 @@
 
                     </div>
 
+                    <div class="movie-card">
+                        {% if serie.render_banner_poster %}
+                        <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
+                        {% endif %}
+                    </div>
+
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                        {% if serie.film_poster %}
-                        <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% if serie.render_image_poster %}
+                        <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% else %}
                         <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% endif %}

@@ -47,13 +47,3 @@ class TMDBClient:
             return None
 
 
-
-    # def fetch_popular_movies(self, page=1):
-    #     """
-    #     Fetch paginated list of popular movies
-    #     """
-    #     url = f"{self.BASE_URL}/movie/popular?page={page}"
-
-    #     response = requests.get(url, params={'api_key': self.ACCESS_TOKEN})
-    #     return response.json()
-

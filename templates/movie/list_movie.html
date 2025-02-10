@@ -34,8 +34,8 @@
             </div>
 
             <div class="card-img-top" style="width: 250px; height: 200px;">
-                {% if movie.image_poster %}
-                <img src="{{ movie.image_poster }}" class="img-fluid rounded"  alt="Profile photo" style="width: 200px; height: 250px; margin-left: 70px;">
+                {% if movie.render_image_poster %}
+                <img src="{{ movie.render_image_poster }}" class="img-fluid rounded"  alt="Profile photo" style="width: 200px; height: 250px; margin-left: 70px;">
                 {% else %}
                 <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                 {% endif %}

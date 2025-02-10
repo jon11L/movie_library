@@ -22,6 +22,9 @@ from . import views
 
 urlpatterns = [
     path('list_serie/', views.list_serie, name='list_serie'),
+    path('import_series/', views.bulk_import_series, name='create_serie'),
+    
     path('detail_serie/<int:pk>', views.detail_serie, name='detail_serie'),
+    path('import_serie/<int:tmdb_id>', views.import_serie, name='import_serie'),
 
 ]

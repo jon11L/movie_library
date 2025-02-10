@@ -9,6 +9,7 @@ def add_movies_from_tmdb(tmdb_id):
     Check if the movie already exists otherwise saves it in the database.
     """
     try:
+        # search for the movie
         movie_data = get_movie_details(tmdb_id)
 
         # check if te API was called correctly and returned the datas
@@ -21,66 +22,66 @@ def add_movies_from_tmdb(tmdb_id):
                 } # Handle failure case
 
         # to place above in the function
-        try:
-            exisiting_movie = Movie.objects.get(tmdb_id=movie_data['id'])
-            print(f"Movie already exists: movie {exisiting_movie.id}: {exisiting_movie.title}")
-            return {
-                'status': 'exists', 
-                'tmdb_id': exisiting_movie.tmdb_id, 
-                'movie_id': exisiting_movie.id,
-                'title': exisiting_movie.title
+        # try:
+        #     exisiting_movie = Movie.objects.get(tmdb_id=movie_data['id'])
+        #     # print(f"Movie already exists: movie {exisiting_movie.id}: {exisiting_movie.title}")
+        #     # return {
+        #     #     'status': 'exists', 
+        #     #     'tmdb_id': exisiting_movie.tmdb_id, 
+        #     #     'movie_id': exisiting_movie.id,
+        #     #     'title': exisiting_movie.title
+        #     # }
+
+        # except Movie.DoesNotExist:
+
+        print("passing datas into field for the new movie's instance") # debug print
+        
+        # initialize empty list, for future jsonfield reference ... 
+        director = []
+        writers = []
+        cast = []
+        origin_country = []
+        youtube_trailer = []
+        spoken_languages = []
+
+        # Extract credits from the combined response
+        credits_data = movie_data.get('credits', {})
+
+        if credits_data:
+            for person in credits_data.get("crew", []):
+                # append the directors for the  director field
+                if person["job"] == "Director":
+                    director.append(person["name"])
+
+                # append the writers for the  Writer field
+                if person["job"] in ["Writer", "Screenplay"]:
+                    writers.append(person["name"])
+
+        # Top 10 cast members (takes the name and role)
+        cast = [
+            {
+                "name": member["name"], 
+                "role": member["character"]
             }
+            for member in credits_data.get("cast", [])[:10]
+        ]
 
-        except Movie.DoesNotExist:
+        # Extract trailer from the combined response
+        trailer_data = movie_data.get("videos", {}).get("results", [])
 
-            print("passing datas into field for the new movie's instance") # debug print
-            
-            # initialize empty list, for future jsonfield reference ... 
-            director = []
-            writers = []
-            cast = []
-            origin_country = []
-            youtube_trailer = []
-            spoken_languages = []
+        for trailer in trailer_data[:4]:
+            if trailer["type"] in ["Trailer", "Featurette"] and trailer['site'] == "YouTube":
+                youtube_trailer.append(
+                    {
+                        "website": trailer["site"],
+                        "key": trailer["key"]
+                    }
+                )
 
-            # Extract credits from the combined response
-            credits_data = movie_data.get('credits', {})
+        languages = movie_data.get("spoken_languages", [])
+        spoken_languages = [language["english_name"] for language in languages]
 
-            if credits_data:
-                for person in credits_data.get("crew", []):
-                    # append the directors for the  director field
-                    if person["job"] == "Director":
-                        director.append(person["name"])
-
-                    # append the writers for the  Writer field
-                    if person["job"] in ["Writer", "Screenplay"]:
-                        writers.append(person["name"])
-
-            # Top 10 cast members (takes the name and role)
-            cast = [
-                {
-                    "name": member["name"], 
-                    "role": member["character"]
-                }
-                for member in credits_data.get("cast", [])[:10]
-            ]
-
-            # Extract trailer from the combined response
-            trailer_data = movie_data.get("videos", {}).get("results", [])
-
-            for trailer in trailer_data[:4]:
-                if trailer["type"] in ["Trailer", "Featurette"] and trailer['site'] == "YouTube":
-                    youtube_trailer.append(
-                        {
-                            "website": trailer["site"],
-                            "key": trailer["key"]
-                        }
-                    )
-
-            languages = movie_data.get("spoken_languages", [])
-            spoken_languages = [language["english_name"] for language in languages]
-
-            movie = Movie.objects.create(
+        movie = Movie.objects.create(
                 # External unique identifier
                 tmdb_id = movie_data["id"],  # check if the movie is already existing in the database
                 imdb_id = movie_data.get("imdb_id"),
@@ -110,16 +111,17 @@ def add_movies_from_tmdb(tmdb_id):
                 image_poster = f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
                 banner_poster = f"https://image.tmdb.org/t/p/w1280{movie_data.get('backdrop_path')}" if movie_data.get("backdrop_path") else None,
                 trailers = youtube_trailer
-        )
+            )
 
-            return {
-                'status': 'added', 
-                'movie_id': movie.id, 
-                'tmdb_id': movie.tmdb_id, 
-                'title': movie.title,
-                'message': 'Movie was successfully added to the DB.'
-            }
-        
+        print(f"\nMovie: '{movie_data.get('title')}' added to DB.\n")
+        return {
+            'status': 'added', 
+            'movie_id': movie.id, 
+            'tmdb_id': movie.tmdb_id, 
+            'title': movie.title,
+            'message': 'Movie was successfully added to the DB.'
+        }
+
     except Exception as e:
         # Catch any unexpected errors during the process
         return {
@@ -148,23 +150,3 @@ def add_movies_from_tmdb(tmdb_id):
 
 
 
-
-def add_series_from_tmdb(tmdb_id):
-    """
-    Fetches a single series and it'S content datas from TMDB API 
-    Check if the series already exists otherwise saves it in the database.
-    """
-    pass
-
-
-# take ["seasons"] number from Serie then loop through that number to call for season detail then same approach with episode
-# for episode take from Season or serie
-
-
-
-
-
-# to reach season :  
-# 
-# season_data = []
-# for len(season_data)
