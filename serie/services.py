@@ -2,6 +2,7 @@ from .models import Serie, Season, Episode
 from api_services.TMDB.base_client import TMDBClient
 from api_services.TMDB.fetch_series import get_serie_details, get_season_details
 import time
+import traceback
 
 def add_series_from_tmdb(tmdb_id):
     """
@@ -56,7 +57,8 @@ def add_series_from_tmdb(tmdb_id):
         print(f"looking for seasons...\n")
 
         # --------- Passing on the seasons ------------------------------
-        datas_season_ep = [] # to display some result in the json return.
+        datas_season = [] # to display some result in the json return.
+        
         seasons = serie_data.get('seasons', [])
         print(f"seasons: {seasons}") # get all seasons data from serie
 
@@ -88,7 +90,7 @@ def add_series_from_tmdb(tmdb_id):
                         "role": member["character"]
                     }
                     for member in credits_data.get("cast", [])[:10] if member["known_for_department"] == "Acting"
-                ]
+                ] 
 
                 producers = [
                     {
@@ -153,11 +155,11 @@ def add_series_from_tmdb(tmdb_id):
 
 
                 directors = [director["name"] for director in episode.get("crew", [])[:3] if director["department"] == "Directing"]
-                print(f"directors :{directors}\n")
+                # print(f"directors :{directors}\n") # debug print
                 
 
                 writers = [writer["name"] for writer in episode.get("crew", []) if writer["department"] == "Writing"]
-                print(f"{writers}")
+                # print(f"{writers}") # debug print
 
                 new_episode = Episode.objects.create(
                     season=season,
@@ -175,20 +177,24 @@ def add_series_from_tmdb(tmdb_id):
                 )
 
                 print(f"added episode: {new_episode}")
-                time.sleep(0.1)
+                time.sleep(0.2)
                 
-            datas_season_ep.append(
+            datas_season.append(
                 {
                 "season": season_data.get("name"),
                 "total episodes for season": len(number_of_episode)
                 }
             )
 
+        print("reaching end of import\n")
+        print(f"serie: {serie.id}, title: {serie.title}\n")
+        print(f"data_season: {datas_season}\n")
+
         return {
             'status': 'added', 
             'serie_id': serie.id,
-            'title': serie.title,
-            "datas_seasons": datas_season_ep, 
+            'title': serie.title if serie.title else "Unknown Title",
+            "datas_season": datas_season, 
             'tmdb_id': serie.tmdb_id, 
             'message': 'Serie was successfully added to the DB.'
         }
@@ -196,17 +202,11 @@ def add_series_from_tmdb(tmdb_id):
 
     except Exception as e:
         # Catch any unexpected errors during the process
+        print(traceback.format_exc())
         return {
             'status': 'error',
             'message': f'An error occurred: {str(e)}'
         }
-
-
-# guest_star on episode field
-#  director = [] same on episode field ... directly in crew ["department"] == "Directing"
-# writer = [] same on episode field ...  directly in crew ["department"] == "Writer"
-
-
 
 
 # id for breakingbad  1396
