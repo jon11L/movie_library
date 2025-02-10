@@ -95,16 +95,30 @@ def import_movie(request, tmdb_id):
     print(f"request importing a new movie")
     try:
         if request.method == 'GET' and request.user.is_superuser:
-            result = add_movies_from_tmdb(tmdb_id)
 
-            # Determine appropriate HTTP status code
-            status_code = {
-                'added': 201,
-                'exists': 200,
-                'error': 404
-            }.get(result['status'], 400)
+            try:
+                # check if the movie is already in our database
+                exisiting_movie = Movie.objects.get(tmdb_id=tmdb_id)
+                print(f"Movie already exists: movie {exisiting_movie.id}: {exisiting_movie.title}")
+                return JsonResponse({
+                    'status': 'already exists in DB', 
+                    'tmdb_id': exisiting_movie.tmdb_id, 
+                    'movie_id': exisiting_movie.id,
+                    'title': exisiting_movie.title
+                }, status=200)
+            
+            # if the movie is not then we try to fetch it.
+            except Movie.DoesNotExist:
+                result = add_movies_from_tmdb(tmdb_id)
 
-            return JsonResponse(result, status=status_code)
+                # Determine appropriate HTTP status code
+                status_code = {
+                    'added': 201,
+                    'exists': 200,
+                    'error': 404
+                }.get(result['status'], 400)
+
+                return JsonResponse(result, status=status_code)
 
         else:
             print(f"Unauthorized access to 'import_movie' page.")
@@ -114,6 +128,11 @@ def import_movie(request, tmdb_id):
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
+        # return JsonResponse()
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An unexpected error occurred'
+        }, status=500)
 
 
 # @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
@@ -128,29 +147,32 @@ def bulk_import_movies(request):
     try:
         if request.user.is_superuser:
             
-            page = 250
+            page = 1 # for now the page is decided here and line 153 to choose the amount (only temporary)
             while True:
-                print(f"request importing bulk new movies") # debug print
+                print(f"request importing bulk new movies\n") # debug print
                 popular_movies = fetch_popular_movies(page)
 
                 if not popular_movies:
                     print(f" The query could not fetch a list of popular movies, check the url.")  # debug print
                     return JsonResponse({'message': 'Bulk import failed, check Url'}, status=404)
                 
-                for movie in popular_movies['results']:
-                    tmdb_id = movie['id']
+                print("\n Looping through the list of popular movies and pass the Ids to get the datas.\n")
+                for tmdb_movie in popular_movies['results']:
+                    tmdb_id = tmdb_movie['id']
                     print(f" passing tmdb_id: {tmdb_id}") # debug print
 
                     # Check if movie exists
                     if not Movie.objects.filter(tmdb_id=tmdb_id).exists():
                         try:
                             add_movies_from_tmdb(tmdb_id)
-                            print(f"Imported movie: {movie['title']}")  # not sure it is imported if already exist
+                            print(f"Imported movie: {tmdb_movie['title']}")  # not sure it is imported if already exist
                         except Exception as e:
-                            print(f"Error importing {movie['title']}: {e}")
+                            print(f"Error importing {tmdb_movie['title']}: {e}")
+                    else:
+                        print(f"{tmdb_movie['title']} already exists in DB.")
 
                 # Break if no more pages
-                if page > 250: # will run 2 pages
+                if page > 1: # will run 2 pages
                     break
                 page += 1
             print(f"Imported list popular movies done! success")

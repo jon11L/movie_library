@@ -57,7 +57,7 @@
 
                 </div>
 
-                <div class="card-title" style="">
+                <div class="card-title">
                     <div style="display: flex; justify-content: center;">
                         <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
                             <h4>{{ movie.title }} </h4>
@@ -104,14 +104,14 @@
     <h3 style="text-align: center;">Last added series:</h3>
     <br>
 
-    <div style="display: flex; flex-wrap: wrap; flex-direction: row;">
+    <div style="display: flex; flex-wrap: wrap;">
         {% if series %}
         {% for serie in series %}
 
-        <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: auto; border: none;">
+        <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
             
             <div style="display: flex; justify-content: space-between;" id="like_button">
-                <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.rating }}/10</small></p>
+                <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p>
 
                 <!-- like button feature -->
                 <button class="like-button"
@@ -129,8 +129,8 @@
                     </a>
 
                     <div style="color: grey;">
-                        {% if serie.length %}
-                        <p style="margin-left: 8px;"><small>({{ serie.length }}min)</small></p>
+                        {% if serie.render_length %}
+                        <p style="margin-left: 8px;"><small>({{ serie.render_length }}min)</small></p>
                         {% else %}
                         <p style="margin-left: 8px;"><small>(N/a)</small></p>
                         {% endif %}
@@ -139,9 +139,9 @@
                 </div>
             </div>
 
-            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                {% if serie.film_poster %}
-                <img src=" {{ serie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
+            <div class="card-img-top" style="text-align: center; margin-top: 25px; margin:auto;  width: 60%;">
+                {% if serie.render_image_poster %}
+                <img src=" {{ serie.render_image_poster }} " class="img-fluid rounded" style="width: max-content;" alt="Profile photo">
                 {% else %}
                 <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                 {% endif %}

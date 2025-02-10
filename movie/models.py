@@ -152,3 +152,18 @@ class Movie(models.Model):
             spoken_languages = ', '.join(self.spoken_languages)
             return spoken_languages
         pass
+
+    def render_banner_poster(self):
+        ''' return the Movie.banner_poster with a formatted string'''
+        if self.banner_poster:
+            banner_poster = f"https://image.tmdb.org/t/p/w1280{self.banner_poster}" # for a width1280
+            return banner_poster
+        return None
+
+    def render_image_poster(self):
+        ''' return the Movie.banner_poster with a formatted string'''
+        if self.image_poster:
+            image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
+            return image_poster
+        return None
+    

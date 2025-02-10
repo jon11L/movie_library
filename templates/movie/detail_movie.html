@@ -11,8 +11,8 @@
             <div class="card">
                 
                 <div class="movie-card">
-                    {% if movie.banner_poster %}
-                    <img src=" {{ movie.banner_poster }} " class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
+                    {% if movie.render_banner_poster %}
+                    <img src="{{ movie.render_banner_poster }}" class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
                     {% endif %}
                 </div>
                 <div>
@@ -36,8 +36,8 @@
                     </div>
                 
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                        {% if movie.image_poster %}
-                        <img src=" {{ movie.image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% if movie.render_image_poster %}
+                        <img src=" {{ movie.render_image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% else %}
                         <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% endif %}

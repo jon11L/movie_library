@@ -7,24 +7,28 @@ class Serie(models.Model):
     # core details
     original_title = models.CharField(max_length=255, blank=True, null=True) # if title not english get from: ["original_name"]
     title = models.CharField(max_length=255) # ["name"]
-    origin_country = models.JSONField(blank=True, null=True) # ["origin_country", []]
-    original_language = models.CharField(max_length=50, blank=True, null=True)  # Movie's original language
-    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spokent_languages', []] "english_name"
     description = models.TextField(blank=True, null=True)
     genre = models.JSONField(blank=True, null=True)
+    origin_country = models.JSONField(blank=True, null=True) # ["origin_country", []]
+    original_language = models.CharField(max_length=50, blank=True, null=True)  # Movie's original language
+    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spoken_languages', []] "english_name"
     tagline = models.TextField(blank=True, null=True) # ["tagline"]
     # Cast and Prod
     production = models.JSONField(blank=True, null=True) # ["production_companies"]
-    created_by = models.CharField(blank=True, null=True) # ["created_by"]
+    created_by = models.JSONField(blank=True, null=True) # ["created_by"]
+    # casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] as main actors  ---/ guest stars [""guest_stars""] loop through 8 or so.... make a list of dict with key, main and guest star (inside each names and roles)
+
     # Metrics
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
     vote_count = models.IntegerField(blank=True, null=True)
     # images
     image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
     banner_poster = models.URLField(blank=True, null=True) # ["backdrop_path"]
-    ongoing = models.BooleanField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
+    status = models.CharField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
     # External unique identifier / sources for api references
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
+    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above
+
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -62,29 +66,52 @@ class Serie(models.Model):
         if self.origin_country:
             origin_country = ', '.join(self.origin_country)
             return origin_country  
-        return 'N/a' 
+        return 'N/a'
+    
+    def render_vote_average(self):
+        '''return the Movie.vote_average with a rounded number'''
+        if self.vote_average:
+            return round(self.vote_average, 1)
+        else:
+            return 0
 
+
+
+    def render_banner_poster(self):
+        ''' return the Movie.banner_poster with a formatted string'''
+        if self.banner_poster:
+            banner_poster = f"https://image.tmdb.org/t/p/w1280{self.banner_poster}" # for a width1280
+            return banner_poster
+        return None
+
+    def render_image_poster(self):
+        ''' return the Movie.banner_poster with a formatted string'''
+        if self.image_poster:
+            image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
+            return image_poster
+        return None
 
 # ["seasons"] will return a list of dictionnary with the seasons id in it ["i"]
 
 class Season(models.Model):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') # ["season_number"]
+    name = models.CharField(max_length=255, blank=True, null=True)
 
-    season_number = models.PositiveSmallIntegerField(blank=True, null=True)
+    season_number = models.IntegerField(blank=True, null=True)
     # Crew and staff
-    director = models.CharField(max_length=255, blank=True, null=True) # when ['job'] = Director
-    writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
+    producer = models.JSONField(max_length=255, blank=True, null=True) # when ['job'] = Director    // no director in seasons but producer instead
+    # writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
     casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] as main actors  ---/ guest stars [""guest_stars""] loop through 8 or so.... make a list of dict with key, main and guest star (inside each names and roles)
 
-    description = models.TextField(max_length=1000, blank=True, null=True) # ["overview"]
-    image_poster = models.URLField(blank=True) # ["still_path"]
+    description = models.TextField(blank=True, null=True) # ["overview"]
+    # image
+    image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
 
     trailers = models.JSONField(max_length=11, blank=True, null=True) # ["videos", {}] ["results", []]
 
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above
 
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
@@ -147,16 +174,21 @@ class Episode(models.Model):
         related_name='episodes'
         )
 
-    episode_number = models.PositiveSmallIntegerField(blank=True, null=True) # ["episode_number"]
-    title = models.CharField(max_length=255, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    episode_number = models.PositiveSmallIntegerField(blank=True, null=True)# loop through ["episodes"] first then: ["episode_number"]
+    title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
+    description = models.TextField(blank=True, null=True) # ["overview"]
     length = models.IntegerField(
         help_text="Average episode length in minutes",
         validators=[MinValueValidator(1)],
         blank=True, null=True
-        )
+        ) # ["runtime"]
 
     release_date = models.DateField(blank=True, null=True) # [""air_date""]
+    guest_star = models.JSONField(blank=True, null=True)
+    director = models.JSONField(blank=True, null=True)
+    writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
+    # image
+    banner_poster = models.URLField(blank=True, null=True) # ["still_path"]
 
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
