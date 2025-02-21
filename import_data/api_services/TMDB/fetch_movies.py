@@ -3,7 +3,7 @@ from .base_client import TMDBClient
 import requests
 
 
-def get_movie_details(tmdb_id):
+def get_movie_data(tmdb_id):
     ''' Finds and Return the datas for single movie.
     Get movie data details from the TMDB API using the 'movie_id' parameter.
     Also, the  extra credits datas are being retrieved using '?append_to_response=credits'
@@ -55,6 +55,8 @@ def fetch_popular_movies(page):
         print(f"An error occurred while fetching the list of popular movies: {e}")
         return None
     
+
+
 
 # def search_movies_by_title(title: str):
 #     """

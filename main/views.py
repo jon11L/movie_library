@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import user_passes_test
 
-from api_services.TMDB.base_client import TMDBClient
-from api_services.TMDB.fetch_movies import get_movie_details
+# from api_services.TMDB.base_client import TMDBClient
+# from api_services.TMDB.fetch_movies import get_movie_data
 
 from movie.models import Movie
 from serie.models import Serie
@@ -64,23 +64,23 @@ def about_page(request):
 # Find a way to authorize the only for admin  --- Below are test functions for the API calls with TMDB
 
 @user_passes_test(admin_check, login_url="user:login", redirect_field_name="main/home")
-def get_tmdb_access(request):
-    '''Make the first call to TMDB api to get the read access to the apis/datas.
-    If user is not admin, will be redirected to login page"
-    '''
+# def get_tmdb_access(request):
+#     '''Make the first call to TMDB api to get the read access to the apis/datas.
+#     If user is not admin, will be redirected to login page"
+#     '''
 
-    if request.method == 'GET':
-        client = TMDBClient()
-        client_access = client.get_authorization()
+#     if request.method == 'GET':
+#         client = TMDBClient()
+#         client_access = client.get_authorization()
 
-        if client_access:
-            messages.success(request, "request to read access TMDB api was successful")
-            # return render(request, 'main/tmdb_access.html', {'access_token': access})
-            return JsonResponse(client_access)
+#         if client_access:
+#             messages.success(request, "request to read access TMDB api was successful")
+#             # return render(request, 'main/tmdb_access.html', {'access_token': access})
+#             return JsonResponse(client_access)
         
-        else:
-            messages.error(request, "The request to read access TMDB api was not successful.")
-            return redirect(to='main:home')
+#         else:
+#             messages.error(request, "The request to read access TMDB api was not successful.")
+#             return redirect(to='main:home')
 
 
 
@@ -88,7 +88,7 @@ def get_tmdb_access(request):
 def search_movie(request):
     tmdb_id =  '650'  # Default search for testing
     # client = TMDBClient()
-    movie_data = get_movie_details(tmdb_id)
+    movie_data = get_movie_data(tmdb_id)
     # credit_data = client.get_movie_credits(query)
     return JsonResponse({
         'data': movie_data

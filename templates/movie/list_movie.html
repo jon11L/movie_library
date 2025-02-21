@@ -66,35 +66,39 @@
 
 
     <!-- first page -->
-    <div style="display: flex; justify-content: center;">
+    <!-- <div style="display: flex; justify-content: center;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav> -->
+        
+        
+        
+        <div style="display: flex; justify-content: center;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if movie_list.has_previous %}
+                        <li class="page-item"><a  href="?page=1" class="page-link">&laquo first</a></li>
+                    <!-- previous page -->
+                        <li class="page-item"><a href="?page={{ movie_list.previous_page_number }}" class="page-link">&laquo Previous page</a></li>
+                    {% endif %}
 
-        {% if movie_list.has_previous %}
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px  10px;">
-            <a href="?page=1" style="text-decoration: none; color: antiquewhite">&laquo first</a>
-        </button>
-        <!-- previous page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ movie_list.previous_page_number }}" style="text-decoration: none; color: antiquewhite;">&laquo Previous page</a>
-        </button>
-        {% endif %}
+                    <li class="page-item disabled"><a href="#" class="page-link">Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }}</a></li>
+                    
+                {% if movie_list.has_next %}
+                <!-- Next page -->
+                <li class="page-item"><a href="?page={{ movie_list.next_page_number }}" class="page-link">Next Page</a></li>
 
-    
-        <span class="current" style="color: antiquewhite; margin: 0px  10px 0px 10px;">
-            Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }}
-        </span>
-    
-        {% if movie_list.has_next %}
-        <!-- Next page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ movie_list.next_page_number }}" style="text-decoration: none; color: antiquewhite;">Next Page</a>
-        </button>
-
-        <!-- Last page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ movie_list.paginator.num_pages}}" style="text-decoration: none; color: antiquewhite;">Last Page</a>
-        </button>
-        {% endif %}
-    
+                <!-- Last page -->
+                <li class="page-item"><a href="?page={{ movie_list.paginator.num_pages}}" class="page-link">Last Page</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
     
     
