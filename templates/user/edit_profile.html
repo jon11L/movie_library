@@ -4,7 +4,7 @@
 
 
 <div style="display: flex;">
-
+    <!-- Links to update credentials: user name, password -->
     <div class="card" style="text-align: center; background-color: #f5f5f5; border-right: solid darkgrey;">
         <div style="margin: 50px 50px; padding-right: 20px;">
             <h5>To edit your user account</h5>
@@ -20,7 +20,7 @@
         </div>
     </div>
     
-
+    <!-- Forms input to edit profile -->
     <div class="col-md-6 offset-md-3" style="margin: 10px 100px;">
         <h1 style="margin-bottom: 25px;">Edit your profile here:</h1>
     
@@ -28,7 +28,7 @@
             {% csrf_token %}
             {% for field in form %}
 
-            <div class="mb-2 ms-3">
+            <div class="mb-2 ms-3" style="display: flex;">
                 <label for="{{ field.id_for_label }}">{{ field.label }}  {{ field }}</label>        
                 {% if field.help_text %}
                     <div class="form-text" style="color:antiquewhite">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>

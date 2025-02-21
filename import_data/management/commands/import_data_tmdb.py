@@ -25,8 +25,8 @@ class Command(BaseCommand):
         4. Import new movies 
         """
 
-        page_st = 1
-        page_end = 1
+        page_st = 1 # starting page list
+        page_end = page_st + 3 # ending page list
         
         try:
             while page_st <= page_end:
@@ -34,9 +34,7 @@ class Command(BaseCommand):
                 popular_movies = fetch_popular_movies(page_st)
 
                 if not popular_movies:
-                    # print(f" The query could not fetch a list of popular movies, check the url.")  # debug print
                     self.stdout.write(self.style.ERROR(f" The query could not fetch a list of popular movies, check the url.\nstatus=404"))  # debug print
-                    # return JsonResponse({'message': 'Bulk import failed, check Url'}, status=404)
 
                 self.stdout.write("\n Looping through the list of popular movies and pass the Ids to get the datas.\n")
                 for tmdb_movie in popular_movies['results']:

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Search form  -->
+<div style="width: 85%; margin: auto; margin-top: 100px;">
+
+    <div style="margin: auto;">
+        <form method="POST" action="{% url 'search:search' %}">
+            {% csrf_token %}
+            <input type="input" class="form-control" placeholder="search" name="search_query" style=" width: 50%; ">
+            <br>
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+    </div>
+
+    <br><br>
+    {% if search %}
+    <h3>Search results for "{{ search }}"</h3>
+    {% endif %}
+    
+    <!-- Movies found are displayed here -->
+    <div style="display: flex; flex-wrap: wrap;">
+        {% if movies %}
+        {% for movie in movies %}
+        
+        <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
+            
+            <div style="display: flex; justify-content: space-between;" id="like_button">
+                <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
+                
+                <!-- like button feature -->
+                <button class="like-button"
+                data-type="movie"
+                data-id="{{ movie.id }}"
+                data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
+                <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+            </button>
+            
+        </div>
+        
+            <div class="card-title">
+                <div style="display: flex; justify-content: center;">
+                    <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
+                        <h4>{{ movie.title }} </h4>
+                    </a>
+                    
+                    <div style="color: lightblue;">
+                        {% if movie.length %}
+                        <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
+                        {% else %}
+                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="card-img-top" style="margin:auto;  width: 60%;">
+                {% if movie.image_poster %}
+                <img src="{{ movie.image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
+                {% else %}
+                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                {% endif %}
+            </div>
+            
+            <div class="card-body" style="text-align: left;">
+                <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
+                    <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
+                </ul>
+            </div>
+        </div>
+        
+        
+        {% endfor %}
+        {% endif %}
+        
+        
+        <!-- Series found are displayed here -->
+        {% if series %}
+        {% for serie in series %}
+        
+        <div style="display: flex; text-align: center;">
+            <div style="margin-left: 20px;">
+                <a href="{% url 'serie:detail_serie' serie.id %}" style="text-decoration: none; color: #000;">
+                    <h4>{{ serie.title }} </h4>
+                </a>
+                <p><strong>Vote Average:</strong> {{ serie.render_vote_average }}/10</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+    </div>
+
+</div>
+    
+    {% endblock %}
+    
