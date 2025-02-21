@@ -1,13 +1,131 @@
-from .models import Serie, Season, Episode
-from api_services.TMDB.base_client import TMDBClient
-from api_services.TMDB.fetch_series import get_serie_details, get_season_details
+from import_data.api_services.TMDB.fetch_movies import get_movie_data
+from import_data.api_services.TMDB.fetch_series import get_serie_details, get_season_details
+from movie.models import Movie
+from serie.models import Serie, Season, Episode
 import time
 import traceback
 
+def add_movies_from_tmdb(tmdb_id):
+    """
+    Fetches a single movie and it'S content datas from TMDB API 
+    Check if the movie already exists otherwise saves it in the database.
+    """
+    try:
+        # search for the movie
+        movie_data = get_movie_data(tmdb_id)
+
+        # check if te API was called correctly and returned the datas
+        if not movie_data:
+            print(f"Failed to fetch movie data from TMDB api with ID: {tmdb_id}")
+            return  {
+                    'status': 'error',
+                    'tmdb_status_code': 34,
+                    'message': f'No movie found with TMDB ID: {tmdb_id}',
+                } # Handle failure case
+
+        print("passing datas into field for the new movie's instance") # debug print
+        
+        # initialize empty list, for future jsonfield reference ... 
+        director = []
+        writers = []
+        cast = []
+        # origin_country = []
+        youtube_trailer = []
+        spoken_languages = []
+
+        # Extract credits from the combined response
+        movie_credit = movie_data.get('credits', {})
+
+        if movie_credit:
+            for person in movie_credit.get("crew", []):
+                # append the directors for the  director field
+                if person["job"] == "Director":
+                    director.append(person["name"])
+
+                # append the writers for the  Writer field
+                if person["job"] in ["Writer", "Screenplay"]:
+                    writers.append(person["name"])
+
+        # Top 10 cast members (takes the name and role)
+        cast = [
+            {
+                "name": member["name"], 
+                "role": member["character"]
+            }
+            for member in movie_credit.get("cast", [])[:10]
+        ]
+
+        # Extract trailer from the combined response
+        trailer_data = movie_data.get("videos", {}).get("results", [])
+
+        for trailer in trailer_data:
+            if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
+                youtube_trailer.append(
+                    {
+                        "website": trailer["site"],
+                        "key": trailer["key"]
+                    }
+                )
+
+        languages = movie_data.get("spoken_languages", [])
+        spoken_languages = [language["english_name"] for language in languages]
+
+        movie = Movie.objects.create(
+                # External unique identifier
+                tmdb_id = movie_data["id"],  # check if the movie is already existing in the database
+                imdb_id = movie_data.get("imdb_id"),
+                # Core Movie Details
+                original_title = movie_data.get("original_title"),
+                title=movie_data.get("title") or movie_data.get("original_title"),  # Use original_title if title is missing
+                release_date = movie_data.get("release_date"),
+                origin_country = movie_data.get("origin_country"),
+                original_language = movie_data.get("original_language"),
+                production = [company["name"] for company in movie_data.get("production_companies", [])], # List of production companies
+                director = director,
+                writer = writers,
+                casting = cast,
+                length = movie_data.get("runtime"),
+                vote_average = movie_data.get("vote_average"),
+                description = movie_data.get("overview"),
+                genre = [genre["name"] for genre in movie_data.get("genres", [])],
+                budget = movie_data.get("budget"),
+                revenue = movie_data.get("revenue"),
+                tagline = movie_data.get("tagline"),
+                spoken_languages = spoken_languages,
+                # Metrics
+                released = True if movie_data.get("status") == "Released" else False,
+                vote_count = movie_data.get("vote_count"),
+                popularity = movie_data.get("popularity"),
+                # images
+                image_poster = f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+                banner_poster = f"https://image.tmdb.org/t/p/w1280{movie_data.get('backdrop_path')}" if movie_data.get("backdrop_path") else None,
+                trailers = youtube_trailer[:3]
+            )
+
+        print(f"\nMovie: '{movie_data.get('title')}' added to DB.\n")
+        return {
+            'status': 'added', 
+            'movie_id': movie.id, 
+            'tmdb_id': movie.tmdb_id, 
+            'title': movie.title,
+            'message': 'Movie was successfully added to the DB.'
+        }
+
+    except Exception as e:
+        # Catch any unexpected errors during the process
+        return {
+            'status': 'error',
+            'message': f'An error occurred: {str(e)}'
+        }
+
+
+
 def add_series_from_tmdb(tmdb_id):
     """
-    Fetches a single series and it's content datas from TMDB API 
+    Fetches a single serie and it's content datas from TMDB API 
     Check if the series already exists otherwise saves it in the database.
+    It Will also then retrieve the Season and Episodes data from that serie.
+    One new Api call is made per season fetched (episodes data are retrieved within that call)
     """
     try:
         # search for the serie
@@ -136,15 +254,12 @@ def add_series_from_tmdb(tmdb_id):
 
             # pass on the new fields for episode
             for episode in number_of_episode:
-
                 # print(f"Episode: {episode}\n") # debug print
-
                 guest_names = []
                 directors = []
                 writers = []
 
                 # Extract credits from the combined response
-
                 guest_names = [
                     {
                         "name": guest["name"], 
@@ -153,11 +268,9 @@ def add_series_from_tmdb(tmdb_id):
                     for guest in episode.get("guest_stars", [])[:10] if guest["known_for_department"] == "Acting"
                 ]
 
-
                 directors = [director["name"] for director in episode.get("crew", [])[:3] if director["department"] == "Directing"]
                 # print(f"directors :{directors}\n") # debug print
                 
-
                 writers = [writer["name"] for writer in episode.get("crew", []) if writer["department"] == "Writing"]
                 # print(f"{writers}") # debug print
 
@@ -177,7 +290,7 @@ def add_series_from_tmdb(tmdb_id):
                 )
 
                 print(f"added episode: {new_episode}")
-                time.sleep(0.2)
+                time.sleep(0.1)
                 
             datas_season.append(
                 {
@@ -207,7 +320,3 @@ def add_series_from_tmdb(tmdb_id):
             'status': 'error',
             'message': f'An error occurred: {str(e)}'
         }
-
-
-# id for breakingbad  1396
-# id for black mirror  42009
