@@ -60,7 +60,7 @@ def list_serie(request):
 
 
 
-def detail_serie(request, pk):
+def serie_overview(request, pk):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
     try:
         if Serie:

@@ -23,11 +23,11 @@ def search(request):
 
         # Search through media content: movies, series
         try:
-
-            movies = Movie.objects.filter(title__icontains = search_query)
-            print(f"\n movies: {movies} ")
-            series = Serie.objects.filter(title__icontains = search_query)
-            print(f"\n series: {series} ")
+            if search_query:
+                movies = Movie.objects.filter(title__icontains = search_query)
+                series = Serie.objects.filter(title__icontains = search_query)
+                
+            print(f"\n movies: {movies}\n\n series: {series} ")
         
             context = {
                 'movies': movies,

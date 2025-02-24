@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="card-body">
-                    <a href="{% url 'serie:detail_serie' series_data.serie.id %}" style="text-decoration: none; color: #000;">
+                    <a href="{% url 'serie:serie_overview' series_data.serie.id %}" style="text-decoration: none; color: #000;">
                         <h5 class="card-title" style="text-align: center;">{{ series_data.serie.title }}</h5>
                     </a>
                     <br>
@@ -66,50 +66,38 @@
     </div>
     <br/>
 
-
-    <!-- first page -->
+    <!----- Pagination system ------->
     <div style="display: flex; justify-content: center;">
-
-        {% if serie_list.has_previous %}
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px  10px;">
-            <a href="?page=1" style="text-decoration: none; color: antiquewhite">&laquo first</a>
-        </button>
-        <!-- previous page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ serie_list.previous_page_number }}" style="text-decoration: none; color: antiquewhite;">&laquo Previous page</a>
-        </button>
-        {% endif %}
-
-    
-        <span class="current" style="color: antiquewhite; margin: 0px  10px 0px 10px;">
-            Page {{ serie_list.number }} of {{ serie_list.paginator.num_pages }}
-        </span>
-    
-        {% if serie_list.has_next %}
-        <!-- Next page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ serie_list.next_page_number }}" style="text-decoration: none; color: antiquewhite;">Next Page</a>
-        </button>
-
-        <!-- Last page -->
-        <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 10px;">
-            <a href="?page={{ serie_list.paginator.num_pages}}" style="text-decoration: none; color: antiquewhite;">Last Page</a>
-        </button>
-        {% endif %}
-    
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if serie_list.has_previous %}
+                <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                <!-- previous page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ serie_list.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                {% endif %}
+                
+                {% for num in serie_list.paginator.page_range %}
+                <!-- enumerate pages around current page -->
+                {% if num == serie_list.number %}
+                <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                {% elif num > serie_list.number|add:'-5' and num < serie_list.number|add:'5' %}
+                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if serie_list.has_next %}
+                <!-- Next page -->
+                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ serie_list.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                
+                <!-- Last page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ serie_list.paginator.num_pages}}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                {% endif %}
+                
+                <!-- Current page and how many pages are there -->
+                <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ serie_list.number }} of {{ serie_list.paginator.num_pages }}</h6></li>
+            </ul>
+        </nav>
     </div>
-    
 
 </div>
-
 {% endblock %}
-
-<!-- <div style="display: flex; justify-content: space-between;">
-    <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 30px;">
-        <a href="{% url 'serie:list_serie' page|add:-1 %}" style="text-decoration: none;">Previous Page</a>
-    </button>
-
-    <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
-        <a href="{% url 'serie:list_serie' page|add:1 %}" style="text-decoration: none;">Next Page</a>
-    </button>
-</div> -->
