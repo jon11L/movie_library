@@ -83,6 +83,3 @@ def fetch_popular_movies(page):
 #     except Exception as e:
 #         print(f"An error occurred while fetching the list of popular movies: {e}")
 #         return None
-    
-
-#     pass

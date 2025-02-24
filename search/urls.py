@@ -16,18 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.static import static
-from . import settings
+from . import views
 
-
+app_name = 'search'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('main.urls', namespace='main')),
-    path('user/', include('user.urls', namespace='user')),
-    path('movie/', include('movie.urls', namespace='movie')),
-    path('serie/', include('serie.urls', namespace='serie')),
-    path('user_library/', include('user_library.urls', namespace='user_library')),
-    path('search/', include('search.urls', namespace='search')),
+    path('', views.search, name='search'),
+    # path('results.html', views.search, name='results'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

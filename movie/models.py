@@ -50,6 +50,7 @@ class Movie(models.Model):
         db_table = 'movie'
         verbose_name = 'Movie'
         verbose_name_plural = 'Movies'
+        ordering = ['id']
 
     
     def __str__(self):

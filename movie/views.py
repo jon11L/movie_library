@@ -25,14 +25,15 @@ def list_movie(request): # , page     ----- was for the custom pagination
     # page -= 1  # as the first page need to consider taking the id's from 0.
 
     try:
-        if Movie:
-
-            # movies = Movie.objects.order_by('-id')[0 + 40*page:40 + 40*page]
-            
+        if Movie:            
             # paginator implementation
-            p = Paginator(Movie.objects.all().order_by('-id'), 20)
+            paginator = Paginator(Movie.objects.all().order_by('-id'), 20)
+
+            # Get the current page number from the GET request
             page = request.GET.get('page')
-            movie_list = p.get_page(page)
+            movie_list = paginator.get_page(page)
+
+            # total_num_pages = paginator.num_pages
 
             # Get the user's like content
             user_liked_movies = []
@@ -44,6 +45,8 @@ def list_movie(request): # , page     ----- was for the custom pagination
             context = {
                 'user_liked_movies': user_liked_movies,
                 'movie_list' : movie_list,
+                # 'total_num_pages': total_num_pages,
+                
                 }
 
             return render(request, 'movie/list_movie.html', context=context)

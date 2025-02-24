@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'movie',
     'serie',
     'user_library',
-    'import_data'
+    'import_data',
+    'search'
 ]
 
 MIDDLEWARE = [
