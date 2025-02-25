@@ -11,18 +11,11 @@
     <div style="display: flex; flex-wrap: wrap; margin-left: 25px;" >
         {% if movie_list %}
         {% for movie in movie_list %}
-        
         <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
 
             <!-- Form for the Like button -->
             <div style="display: flex; justify-content: space-between;  margin: 5px 0px 0 10px;">
                 <p><small>{{ movie.render_vote_average }}/10</small></p>
-
-                <!-- <div class="card-title">
-                    <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
-                        <h5>{{ movie.title }}</h5>
-                    </a>
-                </div> -->
 
                 <!-- like button feature -->
                 <button class="like-button"
@@ -55,7 +48,6 @@
                     </ul>
             </div>
         </div>
-
 
         {% endfor %}
         {% else %}
