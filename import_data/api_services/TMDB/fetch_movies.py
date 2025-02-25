@@ -31,15 +31,17 @@ def get_movie_data(tmdb_id):
 
 
 
-def fetch_popular_movies(page):
+def fetch_movies(page, endpoint):
     """
     Fetch paginated list of popular movies
     """
     tmdb_client = TMDBClient()
 
-    url = f"{tmdb_client.BASE_URL}/movie/popular?page={page}"
+    # url = f"{tmdb_client.BASE_URL}/movie/popular?page={page}"
+    url = f"{tmdb_client.BASE_URL}/movie/{endpoint}?page={page}"
     headers = tmdb_client.HEADERS
-    print(f"Url set up.\n")  # debug print
+
+    print(f"Url set up: {url}\n")  # debug print
     try:
 
         response = requests.get(url, headers=headers)
@@ -57,6 +59,17 @@ def fetch_popular_movies(page):
     
 
 
+
+# get url endpoint for top rated and upcoming 
+
+# https://api.themoviedb.org/3/movie/top_rated
+# https://api.themoviedb.org/3/movie/now_playing    # currently in theater
+
+
+
+# series url:
+# https://api.themoviedb.org/3/tv/top_rated
+# https://api.themoviedb.org/3/tv/on_the_air      # -- series that air in next 7days
 
 # def search_movies_by_title(title: str):
 #     """

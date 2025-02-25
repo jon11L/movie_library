@@ -28,11 +28,14 @@ def search(request):
                 series = Serie.objects.filter(title__icontains = search_query)
                 
             print(f"\n movies: {movies}\n\n series: {series} ")
+
+            total_found = movies.count() + series.count()
         
             context = {
                 'movies': movies,
                 'series' : series,
                 'query': search_query,
+                'total_found': total_found,
                 }
             return render(request,'search/search.html', context=context)
         

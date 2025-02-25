@@ -103,6 +103,7 @@ def add_movies_from_tmdb(tmdb_id):
             )
 
         print(f"\nMovie: '{movie_data.get('title')}' added to DB.\n")
+        time.sleep(0.2) # to not trigger rate limit
         return {
             'status': 'added', 
             'movie_id': movie.id, 
@@ -178,11 +179,11 @@ def add_series_from_tmdb(tmdb_id):
         datas_season = [] # to display some result in the json return.
         
         seasons = serie_data.get('seasons', [])
-        print(f"seasons: {seasons}") # get all seasons data from serie
+        # print(f"seasons: {seasons}") # get all seasons data from serie
 
         number_of_seasons = []
         number_of_seasons = [season["season_number"] for season in seasons]
-        print(f"\nnumber of seasons: {number_of_seasons}\n")
+        print(f"\nNumber of seasons: {number_of_seasons}\n")
 
         for season_number in number_of_seasons:
             print(f"trying season {season_number}") # debug print
@@ -268,10 +269,14 @@ def add_series_from_tmdb(tmdb_id):
                     for guest in episode.get("guest_stars", [])[:10] if guest["known_for_department"] == "Acting"
                 ]
 
-                directors = [director["name"] for director in episode.get("crew", [])[:3] if director["department"] == "Directing"]
+                directors = [
+                    director["name"] for director in episode.get("crew", [])[:3] if director["department"] == "Directing"
+                    ]
                 # print(f"directors :{directors}\n") # debug print
                 
-                writers = [writer["name"] for writer in episode.get("crew", []) if writer["department"] == "Writing"]
+                writers = [
+                    writer["name"] for writer in episode.get("crew", []) if writer["department"] == "Writing"
+                    ]
                 # print(f"{writers}") # debug print
 
                 new_episode = Episode.objects.create(
@@ -290,7 +295,7 @@ def add_series_from_tmdb(tmdb_id):
                 )
 
                 print(f"added episode: {new_episode}")
-                time.sleep(0.1)
+                time.sleep(0.1) # space time between episodes to avoid overcharging cpu
                 
             datas_season.append(
                 {

@@ -57,15 +57,16 @@ def get_season_details(tmdb_id: int, season_number: int):
 
 
 
-def fetch_popular_series(page):
+def fetch_series(page, endpoint):
     """
     Fetch paginated list of popular series
     """
     tmdb_client = TMDBClient()
 
-    url = f"{tmdb_client.BASE_URL}/tv/popular?page={page}"
+    # url = f"{tmdb_client.BASE_URL}/tv/popular?page={page}"
+    url = f"{tmdb_client.BASE_URL}/tv/{endpoint}?page={page}"
     headers = tmdb_client.HEADERS
-    print(f"Url set up.\n")  # debug print
+    print(f"Url set up: {url}\n")  # debug print
     try:
 
         response = requests.get(url, headers=headers)
