@@ -75,8 +75,6 @@ class Serie(models.Model):
         else:
             return 0
 
-
-
     def render_banner_poster(self):
         ''' return the Movie.banner_poster with a formatted string'''
         if self.banner_poster:
@@ -91,20 +89,19 @@ class Serie(models.Model):
             return image_poster
         return None
 
-# ["seasons"] will return a list of dictionnary with the seasons id in it ["i"]
 
 class Season(models.Model):
 
-    serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') # ["season_number"]
+    serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') 
     name = models.CharField(max_length=255, blank=True, null=True)
     season_number = models.IntegerField(blank=True, null=True)
     producer = models.JSONField(max_length=255, blank=True, null=True)
-    casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] [""guest_stars""] 
-    description = models.TextField(blank=True, null=True) # ["overview"]
-    image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
-    trailers = models.JSONField(max_length=11, blank=True, null=True) # ["videos", {}] ["results", []]
+    casting = models.JSONField(blank=True, null=True) 
+    description = models.TextField(blank=True, null=True) 
+    image_poster = models.URLField(blank=True, null=True) 
+    trailers = models.JSONField(max_length=11, blank=True, null=True) 
     # external sources ID
-    tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
+    tmdb_id = models.IntegerField(unique=True, null=True, blank=True)
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

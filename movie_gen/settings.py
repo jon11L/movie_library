@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'serie',
     'user_library',
     'import_data',
-    'search'
+    'search',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -127,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -147,3 +148,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
+
+
+# Celery Configuration Options
+CELERY_BROKER_URL = 'amqp://mong3eye:j_ArbCd07v@localhost:5672//'  # Use RabbitMQ as the message broker
+CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_MAX_LOOP_INTERVAL = 60 # look for change in DB every 60 seconds
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Berlin'

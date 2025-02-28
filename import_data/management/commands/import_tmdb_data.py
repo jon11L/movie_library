@@ -67,7 +67,6 @@ class Command(BaseCommand):
                     else:
                         self.stdout.write(self.style.WARNING(f"{tmdb_movie['title']} already exists in DB."))
 
-
                 # page_st += 1
                 time.sleep(2) # give some time between fetching a new page list of movies.
             self.stdout.write(self.style.SUCCESS(f"Imported list of popular movies successfully\n"))

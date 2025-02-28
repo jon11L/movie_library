@@ -22,7 +22,6 @@ from . import views
 
 urlpatterns = [
     path('list_movie/', views.list_movie, name='list_movie'),
-    # path('list_movie/<int:page>', views.list_movie, name='list_movie'), # was for custom pagination
     path('movie_overview/<int:pk>', views.movie_overview, name='movie_overview'),
 
     # path('edit_movie/<int:pk>', views.edit_movie, name='edit_movie'),

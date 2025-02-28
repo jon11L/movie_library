@@ -27,8 +27,6 @@ def get_movie_data(tmdb_id):
     except Exception as e:
         print(f"Error getting movie details: {e}")
         return None
-    
-
 
 
 def fetch_movies(page, endpoint):
@@ -56,7 +54,6 @@ def fetch_movies(page, endpoint):
     except Exception as e:
         print(f"An error occurred while fetching the list of popular movies: {e}")
         return None
-    
 
 
 
