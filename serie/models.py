@@ -4,6 +4,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Serie(models.Model):
 
+    # External unique identifier / sources for api references
+    tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
+    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above
+
     # core details
     original_title = models.CharField(max_length=255, blank=True, null=True) # if title not english get from: ["original_name"]
     title = models.CharField(max_length=255) # ["name"]
@@ -25,9 +29,6 @@ class Serie(models.Model):
     image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
     banner_poster = models.URLField(blank=True, null=True) # ["backdrop_path"]
     status = models.CharField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
-    # External unique identifier / sources for api references
-    tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above
 
     # Time stamp
     added_at = models.DateTimeField(auto_now_add=True)
@@ -88,6 +89,11 @@ class Serie(models.Model):
             image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
             return image_poster
         return None
+    
+    def render_average_time(self):
+        '''return the Serie' length in average per episode time
+        '''
+        average_length = self.seasons.episodes.aggregate(models.Avg('episodes__length'))['episodes__length__avg']
 
 
 class Season(models.Model):
@@ -115,7 +121,7 @@ class Season(models.Model):
 
 
     def __str__(self):
-        return f"{self.season_number}"
+        return f"season: {self.season_number} - {self.name}"
 
     def render_casting(self):
         '''return the Movie.casting attribute in without quotes and [],
@@ -125,7 +131,6 @@ class Season(models.Model):
             casting = ', '.join(self.casting)
             return casting
         return 'N/a'
-
 
     def render_trailer(self):
         ''' concatenates the field "trailers" to a base url'''

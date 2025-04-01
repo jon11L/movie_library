@@ -8,7 +8,7 @@ load_dotenv()
 
 class TMDBClient:
     
-    BASE_URL = "https://api.themoviedb.org/3/"
+    BASE_URL = "https://api.themoviedb.org/3"
 
     def __init__(self):
         '''
@@ -38,7 +38,7 @@ class TMDBClient:
             time = datetime.datetime.now() # to add some logging purposes
 
             print(response.text, "\n") # log the response
-            print(f"API call was made on the {time}.   \n{response}") # log the time taken to call the API
+            print(f"API call was made on the {time}.\n{response}") # log the time taken to call the API
 
             return response.json()
 

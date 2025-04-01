@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
-from django.http import JsonResponse
+# from django.http import JsonResponse
 # from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
 
@@ -28,7 +28,6 @@ def list_movie(request): # , page     ----- was for the custom pagination
         if Movie:            
             # paginator implementation
             paginator = Paginator(Movie.objects.all().order_by('-id'), 20)
-
             # Get the current page number from the GET request
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)
@@ -46,7 +45,6 @@ def list_movie(request): # , page     ----- was for the custom pagination
                 'user_liked_movies': user_liked_movies,
                 'movie_list' : movie_list,
                 # 'total_num_pages': total_num_pages,
-                
                 }
 
             return render(request, 'movie/list_movie.html', context=context)
@@ -55,7 +53,7 @@ def list_movie(request): # , page     ----- was for the custom pagination
             return f'No movies found in the database'
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
-        print(f" error :\n\n{e}")
+        print(f" error :\n{e}")
 
 
 

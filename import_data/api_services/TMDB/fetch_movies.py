@@ -2,8 +2,7 @@ from .base_client import TMDBClient
 
 import requests
 
-
-def get_movie_data(tmdb_id):
+def get_movie_data(tmdb_id: int):
     ''' Finds and Return the datas for single movie.
     Get movie data details from the TMDB API using the 'movie_id' parameter.
     Also, the  extra credits datas are being retrieved using '?append_to_response=credits'
@@ -12,84 +11,53 @@ def get_movie_data(tmdb_id):
     tmdb_client = TMDBClient() # instance of TMDB to create the authorization and Token retrieval.
 
     # append credits to the movie to get those extra datas about casting and videos for the youtube trailer id.
-    url = f"{tmdb_client.BASE_URL}movie/{tmdb_id}?append_to_response=videos,credits"
+    url = f"{tmdb_client.BASE_URL}/movie/{tmdb_id}?append_to_response=videos,credits"
     headers = tmdb_client.HEADERS # send the headers with bearer Token
+    print(f"Url called: {url}")  # debug print
 
     try:
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
-            print("response api ok!")
+            print(f"response api ok! Status: {response.status_code}")
+            # print("---------")
             return response.json()
         else:
+            print(f"Error: {response.status_code}")
+            print("---------")
             return None
 
     except Exception as e:
         print(f"Error getting movie details: {e}")
+        print("---------")
         return None
 
 
-def fetch_movies(page, endpoint):
+def get_movie_list(page: int, endpoint: str):
     """
     Fetch paginated list of popular movies
     """
     tmdb_client = TMDBClient()
 
-    # url = f"{tmdb_client.BASE_URL}/movie/popular?page={page}"
-    url = f"{tmdb_client.BASE_URL}/movie/{endpoint}?page={page}"
+    # add date at the end of url for the updated movies call.
+    #  Date should only be for the update not for other endpoints.. need to work with that constraint
+    url = f"{tmdb_client.BASE_URL}/movie/{endpoint}?page={page}" # &start_date=2025-03-22&end_date=2025-03-23
     headers = tmdb_client.HEADERS
 
-    print(f"Url set up: {url}\n")  # debug print
+    print(f"Url called: {url}\n")  # debug print
     try:
-
         response = requests.get(url, headers=headers)
         print(f"API call made.\n")  # debug print
         if response.status_code == 200:
-            print(f"Response received. success\n")  # debug print
+            print(f"Response received. success: {response.status_code}\n")  # debug print
+            print("---------")
             return response.json()
         else:
             print(f"Error: {response.status_code}\n")  # debug print
+            print("---------")
             return None
     
     except Exception as e:
         print(f"An error occurred while fetching the list of popular movies: {e}")
+        print("---------")
         return None
-
-
-
-# get url endpoint for top rated and upcoming 
-
-# https://api.themoviedb.org/3/movie/top_rated
-# https://api.themoviedb.org/3/movie/now_playing    # currently in theater
-
-
-
-# series url:
-# https://api.themoviedb.org/3/tv/top_rated
-# https://api.themoviedb.org/3/tv/on_the_air      # -- series that air in next 7days
-
-# def search_movies_by_title(title: str):
-#     """
-#     Search for movies by title, if the movie is not found in the database,
-#     fetch the details from the TMDB API and add it to the database.
-#     """
-
-#     # TODO: call for a search query
-#     # get the id reference
-#     # get the details by the id
-#     # add it to the database
-
-#     # if not already stored in the database look for it with TMDB api 
-#     tmdb_client = TMDBClient()
-
-#     url = f"{tmdb_client.BASE_URL}/search/movie?query={title}"
-#     headers = tmdb_client.HEADERS
-#     print(f"Url set up.\n")  # debug print
-#     try:
-#         response = requests.get(url, headers=headers)
-
-# # use: ["results"] ["id"] 
-
-#     except Exception as e:
-#         print(f"An error occurred while fetching the list of popular movies: {e}")
-#         return None
