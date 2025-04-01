@@ -48,7 +48,7 @@ def get_serie_data(tmdb_id: int):
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                print(f"response api (serie) ok! -- Status: {response.status_code}")
+                print(f"response api ok! -- Status: {response.status_code}")
                 return response.json()
             
             # if Url response fails, it try agains and to catch exception why it failed 
@@ -56,7 +56,7 @@ def get_serie_data(tmdb_id: int):
 
         except requests.exceptions.RequestException as e:
             print(f"Request exception Error getting serie details: {e}")
-
+            return None
         except Exception as e:
             print(f"(Exception) Error getting serie details: {e}")
             return None

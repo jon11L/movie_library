@@ -153,11 +153,11 @@ MEDIA_URL = '/media/'
 
 
 # ------------- Configuration  for Celery and RabbitMQ --------------------------------
-rabbitmq_pw = os.getenv('RABBITMQ_PASSWORD')
+RABBITMQ_USER = os.getenv('RABBITMQ_USER')
+RABBITMQ_PW = os.getenv('RABBITMQ_PASSWORD')
 
 # Celery Configuration Options
-# CELERY_BROKER_URL = 'amqp://mong3eye:j_ArbCd07v@localhost:5672//'  # Use RabbitMQ as the message broker
-CELERY_BROKER_URL = f'amqp://mong3eye:{rabbitmq_pw}@localhost:5672//'  # Use RabbitMQ as the message broker
+CELERY_BROKER_URL = f'amqp://{RABBITMQ_USER}:{RABBITMQ_PW}@localhost:5672//'  # Use RabbitMQ as the message broker
 
 
 CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
