@@ -109,25 +109,13 @@ def save_or_update_movie(tmdb_id: int):
 
         print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
         print("---------")
-        time.sleep(0.3) # to not trigger rate limit
+        time.sleep(0.5) # to not trigger rate limit
         return (movie, created)
 
     except Exception as e:
         print(f"an error occurred while saving/updating movie: '{movie}' ", str(e))
         return None, False
-        # Catch any unexpected errors during the process
-        # return {
-        #     'status': 'error',
-        #     'message': f'An error occurred: {str(e)}'
-        # }
-    
-        # return {
-        #     'status': 'added', 
-        #     'movie_id': movie.id, 
-        #     'tmdb_id': movie.tmdb_id, 
-        #     'title': movie.title,
-        #     'message': 'Movie was successfully added to the DB.'
-        # }
+
 
 
 

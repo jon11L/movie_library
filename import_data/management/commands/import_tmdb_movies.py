@@ -54,10 +54,13 @@ class Command(BaseCommand):
 
         pages_to_fetch = random.sample(range(1, max_pages + 1), 5)  # Randomly select 5 pages
 
+        # Track the number of movies imported and skipped
+        created = 0
         imported_count = 0  # Tracks how many movies were imported
         skipped_count = 0  # Tracks how many movies already existed
 
         try:
+            # Loop pages 
             for page in pages_to_fetch:
                 self.stdout.write(f"----------------------------") # debug print
                 self.stdout.write(f"Fetching movies from '{selected_endpoint}' list, With page n: {page}\n") # debug print
@@ -67,11 +70,14 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.ERROR(f"No movie list found... Check the url for possible error (or outside range)."))
                     continue  # Skip this page if no movies are found
 
+                # Fetch and process each movie from the selected endpoint
                 self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
                 for movie in list_movies['results']:
+                    imported_count += 1
                     movie_id = movie['id']
                     movie_title = movie['title']
                     adult = movie['adult']  
+                    self.stdout.write(f"passing movie {imported_count} in {len(list_movies['results']*5)}")
                     self.stdout.write(f"Importing Movie title: {movie_title} (ID: {movie_id})\n") # debug print
 
                     if adult:
@@ -83,7 +89,7 @@ class Command(BaseCommand):
                     if not Movie.objects.filter(tmdb_id=movie_id).exists():
                         try:
                             save_or_update_movie(movie_id)
-                            imported_count += 1
+                            created += 1
                             # self.stdout.write(self.style.SUCCESS(f"Imported movie: **{new_movie['title']}** \n"))  # not sure it is imported if already exist
                             # logger.info(f"Imported: {movie_title} (ID: {movie_id})")
                         except Exception as e:
@@ -98,9 +104,8 @@ class Command(BaseCommand):
                         # logger.info(f"Skipped (Already in DB): {movie_title}")
 
                 time.sleep(5) # give some time between fetching a new page list of movies.
-            self.stdout.write(self.style.SUCCESS(f"Imported list of **{selected_endpoint}** series done!\n"))
             self.stdout.write(self.style.SUCCESS(f"Import of movies successfully completed: {imported_count} New, {skipped_count} Skipped.\n"))
-            logger.info(f"SUMMARY: {imported_count} movies added -- {skipped_count}  skipped.")
+            logger.info(f"SUMMARY: {created} movies added -- {skipped_count}  skipped.")
 
         except Exception as e:
             # messages.error(request, "the page seem to experience some issue, please try again later")

@@ -69,23 +69,22 @@ class Command(BaseCommand):
 
             self.stdout.write("Looping through the list of updated movies and pass the Ids to fetch the datas.\n")
             for tmdb_movie_id in updated_movie_list['results']: # add a random index to go through
+                imported_count += 1
                 tmdb_id = tmdb_movie_id['id']
                 adult = tmdb_movie_id['adult']
-                print(f"movie adult: '{adult}'.")
+                # print(f"movie adult: '{adult}'.") # debug print
+                print(f"passing movie {imported_count} in {len(updated_movie_list['results'])}")
                 if adult:
-                    self.stdout.write(self.style.WARNING(f"Movie {tmdb_id} is marked as adult content. Skipping..."))
+                    self.stdout.write(self.style.WARNING(f"Movie {tmdb_id} is marked as adult content."))
+                    self.stdout.write(self.style.WARNING(f"Skipping...."))
                     skipped_count += 1
                     continue
+                if imported_count > 30:
+                    break # stop the iteration to fetch for updated movies.
 
-                imported_count += 1
-                print(f"passing movie {imported_count} in {len(updated_movie_list['results'])}")
+
                 try:
-                    if imported_count >= 30:
-                        break # stop the iteration to fetch for updated movies.
-
                     new_movie, is_created = save_or_update_movie(tmdb_id)
-
-
                     # check if the movie worked
                     if new_movie and is_created:
                         created += 1
@@ -100,23 +99,11 @@ class Command(BaseCommand):
                         skipped_count += 1
                         print("---------")
 
-                    # self.stdout.write(f" Movie {imported_count} in {len(updated_movie_list['results'])}") # debug print
-                    # save_or_update_movie(tmdb_id)
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"Error importing {new_movie['title']}: {e}"))
                     continue
 
-                    # Check if movie exists
-                    # if not Movie.objects.filter(tmdb_id=tmdb_id).exists():
-                    #     try:
-                    #         add_movies_from_tmdb(tmdb_id)
-                    #         self.stdout.write(self.style.SUCCESS(f"Imported movie: **{tmdb_movie['title']}** \n"))  # not sure it is imported if already exist
-                    #     except Exception as e:
-                    #         self.stdout.write(self.style.ERROR(f"Error importing {tmdb_movie['title']}: {e}"))
-                    # else:
-                    #     self.stdout.write(self.style.WARNING(f"{tmdb_movie['title']} already exists in DB."))
-
-            time.sleep(2) # give some time between fetching a new page list of movies.
+            time.sleep(3) # give some time between fetching a new page list of movies.
             self.stdout.write(self.style.SUCCESS(f"Imported list of updated movies successfully\n"))
             logger.info(f"{imported_count} movie imported.")
             logger.info(f"SUMMARY: {updated} updated movies -- {created} created movies. -- {skipped_count} skipped/failed movies")
