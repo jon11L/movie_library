@@ -1,0 +1,118 @@
+import requests
+import logging
+import time
+import datetime
+import random
+import os
+
+from django.core.management.base import BaseCommand
+
+# from serie.models import Serie
+from import_data.api_services.TMDB.fetch_series import get_series_list
+from import_data.services import save_or_update_series
+
+# Configure Logging
+logger = logging.getLogger(__name__)
+
+LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+os.makedirs(LOG_DIR, exist_ok=True)  # Ensure the directory exists
+
+LOG_FILE = os.path.join(LOG_DIR, "tmdb_import.log")
+
+
+logging.basicConfig(
+    filename=LOG_FILE,
+    filemode="a",  # Append to existing log file
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
+
+class Command(BaseCommand):
+    help = 'Import updated series from TMDB.'
+
+    def handle(self, *args, **kwargs):
+        self.get_updated_series()
+
+    def get_updated_series(self):
+        """
+        Bulk import strategy:
+        1. Fetch a page of updated series
+        2. Loop through each serie to query their data 
+        3. Update the series 
+        """
+        endpoint = "changes"
+
+        # calculate date up to two weeks before now for the list of updated movies
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        two_weeks_ago = (datetime.datetime.now() - datetime.timedelta(days=14)).strftime("%Y-%m-%d")
+        # https://api.themoviedb.org/3/tv/changes?page=1&start_date=2025-03-18&end_date=2025-03-19
+
+        # self.stdout.write(f"Fetching series from '{endpoint}' endpoint, from {two_weeks_ago} to {today}\n") # debug print
+
+        page = 3
+        imported_count = 0  # Tracks how many series were imported and updated
+        created = 0  # Tracks how many movies were created
+        updated = 0  # .................... updated
+        skipped_count = 0
+        try:
+            # for page in pages_to_fetch:
+            self.stdout.write(f"Fetching series from '{endpoint}' endpoint, With page: {page}\n") # debug print
+
+            updated_serie_list = get_series_list(page, endpoint)
+            # list_page = get_series_list(page, endpoint)
+
+            # ----to implement later, for randomnes page selection through updated list-------
+            # page = random.randint(1, list_page['total_pages'])  # Randomly select a page available in the updates data
+            # # updated_serie_list = get_series_list(page, endpoint, two_weeks_ago, today)
+            # print(f"page selected: '{page}'")
+            # updated_serie_list = get_series_list(page, endpoint)
+
+            if not updated_serie_list:
+                self.stdout.write(self.style.ERROR(f" The query could not fetch a list of updated series, check the url.\n"))  # debug print
+
+            # self.stdout.write("Looping through the page of updated series and pass the Ids to get the datas.\n")
+            for tmdb_serie_id in updated_serie_list['results']:
+                # serie_count += 1  # Increment the count of series processed
+
+                if imported_count >= 4:
+                    self.stdout.write(f"Breaking after XX series for testing purpose.\n")
+                    break
+                imported_count += 1
+
+                print(f"passing serie {imported_count} in {len(updated_serie_list)}")
+                tmdb_id = tmdb_serie_id['id']
+                # tmdb_title = tmdb_movie['title']
+                self.stdout.write(f" Serie id: {tmdb_id}") # debug print
+                try:
+                    new_serie, is_created = save_or_update_series(tmdb_id)
+                    time.sleep(2) # give some time between fetching a new page list of movies.
+
+                    if new_serie and is_created:
+                        created += 1
+                        self.stdout.write(self.style.SUCCESS(f"Imported! Created new serie: **{new_serie}**"))
+                        print("---------")
+                    elif new_serie and not is_created:
+                        updated += 1
+                        self.stdout.write(self.style.SUCCESS(f"Imported! Updated serie: **{new_serie}** \n"))
+                        print("---------")
+                    else:
+                        self.stdout.write(self.style.WARNING(f"**failed to register in DB.**"))
+                        skipped_count += 1
+                        print("---------")
+
+                except Exception as e:
+                    # self.stdout.write(self.style.ERROR(f"Error importing {tmdb_serie_id}: {e}"))
+                    logger.error(f"Error importing {tmdb_serie_id}: {e}")
+
+            self.stdout.write(self.style.SUCCESS(f"Imported list ({imported_count}) of series updated successfully\n"))
+            # logger.info(f"SUMMARY: {imported_count} series updated.")
+            # self.stdout.write(f"Created: {created} \nUpdated: {updated} \nSkipped: {skipped_count}")  # debug print
+            logger.info(f"SUMMARY: {updated} updated series -- {created} created series. -- {skipped_count} skipped/failed series")
+
+            self.stdout.write(f"-----") # debug print
+
+
+        except Exception as e:
+            # messages.error(request, "the page seem to experience some issue, please try again later")
+            self.stdout.write(self.style.WARNING(f" error :{e}"))

@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
-from django.http import JsonResponse
+# from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-from .models import Serie
+from .models import Serie, Season
 from user_library.models import Like
 # from .services import add_series_from_tmdb
 # from api_services.TMDB.fetch_series import fetch_popular_series
@@ -15,26 +15,10 @@ def list_serie(request):
     '''
     try:
         if Serie:
-            series_data = []
-            series = Serie.objects.all().order_by('-id')
-
-            # load the extra information of a series from Season and Episode 
-            for serie in series:
-                last_season = serie.seasons.order_by('-season_number').first()
-
-                if last_season:
-                    last_episode = last_season.episodes.order_by('-episode_number').first() # issue comes from here
-
-                # Series_data contain the serie and Season,Episode information 
-                series_data.append({
-                    'serie': serie,
-                    'last_season': last_season,
-                    'last_episode': last_episode
-                })
-
             # paginator implementation
-            p = Paginator(series_data, 20)
-            page = request.GET.get('page')
+            p = Paginator(Serie.objects.all().order_by('-id'), 20)
+            # Get the current page number from the GET request
+            page = request.GET.get('page') 
             serie_list = p.get_page(page)
 
             # Get the user's like content
@@ -56,7 +40,7 @@ def list_serie(request):
         
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
-        print(f" error :{e}")
+        print(f" error :\n{e}")
 
 
 
@@ -76,11 +60,13 @@ def serie_overview(request, pk):
                                             ).values_list('object_id', flat=True)
 
             print(f"user_liked :{user_liked_serie}") # debug print
+            # Get the seasons
+            # seasons = serie.seasons.all()
 
             context = {
                 'serie': serie,
-                'user_liked_serie': user_liked_serie
-
+                'user_liked_serie': user_liked_serie,
+                # 'seasons': seasons
                 }
             
             return render(request,'serie/detail_serie.html', context=context)

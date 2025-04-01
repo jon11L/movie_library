@@ -114,7 +114,6 @@ class Movie(models.Model):
         else:
             return 0
         
-
     def render_origin_country(self):
         '''return the Movie.origin_country with a comma-separated string'''
         if self.origin_country:

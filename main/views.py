@@ -35,8 +35,8 @@ def home(request):
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
         
-        print(f"\n user liked:\n\n{user_liked_movies}\n")
-        print(f"\n user liked:\n\n{user_liked_series}\n")
+        print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
+        print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
 
         context = {
             'movies': movies,

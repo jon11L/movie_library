@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'user_library',
     'import_data',
     'search',
+    'comment',
     'django_celery_beat',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -150,12 +152,30 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 
+# ------------- Configuration  for Celery and RabbitMQ --------------------------------
+rabbitmq_pw = os.getenv('RABBITMQ_PASSWORD')
+
 # Celery Configuration Options
-CELERY_BROKER_URL = 'amqp://mong3eye:j_ArbCd07v@localhost:5672//'  # Use RabbitMQ as the message broker
+# CELERY_BROKER_URL = 'amqp://mong3eye:j_ArbCd07v@localhost:5672//'  # Use RabbitMQ as the message broker
+CELERY_BROKER_URL = f'amqp://mong3eye:{rabbitmq_pw}@localhost:5672//'  # Use RabbitMQ as the message broker
+
+
 CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_MAX_LOOP_INTERVAL = 60 # look for change in DB every 60 seconds
+
+# heartbeat 0 should fix the issue with ''  Couldn't ack 1, reason:ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None) ''
+CELERY_BROKER_HEARTBEAT = 0
+CELERY_TASK_ACKS_LATE = True  # Ensures tasks are acknowledged only when completed
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Berlin'
+
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 500000,
+    # 'heartbeat': 0,  
+    # 'connection_timeout': 5000
+}
+
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
