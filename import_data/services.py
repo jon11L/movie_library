@@ -211,7 +211,6 @@ def save_or_update_series(tmdb_id):
             # initialize json fields
             producers =[]
             cast = []
-            youtube_trailer = []
             spoken_languages = []
             youtube_trailer = []
 
@@ -222,7 +221,7 @@ def save_or_update_series(tmdb_id):
                         "name": member["name"], 
                         "role": member["character"]
                     }
-                    for member in credits_data.get("cast", [])[:10] if member["known_for_department"] == "Acting"
+                    for member in credits_data.get("cast", [])[:10] if member.get("known_for_department") == "Acting"
                 ] 
 
                 producers = [
@@ -230,7 +229,7 @@ def save_or_update_series(tmdb_id):
                         "name": member["name"], 
                         "job": member["job"]
                     }
-                    for member in credits_data.get("crew", [])[:8] if member["department"] == "Production"
+                    for member in credits_data.get("crew", [])[:8] if member.get("department") == "Production"
                 ]
 
             # Extract trailer from the combined response
@@ -305,16 +304,17 @@ def save_or_update_series(tmdb_id):
                         "role": guest["character"]
                     }
                     for guest in episode.get("guest_stars", [])[:10] 
-                    if guest["known_for_department"] == "Acting"
+                    if guest.get("known_for_department") == "Acting"
                 ]
 
                 directors = [
                     director["name"] for director in episode.get("crew", [])[:3]
-                    if director["department"] == "Directing"
+                    if director.get("department") == "Directing"
                     ]
                 
                 writers = [
-                    writer["name"] for writer in episode.get("crew", [])[:4] if writer["department"] == "Writing"
+                    writer["name"] for writer in episode.get("crew", [])[:4]
+                    if writer.get("department") == "Writing"
                     ]
                 # print(f"directors :{directors}\n") # debug print
                 # print(f"{writers}") # debug print
@@ -332,7 +332,6 @@ def save_or_update_series(tmdb_id):
                         writer = writers,
                         banner_poster = episode.get('still_path'),
                         tmdb_id = episode.get('id'),
-
                     )
 
                     if created:
