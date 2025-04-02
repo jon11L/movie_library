@@ -10,21 +10,29 @@ from serie.models import Serie
 from import_data.api_services.TMDB.fetch_series import get_series_list
 from import_data.services import save_or_update_series
 
+
 # Configure Logging
-logger = logging.getLogger(__name__)
-
-LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)  # Ensure the directory exists
-
 LOG_FILE = os.path.join(LOG_DIR, "tmdb_import.log")
 
-
 logging.basicConfig(
-    filename=LOG_FILE,
-    filemode="a",  # Append to existing log file
     format="%(asctime)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+
+# Create a logger instance for this module
+logger = logging.getLogger(__name__)
+
+# Create a FileHandler and attach it to the logger
+file_handler = logging.FileHandler(LOG_FILE, mode="a")
+file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+logger.addHandler(file_handler)
+
+# Prevent duplicate logs (avoid propagation to the root logger)
+logger.propagate = False
+
 
 class Command(BaseCommand):
     help = 'Import series data from TMDB'
@@ -39,14 +47,16 @@ class Command(BaseCommand):
         2.  loop through each serie to query their data 
         3. Check if the series already exists otherwise saves it in the database.
         """
+        # instantiate variable to keep track of import and retry policy
+        MAX_RETRIES = 3
+        attempt = 0
+        imported_count = 0  # Tracks how many series were imported
+        skipped_count = 0  # Tracks how many series already existed
+        created = 0
 
         endpoint = ("popular", "top_rated", "on_the_air")
+
         selected_endpoint = random.choice(endpoint)
-
-        imported_count = 0  # Tracks how many movies were imported
-        skipped_count = 0  # Tracks how many movies already existed
-        serie_count = 0
-
         # Define the range of pages to fetch
         # set on max available with the corresponding query of TMDB
         if  selected_endpoint == "on_the_air":
@@ -55,52 +65,77 @@ class Command(BaseCommand):
             max_pages = 100
         else:
             max_pages = 500
-            # logger.info(f"Fetching series from '{selected_endpoint}' endpoint")  # debug print
 
-        # page = random.sample(range(1, max_pages + 1), 1)  # Randomly select a page
         page = random.randint(1, max_pages)  # Randomly select a page
 
-        try:
-            self.stdout.write(f"Fetching series from '{selected_endpoint}' list, With page n: {page}\n") # debug print
-            list_series = get_series_list(page, selected_endpoint)
+        # retry feature if the url page brings error.
+        while attempt < MAX_RETRIES:
+            try:
+                self.stdout.write(f"Fetching series from '{selected_endpoint}' list, With page n: {page}\n") # debug print
+                list_series = get_series_list(page, selected_endpoint)
 
-            if not list_series:
-                self.stdout.write(self.style.ERROR(f"No serie page found... Check the url for possible error (or outside range)."))
+                if not list_series:
+                    self.stdout.write(self.style.ERROR(f"No serie page found... Check the url for possible error (or outside range)."))
+                    attempt += 1
+                    self.stdout.write(f"Retrying... Attempt {attempt}/{MAX_RETRIES} in {attempt*3}seconds")
+                    time.sleep(attempt*3)  # wait for 1 second before retrying
+                    continue
 
-            self.stdout.write("Processing the list of series to get the series datas.\n")
-            for new_serie in list_series['results']:
-                tmdb_id = new_serie['id']
-                #------- temporary break here after 4 series to check feature is going well with adding episode--------
-                if serie_count >= 5:
-                    self.stdout.write(f"Breaking after 5 series for testing purpose.\n")
-                    break
-                serie_count += 1
+                break # if list_series exist then break out of the Loop
 
-                # tmdb_title = new_serie['title']
-                self.stdout.write(f"-----") # debug print
-                self.stdout.write(f"Importing *Serie {serie_count} of {len(list_series['results'])}* (id: {tmdb_id})") # debug print
+            except Exception as e:
+                self.stdout.write(f"(Exception) Error getting updated series: {e}")
+                attempt += 1
+                self.stdout.write(f"Retrying... Attempt {attempt}/{MAX_RETRIES} in {attempt*3}seconds")
+                time.sleep(attempt*3)  # wait for 1 second before retrying
 
-                # Check if serie exists
-                if not Serie.objects.filter(tmdb_id=tmdb_id).exists():
-                    try:
-                        save_or_update_series(tmdb_id)
-                        imported_count += 1
-                        self.stdout.write(f"Imported serie: {new_serie['name']}\n")  # not sure it is imported if already exist
-                        self.stdout.write("-----------")  # not sure it is imported if already exist
-                    except Exception as e:
-                        self.stdout.write(self.style.ERROR(f"Error importing {new_serie['name']}: {e}\n"))
-                else:
-                    self.stdout.write(self.style.WARNING(f"{new_serie['name']} already exists in DB.\n"))
+        # If all retries failed, exit early
+        if attempt == MAX_RETRIES:
+            self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated series. -- Task ending.\n"))
+            return  
+
+        # give some random to index to look through for the series list.
+        r_index = random.randint(0, len(list_series['results']) - 4) 
+
+        self.stdout.write("Processing the list of series to get the individual serie's data.\n")
+        for new_serie in list_series['results'][r_index:r_index+4]:
+            imported_count += 1
+            
+            #------- temporary break here after 5 series to check feature is going well with adding episode--------
+            if imported_count > 4:
+                self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
+                break
+
+            # tmdb_title = new_serie['title']
+            self.stdout.write(f"-----") # debug print
+            self.stdout.write(f"Importing *Serie {imported_count} of {len(list_series['results'])}* (id: {new_serie['id']})") # debug print
+            # serie_id = new_serie['id']
+
+            # Check if serie exists
+            if not Serie.objects.filter(tmdb_id=new_serie['id']).exists():
+                try:
+                    save_or_update_series(new_serie['id'])
+                    created += 1
+                    self.stdout.write(f"Imported serie: {new_serie['name']}\n")  # not sure it is imported if already exist
+                    self.stdout.write("-----------")  # not sure it is imported if already exist
+                except Exception as e:
+                    self.stdout.write(f"Error importing {new_serie['id']}- {new_serie['name']}: {e}")
                     skipped_count += 1
+                    continue
+            else:
+                self.stdout.write(self.style.WARNING(f"{new_serie['name']} already exists in DB.\n"))
+                self.stdout.write(f"Skipping....")
+                skipped_count += 1
+                print("-----------")
 
-                # give some time between fetching a new serie.
-                time.sleep(3) 
+            # give some time between fetching new series.
+            time.sleep(3) 
 
-            self.stdout.write(self.style.SUCCESS(f"Imported list of **{selected_endpoint}** series done!\n"))
-            logger.info(f"SUMMARY: {imported_count} series imported, {skipped_count} series skipped.")
+        self.stdout.write(self.style.SUCCESS(f"Imported list of **{selected_endpoint}** series done!\n"))
+        logger.info(f"SUMMARY: Series -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
+        self.stdout.write(f"SUMMARY: Series -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
+        self.stdout.write(f"-----") # debug print
 
-        except Exception as e:
-            self.stdout.write(self.style.WARNING(f" error :{e}"))
 
 
 
