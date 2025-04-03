@@ -244,10 +244,6 @@ def save_or_update_series(tmdb_id):
                         }
                     )
 
-            # print(f"***Check serie works... for serie or serie.title***") # log print
-            # print(f"serie: {serie}") # log print
-
-        
             # TODO
             # check what seasons already exist
             # check if current seasons has more than one season ahead, skip
@@ -273,17 +269,15 @@ def save_or_update_series(tmdb_id):
                 print(f"Created new season: *{season}* to DB\n")
             else:
                 print(f"Updated existing season: *{season}*\n")
-            # print(f"Season {season.name}: '{season_number}' added to DB.\n")# log print
 
-            # ----------- Importing episodes-----------------:
+            # ---------------------- Importing episodes-------------------------:
 
             # to update episode instance creation with Bulkupdate / bulk create instead of update or create
             episode_objects = [] # instantiate a list for episodes to create in bulk (saves on query) // Bulk purpose 
             update_objects = [] # list for exisitng episode to update // Bulk purpose
             
-            list_episodes = season_data.get('episodes', [])
-            print(f" total episodes: {len(list_episodes)}")
-
+            list_episodes = season_data.get('episodes', [])# all episodes here
+            print(f"Season contains {len(list_episodes)} episodes: ")
 
             datas_season.append(
                 [season_data.get("name"), f"total episodes: {len(list_episodes)}"]
@@ -318,7 +312,9 @@ def save_or_update_series(tmdb_id):
                     ]
                 # print(f"directors :{directors}\n") # debug print
                 # print(f"{writers}") # debug print
+                
                 try:
+                # --// Need to update episode query as a bulk create to avoide many queries
 
                     episode, created = Episode.objects.update_or_create(
                         season = season,
@@ -347,7 +343,6 @@ def save_or_update_series(tmdb_id):
                     print(f"An error occurred while saving/updating episode: {str(e)}")
                     print(f"Episode: '{episode.get('name', 'Unknown Title')}' failed to add fully to DB.\n")# log print
                     print("----------")
-                # --// Need to update episode query as a bulk create to avoide many queries
                 time.sleep(0.1) # space time between episodes to avoid overcharging cpu
 
 

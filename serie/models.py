@@ -142,12 +142,7 @@ class Season(models.Model):
 
 class Episode(models.Model):
 
-    season = models.ForeignKey(
-        Season,
-        on_delete=models.CASCADE,
-        related_name='episodes'
-        )
-
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.PositiveSmallIntegerField(blank=True, null=True)# loop through ["episodes"] first then: ["episode_number"]
     title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
     description = models.TextField(blank=True, null=True) # ["overview"]
