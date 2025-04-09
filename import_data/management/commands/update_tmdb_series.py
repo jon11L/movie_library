@@ -138,7 +138,7 @@ class Command(BaseCommand):
                 logger.error(f"Error importing {tmdb_serie_id}: {e}")
 
         self.stdout.write(self.style.SUCCESS(f"Imported list of  updated series successful!\n"))
-        self.stdout.write(f"{imported_count-1} serie imported.")
+        self.stdout.write(f"{imported_count} serie imported.")
         logger.info(f"SUMMARY: Series -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"SUMMARY: Series -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
@@ -150,4 +150,3 @@ class Command(BaseCommand):
             #     attempt += 1
             #     print(f"Retrying... Attempt {attempt}/{MAX_RETRIES} in {attempt*3}seconds")
             #     time.sleep(attempt*3)  # wait for 1 second before retrying
-
