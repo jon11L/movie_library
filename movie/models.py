@@ -15,7 +15,7 @@ class Movie(models.Model):
     spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spokent_languages'] "english_name"
     description = models.TextField(blank=True, null=True)
     length = models.IntegerField(blank=True, null=True) # will display the Movie time in minutes
-    genre = models.JSONField(blank=True, null=True)  # This field an array of strings, i want 
+    genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
     released = models.BooleanField(blank=True, null=True)
     # Cast and Prod

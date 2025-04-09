@@ -72,21 +72,23 @@
                     </div>
                 </div>
 
-
-                <div class="card-img-top" style="margin:auto;  width: 60%;">
-                    {% if movie.image_poster %}
-                    <img src="{{ movie.image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
-                    {% else %}
-                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                    {% endif %}
-                </div>
-
+                <!-- display the movie's poster -->
+                <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
+                    <div class="card-img-top" style="margin:auto;  width: 60%;">
+                        {% if movie.image_poster %}
+                        <img src="{{ movie.image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
+                        {% else %}
+                        <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                        {% endif %}
+                    </div>
+                </a>
 
                 <div class="card-body" style="text-align: left;">
                         <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
                             <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
+                            <li class="list-group-item">movie tmdbid: {{ movie.tmdb_id }}</li>
                         </ul>
                 </div>
             </div>
@@ -138,13 +140,16 @@
                 </div>
             </div>
 
-            <div class="card-img-top" style="text-align: center; margin-top: 25px; margin:auto;  width: 60%;">
-                {% if serie.render_image_poster %}
-                <img src=" {{ serie.render_image_poster }} " class="img-fluid rounded" style="width: max-content;" alt="Profile photo">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                {% endif %}
-            </div>
+            <!-- display the serie's poster -->
+            <a href="{% url 'serie:serie_overview' serie.id %}" style="text-decoration: none; color: #000;">
+                <div class="card-img-top" style="text-align: center; margin-top: 25px; margin:auto;  width: 60%;">
+                    {% if serie.render_image_poster %}
+                    <img src=" {{ serie.render_image_poster }} " class="img-fluid rounded" style="width: max-content;" alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                    {% endif %}
+                </div>
+            </a>
 
             <div class="card-body" style="text-align: left;">
                 <p class="card-text" style="height: 70px;"><strong>Overview</strong>: {{ serie.description|slice:":80" }}...</p>

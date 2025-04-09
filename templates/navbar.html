@@ -10,13 +10,12 @@
     </button>
 
     <!-- Search engine  -->
-    <form class="d-flex ms-5" role="search" method="POST" action="{% url 'search:search' %}">
-      {% csrf_token %}
-      <input type="input" class="form-control ms-5 me-2"  placeholder="search" name="search_query" aria-label="Search">
+    <form class="d-flex ms-5" role="search" method="GET" action="{% url 'search:search' %}">
+      <!-- {% csrf_token %} --> 
+      <!-- {{ filter.form.title }} -->
+      <input type="text" class="form-control ms-5 me-2"  placeholder="search..." name="title" aria-label="Search">
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
-
-
 
     <!-- Links of different pages -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -27,6 +26,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'serie:list_serie' %}">Serie's Catalogue</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="">Documentaries</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'search:search' %}">Search</a>

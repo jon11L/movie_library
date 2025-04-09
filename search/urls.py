@@ -22,6 +22,4 @@ app_name = 'search'
 
 urlpatterns = [
     path('', views.search, name='search'),
-    # path('results.html', views.search, name='results'),
-
 ]

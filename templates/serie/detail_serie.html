@@ -53,7 +53,38 @@
                             <li class="list-group-item"><strong>Origin country:</strong> {{ serie.country_of_origin }}</li>
                         </ul>
                     </div>
+
+                    <!-- Display the seasons here and episodes -->
+                    <p style="text-align: center;">Seasons:</p>
+                    <div style="display: flex; flex-wrap: wrap; width: 87%; margin-left: 80px;">
+                        {% for season in seasons %}
+
+                        <div style=" margin-left: 10px;">
+                            <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 20px; ">
+                                {{ season.season_number }} - {{ season.name }}
+                            </button>
+                            <!-- display the episodes when user click on the season -->
+                            <div id="season-{{ season.id }}" class="episode-list" style="display: none;">
+                                <ul>
+                                    {% for episode in season.episodes.all %}
+                                        <li>
+                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.length }}min</small>
+                                            <p>{{ episode.description }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <!-- <div class="" style=" margin-left: 10px;">
+                            <p style="margin-left: 25px;">{{ season.season_number }}-{{ season.name }}</p>
+                        
+                        </div> -->
+                        {% endfor %}
+                    </div>
                 </div>
+
                 <br><br>
 
             <!-- Comment section -->
@@ -75,7 +106,7 @@
             </div>
 
         </div>
-                      
+        
     </div>
 
             {% else %}
@@ -84,5 +115,24 @@
     <br/>
     
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".season-toggle").forEach(button => {
+            button.addEventListener("click", function () {
+                let seasonId = this.getAttribute("data-season");
+                let episodeList = document.getElementById("season-" + seasonId);
+
+                // Toggle visibility
+                if (episodeList.style.display === "none") {
+                    episodeList.style.display = "block";
+                } else {
+                    episodeList.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
 
 {% endblock %}

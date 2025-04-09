@@ -1,13 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-from .models import Serie, Season
+from .models import Serie, Season, Episode
 from user_library.models import Like
 # from .services import add_series_from_tmdb
 # from api_services.TMDB.fetch_series import fetch_popular_series
-
 
 def list_serie(request):
     '''retrieve the series from newer to older and display them in the template
@@ -49,7 +48,10 @@ def serie_overview(request, pk):
     try:
         if Serie:
         # retrieve the specified serie requested by user
-            serie = Serie.objects.get(id=pk)
+            serie = get_object_or_404(Serie, id=pk)
+            # Get the seasons and episodes
+            seasons = serie.seasons.all().prefetch_related("episodes")
+            print(f"{len(seasons)}")
 
             # Check if user's like the serie
             user_liked_serie = False
@@ -60,13 +62,11 @@ def serie_overview(request, pk):
                                             ).values_list('object_id', flat=True)
 
             print(f"user_liked :{user_liked_serie}") # debug print
-            # Get the seasons
-            # seasons = serie.seasons.all()
 
             context = {
                 'serie': serie,
                 'user_liked_serie': user_liked_serie,
-                # 'seasons': seasons
+                'seasons': seasons
                 }
             
             return render(request,'serie/detail_serie.html', context=context)

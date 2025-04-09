@@ -24,6 +24,8 @@ def list_movie(request): # , page     ----- was for the custom pagination
     #     page = 1  # default page number to 1 if page number is 0
     # page -= 1  # as the first page need to consider taking the id's from 0.
 
+    user_liked_movies = []
+    
     try:
         if Movie:            
             # paginator implementation
@@ -32,10 +34,7 @@ def list_movie(request): # , page     ----- was for the custom pagination
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)
 
-            # total_num_pages = paginator.num_pages
-
             # Get the user's like content
-            user_liked_movies = []
             user_liked_movies = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='movie'
@@ -44,7 +43,6 @@ def list_movie(request): # , page     ----- was for the custom pagination
             context = {
                 'user_liked_movies': user_liked_movies,
                 'movie_list' : movie_list,
-                # 'total_num_pages': total_num_pages,
                 }
 
             return render(request, 'movie/list_movie.html', context=context)

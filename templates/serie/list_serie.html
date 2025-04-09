@@ -10,50 +10,44 @@
     <br><br>
     <div style="display: flex; flex-wrap: wrap; width: 80%; margin: auto;" >
         {% if serie_list %}
-        {% for series_data in serie_list %}
+        {% for serie in serie_list %}
 
         <div class="card" style="width: 300px; margin-bottom: 25px; margin-right: 25px;">
             <div>
 
                 <!-- Form for the Like button -->
                 <div style="display: flex; justify-content: space-between;">
-                    <p style=" margin: 15px 0px 0 15px;"><small>{{ series_data.serie.render_vote_average }}/10</small></p>
+                    <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p>
                     
                     <!-- like button feature -->
                     <button class="like-button"
                             data-type="serie"
-                            data-id="{{ series_data.serie.id }}"
-                            data-liked="{% if series_data.serie.id in user_liked_series %}true{% else %}false{% endif %}">
-                            <i class="{% if series_data.serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                            data-id="{{ serie.id }}"
+                            data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
+                            <i class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
 
                     </button>
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                    {% if series_data.serie.render_image_poster %}
-                    <img src="{{ series_data.serie.render_image_poster }}" class="img-fluid rounded" style="width: 200px; height: 250px; margin-left: auto;" alt="Profile photo" >
+                    {% if serie.render_image_poster %}
+                    <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="width: 200px; height: 250px; margin-left: auto;" alt="Profile photo" >
                     {% else %}
                     <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                     {% endif %}
                 </div>
 
                 <div class="card-body">
-                    <a href="{% url 'serie:serie_overview' series_data.serie.id %}" style="text-decoration: none; color: #000;">
-                        <h5 class="card-title" style="text-align: center;">{{ series_data.serie.title }}</h5>
+                    <a href="{% url 'serie:serie_overview' serie.id %}" style="text-decoration: none; color: #000;">
+                        <h5 class="card-title" style="text-align: center;">{{ serie.title }}</h5>
                     </a>
                     <br>
-                    <p class="card-text"><strong>Overview</strong>: {{ series_data.serie.description|slice:":100" }}...</p>
+                    <p class="card-text"><strong>Overview</strong>: {{ serie.description|slice:":100" }}...</p>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Total seasons: </strong>{{ series_data.last_season }}</li>
-                        {% if series_data.last_episode %}
-                        <li class="list-group-item"><strong>last episode: </strong>
-                            {% if series_data.last_episode %}{{ series_data.last_episode }}
-                            {% else %}N/a{% endif %}
-                            {% endif %}
-                        </li>
-                        <li class="list-group-item"><strong>First release:</strong> {{ series_data.serie.release_date }}</li>
-                        <li class="list-group-item"><strong>Genre:</strong> {{ series_data.serie.render_genre }}</li>
-                        <li class="list-group-item"><strong>Length:</strong> {{ series_data.serie.render_length }}min</li>
+
+                        <li class="list-group-item"><strong>First release:</strong> {{ serie.release_date }}</li>
+                        <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre }}</li>
+                        <li class="list-group-item"><strong>Length:</strong> {{ serie.render_length }}min</li>
                     </ul>
                 </div>
             </div>
@@ -101,3 +95,11 @@
 
 </div>
 {% endblock %}
+
+                        <!-- <li class="list-group-item"><strong>Total seasons: </strong>{{ series_data.last_season }}</li>
+                        {% if series_data.last_episode %}
+                        <li class="list-group-item"><strong>last episode: </strong>
+                            {% if series_data.last_episode %}{{ series_data.last_episode }}
+                            {% else %}N/a{% endif %}
+                            {% endif %}
+                        </li> -->

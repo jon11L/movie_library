@@ -140,3 +140,25 @@ img {
     right: 0px;
     margin-bottom: 0px;
 }
+
+
+
+
+
+
+/* Temporary display for the seasons and episodes in detail_serie template */
+.season-toggle {
+    background-color: rgb(71, 22, 22);
+    color: bisque;
+    padding: 8px;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 100%;
+    text-align: left;
+}
+
+.episode-list {
+    padding: 10px;
+    border: 3px solid black;
+    margin-bottom: 10px;
+}

@@ -20,6 +20,8 @@ class Serie(models.Model):
     # Cast and Prod
     production = models.JSONField(blank=True, null=True) # ["production_companies"]
     created_by = models.JSONField(blank=True, null=True) # ["created_by"]
+    first_air_date = models.DateField(blank=True, null=True) # ["first_air_date"]
+    last_air_date = models.DateField(blank=True, null=True) # ["last_air_date"]
     # casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] as main actors  ---/ guest stars [""guest_stars""] loop through 8 or so.... make a list of dict with key, main and guest star (inside each names and roles)
 
     # Metrics
@@ -142,12 +144,7 @@ class Season(models.Model):
 
 class Episode(models.Model):
 
-    season = models.ForeignKey(
-        Season,
-        on_delete=models.CASCADE,
-        related_name='episodes'
-        )
-
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.PositiveSmallIntegerField(blank=True, null=True)# loop through ["episodes"] first then: ["episode_number"]
     title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
     description = models.TextField(blank=True, null=True) # ["overview"]
