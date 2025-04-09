@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+
+# import urlencode
+# from django.utils.http import urlencode
+
 # from django.db.models import Q
 from .filters import SharedMediaFilter
 from movie.models import Movie
@@ -59,7 +63,7 @@ def search(request):
 
     # Handle GET requests with parameters // action from the Filter Form Button
     if request.method == 'GET' and request.GET:
-        print("-- button in form query clicked --") # debug print
+        print("-- User submit a filtered search --") # debug print
 
         #  when no filtes are selected; return only the filter form
         if not has_filter_values:
@@ -120,10 +124,13 @@ def search(request):
             # Remove the 'page' parameter to avoid pagination issues
             if 'page' in query_params:
                 query_params.pop('page')
+            
+            query_string_url = query_params.urlencode()
 
             context = {
                 'filter': content_filter,
                 'query_params': query_params,
+                'query_url': query_string_url,
                 'list_content': page_object,
                 'total_found': total_found,
                 'user_liked_movies': user_liked_movies,

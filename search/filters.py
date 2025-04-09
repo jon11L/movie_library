@@ -13,14 +13,14 @@ class SharedMediaFilter(django_filters.FilterSet):
         )
     
     GENRE_CHOICES = (
-        ('Action', 'Action'),('adventure', 'Adventure'),('animation', 'Animation'),
-        ('biography', 'Biography'),('comedy', 'Comedy'),('crime', 'Crime'),
-        ('documentary', 'Documentary'),('family', 'Family'),('drama', 'Drama'),
-        ('fantasy', 'Fantasy'),('history', 'History'),('horror', 'Horror'),
-        ('music', 'Music'),('musical', 'Musical'),('mystery', 'Mystery'),
-        ('romance', 'Romance'),('sci-fi', 'Sci-Fi'),('science fiction', 'Science Fiction'),
-        ('short', 'Short'),('sport', 'Sport'),('superhero', 'Superhero'),
-        ('thriller', 'Thriller'),('war', 'War'),('western', 'Western')
+        ('Action', 'Action'), ('adventure', 'Adventure'), ('animation', 'Animation'),
+        ('biography', 'Biography'), ('comedy', 'Comedy'), ('crime', 'Crime'),
+        ('documentary', 'Documentary'), ('drama', 'Drama'), ('family', 'Family'),
+        ('fantasy', 'Fantasy'), ('history', 'History'), ('horror', 'Horror'),
+        ('music', 'Music'), ('musical', 'Musical'), ('mystery', 'Mystery'),
+        ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'), ('science fiction', 'Science Fiction'),
+        ('short', 'Short'), ('sport', 'Sport'), ('superhero', 'Superhero'),
+        ('thriller', 'Thriller'), ('war', 'War'), ('western', 'Western')
     )
 # series has these gnere:
 # ("Sci-Fi & Fantasy", "Sci-Fi & Fantasy"), ("Action & Adventure", "Action & Adventure"),
@@ -134,17 +134,29 @@ class SharedMediaFilter(django_filters.FilterSet):
     def filter_genres(self, queryset, name, value):
             """
             Custom filter method for JSONField 'genre'
-            This will filter movies that have the specified genre in their genre list
+            This will filter content that have the specified genre in their genre list
             """
             print(f"Filtering by genre: {value}")
             print(f"type value: {type(value)}")
+
+            if not value:
+                return queryset
+            
+            print(f"query_set: {queryset} ")
+            filtered_queryset = queryset
+            
+                # For each selected genre, filter the queryset to require that genre
+            for genre in value:
+                print(f"Filtering for genre: {genre}")
+
+                filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
 
             # for genre in value:
             #     print(f"Genre: {genre}")
             #     if genre is
 
             # check if the selected value is in the genre list of the movie
-            return queryset.filter(genre__name__icontains=[value])
+            return filtered_queryset
 
     
 
