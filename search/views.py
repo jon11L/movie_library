@@ -1,11 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 # from django.db.models import Q
-from .filters import MovieFilter
-# from .filters import MediaFilter
-# from .filters import SerieFilter
+from .filters import SharedMediaFilter
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like
+
+
+# >>> Author.objects.filter(name__unaccent__lower__trigram_similar="Hélène")
+# [<Author: Helen Mirren>, <Author: Hélène Joy>]
+
+
 
 # ----- attempt using the django-filters module -------
 def search(request):
@@ -18,135 +23,211 @@ def search(request):
     series = []
     search_query = ""
     total_found = 0
+    user_liked_movies = []
+    user_liked_series = []
+    results = []
+
+    # Determine which content type to display
+    content_type = request.GET.get('content_type', 'all')
 
     # Check if any filter parameters have values
     has_filter_values = False
     for key, value in request.GET.items():
-        if value and key not in ['page', 'csrfmiddlewaretoken']:
+        if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type']:
             has_filter_values = True
             break
     
     print(f"has_filter_values: {has_filter_values}")  # Debug print
-    
     # Default to empty queryset if no filters applied
-    base_queryset = Movie.objects.all() if has_filter_values else Movie.objects.none()
-
-    movie_filters = MovieFilter(request.GET, queryset=base_queryset)
+    # base_queryset = Movie.objects.all() if has_filter_values else Movie.objects.none()
+    # movie_filters = SharedMediaFilter(request.GET, queryset=base_queryset)
     
-    # Initial search page load, user reach the search page without any query/filter/request
+
+    # Initialize the filter form (without queryset for form rendering)
+    content_filter = SharedMediaFilter(request.GET)
+    print(f"content_filter: {content_filter}")  # Debug print
+
+    # ----- Initial search page load, user reach the search page without any query/filter/request -----
     if request.method == 'GET' and not request.GET:
         print("going to search page") # debug print
 
         context ={
-            'filter': movie_filters,
-            # 'filtered_movies': movie_filters.qs
+            'filter': content_filter,
         }
 
         return render(request, 'search/search.html', context=context)
 
-    # Handle GET requests with parameters
-    # if request.method == 'GET' and request.GET:
-    if request.method == 'GET':
-        # return no movies when no filter is selected
+    # Handle GET requests with parameters // action from the Filter Form Button
+    if request.method == 'GET' and request.GET:
+        print("-- button in form query clicked --") # debug print
 
+        #  when no filtes are selected; return only the filter form
         if not has_filter_values:
+            print("no filter values applied")
             context = {
-                'filter': movie_filters,
+                'filter': content_filter,
+                'filters_applied': False  # Flag to show a message in the template
                 # 'filtered_movies': movie_filters.qs,  # This will be empty
-                'no_filters_applied': True  # Flag to show a message in the template
             }
         
-        else:
-            filtered_movies = movie_filters.qs
-            total_found = filtered_movies.count()
-            print("should have parameters value") # debug print
+        else: # if filter values are applied
+            print("filter values applied")# debug print
+            filtered_movies = []
+            filtered_series = []
+
+            if content_type in ['movie', 'all']:
+                movie_filter = SharedMediaFilter(request.GET, queryset=Movie.objects.all())
+                filtered_movies = movie_filter.qs
+                # print(f"Filtered movies: {filtered_movies}")
+
+            if content_type in ['serie', 'all']:
+                serie_filter = SharedMediaFilter(request.GET, queryset=Serie.objects.all())
+                filtered_series = serie_filter.qs
+                # print(f"Filtered series: {filtered_series}")
 
             # Get the user's liked content (movies, series)
-            user_liked_movies = []
             user_liked_movies = Like.objects.filter(
                                                 user=request.user.id, content_type='movie'
                                                 ).values_list('object_id', flat=True)
-
-            user_liked_series = []
             user_liked_series = Like.objects.filter(
                                                 user=request.user.id, content_type='serie'
                                                 ).values_list('object_id', flat=True)
+            
+            for movie in filtered_movies:
+                results.append({
+                    'object': movie,
+                    'type': 'movie',
+                })
+
+            for serie in filtered_series:
+                results.append({
+                    'object': serie,
+                    'type': 'serie',
+                })
+
+            total_found = len(results)
+            print(f"Total found: {total_found}")  # Debug print
+
+            # -- paginate over the results --
+            paginator = Paginator(results, 12)
+            page_number = request.GET.get('page')
+            page_object = paginator.get_page(page_number)
+            print(f"List content: {page_object}")
+
+            # Preserve all GET parameters except 'page'
+            query_params = request.GET.copy()
+            print(f"Query params: {query_params}")  # Debug print
+            # Remove the 'page' parameter to avoid pagination issues
+            if 'page' in query_params:
+                query_params.pop('page')
 
             context = {
-                'filter': movie_filters,
-                'filtered_movies': filtered_movies,
+                'filter': content_filter,
+                'query_params': query_params,
+                'list_content': page_object,
                 'total_found': total_found,
                 'user_liked_movies': user_liked_movies,
-                'user_liked_series': user_liked_series
+                'user_liked_series': user_liked_series,
+                'filters_applied': True
+                # 'filtered_movies': filtered_movies,
             }
 
         return render(request, 'search/search.html', context=context)
 
+    # #----- Handle the search bar submission query --------
+    # if request.method == 'POST':
+    #     print("submit search button on navbar")
+    #     # Get the search query from the form input and filter movies and series by the query.
+    #     search_query = request.POST.get('search_query', "").lower().strip()
 
-    # Handle the search bar submission query
-    if request.method == 'POST':
-        # Get the search query from the form input and filter movies and series by the query.
-        search_query = request.POST.get('search_query', "").lower()
+    #     # Search through media content: movies, series
+    #     try:
+    #         if search_query:
+    #         # filtered_movies = movie_filters.qs
+    #             movies = Movie.objects.filter(title__icontains=search_query)
+    #             series = Serie.objects.filter(title__icontains=search_query)
 
-        # serie_filter = SerieFilter(request.GET, queryset=Serie.objects.all())
-        # Search through media content: movies, series
-        try:
-            if search_query:
-            # filtered_movies = movie_filters.qs
-                movies = Movie.objects.filter(title__icontains=search_query)
-                series = Serie.objects.filter(title__icontains=search_query)
+    #             # Get the user's liked content (movies, series)
+    #             user_liked_movies = Like.objects.filter(
+    #                                                 user=request.user.id, content_type='movie'
+    #                                                 ).values_list('object_id', flat=True)
 
-            # Get the user's liked content (movies, series)
-            user_liked_movies = []
-            user_liked_movies = Like.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+    #             user_liked_series = Like.objects.filter(
+    #                                                 user=request.user.id, content_type='serie'
+    #                                                 ).values_list('object_id', flat=True)
 
-            user_liked_series = []
-            user_liked_series = Like.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
+    #             # print(f"Movie filters: {filtered_movies}") # debug print
+    #             # print(f"Serie filters: {serie_filters}") # debug print
+    #             print(f"\n movies: {movies}\n series: {series} ") # log print
 
-            # print("Working until now") # debug print
 
-            # print(f"Movie filters: {filtered_movies}") # debug print
-            # print(f"Serie filters: {serie_filters}") # debug print
-            print(f"\n movies: {movies}\n series: {series} ") # log print
+    #             # results = movies, series  # Combine the two querysets
+    #             print(f"Results: {results}")  # Debug print
+                
+    #             for movie in movies:
+    #                 results.append({
+    #                     'object': movie,
+    #                     'type': 'movie',
+    #                 })
+                
+    #             for serie in series:
+    #                 results.append({
+    #                     'object': serie,
+    #                     'type': 'serie',
+    #                 })
 
-            total_found = movies.count() + series.count()
-            print(f"Total found: {total_found}")
+    #             print(f"Results: {results}")  # Debug print
+    #             # -- paginate over the results --
+    #             paginator = Paginator(results, 12)
+    #             page_number = request.GET.get('page')
+    #             page_object = paginator.get_page(page_number)
+    #             print(f"List content: {page_object}")
 
-            context = {
-                'movies': movies,
-                'series' : series,
-                'query': search_query,
-                'total_found': total_found,
-                'no_filters_applied': True,  # Flag to show a message in the template
-                'filter': movie_filters,
-                'user_liked_movies': user_liked_movies,
-                'user_liked_series': user_liked_series
-                # 'filtered_movies': filtered_movies
-                }
-            return render(request,'search/search.html', context=context)
+    #             # # Preserve all GET parameters except 'page'
+    #             # query_params = request.GET.copy()
+    #             # if 'page' in query_params:
+    #             #     query_params.pop('page')
+
+
+    #             total_found = movies.count() + series.count()
+    #             print(f"Total found: {total_found}")
+
+    #             context = {
+    #                 'results': results,
+    #                 # 'query_params': page_object,
+    #                 'list_content': page_object,
+    #                 'movies': movies,
+    #                 'series' : series,
+    #                 'query': search_query,
+    #                 'total_found': total_found,
+    #                 'filters_applied': True,  # Flag to show a message in the template
+    #                 'filter': content_filter,
+    #                 'user_liked_movies': user_liked_movies,
+    #                 'user_liked_series': user_liked_series
+    #                 }
+    #                 # 'filtered_movies': filtered_movies
+    #             # return render(request,'search/search.html', context=context)
+    #             return redirect('search:search', query=search_query, content_type=content_type)
+            
+    #         else:
+    #             print(f"\n empty search query given... '{search_query}' ") # debug print
+
+    #             context = {
+    #                 # 'query': search_query,
+    #                 'filters_applied': False,  # Flag to show a message in the template
+    #                 'filter': content_filter,
+    #                 }
+
+    #             return render(request,'search/search.html', context=context)
+
         
-        except Exception as e:
-            context = {
-                'error_message': f'An error occurred: {str(e)}',
-                'query': search_query,
-            }
-            return render(request, 'search/search.html', context=context)
+        # except Exception as e:
+        #     context = {
+        #         'error_message': f'An error occurred: {str(e)}',
+        #         'query': search_query,
+        #     }
+        #     return render(request, 'search/search.html', context=context)
 
-
-
-    # if request.method == 'GET' and not has_filter_params:
-    # # Initial page load or filter form submitted with no criteria
-    #     print("No movies found, walalala")
-    #     context = {
-    #         'filter': movie_filters,
-    #         'filtered_movies': movie_filters.qs,  # This will be empty
-    #         'no_filters_applied': True  # Flag to show a message in the template
-    #     }
-    #     return render(request, 'search/search.html', context=context)
 
 
 

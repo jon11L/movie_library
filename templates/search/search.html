@@ -8,97 +8,89 @@
 
     <div class="card" style="text-align: center;">
 
-        <div class="card-header" style="text-align: center;">
-            <h5 class="card-title">Search here</h5>  
+        <div class="card-header" style="text-align: center; margin-top: 8px;">
+            <h5 class="card-title">Filter your search here</h5>  
         </div>
 
+        <!------------------ Filter form  ----------------->
         <div class="row">
             <div class="col">
-            <!-- Filter form  -->
-                <div class="card-body" style="margin: auto;">
+                <div class="card-body" style="margin-top: 25px;">
                     <form method="get" action="{% url 'search:search' %}">
                         <!-- {% csrf_token %} -->
-                         <div class="d-flex" style=" width: 100%; margin: auto;">
-                            {{ filter.form.as_p }}
+                        <div class="" style=" width: 90%; display: flex; flex-wrap: wrap; justify-content: center;">
 
-                            <!-- <div class="form-check form-switch" style="margin-top: 10px;">
-                            <input class="form-check-input" type="checkbox" id="is_series" name="is_series" {% if is_series %}checked{% endif %}>
-                            <label class="form-check-label" for="is_series">Series</label> -->
-                         </div>
 
-                        <br>
-                        <br>
-                        <button type="submit" class="btn btn-secondary">Search</button>
+                            <div class="form-group mb-2 me-3">
+                                <label for="content_type">Content Type:</label>
+                                {{ filter.form.content_type }}
+                            </div>
+
+                            <div class="form-group mb-2 me-3">
+                                <label for="title">Title:</label>
+                                {{ filter.form.title }}
+                            </div>
+
+                            <div class="form-group mb-2 me-3">
+                                <label for="genre">Genre:</label>
+                                {{ filter.form.genre }}
+                            </div>
+
+                            <div class="form-group mb-2 me-3">
+                                <label for="vote_average__gte">Min Rating:</label>
+                                {{ filter.form.vote_average }}
+                            </div>
+
+                            <!-- <div>
+                                <label for="release_date__gte">Release Date:</label>
+                                {{ filter.form.release_date }}
+                            </div> -->
+
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 40px;">Search</button>
                     </form>
                 </div>
             </div>                    
         </div>
     </div>
 
-  
 
 
-
-                <!-- <input type="input" class="form-control" placeholder="search" name="search_query" style=" margin: auto;">
-                <br> -->
-                
-                
-                <!-- <div style="display: flex;"> -->
-                    <!-- Year selection -->
-                    <!-- <div class="me-2">
-                        <p> year from..</p>
-                        <input type="year" class="form-control" placeholder="1970" name="year_from" value="{{ year_from }}" style="">
-                    </div>
-                    <br>
-                    <div class="me-5">
-                        <p> year to..</p>
-                        <input type="year" class="form-control" placeholder="2025" name="year_to" value="{{ year_to }}" style="">
-                    </div>
-                    <br> -->
-
-                    <!-- Rating selection -->
-                    <!-- <div class="d-flex" style="width: 30%;">
-                        <div class="me-2">
-                            <p> min. rating (0)</p>
-                            <input type="number" class="form-control" placeholder="3" name="min_rating" style="">
-                        </div>
-                        <br>
-                        <div class="">
-                            <p> max. rating (10)</p>
-                            <input type="number" class="form-control" placeholder="8.5" name="max_rating" style="">
-                        </div>
-                        <br>
-                    </div> -->
-
-
-
-
-
-
-
-
-
-
-
-      <!-- Result Query -->
+                    <br><br>
+    <!------------- Result Query Result Found or no items found -------------->
     <div style="width: 50%; margin: auto; text-align: center;">
-        <!-- <form method="POST" action="{% url 'search:search' %}">
-            {% csrf_token %}
-            <input type="input" class="form-control" placeholder="search" name="search_query" style="">
-            <br>
-            <button type="submit" class="btn btn-secondary">Search</button>
-        </form> -->
+        <!-- click on search button in Navbar with result -->
+        {% if query and movies or series %}
+        <h3 style="color: green;">Search results for "{{ query }}".</h3>
+        <p style="color: darkgreen;">{{ total_found }} items found match your query.</p>
+        
+        <!-- click on search button in Navbar without result -->
+        {% elif query and not movies and not series %}
+        <h3 style="color: red;">No result for "{{ query }}"...</h3>
 
-        <br><br>
-        {% if query or filtered_movies %}
-        <h3>Search results for "{{ query }}".    {{ total_found }} items Found.  </h3>
+        <!-- click on search button in Navbar without search given // same with search filter button-->
+        {% elif not query and not filters_applied %}
+        <h3 style="color: green;">Start your search</h3>
+
+
+        <!-- filter form button clicked with filters and results -->
+        {% elif filter and query_params and not query %}
+        <h3 style="color: green;">Search results for your query.</h3>
+        <p style="color: darkgreen;">{{ total_found }} items match your query.</p>        
+        <!-- filter form button clicked with filters no result -->
+        
+
+        {% elif not query and filter and not movies or not series %}
+        <h3 style="color: red;">No result could be found base on your query</h3>        
+        <p style="color: darkred;"> please refine the filtering options</p>
         {% endif %}
     </div>
 
     
     
-    <!-- Movies found are displayed here -->
-    <div style="display: flex; flex-wrap: wrap; margin-top: 30px;">
+    <!------ Movies found are displayed here ------->
+    <!-- <div style="display: flex; flex-wrap: wrap; margin-top: 30px;">
 
         {% if movies %}
         {% for movie in movies %}
@@ -107,9 +99,9 @@
             
             <div style="display: flex; justify-content: space-between;" id="like_button">
                 <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
-                
+                 -->
                 <!-- like button feature -->
-                <button class="like-button"
+                <!-- <button class="like-button"
                 data-type="movie"
                 data-id="{{ movie.id }}"
                 data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
@@ -143,6 +135,7 @@
             </div>
             
             <div class="card-body" style="text-align: left;">
+                <small>(movie)</small>
                 <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
@@ -151,13 +144,13 @@
             </div>
         </div>
         {% endfor %}
-        {% endif %}
+        {% endif %} -->
 
 
 
-    <!-- Filtered Movies found are displayed here -->
+    <!----------- Filtered Movies found are displayed here -------------->
     <!-- <div style="display: flex; flex-wrap: wrap; margin-top: 30px;"> -->
-        {% if filtered_movies %}
+        <!-- {% if filtered_movies %}
         {% for movie in filtered_movies %}
         
         <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
@@ -165,8 +158,8 @@
             <div style="display: flex; justify-content: space-between;" id="like_button">
                 <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
                 
-                <!-- like button feature -->
-                <button class="like-button"
+                like button feature -->
+                <!-- <button class="like-button"
                 data-type="movie"
                 data-id="{{ movie.id }}"
                 data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
@@ -211,22 +204,22 @@
         </div>
         {% endfor %}
         {% endif %}
-
+ -->
 
 
 
         <!-- Series found are displayed here -->
         <!-- <div style="display: flex; flex-wrap: wrap;"> -->
-        {% if series %}
+        <!-- {% if series %}
         {% for serie in series %}
 
         <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
 
             <div style="display: flex; justify-content: space-between;" id="like_button">
-                <p style=" margin: 5px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p>
+                <p style=" margin: 5px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p> -->
 
                 <!-- like button feature -->
-                <button class="like-button"
+                <!-- <button class="like-button"
                     data-type="serie"
                     data-id="{{ serie.id }}"
                     data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
@@ -271,9 +264,120 @@
         {% endfor %}
         {% endif %}
 
+    </div> -->
+
+
+
+
+    <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
+    <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 20px 30px 20px; align-content: flex-start;">
+        {% if list_content %}
+        {% for item in list_content %}
+        <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 350px; height: auto; margin-right: 25px;">
+            <div class="poster">
+                
+                {% if item.type == 'movie' %}
+                <div style="display: flex; justify-content: space-between;" id="like_button">
+                    <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
+                    
+                    <!-- like button feature  -->
+                    <button class="like-button"
+                    data-type="{{ item.object.type }}"
+                    data-id="{{ item.object.id }}"
+                    data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
+                    <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                </button>
+                
+            </div>
+
+                <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" style="width: fit-content; height: 500px;">
+                {% else %}
+
+                <div style="display: flex; justify-content: space-between;" id="like_button">
+                    <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
+                    
+                    <!-- like button feature  -->
+                    <button class="like-button"
+                    data-type="{{ item.object.type }}"
+                    data-id="{{ item.object.id }}"
+                    data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
+                    <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                </button>
+                
+            </div>
+
+                <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  style="width: fit-content; height: 500px;">
+                {% endif %}
+            </div>
+
+            <div class="info">
+                {% if item.type == 'movie' %}
+                <a href="{% url 'movie:movie_overview' item.object.id %}">
+                    <h4 style="color: rgb(99, 192, 161);">title: {{ item.object.title }}</h4></a>
+                    {% else %}
+                    <a href="{% url 'serie:serie_overview' item.object.id %}">
+                    <h4 style="color: aquamarine; ">title: {{ item.object.title }}</h4></a>
+                    {% endif %}
+                <p style="color: aquamarine;">Type: {{ item.type|title }}</p>
+                <p style="color: aquamarine;">Rating: {{ item.render_vote_average }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% endif %}
     </div>
+    
+    
+    {% if query or filters_applied or list_content %}
+    <!----- Pagination system ------->
+    <div style="display: flex; justify-content: center;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if list_content.has_previous and query_params  %}
+                <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                <!-- previous page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                {% elif list_content.has_previous and not query_params  %}
+                <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                <!-- previous page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                {% endif %}
+                
+                {% for num in list_content.paginator.page_range %}
+                    <!-- enumerate pages around current page -->
+                    {% if num == list_content.number %}
+                    <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                    {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
+                    <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                    
+                {% if query_params and list_content.has_next %}
+                <!-- Next page -->
+                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                
+                <!-- Last page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                {% elif not query_params and list_content.has_next %}
+                <!-- Next page -->
+                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                
+                <!-- Last page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                {% endif %}
+                
+                <!-- Current page and how many pages are there -->
+                <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ list_content.number }} of {{ list_content.paginator.num_pages }}</h6></li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    <!----- End of Pagination system ------->
 
 
 </div>
-    
+
 {% endblock %}
+
+<!-- {% for item in items %} -->
+<!-- {% endfor %} -->

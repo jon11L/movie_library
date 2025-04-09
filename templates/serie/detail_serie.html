@@ -56,11 +56,11 @@
 
                     <!-- Display the seasons here and episodes -->
                     <p style="text-align: center;">Seasons:</p>
-                    <div style="display: flex;">
+                    <div style="display: flex; flex-wrap: wrap; width: 87%; margin-left: 80px;">
                         {% for season in seasons %}
 
                         <div style=" margin-left: 10px;">
-                            <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 15px; ">
+                            <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 20px; ">
                                 {{ season.season_number }} - {{ season.name }}
                             </button>
                             <!-- display the episodes when user click on the season -->
