@@ -110,10 +110,10 @@ def search(request):
                 })
 
             total_found = len(results)
-            print(f"Total found: {total_found}")  # Debug print
+            print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print
 
             # -- paginate over the results --
-            paginator = Paginator(results, 12)
+            paginator = Paginator(results, 20)
             page_number = request.GET.get('page')
             page_object = paginator.get_page(page_number)
             print(f"List content: {page_object}")
@@ -125,6 +125,7 @@ def search(request):
             if 'page' in query_params:
                 query_params.pop('page')
             
+            # Allow to keep the query parameter in the url for pagination
             query_string_url = query_params.urlencode()
 
             context = {
@@ -136,7 +137,6 @@ def search(request):
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
                 'filters_applied': True
-                # 'filtered_movies': filtered_movies,
             }
 
         return render(request, 'search/search.html', context=context)
