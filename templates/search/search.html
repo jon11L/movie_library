@@ -3,327 +3,199 @@
 
 {% block content %}
 
-<!-- Search form  -->
-<div style="width: 85%; margin: auto; margin-top: 20px;">
 
+<div style="width: 90%; margin: auto; margin-top: 20px;">
+    
     <div class="card" style="text-align: center;">
-
+        
         <div class="card-header" style="text-align: center; margin-top: 8px;">
             <h5 class="card-title">Filter your search here</h5>  
         </div>
-
-        <!------------------ Filter form  ----------------->
-        <div class="row">
-            <div class="col">
-                <div class="card-body" style="margin-top: 25px;">
-                    <form method="get" action="{% url 'search:search' %}">
-                        <!-- {% csrf_token %} -->
-                        <div class="" style=" width: 90%; display: flex; flex-wrap: wrap; justify-content: center;">
-
-
+        
+        <!------------------ Search Filter  form  ----------------->
+        <div class="card-body" style="margin-top: 25px;">
+            <form method="get" action="{% url 'search:search' %}">
+                <!-- {% csrf_token %} -->
+                <div class="" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                    
+                    
+                    <div class="row">
+                        <div class="col">
                             <div class="form-group mb-2 me-3">
                                 <label for="content_type">Content Type:</label>
                                 {{ filter.form.content_type }}
                             </div>
+                            
+                            <div class="form-group me-3" style="margin-top: 15px;">
+                                <label for="genre">Genre:</label>
+                                {{ filter.form.genre }}
+                            </div>
+                        </div>                    
+                    </div>
 
                             <div class="form-group mb-2 me-3">
                                 <label for="title">Title:</label>
                                 {{ filter.form.title }}
                             </div>
 
-                            <div class="form-group mb-2 me-3">
-                                <label for="genre">Genre:</label>
-                                {{ filter.form.genre }}
+
+                            <div>
+                                <div class="form-group mb-2 me-3" style="width: 80%;">
+                                    <label for="vote_average_from">Min Rating:</label>
+                                    {{ filter.form.vote_average_gte }}
+                                </div>
+                                <div class="form-group mb-2 me-3" style="width: 80%;">
+                                    <label for="vote_average_to">Max Rating:</label>
+                                    {{ filter.form.vote_average_lte }}
+                                </div>
+
                             </div>
 
-                            <div class="form-group mb-2 me-3">
-                                <label for="vote_average__gte">Min Rating:</label>
-                                {{ filter.form.vote_average }}
-                            </div>
-
-                            <!-- <div>
-                                <label for="release_date__gte">Release Date:</label>
+                            <!-- Range date fields / option between exact and range filter -->
+                            <div class="form-group me-2" id="exactDateField">
+                                <label for="release_date">Filter by Date:</label>
                                 {{ filter.form.release_date }}
-                            </div> -->
+                            </div>
+
+                            <div id="rangeDateField" style="display: none;">
+                                <div class="form-group mb-2 me-2">
+                                    <label for="release_date_from">year From:</label>
+                                    {{ filter.form.release_date_gte }}
+                                </div>
+    
+    
+                                <div class="form-group me-2">
+                                    <label for="release_date_to">year To:</label>
+                                    {{ filter.form.release_date_lte }}
+                                </div>
+
+                            </div>
+
+                            <!-- toggle the release date field between Excact or Rangefilter -->
+                            <div class="form-group">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="toggleDateRange">
+                                    <label class="form-check-label" for="toggleDateRange">
+                                        <small>click to use range instead of exact year</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                                <!-- <label for="release_date__lte">to:</label>
+                                {{ filter.form.release_date }} -->
 
                         </div>
 
-                        <button type="submit" class="btn btn-secondary" style="margin-top: 40px;">Search</button>
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 40px; margin-right: 35px;">
+                            <a class="nav-link active" aria-current="page" href="{% url 'search:search' %}">Reset filters</a>
+                        </button>
+
+                        <button type="submit" class="btn btn-secondary" style="margin-top: 40px; margin-right: 35px; background-color: darkcyan;">Apply filters</button>
                     </form>
                 </div>
-            </div>                    
-        </div>
     </div>
+    <br><br>
 
 
-
-                    <br><br>
     <!------------- Result Query Result Found or no items found -------------->
     <div style="width: 50%; margin: auto; text-align: center;">
-        <!-- click on search button in Navbar with result -->
-        {% if query and movies or series %}
-        <h3 style="color: green;">Search results for "{{ query }}".</h3>
-        <p style="color: darkgreen;">{{ total_found }} items found match your query.</p>
-        
-        <!-- click on search button in Navbar without result -->
-        {% elif query and not movies and not series %}
-        <h3 style="color: red;">No result for "{{ query }}"...</h3>
-
         <!-- click on search button in Navbar without search given // same with search filter button-->
-        {% elif not query and not filters_applied %}
+        {% if not query and not filters_applied %}
         <h3 style="color: green;">Start your search</h3>
 
-
         <!-- filter form button clicked with filters and results -->
-        {% elif filter and query_params and not query %}
+        {% elif filter and query_params and total_found %}
         <h3 style="color: green;">Search results for your query.</h3>
         <p style="color: darkgreen;">{{ total_found }} items match your query.</p>        
         <!-- filter form button clicked with filters no result -->
-        
 
-        {% elif not query and filter and not movies or not series %}
+        {% elif filter and not total_fount %}
         <h3 style="color: red;">No result could be found base on your query</h3>        
         <p style="color: darkred;"> please refine the filtering options</p>
         {% endif %}
     </div>
 
-    
-    
-    <!------ Movies found are displayed here ------->
-    <!-- <div style="display: flex; flex-wrap: wrap; margin-top: 30px;">
-
-        {% if movies %}
-        {% for movie in movies %}
-        
-        <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
-            
-            <div style="display: flex; justify-content: space-between;" id="like_button">
-                <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
-                 -->
-                <!-- like button feature -->
-                <!-- <button class="like-button"
-                data-type="movie"
-                data-id="{{ movie.id }}"
-                data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
-                <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
-            </div>
-        
-            <div class="card-title">
-                <div style="display: flex; justify-content: center;">
-                    <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
-                        <h4>{{ movie.title }}</h4>
-                    </a>
-                    
-                    <div style="color: lightblue;">
-                        {% if movie.length %}
-                        <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
-                        {% else %}
-                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="card-img-top" style="margin:auto;  width: 60%;">
-                {% if movie.image_poster %}
-                <img src="{{ movie.image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                {% endif %}
-            </div>
-            
-            <div class="card-body" style="text-align: left;">
-                <small>(movie)</small>
-                <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
-                    <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
-                </ul>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %} -->
-
-
-
-    <!----------- Filtered Movies found are displayed here -------------->
-    <!-- <div style="display: flex; flex-wrap: wrap; margin-top: 30px;"> -->
-        <!-- {% if filtered_movies %}
-        {% for movie in filtered_movies %}
-        
-        <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
-            
-            <div style="display: flex; justify-content: space-between;" id="like_button">
-                <p style=" margin: 5px 0px 0 15px;"><small>{{ movie.render_vote_average }}/10</small></p>
-                
-                like button feature -->
-                <!-- <button class="like-button"
-                data-type="movie"
-                data-id="{{ movie.id }}"
-                data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
-                <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
-            
-            </div>
-        
-            <div class="card-title">
-                <div style="display: flex; justify-content: center;">
-                    <a href="{% url 'movie:movie_overview' movie.id %}" style="text-decoration: none; color: #000;">
-                        <h4>{{ movie.title }}</h4>
-                    </a>
-                    
-                    <div style="color: lightblue;">
-                        {% if movie.length %}
-                        <p style="margin-left: 8px;"><small>({{ movie.length }}min)</small></p>
-                        {% else %}
-                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="card-img-top" style="margin:auto;  width: 60%;">
-                {% if movie.image_poster %}
-                <img src="{{ movie.image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                {% endif %}
-            </div>
-            
-            <div class="card-body" style="text-align: left;">
-                <small>(movie)</small>
-                <p style="height: 70px;"><strong>Overview</strong>: {{ movie.description|slice:":80" }}...</p>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date.year }}</li>
-                    <li class="list-group-item"><strong>Genre:</strong> {{ movie.render_genre|slice:":20" }}</li>
-                </ul>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %}
- -->
-
-
-
-        <!-- Series found are displayed here -->
-        <!-- <div style="display: flex; flex-wrap: wrap;"> -->
-        <!-- {% if series %}
-        {% for serie in series %}
-
-        <div class="card" style="width: 350px; margin-bottom: 25px; margin-right: auto; border: none;">
-
-            <div style="display: flex; justify-content: space-between;" id="like_button">
-                <p style=" margin: 5px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p> -->
-
-                <!-- like button feature -->
-                <!-- <button class="like-button"
-                    data-type="serie"
-                    data-id="{{ serie.id }}"
-                    data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
-                    <i class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
-            </div>
-
-            <div class="card-title">
-                <div style="display: flex; justify-content: center;">
-                    <a href="{% url 'serie:serie_overview' serie.id %}" style="text-decoration: none; color: #000;">
-                        <h4>{{ serie.title }}</h4>
-                    </a>
-
-                    <div style="color: lightblue;">
-                        {% if serie.length %}
-                        <p style="margin-left: 8px;"><small>({{ serie.render_length }}min)</small></p>
-                        {% else %}
-                        <p style="margin-left: 8px;"><small>(N/a)</small></p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="card-img-top" style="margin:auto;  width: 60%;">
-                {% if serie.image_poster %}
-                <img src="{{ serie.render_image_poster }}" class="img-fluid"  alt="Profile photo" style="width: max-content;">
-                {% else %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                {% endif %}
-            </div>
-
-            <div class="card-body" style="text-align: left;">
-                <small>(serie)</small>
-                <p style="height: 70px;"><strong>Overview</strong>: {{ serie.description|slice:":80" }}...</p>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Released:</strong> {{ serie.release_date.year }}</li>
-                    <li class="list-group-item"><strong>Genre:</strong> {{ serie.render_genre|slice:":20" }}</li>
-                </ul>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-    </div> -->
-
-
-
 
     <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
-    <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 20px 30px 20px; align-content: flex-start;">
+    <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 100px; align-content: center;">
         {% if list_content %}
         {% for item in list_content %}
-        <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 350px; height: auto; margin-right: 25px;">
+        <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 270px; height: auto; margin-right: 30px; margin-bottom: 25px;">
             <div class="poster">
                 
                 {% if item.type == 'movie' %}
                 <div style="display: flex; justify-content: space-between;" id="like_button">
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
-                    
-                    <!-- like button feature  -->
-                    <button class="like-button"
-                    data-type="{{ item.object.type }}"
-                    data-id="{{ item.object.id }}"
-                    data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
-                    <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
+                    <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
+
+        
+                    <div>
+                        <!-- Watchlist button feature -->
+                        <button class="watchlist-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-bookmarked="{% if item.object..id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                        </button>
+
+                        <!-- like button feature -->
+                        <button class="like-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
+                    </div>
+
+
                 
-            </div>
+                </div>
 
-                <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" style="width: fit-content; height: 500px;">
+                <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" style="width: fit-content; height: 400px;">
                 {% else %}
-
                 <div style="display: flex; justify-content: space-between;" id="like_button">
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
+                    <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
                     
-                    <!-- like button feature  -->
-                    <button class="like-button"
-                    data-type="{{ item.object.type }}"
-                    data-id="{{ item.object.id }}"
-                    data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
-                    <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
-                
-            </div>
 
-                <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  style="width: fit-content; height: 500px;">
+                    <div>
+                        <!-- Watchlist button feature -->
+                        <button class="watchlist-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-bookmarked="{% if item.object..id in user_watchlist_series %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                        </button>
+
+                        <!-- like button feature  -->
+                        <button class="like-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
+
+                    </div>
+                
+                </div>
+
+                <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  style="width: fit-content; height: 400px;">
                 {% endif %}
             </div>
 
-            <div class="info">
+            <div class="" style="width: auto;">
                 {% if item.type == 'movie' %}
-                <a href="{% url 'movie:movie_overview' item.object.id %}">
-                    <h4 style="color: rgb(99, 192, 161);">title: {{ item.object.title }}</h4></a>
-                    {% else %}
-                    <a href="{% url 'serie:serie_overview' item.object.id %}">
-                    <h4 style="color: aquamarine; ">title: {{ item.object.title }}</h4></a>
-                    {% endif %}
-                <p style="color: aquamarine;">Type: {{ item.type|title }}</p>
-                <p style="color: aquamarine;">Rating: {{ item.render_vote_average }}</p>
+                <a href="{% url 'movie:movie_overview' item.object.id %}" style="text-decoration: none;">
+                    <h4 style="color: rgb(99, 192, 161);">{{ item.object.title|slice:":70" }}</h4>
+                </a>
+                {% else %}
+                <a href="{% url 'serie:serie_overview' item.object.id %}" style="text-decoration: none;">
+                <h4 style="color: rgb(99, 192, 161);">{{ item.object.title }}</h4>
+                </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
-        
         {% endif %}
     </div>
     
@@ -372,13 +244,29 @@
         </nav>
     </div>
     {% endif %}
-    --- End of Pagination system -----
-
+    <!-- --- End of Pagination system ----- -->
 
 </div>
+
+
+<script>
+    document.getElementById('toggleDateRange').addEventListener('change', function() {
+    const exactDateField = document.getElementById('exactDateField');
+    const rangeDateField = document.getElementById('rangeDateField');
     
+    if (this.checked) {
+      exactDateField.style.display = 'none';
+      rangeDateField.style.display = 'block';
+      // Clear the exact date field to avoid conflicting filters
+      document.querySelector('#exactDateField input').value = '';
+    } else {
+      exactDateField.style.display = 'block';
+      rangeDateField.style.display = 'none';
+      // Clear the range fields
+      document.querySelectorAll('#rangeDateField input').forEach(input => input.value = '');
+    }
+});
+</script>
+
+
 {% endblock %}
-
-<!-- {% for item in items %} -->
-
-<!-- {% endfor %} -->

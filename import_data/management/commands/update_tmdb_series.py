@@ -139,8 +139,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported list of  updated series successful!\n"))
         self.stdout.write(f"{imported_count} serie imported.")
-        logger.info(f"SUMMARY: Series -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
-        self.stdout.write(f"SUMMARY: Series -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
+        logger.info(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
+        self.stdout.write(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
 
 

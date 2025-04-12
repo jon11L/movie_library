@@ -18,13 +18,10 @@ class SharedMediaFilter(django_filters.FilterSet):
         ('documentary', 'Documentary'), ('drama', 'Drama'), ('family', 'Family'),
         ('fantasy', 'Fantasy'), ('history', 'History'), ('horror', 'Horror'),
         ('music', 'Music'), ('musical', 'Musical'), ('mystery', 'Mystery'),
-        ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'), ('science fiction', 'Science Fiction'),
-        ('short', 'Short'), ('sport', 'Sport'), ('superhero', 'Superhero'),
-        ('thriller', 'Thriller'), ('war', 'War'), ('western', 'Western')
+        ("reality", "Reality"), ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
+        ('short', 'Short'), ("soap", "Soap"), ('sport', 'Sport'), ('superhero', 'Superhero'),
+        ("talk", "Talk"), ('thriller', 'Thriller'), ('war', 'War'), ('western', 'Western')
     )
-# series has these gnere:
-# ("Sci-Fi & Fantasy", "Sci-Fi & Fantasy"), ("Action & Adventure", "Action & Adventure"),
-# ("soap", "Soap"), ("talk", "Talk"), ("reality", "Reality"),("kids", "Kids"),
 
     content_type = django_filters.ChoiceFilter(
         choices=CONTENT_CHOICES,
@@ -58,78 +55,106 @@ class SharedMediaFilter(django_filters.FilterSet):
             })
         )
 
-    vote_average = django_filters.NumberFilter(
-        # field_name="vote_average",
+    # vote_average = django_filters.NumberFilter(
+    #     field_name="vote_average",
+    #     lookup_expr="",
+    #     label="Rating",
+    #     widget=forms.NumberInput(attrs={
+    #         'class': 'form-control',
+    #         'placeholder': 'Enter an exact rating score',
+    #         'type': 'number',
+    #         })
+    # )
+
+    vote_average_gte = django_filters.NumberFilter(
+        field_name="vote_average",
         lookup_expr="gte",
         label="Rating",
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter a rating here for an exact match',
+            'placeholder': 'Rating from..  eg: 2',
             'type': 'number',
             })
     )
 
-    release_date = django_filters.DateFromToRangeFilter(
-        method='check_release_date',
-        label='Release Date',
-        widget=forms.DateInput(attrs={
+    vote_average_lte = django_filters.NumberFilter(
+        field_name="vote_average",
+        lookup_expr="lte",
+        label="Rating",
+        widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Select a date range...',
+            'placeholder': 'Rating to..  eg: 7.5',
+            'type': 'number',
             })
     )
 
-    def check_release_date(self, queryset, name, value):
+
+
+
+    release_date = django_filters.NumberFilter(
+        method='check_release_date',
+        lookup_expr='year',
+        label='Release Date',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Type in an exact year',
+            })
+    )
+
+    release_date_gte = django_filters.NumberFilter(
+        method='check_release_date',
+        lookup_expr='year__gte',
+        widget=forms.DateInput(attrs={
+            'class': 'form-control', 'placeholder':'Enter a starting range..',
+            'type': 'number',
+            })
+        )
+    
+    release_date_lte = django_filters.NumberFilter(
+        method='check_release_date',
+        lookup_expr='year__lte',
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control', 'placeholder':'Enter a ending range...',
+            'type': 'number',
+            })
+        )
+    
+
+# filter by length
+# check if movies are less than 30min, 90min() or more than 120min, in between medium 
+
+
+    def check_release_date(self, queryset, name, value: int):
         """Custom filter method for release_date
         check if content_type is movie or serie
         and filter the queryset accordingly
         """
+        # debug print
+        print(f"*Filtering by {name}: {value}")
+        print(f"self.data is: {self.data}")
+        print(f"self.data is: {queryset}")
+        print(f"self.data.get('content_type') is: {self.data.get('content_type')}")
+        print(f"queryset_model is: {queryset.model}")
 
-        print(f"Filtering by release_date: {value}")
-        print(f"type value: {type(value)}")
-        if self.data.get('content_type') == 'movie':
-            return queryset.filter(release_date__range=value)
-        elif self.data.get('content_type') == 'serie':
-            return queryset.filter(serie__first_air_date__range=value)
-        else:
-            return queryset.filter(release_date__range=value)
-        
+        # if 'release_date_lte' in self.data:
+        #     print(f"data rel.date.gte found..------")
 
-    # release_year = django_filters.NumberFilter(
-    #     field_name='release_date', 
-    #     lookup_expr='year', 
-    #     widget=forms.NumberInput(attrs={
-    #         'class': 'form-control', 'placeholder':'Enter a year here for an exact match',
-    #         'type': 'number',
-    #         })
-    #     )
-    
-    # release_year__gt = django_filters.NumberFilter(
-    #     field_name='release_date', 
-    #     lookup_expr='year__gte',
-    #     widget=forms.NumberInput(attrs={
-    #         'class': 'form-control', 'placeholder':'Enter a year for a begin range',
-    #         'type': 'number',
-    #         })
-    #     )
-    
+        if hasattr(queryset.model, 'release_date'):
+            if 'gte' in name:
+                return queryset.filter(release_date__year__gte=value)
+            elif 'lte' in name:
+                return queryset.filter(release_date__year__lte=value)
+            else:
+                return queryset.filter(release_date__year=value)
+        elif hasattr(queryset.model, 'first_air_date'):
+            if 'gte' in name:
+                return queryset.filter(first_air_date__year__gte=value)
+            elif 'lte' in name:
+                return queryset.filter(first_air_date__year__lte=value)
+            else:
+                return queryset.filter(first_air_date__year=value)
 
 
-
-    # release_year__lt = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte')
-
-    # rating = django_filters.NumberFilter()
-    # rating__gt = django_filters.NumberFilter(field_name='rating', lookup_expr='gte')
-    # rating__lt = django_filters.NumberFilter(field_name='rating', lookup_expr='lte')
-
-
-    # Alternative implementation for filtering // may not need the above implementation
-        # fields = {
-        #     # 'title': ['icontains'], # , 'istartswith'
-        #     # 'release_date': ['year', 'year__gte', 'year__lte'],
-        #     # 'vote_average': ['exact', 'gte', 'lte'],
-        #     # 'genre': ['exact'],
-        # }
-        
 
     def filter_genres(self, queryset, name, value):
             """
@@ -137,50 +162,35 @@ class SharedMediaFilter(django_filters.FilterSet):
             This will filter content that have the specified genre in their genre list
             """
             print(f"Filtering by genre: {value}")
-            print(f"type value: {type(value)}")
 
-            if not value:
-                return queryset
-            
             print(f"query_set: {queryset} ")
             filtered_queryset = queryset
+            print(f"content_type is:  {self.data.get('content_type')}")
             
-                # For each selected genre, filter the queryset to require that genre
+            # For each selected genre, filter the queryset
+            # to include only those that contain the genre in their genre list
+            print(f"queryset_model: {queryset.model}")
+
             for genre in value:
                 print(f"Filtering for genre: {genre}")
+                # check content_type Movie or Serie , and change Sci-Fi to Science Fiction if model is Movie
+                if genre == "sci-fi" and queryset.model.__name__ == "Movie":
+                    genre = "science fiction"
+                    print(f"value sci-fi changed to: '{genre}'.")
 
                 filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
-
-            # for genre in value:
-            #     print(f"Genre: {genre}")
-            #     if genre is
-
-            # check if the selected value is in the genre list of the movie
             return filtered_queryset
 
-    
 
     def filter_content_type(self, queryset, name, value):
         ''' This is a placeholder - actual filtering happens in the view '''
         return queryset
 
 
-
     class Meta:
         # This meta class is required, but we'll override it in each instance
         model = Movie  # Default model, will be overridden when creating filter instances
-        fields = ['title', 'vote_average', 'genre']
+        fields = ['title', 'vote_average', 'genre', 'release_date']
 
-
-
-# class MovieFilter(SharedMediaFilter):
-#     class Meta:
-#         model = Movie
-#         fields = ['title', 'vote_average']
-
-# class SerieFilter(SharedMediaFilter):
-#     class Meta:
-#         model = Serie
-#         fields = ['title', 'vote_average']
 
 

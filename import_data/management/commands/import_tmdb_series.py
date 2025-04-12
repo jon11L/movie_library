@@ -132,8 +132,8 @@ class Command(BaseCommand):
             time.sleep(3) 
 
         self.stdout.write(self.style.SUCCESS(f"Imported list of **{selected_endpoint}** series done!\n"))
-        logger.info(f"SUMMARY: Series -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
-        self.stdout.write(f"SUMMARY: Series -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
+        logger.info(f"SUMMARY: Series (import) -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
+        self.stdout.write(f"SUMMARY: Series (import) -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
 
 

@@ -142,8 +142,8 @@ class Command(BaseCommand):
         time.sleep(3) # give some time between fetching a new page list of movies. // to correct
         self.stdout.write(self.style.SUCCESS(f"Imported list of updated movies successfully\n"))
         self.stdout.write(f"{imported_count-1} movie imported.")
-        logger.info(f"SUMMARY: Movies -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
-        self.stdout.write(f"SUMMARY: Movies -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
+        logger.info(f"SUMMARY: Movies (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
+        self.stdout.write(f"SUMMARY: Movies (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
 
             # except Exception as e:
