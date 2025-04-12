@@ -67,7 +67,7 @@ def login_user(request):
             messages.error(request, ("User and password don't match. Please try again"))
             return redirect(to='user:login')
 
-
+# log out function
 @login_required
 def logout_user(request):
     logout(request)
@@ -86,7 +86,7 @@ def profile_page(request, pk):
         like = Like.objects.filter(user=pk)
         # print(f"like: {like}") # debug print
 
-        total_like = like.count() #count how many items has been liked
+        total_like = like.count()
 
         context = {
             'profile': profile,

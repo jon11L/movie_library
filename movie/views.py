@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from .models import Movie
-from user_library.models import Like
+from user_library.models import Like, WatchList
 # from .services import add_movies_from_tmdb
 # from api_services.TMDB.fetch_movies import fetch_popular_movies
 
@@ -34,6 +34,14 @@ def list_movie(request): # , page     ----- was for the custom pagination
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)
 
+
+            # Get the user's watchlist content (movies, series)
+            user_watchlist_movies = []
+            user_watchlist_movies = WatchList.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+
+
             # Get the user's like content
             user_liked_movies = Like.objects.filter(
                                             user=request.user.id,
@@ -43,6 +51,7 @@ def list_movie(request): # , page     ----- was for the custom pagination
             context = {
                 'user_liked_movies': user_liked_movies,
                 'movie_list' : movie_list,
+                'user_watchlist_movies': user_watchlist_movies, 
                 }
 
             return render(request, 'movie/list_movie.html', context=context)
@@ -64,6 +73,13 @@ def movie_overview(request, pk):
         # retrieve the specified movie requested by user
             movie = Movie.objects.get(id=pk)
             # Check if user's like the movie
+
+            # Get the user's watchlist content (movies, series)
+            user_watchlist_movies = []
+            user_watchlist_movies = WatchList.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+
             user_liked_movie = False
             user_liked_movie = Like.objects.filter(
                                             user=request.user.id,
@@ -72,9 +88,11 @@ def movie_overview(request, pk):
                                             ).values_list('object_id', flat=True)
 
             print(f"user_liked :{user_liked_movie}") # debug print
+
             context = {
                 'movie': movie,
                 'user_liked_movie': user_liked_movie,
+                'user_watchlist_movies': user_watchlist_movies,
                 }
             
             return render(request,'movie/detail_movie.html', context=context)
