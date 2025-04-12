@@ -19,14 +19,24 @@
                 <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 15px 0px 0 15px;"><small>{{ serie.render_vote_average }}/10</small></p>
                     
-                    <!-- like button feature -->
-                    <button class="like-button"
+                        
+                    <div>
+                        <!-- Watchlist button feature -->
+                        <button class="watchlist-button"
                             data-type="serie"
                             data-id="{{ serie.id }}"
-                            data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
-                            <i class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                            data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                            <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                        </button>
 
-                    </button>
+                        <!-- like button feature -->
+                        <button class="like-button"
+                                data-type="serie"
+                                data-id="{{ serie.id }}"
+                                data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                                <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card-img-top" style="text-align: center; margin-top: 25px;">

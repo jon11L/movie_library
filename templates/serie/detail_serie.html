@@ -11,14 +11,24 @@
                 <div class="card">
 
                     <div style="display: flex; flex-wrap: wrap; align-self: flex-end; margin-top: 15px; margin-right: 10px;">
-                        <!-- like button feature -->
-                        <button class="like-button"
+                        
+                        <div>
+                            <!-- Watchlist button feature -->
+                            <button class="watchlist-button"
                                 data-type="serie"
                                 data-id="{{ serie.id }}"
-                                data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
-                                <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                            </button>
 
-                        </button>
+                            <!-- like button feature -->
+                            <button class="like-button"
+                                    data-type="serie"
+                                    data-id="{{ serie.id }}"
+                                    data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                                    <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                            </button>
+                        </div>
 
                     </div>
 
@@ -43,7 +53,7 @@
                         <p class="card-text"> Description: {{ serie.description }}</p>
                         <br>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Year:</strong> {{ serie.release_date }}</li>
+                            <li class="list-group-item"><strong>Year:</strong> {{ serie.first_air_date }}</li>
                             <li class="list-group-item"><strong>Genre:</strong>  {{ serie.render_genre }}</li>
                             <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
                             <li class="list-group-item"><strong>Rating score:</strong> {{ serie.rating }}/10</li>

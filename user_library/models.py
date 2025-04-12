@@ -61,7 +61,6 @@ class WatchedContent(models.Model):
 
 class WatchList(models.Model):
 
-
     MOVIE = 'movie'
     SERIE = 'serie'
 
@@ -84,14 +83,15 @@ class WatchList(models.Model):
     status = models.CharField(choices=Status.choices, blank=True, null=True)
 
     # track time    # track time
-    added_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'watch_list'
         verbose_name = 'Watch_List'
         verbose_name_plural = 'Watch_Lists'
         unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-added_on']
+        ordering = ['-created_on']
 
 
     def __str__(self):

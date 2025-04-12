@@ -18,12 +18,11 @@
         <div style="justify-items: center; padding-bottom: 50px;" >
         
 
-            <div style=" margin-right: 30px;">
+            <div style=" margin-right: 30px; color: bisque;">
                 <p><strong>liked on:</strong> {{ item.liked_on }}</p>
             </div>
 
             <div class="card w-25">
-
                 <div class="card-body">
                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
                         
@@ -59,15 +58,22 @@
 
                     </div>
 
-                    <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                        {% if item.content.images_poster %}
-                            <img src=" {{ movie.film_poster.url }} " class="img-fluid rounded"  alt="Profile photo">
-                        {% else %}
-                        <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                        {% endif %}
+                    <div class="row">
+                        <div class="col">
+
+                            <div class="card-img-top">
+                                {% if item.content.render_image_poster %}
+                                    <img src=" {{ item.content.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
+                                {% else %}
+                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                                {% endif %}
+                            </div>
+                            
+                            <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
+
+                        </div>
+                        
                     </div>
-                    
-                <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
                 </div>
             </div>
 

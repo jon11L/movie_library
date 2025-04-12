@@ -17,13 +17,23 @@
             <div style="display: flex; justify-content: space-between;  margin: 5px 0px 0 10px;">
                 <p><small>{{ movie.render_vote_average }}/10</small></p>
 
-                <!-- like button feature -->
-                <button class="like-button"
-                        data-type="movie"
-                        data-id="{{ movie.id }}"
-                        data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
-                        <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                </button>
+                <div>
+                    <!-- watchlist button feature -->
+                    <button class="watchlist-button"
+                            data-type="movie"
+                            data-id="{{ movie.id }}"
+                            data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                        <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                    </button>
+
+                    <!-- like button feature -->
+                    <button class="like-button"
+                            data-type="movie"
+                            data-id="{{ movie.id }}"
+                            data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
+                            <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="card-img-top" style="width: 250px; height: 200px;">
