@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from .filters import SharedMediaFilter
 from movie.models import Movie
 from serie.models import Serie
-from user_library.models import Like
+from user_library.models import Like, WatchList
 
 
 # >>> Author.objects.filter(name__unaccent__lower__trigram_similar="Hélène")
@@ -89,6 +89,19 @@ def search(request):
                 filtered_series = serie_filter.qs
                 # print(f"Filtered series: {filtered_series}")
 
+
+            # Get the user's watchlist content (movies, series)
+            user_watchlist_movies = []
+            user_watchlist_movies = WatchList.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+
+            user_watchlist_series = []
+            user_watchlist_series = WatchList.objects.filter(
+                                                user=request.user.id, content_type='serie'
+                                                ).values_list('object_id', flat=True)
+
+
             # Get the user's liked content (movies, series)
             user_liked_movies = Like.objects.filter(
                                                 user=request.user.id, content_type='movie'
@@ -133,9 +146,11 @@ def search(request):
                 'query_params': query_params,
                 'query_url': query_string_url,
                 'list_content': page_object,
-                'total_found': total_found,
+                'total_found': total_found if total_found > 0 else None,
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
+                'user_watchlist_movies': user_watchlist_movies, 
+                'user_watchlist_series': user_watchlist_series, 
                 'filters_applied': True
             }
 

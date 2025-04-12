@@ -132,8 +132,8 @@ class Command(BaseCommand):
 
         # final summary:
         self.stdout.write(self.style.SUCCESS(f"Import of movies successfully completed: '{imported_count}' movies processed\n"))
-        logger.info(f"SUMMARY: Movies -- {created} Created. -- 0 Updated. -- {skipped_count}  Skipped/Failed.")
-        self.stdout.write(f"SUMMARY: Movies -- {created} Created. -- 0 Updated. -- {skipped_count}  Skipped/Failed.")
+        logger.info(f"SUMMARY: Movies (import) -- {created} Created. -- 0 Updated. -- {skipped_count}  Skipped/Failed.")
+        self.stdout.write(f"SUMMARY: Movies (import) -- {created} Created. -- 0 Updated. -- {skipped_count}  Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
 
 

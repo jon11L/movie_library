@@ -13,54 +13,73 @@
         </div>
         
         <!------------------ Search Filter  form  ----------------->
-        <div class="row">
-            <div class="col">
-                <div class="card-body" style="margin-top: 25px;">
-                    <form method="get" action="{% url 'search:search' %}">
-                        <!-- {% csrf_token %} -->
-                        <div class="" style="display: flex; flex-wrap: wrap; justify-content: center;">
-
-
+        <div class="card-body" style="margin-top: 25px;">
+            <form method="get" action="{% url 'search:search' %}">
+                <!-- {% csrf_token %} -->
+                <div class="" style="display: flex; flex-wrap: wrap; justify-content: center;">
+                    
+                    
+                    <div class="row">
+                        <div class="col">
                             <div class="form-group mb-2 me-3">
                                 <label for="content_type">Content Type:</label>
                                 {{ filter.form.content_type }}
                             </div>
-
-                            <div class="form-group me-3">
+                            
+                            <div class="form-group me-3" style="margin-top: 15px;">
                                 <label for="genre">Genre:</label>
                                 {{ filter.form.genre }}
                             </div>
+                        </div>                    
+                    </div>
 
                             <div class="form-group mb-2 me-3">
                                 <label for="title">Title:</label>
                                 {{ filter.form.title }}
                             </div>
 
-                            <div class="form-group mb-2 me-3">
-                                <label for="vote_average__gte">Min Rating:</label>
-                                {{ filter.form.vote_average }}
+
+                            <div>
+                                <div class="form-group mb-2 me-3" style="width: 80%;">
+                                    <label for="vote_average_from">Min Rating:</label>
+                                    {{ filter.form.vote_average_gte }}
+                                </div>
+                                <div class="form-group mb-2 me-3" style="width: 80%;">
+                                    <label for="vote_average_to">Max Rating:</label>
+                                    {{ filter.form.vote_average_lte }}
+                                </div>
+
                             </div>
 
-                            <div class="form-group me-2">
-                                <label for="release_date">Select an exact year:</label>
+                            <!-- Range date fields / option between exact and range filter -->
+                            <div class="form-group me-2" id="exactDateField">
+                                <label for="release_date">Filter by Date:</label>
                                 {{ filter.form.release_date }}
                             </div>
 
-
-                            <div>
-                                <div class="form-group me-2">
-                                    <label for="release_date__gte">year From:</label>
+                            <div id="rangeDateField" style="display: none;">
+                                <div class="form-group mb-2 me-2">
+                                    <label for="release_date_from">year From:</label>
                                     {{ filter.form.release_date_gte }}
                                 </div>
     
     
                                 <div class="form-group me-2">
-                                    <label for="release_date__lte">year To:</label>
+                                    <label for="release_date_to">year To:</label>
                                     {{ filter.form.release_date_lte }}
                                 </div>
 
                             </div>
 
+                            <!-- toggle the release date field between Excact or Rangefilter -->
+                            <div class="form-group">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="toggleDateRange">
+                                    <label class="form-check-label" for="toggleDateRange">
+                                        <small>click to use range instead of exact year</small>
+                                    </label>
+                                </div>
+                            </div>
 
                                 <!-- <label for="release_date__lte">to:</label>
                                 {{ filter.form.release_date }} -->
@@ -74,41 +93,27 @@
                         <button type="submit" class="btn btn-secondary" style="margin-top: 40px; margin-right: 35px; background-color: darkcyan;">Apply filters</button>
                     </form>
                 </div>
-            </div>                    
-        </div>
     </div>
+    <br><br>
 
 
-                    <br><br>
     <!------------- Result Query Result Found or no items found -------------->
     <div style="width: 50%; margin: auto; text-align: center;">
-        <!-- click on search button in Navbar with result -->
-        {% if query and movies or series %}
-        <h3 style="color: green;">Search results for "{{ query }}".</h3>
-        <p style="color: darkgreen;">{{ total_found }} items found match your query.</p>
-        
-        <!-- click on search button in Navbar without result -->
-        {% elif query and not movies and not series %}
-        <h3 style="color: red;">No result for "{{ query }}"...</h3>
-
         <!-- click on search button in Navbar without search given // same with search filter button-->
-        {% elif not query and not filters_applied %}
+        {% if not query and not filters_applied %}
         <h3 style="color: green;">Start your search</h3>
 
-
         <!-- filter form button clicked with filters and results -->
-        {% elif filter and query_params and not query %}
+        {% elif filter and query_params and total_found %}
         <h3 style="color: green;">Search results for your query.</h3>
         <p style="color: darkgreen;">{{ total_found }} items match your query.</p>        
         <!-- filter form button clicked with filters no result -->
-        
 
-        {% elif not query and filter and not movies or not series %}
+        {% elif filter and not total_fount %}
         <h3 style="color: red;">No result could be found base on your query</h3>        
         <p style="color: darkred;"> please refine the filtering options</p>
         {% endif %}
     </div>
-
 
 
     <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
@@ -122,13 +127,27 @@
                 <div style="display: flex; justify-content: space-between;" id="like_button">
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
                     <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
-                    <!-- like button feature  -->
-                    <button class="like-button"
-                        data-type="{{ item.object.type }}"
-                        data-id="{{ item.object.id }}"
-                        data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
-                        <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                    </button>
+
+        
+                    <div>
+                        <!-- Watchlist button feature -->
+                        <button class="watchlist-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-bookmarked="{% if item.object..id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                        </button>
+
+                        <!-- like button feature -->
+                        <button class="like-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
+                    </div>
+
+
                 
                 </div>
 
@@ -138,13 +157,25 @@
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
                     <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
                     
-                    <!-- like button feature  -->
-                    <button class="like-button"
-                        data-type="{{ item.object.type }}"
-                        data-id="{{ item.object.id }}"
-                        data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
-                        <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                    </button>
+
+                    <div>
+                        <!-- Watchlist button feature -->
+                        <button class="watchlist-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-bookmarked="{% if item.object..id in user_watchlist_series %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                        </button>
+
+                        <!-- like button feature  -->
+                        <button class="like-button"
+                            data-type="{{ item.type }}"
+                            data-id="{{ item.object.id }}"
+                            data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
+                            <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                        </button>
+
+                    </div>
                 
                 </div>
 
@@ -165,7 +196,6 @@
             </div>
         </div>
         {% endfor %}
-        
         {% endif %}
     </div>
     
@@ -216,11 +246,27 @@
     {% endif %}
     <!-- --- End of Pagination system ----- -->
 
-
 </div>
+
+
+<script>
+    document.getElementById('toggleDateRange').addEventListener('change', function() {
+    const exactDateField = document.getElementById('exactDateField');
+    const rangeDateField = document.getElementById('rangeDateField');
     
+    if (this.checked) {
+      exactDateField.style.display = 'none';
+      rangeDateField.style.display = 'block';
+      // Clear the exact date field to avoid conflicting filters
+      document.querySelector('#exactDateField input').value = '';
+    } else {
+      exactDateField.style.display = 'block';
+      rangeDateField.style.display = 'none';
+      // Clear the range fields
+      document.querySelectorAll('#rangeDateField input').forEach(input => input.value = '');
+    }
+});
+</script>
+
+
 {% endblock %}
-
-<!-- {% for item in items %} -->
-
-<!-- {% endfor %} -->

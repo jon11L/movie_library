@@ -55,16 +55,41 @@ class SharedMediaFilter(django_filters.FilterSet):
             })
         )
 
-    vote_average = django_filters.NumberFilter(
+    # vote_average = django_filters.NumberFilter(
+    #     field_name="vote_average",
+    #     lookup_expr="",
+    #     label="Rating",
+    #     widget=forms.NumberInput(attrs={
+    #         'class': 'form-control',
+    #         'placeholder': 'Enter an exact rating score',
+    #         'type': 'number',
+    #         })
+    # )
+
+    vote_average_gte = django_filters.NumberFilter(
         field_name="vote_average",
         lookup_expr="gte",
         label="Rating",
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter a rating here for an exact match',
+            'placeholder': 'Rating from..  eg: 2',
             'type': 'number',
             })
     )
+
+    vote_average_lte = django_filters.NumberFilter(
+        field_name="vote_average",
+        lookup_expr="lte",
+        label="Rating",
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Rating to..  eg: 7.5',
+            'type': 'number',
+            })
+    )
+
+
+
 
     release_date = django_filters.NumberFilter(
         method='check_release_date',
@@ -72,7 +97,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         label='Release Date',
         widget=forms.DateInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Select a date range...',
+            'placeholder': 'Type in an exact year',
             })
     )
 
