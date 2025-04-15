@@ -33,3 +33,4 @@ tmdb_access.html
 
 #  ------ files to fix some issues /bugs
 correct_production_movies.py
+update_serie_date.py

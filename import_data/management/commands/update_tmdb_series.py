@@ -134,6 +134,7 @@ class Command(BaseCommand):
                     self.stdout.write("---------")
 
             except Exception as e:
+                skipped_count += 1
                 # self.stdout.write(self.style.ERROR(f"Error importing {tmdb_serie_id}: {e}"))
                 logger.error(f"Error importing {tmdb_serie_id}: {e}")
 

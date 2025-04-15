@@ -92,10 +92,10 @@ class Serie(models.Model):
             return image_poster
         return None
     
-    def render_average_time(self):
-        '''return the Serie' length in average per episode time
-        '''
-        average_length = self.seasons.episodes.aggregate(models.Avg('episodes__length'))['episodes__length__avg']
+    # def render_average_time(self):
+    #     '''return the Serie' length in average per episode time
+    #     '''
+    #     average_length = self.seasons.episodes.aggregate(models.Avg('episodes__length'))['episodes__length__avg']
 
 
 class Season(models.Model):

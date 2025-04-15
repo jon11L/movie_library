@@ -21,7 +21,7 @@ def save_or_update_movie(tmdb_id: int):
         else:
             print(f"Movie found with TMDB ID: {tmdb_id}")
 
-        print("passing datas into field for the new movie's instance") # debug print
+        # print("passing datas into field for the new movie's instance") # debug print
         
         # initialize empty list, for future jsonfield reference ... 
         director = []
@@ -133,11 +133,12 @@ def save_or_update_series(tmdb_id):
         # check if te API was called correctly and returned the datas
         if not serie_data:
             print(f"Failed to fetch serie data from TMDB api with ID: {tmdb_id}")
-            return  {
-                    'status': 'error',
-                    'tmdb_status_code': 34,
-                    'message': f'No serie found with TMDB ID: {tmdb_id}',
-                } # Handle failure case
+            # return  {
+            #         'status': 'error',
+            #         'tmdb_status_code': 34,
+            #         'message': f'No serie found with TMDB ID: {tmdb_id}',
+            #     } # Handle failure case
+            return None, False
 
         print("Passing the new serie's instance\n") # debug print
 
