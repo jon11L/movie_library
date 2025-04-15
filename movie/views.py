@@ -29,7 +29,7 @@ def list_movie(request): # , page     ----- was for the custom pagination
     try:
         if Movie:            
             # paginator implementation
-            paginator = Paginator(Movie.objects.all().order_by('-id'), 20)
+            paginator = Paginator(Movie.objects.all().order_by('-id'), 24)
             # Get the current page number from the GET request
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)

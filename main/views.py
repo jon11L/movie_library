@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.decorators import user_passes_test
+# from django.contrib.auth.decorators import user_passes_test
 
+import datetime
+import random
 # from api_services.TMDB.base_client import TMDBClient
 # from api_services.TMDB.fetch_movies import get_movie_data
 
@@ -21,11 +23,50 @@ def home(request):
     '''
     # Check if they are Movie datas and display them if so
     try:
-        movies = Movie.objects.order_by('-release_date')[:8] # retrieve the latest 8 content added 
-        series = Serie.objects.order_by('-id')[:8] 
+
+        def pick_content(list_sample):
+            '''Takes a list sample from the queryset or list given'''
+            return random.sample(list(list_sample), 6) 
+            
+
+        # to display movies & series that are coming soon or recently released
+        today = datetime.date.today()
+        week_ago = today - datetime.timedelta(days=7)  # 7 days ago
+        bi_week_later = today + datetime.timedelta(days=14)  # 14 days later
+        week_start = today - datetime.timedelta(days=today.weekday())  # Monday of the current week
+        week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
+        fortnight_ago = today - datetime.timedelta(days=15)  # 15 days ago
+        month_ago = today - datetime.timedelta(days=30)  # 30 days ago
+
+        movies = Movie.objects.all()
+        series = Serie.objects.all()
         
-        movies_count = Movie.objects.count() # display the amount of movies in the database
-        series_count = Serie.objects.count() 
+
+        recently_released_movies = movies.filter(release_date__range=(week_ago, today)).exclude(length__range=(0, 45))  # retrieve the 10 latest content added
+        print(f"\n recently released movies: {len(recently_released_movies)}\n") # debug print
+        recently_released_movies = pick_content(recently_released_movies)  # retrieve 8 random movies from the last 30 days
+
+        coming_soon_movies = movies.filter(release_date__range=(today, bi_week_later)).exclude(length__range=(0, 45))  # retrieve the movies coming soon.
+        print(f"\n coming soon movies: {len(coming_soon_movies)}\n") # debug print
+        coming_soon_movies = pick_content(coming_soon_movies) 
+
+
+        random_pick_movies = random.sample(list(movies.exclude(length__range=(0, 45))), 6)  # retrieve 8 random movies from the last 30 days
+        print(f"\n random pick movies:\n\n{random_pick_movies}\n") # debug print
+
+
+        # series = Serie.objects.filter(last_air_date__range=(week_start, week_end))[:8] 
+        coming_back_series = series.filter(last_air_date__range=(fortnight_ago, bi_week_later))
+        print(f"\n coming back series: {len(coming_back_series)}\n") # debug print
+        coming_back_series = pick_content(coming_back_series)  # retrieve 8 random movies from the last 30 days
+
+        coming_up_series = series.filter(first_air_date__range=(fortnight_ago, bi_week_later))  # retrieve the 8 latest content added
+        print(f"\n coming up series: {len(coming_up_series)}\n") # debug print
+        coming_up_series = pick_content(coming_up_series)  # retrieve 8 random movies from the last 30 days
+        
+
+        movies_count = movies.count() # display the amount of movies in the database
+        series_count = series.count() 
 
         # Get the user's watchlist content (movies, series)
         user_watchlist_movies = []
@@ -52,19 +93,21 @@ def home(request):
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
         
-        print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
-        print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
+        # print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
+        # print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
 
         context = {
-            'movies': movies,
+            'movies': recently_released_movies,
+            'coming_soon': coming_soon_movies,
+            'random_movies': random_pick_movies,
+            'series': coming_back_series,
+            'coming_up_series': coming_up_series,
             'movies_count': movies_count,
             'series_count': series_count,
-            'series': series,
             'user_liked_movies': user_liked_movies,
             'user_liked_series': user_liked_series,
             'user_watchlist_movies': user_watchlist_movies,
             'user_watchlist_series': user_watchlist_series,
-
 
         }
 

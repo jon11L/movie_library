@@ -15,7 +15,7 @@ def list_serie(request):
     try:
         if Serie:
             # paginator implementation
-            p = Paginator(Serie.objects.all().order_by('-id'), 20)
+            p = Paginator(Serie.objects.all().order_by('-id'), 24)
             # Get the current page number from the GET request
             page = request.GET.get('page') 
             serie_list = p.get_page(page)
@@ -37,7 +37,6 @@ def list_serie(request):
             context = {
                 'user_liked_series': user_liked_series,
                 'user_watchlist_series': user_watchlist_series,
-
                 'serie_list' : serie_list,
             }
 

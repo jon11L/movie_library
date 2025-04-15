@@ -78,7 +78,7 @@
                                 <ul>
                                     {% for episode in season.episodes.all %}
                                         <li>
-                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.length }}min</small>
+                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.length }}min  --  (released on {{episode.release_date}})</small>
                                             <p>{{ episode.description }}</p>
                                         </li>
                                     {% endfor %}
