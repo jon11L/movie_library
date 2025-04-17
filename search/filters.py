@@ -13,7 +13,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         )
     
     GENRE_CHOICES = (
-        ('Action', 'Action'), ('adventure', 'Adventure'), ('animation', 'Animation'),
+        ('action', 'Action'), ('adventure', 'Adventure'), ('animation', 'Animation'),
         ('biography', 'Biography'), ('comedy', 'Comedy'), ('crime', 'Crime'),
         ('documentary', 'Documentary'), ('drama', 'Drama'), ('family', 'Family'),
         ('fantasy', 'Fantasy'), ('history', 'History'), ('horror', 'Horror'),
@@ -25,7 +25,7 @@ class SharedMediaFilter(django_filters.FilterSet):
 
     content_type = django_filters.ChoiceFilter(
         choices=CONTENT_CHOICES,
-        empty_label=None,
+        empty_label=None,   
         method='filter_content_type',
         initial='all',
         label='Content Type',
