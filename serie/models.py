@@ -63,6 +63,16 @@ class Serie(models.Model):
             production = ', '.join(self.production)
             return production 
         return 'N/a' 
+    
+
+    def render_created_by(self):
+        '''return the Movie.production attribute in without quotes and [],
+        only comma-separated string.
+        '''
+        if self.created_by:
+            created_by = ', '.join(self.created_by)
+            return created_by 
+        return 'N/a' 
 
     def render_origin_country(self):
         '''return the Movie.origin_country with a comma-separated string'''
@@ -95,8 +105,7 @@ class Serie(models.Model):
     # def render_average_time(self):
     #     '''return the Serie' length in average per episode time
     #     '''
-    #     average_length = self.seasons.episodes.aggregate(models.Avg('episodes__length'))['episodes__length__avg']
-
+        # pass
 
 class Season(models.Model):
 

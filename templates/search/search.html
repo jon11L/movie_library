@@ -111,14 +111,14 @@
 
 
     <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
-    <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 100px; align-content: center;">
+    <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;">
         {% if list_content %}
         {% for item in list_content %}
         <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 270px; height: auto; margin-right: 30px; margin-bottom: 25px;">
             <div class="poster">
                 
                 {% if item.type == 'movie' %}
-                <div style="display: flex; justify-content: space-between;" id="like_button">
+                <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
                     <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
 
@@ -134,6 +134,7 @@
 
                         <!-- like button feature -->
                         <button class="like-button"
+                            id="like_button"
                             data-type="{{ item.type }}"
                             data-id="{{ item.object.id }}"
                             data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
@@ -141,13 +142,20 @@
                         </button>
                     </div>
 
-
-                
                 </div>
 
-                <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" style="width: fit-content; height: 400px;">
-                {% else %}
-                <div style="display: flex; justify-content: space-between;" id="like_button">
+                <div>
+                    {% if item.object.image_poster %}
+                    <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 375px;">
+                    {% else %}
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 375px;">
+                    {% endif %}
+                </div>
+                
+                
+                {% elif item.type == 'serie' %}
+
+                <div style="display: flex; justify-content: space-between;">
                     <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
                     <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
                     
@@ -163,6 +171,7 @@
 
                         <!-- like button feature  -->
                         <button class="like-button"
+                            id="like_button"
                             data-type="{{ item.type }}"
                             data-id="{{ item.object.id }}"
                             data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
@@ -173,18 +182,25 @@
                 
                 </div>
 
-                <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  style="width: fit-content; height: 400px;">
+                <div>
+                    {% if item.object.render_image_poster %}
+                    <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded" style="width: fit-content; height: 375px;">
+                    {% else %}
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 375px;">
+                    {% endif %}
+                </div>
+                
                 {% endif %}
             </div>
 
             <div class="" style="width: auto;">
                 {% if item.type == 'movie' %}
-                <a href="{% url 'movie:movie_overview' item.object.id %}" style="text-decoration: none;">
+                <a href="{% url 'movie:movie_overview' item.object.id %}"  style="text-decoration: none;">
                     <h4 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":70" }}</h4>
                 </a>
                 {% else %}
                 <a href="{% url 'serie:serie_overview' item.object.id %}" style="text-decoration: none;">
-                <h4 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":70" }}</h4>
+                    <h4 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":70" }}</h4>
                 </a>
                 {% endif %}
             </div>
@@ -194,7 +210,7 @@
     </div>
     
     
-    {% if query or filters_applied or list_content %}
+    {% if filters_applied or list_content %}
     <!----- Pagination system ------->
     <div style="display: flex; justify-content: center;">
         <nav aria-label="Page navigation example">
@@ -202,15 +218,16 @@
                 {% if list_content.has_previous and query_params  %}
                 <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo first</a></li>
                 <!-- previous page -->
-                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                <!-- <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li> -->
                 {% elif list_content.has_previous and not query_params  %}
                 <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
                 <!-- previous page -->
                 <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
                 {% endif %}
                 
+                <!-- enumerate pages around current page -->
                 {% for num in list_content.paginator.page_range %}
-                    <!-- enumerate pages around current page -->
+                
                     {% if num == list_content.number %}
                     <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
                     {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
@@ -221,18 +238,11 @@
                 {% if query_params and list_content.has_next %}
                 <!-- Next page -->
                 <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">Next Page</a></li>
-
                 <!-- Last page -->
-                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}{% for key, value in query_params.items %}&{{ key }}={{ value }}{% endfor %}" class="btn btn-outline-info mb-4">Last Page</a></li>
-                {% elif not query_params and list_content.has_next %}
-                <!-- Next page -->
-                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
-                
-                <!-- Last page -->
-                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}&{{ query_url }}" class="btn btn-outline-info mb-4">Last Page</a></li>
                 {% endif %}
                 
-                <!-- Current page and how many pages are there -->
+                <!-- Show the current page and how many pages there are -->
                 <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ list_content.number }} of {{ list_content.paginator.num_pages }}</h6></li>
             </ul>
         </nav>

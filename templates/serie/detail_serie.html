@@ -10,8 +10,15 @@
             {% if serie %}
                 <div class="card">
 
-                    <div style="display: flex; flex-wrap: wrap; align-self: flex-end; margin-top: 15px; margin-right: 10px;">
-                        
+                    <div class="movie-card">
+                        {% if serie.render_banner_poster %}
+                        <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
+                        {% endif %}
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 15px; margin-right: 10px;">
+            
+                        <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
                         <div>
                             <!-- Watchlist button feature -->
                             <button class="watchlist-button"
@@ -32,13 +39,8 @@
 
                     </div>
 
-                    <div class="movie-card">
-                        {% if serie.render_banner_poster %}
-                        <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
-                        {% endif %}
-                    </div>
 
-                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                    <div class="card-img-top" style="text-align: center; margin-top: 0px;">
                         {% if serie.render_image_poster %}
                         <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% else %}
@@ -48,7 +50,13 @@
                     <br>
                     
                     <div class="card-body">
-                        <h4 class="card-title" style="text-align: center;">{{ serie.title }}</h4>
+                        <div style="text-align: center;">
+                            <h4 class="card-title">{{ serie.title }}</h4>
+                            {% if serie.tagline %}
+                            <p> ({{ serie.tagline }})</p>
+                            {% endif %}
+                            
+                        </div>
                         <br>
                         <p class="card-text"> Description: {{ serie.description }}</p>
                         <br>
@@ -56,11 +64,9 @@
                             <li class="list-group-item"><strong>Year:</strong> {{ serie.first_air_date }}</li>
                             <li class="list-group-item"><strong>Genre:</strong>  {{ serie.render_genre }}</li>
                             <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
-                            <li class="list-group-item"><strong>Rating score:</strong> {{ serie.rating }}/10</li>
-                            <li class="list-group-item"><strong>Casting:</strong> {{ serie.casting }}</li>
-                            <li class="list-group-item"><strong>Production:</strong> {{ serie.production }}</li>
-                            <li class="list-group-item"><strong>Writer:</strong> {{ serie.writer }}</li>
-                            <li class="list-group-item"><strong>Origin country:</strong> {{ serie.country_of_origin }}</li>
+                            <li class="list-group-item"><strong>Created by:</strong> {{ serie.render_created_by }}</li>
+                            <li class="list-group-item"><strong>Production:</strong> {{ serie.render_production }}</li>
+                            <li class="list-group-item"><strong>Origin country:</strong> {{ serie.render_origin_country }}</li>
                         </ul>
                     </div>
 
@@ -73,8 +79,27 @@
                             <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 20px; ">
                                 {{ season.season_number }} - {{ season.name }}
                             </button>
-                            <!-- display the episodes when user click on the season -->
+                            <!-- display the Trailer and episodes when user click on the season -->
                             <div id="season-{{ season.id }}" class="episode-list" style="display: none;">
+                                <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                                    {% if season.trailers %}
+                                    {% for trailer in season.trailers %}
+                                    <div class="ms-3 mb-2">
+                                        <iframe width="300" height="200"
+                                            src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                            title="YouTube video player"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                    <!-- <p>https://www.youtube.com/watch?v={{ trailer.key }}</p> -->
+                                    
+                                    <!-- src="https://www.youtube.com/watch?v={{ trailer.key }}" -->
+                                    {% endfor %}
+                                    {% endif %}
+                                </div>
                                 <ul>
                                     {% for episode in season.episodes.all %}
                                         <li>
@@ -95,14 +120,16 @@
                     </div>
                 </div>
 
-                <br><br>
+                <br>
+
+
 
             <!-- Comment section -->
             <div>
-                <div style="justify-items: center;">
+                <div style="justify-items: center; margin-top: 20px;">
                     <h3>Comments:</h3>
                 </div>
-                <form action="" method="POST">
+                <form action="" method="POST" style="margin-top: 10px;">
                     {% csrf_token %}
                     {{form.as_p }}
                     <div class="row" style="width: 75%; margin: auto;">

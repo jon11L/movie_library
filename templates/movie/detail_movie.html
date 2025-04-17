@@ -21,7 +21,7 @@
 
                 <div style="display: flex; flex-wrap: wrap; justify-content:space-between ;">
 
-                    <p><small>{{ movie.render_vote_average }}/10</small></p>
+                    <p><small>{{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)</small></p>
                     
                     <div style="align-self: flex-end; margin-top: 15px; margin-right: 10px;">
                         
@@ -56,38 +56,58 @@
                     <br>
                     
                     <div class="card-body">
-                        <h2 class="card-title" style="text-align: center;">{{ movie.title }}</h2>
+                        <div style="text-align: center;">
+                            <h4 class="card-title">{{ movie.title }}</h4>
+                            {% if movie.tagline %}
+                            <p> ({{ movie.tagline }})</p>
+                            {% endif %}
+                        </div>   
                         <br>
+
                         <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
                         <br>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Year:</strong> {{ movie.release_date }}</li>
+                            <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date }}</li>
                             <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
                             <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li>
-                            <li class="list-group-item"><strong>Rating score:</strong> {{ movie.render_vote_average }}/10</li>
                             <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li>
                             <li class="list-group-item"><strong>Production:</strong> {{ movie.render_production }}</li>
                             <li class="list-group-item"><strong>director:</strong> {{ movie.render_director }}</li>
                             <li class="list-group-item"><strong>Writer:</strong> {{ movie.render_writer }}</li>
                             <li class="list-group-item"><strong>Origin country:</strong> {{ movie.render_origin_country }}</li>
                             <li class="list-group-item"><strong>Spoken languages:</strong> {{ movie.render_spoken_languages }}</li>
+                            </li>
                         </ul>
                     </div>
-                    
+                    <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                        {% if movie.trailers %}
+                        {% for trailer in movie.trailers %}
+                        <div class="ms-3 mb-2">
+                            <iframe width="300" height="200"
+                                src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                title="YouTube video player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
                 </div>
-                <br><br>
             </div>
                 
 
-            <!-- Comment section -->
+            <!-------- Comment section --------->
             <div>
-                <div style="justify-items: center;">
+                <div style="justify-items: center; margin-top: 20px;">
                     <h3>Comments:</h3>
                 </div>
-                <form action="" method="POST">
+                <form action="" method="POST" style="margin-top: 10px;">
                     {% csrf_token %}
                     {{form.as_p }}
-                    <div class="row" style="width: 75%; margin: auto;">
+                    <div class="row" style="width: 80%; margin: auto;">
                         <!-- <label for=""></label> -->
                         <textarea class="form control" rows="4" style="background-color: black; color: white; margin-bottom: 20px;"></textarea>
                         <button type="submit" class="btn btn-secondary" style="width: auto; margin: auto;">

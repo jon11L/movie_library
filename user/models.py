@@ -8,7 +8,7 @@ from datetime import datetime
 # Create a Profile models here that inherit from the django built-in User.
 class Profile(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", unique=True)
     date_of_birth = models.DateField(blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)

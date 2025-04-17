@@ -11,11 +11,6 @@ from serie.models import Serie
 from user_library.models import Like, WatchList
 
 
-# >>> Author.objects.filter(name__unaccent__lower__trigram_similar="Hélène")
-# [<Author: Helen Mirren>, <Author: Hélène Joy>]
-
-
-
 # ----- attempt using the django-filters module -------
 def search(request):
     """
@@ -42,21 +37,18 @@ def search(request):
             break
     
     print(f"has_filter_values: {has_filter_values}")  # Debug print
-    # Default to empty queryset if no filters applied
-    # base_queryset = Movie.objects.all() if has_filter_values else Movie.objects.none()
-    # movie_filters = SharedMediaFilter(request.GET, queryset=base_queryset)
-    
+
 
     # Initialize the filter form (without queryset for form rendering)
-    content_filter = SharedMediaFilter(request.GET)
-    print(f"content_filter: {content_filter}")  # Debug print
+    Media_filter = SharedMediaFilter(request.GET)
+    print(f"content_filter: {Media_filter}")  # Debug print
 
     # ----- Initial search page load, user reach the search page without any query/filter/request -----
     if request.method == 'GET' and not request.GET:
         print("going to search page") # debug print
 
         context ={
-            'filter': content_filter,
+            'filter': Media_filter,
         }
 
         return render(request, 'search/search.html', context=context)
@@ -69,7 +61,7 @@ def search(request):
         if not has_filter_values:
             print("no filter values applied")
             context = {
-                'filter': content_filter,
+                'filter': Media_filter,
                 'filters_applied': False  # Flag to show a message in the template
                 # 'filtered_movies': movie_filters.qs,  # This will be empty
             }
@@ -90,26 +82,6 @@ def search(request):
                 # print(f"Filtered series: {filtered_series}")
 
 
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = []
-            user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
-
-            user_watchlist_series = []
-            user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
-
-
-            # Get the user's liked content (movies, series)
-            user_liked_movies = Like.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
-            user_liked_series = Like.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
-            
             for movie in filtered_movies:
                 results.append({
                     'object': movie,
@@ -124,6 +96,26 @@ def search(request):
 
             total_found = len(results)
             print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print
+
+            # Get the user's watchlist content (movies, series)
+            user_watchlist_movies = []
+            user_watchlist_movies = WatchList.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+
+            user_watchlist_series = []
+            user_watchlist_series = WatchList.objects.filter(
+                                                user=request.user.id, content_type='serie'
+                                                ).values_list('object_id', flat=True)
+
+            # Get the user's liked content (movies, series)
+            user_liked_movies = Like.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+            user_liked_series = Like.objects.filter(
+                                                user=request.user.id, content_type='serie'
+                                                ).values_list('object_id', flat=True)
+            
 
             # -- paginate over the results --
             paginator = Paginator(results, 20)
@@ -142,7 +134,7 @@ def search(request):
             query_string_url = query_params.urlencode()
 
             context = {
-                'filter': content_filter,
+                'filter': Media_filter,
                 'query_params': query_params,
                 'query_url': query_string_url,
                 'list_content': page_object,
