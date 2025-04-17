@@ -152,6 +152,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 
+
 # ------------- Configuration  for Celery and RabbitMQ --------------------------------
 RABBITMQ_USER = os.getenv('RABBITMQ_USER')
 RABBITMQ_PW = os.getenv('RABBITMQ_PASSWORD')
