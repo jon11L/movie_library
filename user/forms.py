@@ -90,22 +90,3 @@ class UpdateUserForm(forms.ModelForm):
         self.fields['username'].widget.attrs['placeholder'] = 'User Name'
         self.fields['username'].label = ''
         self.fields['username'].help_text = '<span class="form-text text-muted"><small>(Field required). 150 characters max. Letters, digits and @/./+/-/_ only.</small></span>'
-
-
-
-
-# form for the comment that user will be able to put on movies/series
-
-# class CommentForm(forms.ModelForm):
-#     comment = forms.CharField(max_length=1200,
-#                               widget=forms.Textarea(
-#                                   attrs={
-#                                       'placeholder':'Enter your comment.',
-#                                       'class': 'form-control'
-#                                       }
-#                                   ),
-#                                   label=''
-#                               )
-
-#     class Meta:
-        # model = Comment

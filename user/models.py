@@ -52,7 +52,7 @@ class Profile(models.Model):
 
                 minute = elapsed_time.seconds // 60
                 hour = elapsed_time.seconds // 3600
-                month = elapsed_time.days // 30.5
+                month = elapsed_time.days // 30
 
                 if month == 1:
                     return f"{month} month ago "
