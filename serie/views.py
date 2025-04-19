@@ -1,12 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
 
 from .models import Serie, Season, Episode
 from user_library.models import Like, WatchList
-# from .services import add_series_from_tmdb
-# from api_services.TMDB.fetch_series import fetch_popular_series
+from comment.models import Comment
+from comment.forms import CommentForm
+
 
 def list_serie(request):
     '''retrieve the series from newer to older and display them in the template
@@ -77,19 +78,64 @@ def serie_overview(request, pk):
 
             print(f"user_liked :{user_liked_serie}") # debug print
 
-            context = {
-                'serie': serie,
-                'user_liked_serie': user_liked_serie,
-                'user_watchlist_series': user_watchlist_series,
-                'seasons': seasons
-                }
+            # get the comments related to the movie
+            comments = Comment.objects.filter(
+                # user=request.user.id,
+                content_type = "serie",
+                object_id=serie.pk
+                ).order_by('-created_at')
             
-            return render(request,'serie/detail_serie.html', context=context)
-        
+            print(f"comments:\n {comments}")
+
+            # display the Comment form if user is connected
+            if request.user.is_authenticated:
+                form = CommentForm(request.POST or None)
+                if request.method == "POST":
+                    print(f" User: {request.user.username} posting a comment!")
+                    if form.is_valid():
+                        form.save(commit=False)
+                        form.instance.user = request.user
+                        form.instance.content_type = "serie"
+                        form.instance.object_id = serie.pk
+                        form.instance.body = form.cleaned_data['body']
+                        form.save(commit=True)
+                        
+                        messages.success(request, "your post has been posted") # debug log
+                        print(f" User: {request.user.username} posted a comment!")# debug log
+                        print(f" comment: {form.cleaned_data['body']}") # debug log
+
+                        return redirect('serie:serie_overview', pk=pk)
+                    else:
+                        messages.error(request, "it seems your comment is not valid, please check and try again")
+                        return redirect('serie:serie_overview', pk=pk)
+
+
+                context = {
+                    'serie': serie,
+                    'user_liked_serie': user_liked_serie,
+                    'user_watchlist_series': user_watchlist_series,
+                    'seasons': seasons,
+                    'form': form,
+                    'comments': comments
+
+                    }
+
+                return render(request,'serie/detail_serie.html', context=context)
+
+
+            else:
+                context = {
+                    'serie': serie,
+                    'user_liked_serie': user_liked_serie,
+                    'user_watchlist_series': user_watchlist_series,
+                    'comments': comments
+                    }
+                return render(request,'serie/detail_serie.html', context=context)
+
+
         else:
             return f'No series found in the database'
         
-
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")

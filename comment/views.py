@@ -10,7 +10,6 @@ from .models import Comment
 def delete_comment(request, pk):
     '''delete a comment from the database'''
     if request.user.is_authenticated:
-
         try:
             comment = Comment.objects.get(pk=pk)
 
