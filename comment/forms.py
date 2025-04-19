@@ -6,7 +6,7 @@ class CommentForm(forms.ModelForm):
     body = forms.CharField(required=True,
                            widget=forms.widgets.Textarea(
                                attrs={
-                                "placeholder": "Start a discussion",
+                                "placeholder": "Start a discussion...",
                                 "class": "comment-form",
                                 "rows": 4,
                                 "cols": 40,

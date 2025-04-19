@@ -82,8 +82,8 @@ def home(request):
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
 
-        print(f"\n user has in watchlist:\n\n{user_watchlist_movies}\n") # debug print
-        print(f"\n user has in watchlist:\n\n{user_watchlist_series}\n") # debug print
+        print(f"\n user has in watchlist:\nMovie: {user_watchlist_movies}") # debug print
+        print(f"Serie: {user_watchlist_series}\n") # debug print
 
         # Get the user's like content (movies, series)
         user_liked_movies = []
@@ -154,6 +154,9 @@ def show_documentaries(request):
                 'type': 'serie',
             })
 
+
+        # Sort the documentaries by title (ascending order)
+        documentaries = sorted(documentaries, key=lambda x: x['object'].title, reverse=False)  # sort by release date
 
         # -- paginate over the results --
         paginator = Paginator(documentaries, 24)
