@@ -14,7 +14,9 @@ class Profile(models.Model):
     country = models.CharField(max_length=100, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='images/profile_pictures/', null=True, blank=True)
+    background_picture = models.ImageField(upload_to='images/background_pictures/', null=True, blank=True)
     bio = models.TextField(max_length=2000, blank=True)
+
 
     # Time stamp
     created_at = models.DateTimeField(auto_now_add=True)

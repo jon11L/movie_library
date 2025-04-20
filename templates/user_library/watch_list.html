@@ -4,24 +4,24 @@
 {% load static %}
 
 
-<div>
+<div style="width: 90%; margin: auto; margin-top: 20px;">
 
-    <h1 style="text-align: center;">Your watch list:</h1>
+    <h1 style="text-align: center; margin-top: 20px;">Your watch list:</h1>
 
     <br><br>
-    <div style="display: flex; flex-wrap: wrap; width: 85%; margin: auto;" >
+    <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;" >
 
-        {% if watch_list_content %}
-        {% for item in watch_list_content %}
+        {% if watchlist_page %}
+        {% for item in watchlist_page %}
         <div style="margin-right: 30px; width: 280px;" >
             <div class="card">
                 
                 
                 <div class="card-img-top" style="text-align: center; margin-top: 25px;">
                     {% if item.content.render_image_poster %}
-                    <img src=" {{ item.content.render_image_poster }} " class="img-fluid rounded" style="height: 200px; width: auto;"  alt="Profile photo">
+                    <img src="{{ item.content.render_image_poster }}" class="img-fluid rounded" style="width: fit-content; height: 350px;"  alt="{{ item.content.title }}">
                     {% else %}
-                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.content.title }}" style="width: fit-content; height: 350px;">
                     {% endif %}
                 </div>
                 
@@ -53,12 +53,54 @@
                 
         </div>
         {% endfor %}
+
+        
+        
         {% else %}
         <h5 style="color: bisque; margin: auto;">No content in Watchlist yet...</h5>
         {% endif %}
 
     </div>
+    
     <br/>
+
+
+    <!----- Pagination system ------->
+    <div style="display: flex; justify-content: center;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if watchlist_page.has_previous %}
+                <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                <!-- previous page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                {% endif %}
+                
+                {% for num in watchlist_page.paginator.page_range %}
+                    <!-- enumerate pages around current page -->
+                    {% if num == watchlist_page.number %}
+                    <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                    {% elif num > watchlist_page.number|add:'-5' and num < watchlist_page.number|add:'5' %}
+                    <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                    
+                {% if watchlist_page.has_next %}
+                <!-- Next page -->
+                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ watchlist_page.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+    
+                <!-- Last page -->
+                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.paginator.num_pages}}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                {% endif %}
+                
+                <!-- Current page and how many pages are there -->
+                <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ watchlist_page.number }} of {{ watchlist_page.paginator.num_pages }}</h6></li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+
     
 </div>
 

@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 # import urlencode
 # from django.utils.http import urlencode
 
-# from django.db.models import Q
 from .filters import SharedMediaFilter
 from movie.models import Movie
 from serie.models import Serie
@@ -94,6 +93,9 @@ def search(request):
                     'type': 'serie',
                 })
 
+            results = sorted(results, key=lambda x: x['object'].title, reverse=False)
+
+
             total_found = len(results)
             print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print
 
@@ -118,7 +120,7 @@ def search(request):
             
 
             # -- paginate over the results --
-            paginator = Paginator(results, 20)
+            paginator = Paginator(results, 24)
             page_number = request.GET.get('page')
             page_object = paginator.get_page(page_number)
             print(f"List content: {page_object}")

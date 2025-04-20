@@ -39,8 +39,8 @@
 
                 </div>
                 <div>
-                    {% if movie.image_poster %}
-                    <img src="{{ movie.image_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 350px;">
+                    {% if movie.render_image_poster %}
+                    <img src="{{ movie.render_image_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 350px;">
                     {% else %}
                     <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 350px;">
                     {% endif %}

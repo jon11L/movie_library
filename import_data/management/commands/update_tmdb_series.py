@@ -1,4 +1,4 @@
-import requests
+# import requests
 import logging
 import time
 import datetime
@@ -33,8 +33,6 @@ logger.addHandler(file_handler)
 # Prevent duplicate logs (avoid propagation to the root logger)
 logger.propagate = False
 # logger.info("Logging initialized successfully!")  # Test log entry
-
-
 
 
 class Command(BaseCommand):
@@ -101,8 +99,9 @@ class Command(BaseCommand):
         if attempt == MAX_RETRIES:
             self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated series. -- Task ending.\n"))
             return  
- 
-        r_index = random.randint(0, len(updated_serie_list['results']) - 4) # give some random to index to look through for the series.
+
+        # When Url return correct response and data, pass each serie in results to create new serie instance
+        r_index = random.randint(0, len(updated_serie_list['results']) - 4) # give some random to index to look through for the series. 
 
         for tmdb_serie_id in updated_serie_list['results'][r_index:r_index+4]:
             imported_count += 1
@@ -113,7 +112,6 @@ class Command(BaseCommand):
 
             self.stdout.write(f"Processing serie {imported_count} of {len(updated_serie_list)}...")
             tmdb_id = tmdb_serie_id['id']
-            # tmdb_title = tmdb_movie['title']
             self.stdout.write(f" Serie id: {tmdb_id}") # debug print
             time.sleep(3) # give some time between fetching a new page list of movies.
 
@@ -135,15 +133,14 @@ class Command(BaseCommand):
 
             except Exception as e:
                 skipped_count += 1
-                # self.stdout.write(self.style.ERROR(f"Error importing {tmdb_serie_id}: {e}"))
-                logger.error(f"Error importing {tmdb_serie_id}: {e}")
+                self.stdout.write(self.style.ERROR(f"Error importing serie {tmdb_serie_id}: {e}"))
+                logger.error(f"Error importing serie {tmdb_serie_id}: {e}")
 
         self.stdout.write(self.style.SUCCESS(f"Imported list of  updated series successful!\n"))
         self.stdout.write(f"{imported_count} serie imported.")
-        logger.info(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
+        logger.info(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.") # for the logs
         self.stdout.write(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
         self.stdout.write(f"-----") # debug print
-
 
             # except Exception as e:
             #     # messages.error(request, "the page seem to experience some issue, please try again later")
