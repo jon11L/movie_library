@@ -182,7 +182,7 @@ def watch_list_view(request, pk):
                 'user': user,
                 # 'watchlist': watchlist,
                 'watchlist_page': page_object,
-                'watch_list_content': watchlist_content,
+                # 'watch_list_content': watchlist_content,
                 'total_content': total_content,
             }
 

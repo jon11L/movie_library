@@ -4,21 +4,20 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 
 # from django.contrib.auth.decorators import user_passes_test
-
 import datetime
 import random
-# from api_services.TMDB.base_client import TMDBClient
-# from api_services.TMDB.fetch_movies import get_movie_data
 
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like , WatchList
+from user.models import User
 
 
 def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
+# def home(request, *args, **kwargs):
 def home(request):
     '''
     Homepage landing, with display of some latest content (Movies and Series)
@@ -71,7 +70,7 @@ def home(request):
         movies_count = movies.count() # display the amount of movies in the database
         series_count = series.count() 
 
-        # Get the user's watchlist content (movies, series)
+        # ------ Get the user's watchlist content (movies, series)  -------
         user_watchlist_movies = []
         user_watchlist_movies = WatchList.objects.filter(
                                             user=request.user.id, content_type='movie'
@@ -82,10 +81,10 @@ def home(request):
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
 
-        print(f"\n user has in watchlist:\nMovie: {user_watchlist_movies}") # debug print
-        print(f"Serie: {user_watchlist_series}\n") # debug print
+        # print(f"\n user has in watchlist:\nMovie: {user_watchlist_movies}") # debug print
+        # print(f"Serie: {user_watchlist_series}\n") # debug print
 
-        # Get the user's like content (movies, series)
+        # ----- Get the user's like content (movies, series)  -----
         user_liked_movies = []
         user_liked_movies = Like.objects.filter(
                                             user=request.user.id, content_type='movie'
@@ -99,6 +98,33 @@ def home(request):
         # print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
         # print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
 
+
+        user = User.objects.get(id=request.user.id)
+        print(f"\n user:\n\n{user}\n") # debug print
+        watchlist = WatchList.objects.filter(user=request.user.id)
+        print(f"\n user watchlist:\n\n{watchlist[:3]}\n") # debug print
+
+        watchlist_content = [] # intialize the list of watchlist instances 
+        for item in watchlist:
+            if item.content_type == "movie":
+                try:
+                    movie = Movie.objects.get(id=item.object_id)
+                    watchlist_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                    # print(f"movie: {movie}\n") #debug print
+                except Movie.DoesNotExist:
+                    continue
+
+            elif item.content_type == "serie":
+                try:
+                    serie = Serie.objects.get(id=item.object_id)
+                    watchlist_content.append({'content_type': item.content_type, 'object': serie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                    # print(f"serie: {serie}\n") #debug print
+                except Serie.DoesNotExist:
+                    continue
+
+
+        watchlist_content = pick_content(watchlist_content)  # retrieve 6 random content from the user's watchlist
+
         context = {
             'movies': recently_released_movies,
             'coming_soon': coming_soon_movies,
@@ -108,6 +134,8 @@ def home(request):
             'random_series': random_pick_series,
             'movies_count': movies_count,
             'series_count': series_count,
+            'watchlist_content': watchlist_content,
+
             'user_liked_movies': user_liked_movies,
             'user_liked_series': user_liked_series,
             'user_watchlist_movies': user_watchlist_movies,
@@ -121,6 +149,8 @@ def home(request):
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')
+
+
 
 
 def about_page(request):

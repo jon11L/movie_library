@@ -128,7 +128,7 @@
                         <button class="watchlist-button"
                             data-type="{{ item.type }}"
                             data-id="{{ item.object.id }}"
-                            data-bookmarked="{% if item.object..id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                            data-bookmarked="{% if item.object.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                             <i class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                         </button>
 
