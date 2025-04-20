@@ -114,7 +114,7 @@
     <div class="results" style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;">
         {% if list_content %}
         {% for item in list_content %}
-        <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 270px; height: auto; margin-right: 30px; margin-bottom: 25px;">
+        <div class="media-card {% if item.type == 'movie' %}movie-card{% else %}serie-card{% endif %}" style="width: 230px; height: auto; margin-right: 30px; margin-bottom: 25px;">
             <div class="poster">
                 
                 {% if item.type == 'movie' %}
@@ -146,9 +146,9 @@
 
                 <div>
                     {% if item.object.image_poster %}
-                    <img src="{{ item.object.image_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 375px;">
+                    <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 350px;">
                     {% else %}
-                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 375px;">
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 350px;">
                     {% endif %}
                 </div>
                 

@@ -20,8 +20,6 @@ def save_or_update_movie(tmdb_id: int):
             return  None, False
         else:
             print(f"Movie found with TMDB ID: {tmdb_id}")
-
-        # print("passing datas into field for the new movie's instance") # debug print
         
         # initialize empty list, for future jsonfield reference ... 
         director = []
@@ -52,7 +50,7 @@ def save_or_update_movie(tmdb_id: int):
         # Extract trailer from the combined response
         trailer_data = movie_data.get("videos", {}).get("results", [])
 
-        for trailer in trailer_data:
+        for trailer in trailer_data[:4]:
             if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
                 youtube_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
@@ -75,7 +73,6 @@ def save_or_update_movie(tmdb_id: int):
                     "release_date" : movie_data.get("release_date") or None,
                     "origin_country" : movie_data.get("origin_country"),
                     "original_language" : movie_data.get("original_language"),
-                    # "production" : [company["name"] for company in movie_data.get("production_companies", [])], # List of production companies
                     "production" : production, # List of production companies
                     "director" : director,
                     "writer" : writers,
@@ -92,10 +89,10 @@ def save_or_update_movie(tmdb_id: int):
                     "released" : True if movie_data.get("status") == "Released" else False,
                     "vote_count" : movie_data.get("vote_count"),
                     "popularity" : movie_data.get("popularity"),
-                    # images
-                    "image_poster" : f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
-                    "banner_poster" : f"https://image.tmdb.org/t/p/w1280{movie_data.get('backdrop_path')}" if movie_data.get("backdrop_path") else None,
-                    "trailers" : youtube_trailer[:3]
+                    # images & trailer
+                    "image_poster" : movie_data.get('poster_path') if movie_data.get("poster_path") else None,
+                    "banner_poster" : movie_data.get('backdrop_path') if movie_data.get("backdrop_path") else None,
+                    "trailers" : youtube_trailer
                     }
                 )
 
@@ -278,8 +275,10 @@ def save_or_update_series(tmdb_id):
             # ---------------------- Importing episodes-------------------------:
 
             # to update episode instance creation with Bulkupdate / bulk create instead of update or create
-            episode_objects = [] # instantiate a list for episodes to create in bulk (saves on query) // Bulk purpose 
-            update_objects = [] # list for exisitng episode to update // Bulk purpose
+            # to avoid many queries
+            # instantiate a list for episodes to create in bulk (saves on query) // Bulk purpose 
+            existing_episodes = []
+            new_episodes = []
             
             list_episodes = season_data.get('episodes', [])# all episodes here
             print(f"Season contains {len(list_episodes)} episodes: ")
@@ -319,7 +318,6 @@ def save_or_update_series(tmdb_id):
                 # print(f"{writers}") # debug print
                 
                 try:
-                # --// Need to update episode query as a bulk create to avoide many queries
 
                     episode, created = Episode.objects.update_or_create(
                         season = season,

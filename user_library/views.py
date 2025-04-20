@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.contenttypes.models import ContentType
+# from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
 
 from.models import WatchList, Like
 from user.models import User
@@ -168,10 +169,19 @@ def watch_list_view(request, pk):
                     except Serie.DoesNotExist:
                         continue
 
+            # -- paginate over the results --
+            paginator = Paginator(watchlist_content, 24)
+            page_number = request.GET.get('page')
+            page_object = paginator.get_page(page_number)
+            print(f"List content: {page_object}")
+
+
             total_content = watchlist.count()
 
             context = {
                 'user': user,
+                # 'watchlist': watchlist,
+                'watchlist_page': page_object,
                 'watch_list_content': watchlist_content,
                 'total_content': total_content,
             }
