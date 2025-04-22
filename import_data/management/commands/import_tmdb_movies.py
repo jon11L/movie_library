@@ -112,6 +112,7 @@ class Command(BaseCommand):
                     continue
 
                 # Check if movie exists
+                time.sleep(0.5)  # Wait for 1 second before checking the database
                 if not Movie.objects.filter(tmdb_id=movie_id).exists():
                     try:
                         save_or_update_movie(movie_id)

@@ -1,9 +1,11 @@
+import time
+import traceback
+from django.utils import timezone
+
 from import_data.api_services.TMDB.fetch_movies import get_movie_data
 from import_data.api_services.TMDB.fetch_series import get_serie_data, get_season_data
 from movie.models import Movie
 from serie.models import Serie, Season, Episode
-import time
-import traceback
 
 def save_or_update_movie(tmdb_id: int):
     """
@@ -137,7 +139,7 @@ def save_or_update_series(tmdb_id):
             #     } # Handle failure case
             return None, False
 
-        print("Passing the new serie's instance\n") # debug print
+        print(f"Passing the new serie's instance name: {serie_data.get('original_name')}") # debug print
 
         # Store the Serie data.
         languages = serie_data.get("spoken_languages", [])
@@ -173,12 +175,12 @@ def save_or_update_series(tmdb_id):
             )
 
             if is_created:
-                print(f"Created new serie: {serie}\n")
+                print(f"*New serie Created: {serie}")
             else:
-                print(f"Updated existing serie: {serie}\n")
+                print(f"*Existing serie Updated: {serie}")
         except Exception as e:
             print(f"An error occurred while saving/updating serie: {str(e)}")
-            print(f"Serie: '{serie_data.get('name')}' failed to add fully to DB.\n")# log print
+            print(f"Serie: '{serie_data.get('name')}' failed to add fully to DB.")# log print
             print("--------------")
             return (None, False)
 
@@ -190,12 +192,12 @@ def save_or_update_series(tmdb_id):
 
         number_of_seasons = []
         number_of_seasons = [season["season_number"] for season in seasons]
-        print(f"Number of seasons: {len(number_of_seasons)}\n")
+        print(f"Number of seasons: {len(number_of_seasons)}")
 
         for season_number in number_of_seasons:
             time.sleep(3) # to avoid hitting the TMDB API too quickly
             print("--------------")
-            print(f"Fetching season {season_number} out of {len(number_of_seasons)} ({serie})\n") # debug print
+            print(f"Fetching season {season_number} out of {len(number_of_seasons)} ({serie})") # debug print
             season_data = get_season_data(tmdb_id, season_number)
             # print("DONE DONE")
             # Extract credits from the combined response
@@ -251,6 +253,8 @@ def save_or_update_series(tmdb_id):
             # check if current seasons has more than one season ahead, skip
             # example: looping season 4, if more than 6 seasons available, skip
             # one season behind the last one, might need episode updates, and create the latest season
+            # or check if the season was updated recently, if so skip it (probably nothing to really update) if not, go ahead save instance.
+            # What operation is more consuming? checking and possibly skipping or just update all seasons?
 
             season, created = Season.objects.update_or_create(
                 tmdb_id = season_data.get('id'),
@@ -268,24 +272,29 @@ def save_or_update_series(tmdb_id):
             )
 
             if created:
-                print(f"Created new season: *{season}* to DB\n")
+                print(f"New season Created: *{season}* to DB")
             else:
-                print(f"Updated existing season: *{season}*\n")
+                print(f"Existing season Updated: *{season}*")
 
             # ---------------------- Importing episodes-------------------------:
 
-            # to update episode instance creation with Bulkupdate / bulk create instead of update or create
-            # to avoid many queries
-            # instantiate a list for episodes to create in bulk (saves on query) // Bulk purpose 
-            existing_episodes = []
-            new_episodes = []
+            # instantiate lists for new episodes and existing  to pass in bulk (saves on query)
+            update_episodes_obj = []
+            new_episodes_obj = []
             
             list_episodes = season_data.get('episodes', [])# all episodes here
-            print(f"Season contains {len(list_episodes)} episodes: ")
+            print(f"--- Season contains *{season}* {len(list_episodes)} episodes. ---")
 
             datas_season.append(
                 [season_data.get("name"), f"total episodes: {len(list_episodes)}"]
             )
+
+            # Retrieve existing episode IDs for this season (to differentiate between new & existing episodes)
+            existing_episodes = {
+                ep.episode_number: ep for ep in Episode.objects.filter(season=season)
+            }
+            print(f"Existing episodes: {existing_episodes}") # debug print
+
 
             # Loop through each episode, Update existing episode or create new ones.
             for episode in list_episodes:
@@ -302,62 +311,80 @@ def save_or_update_series(tmdb_id):
                         "role": guest["character"]
                     }
                     for guest in episode.get("guest_stars", [])[:10] 
-                    if guest.get("known_for_department") == "Acting"
+                    if isinstance(guest, dict) and guest.get("known_for_department") == "Acting"
                 ]
 
                 directors = [
                     director["name"] for director in episode.get("crew", [])[:3]
-                    if director.get("department") == "Directing"
+                    if isinstance(director, dict) and director.get("department") == "Directing"
                     ]
                 
                 writers = [
                     writer["name"] for writer in episode.get("crew", [])[:4]
-                    if writer.get("department") == "Writing"
+                    if isinstance(writer, dict) and  writer.get("department") == "Writing"
                     ]
                 # print(f"directors :{directors}\n") # debug print
                 # print(f"{writers}") # debug print
-                
+
+                episode_number = episode.get("episode_number")
                 try:
-
-                    episode, created = Episode.objects.update_or_create(
-                        season = season,
-                        episode_number = episode.get("episode_number"),
-                        defaults={  # Fields to update if the object exists
-                            'title' : episode.get("name", "Unknown Title"),
-                            'description' : episode.get('overview', "No description available"),
-                            'length' : episode.get("runtime"),
-                            'release_date' : episode.get('air_date') or None,
-                            'guest_star' : guest_names,
-                            'director' : directors,
-                            'writer' : writers,
-                            'banner_poster' : episode.get('still_path'),
-                            'tmdb_id' : episode.get('id'),
-                        }
-                        # title = episode.get("name", "Unknown Title"),
-                        # description = episode.get('overview', "No description available"),
-                        # length = episode.get("runtime"),
-                        # release_date = episode.get('air_date') or None,
-                        # guest_star = guest_names,
-                        # director = directors,
-                        # writer = writers,
-                        # banner_poster = episode.get('still_path'),
-                        # tmdb_id = episode.get('id'),
-                    )
-
-                    if created:
-                        print(f"Added new episode: *{episode}*")
+                    # Check if the episode already exists in the database
+                    # If it does, update it; if not, create a new one.
+                    if episode_number in existing_episodes:
+                        # prepare episode for update the already existing.
+                        existing_episode = existing_episodes[episode_number]
+                        existing_episode.title = episode.get("name", "Unknown Title")
+                        existing_episode.description = episode.get('overview', "No description available")
+                        existing_episode.length = episode.get("runtime") or None
+                        existing_episode.release_date = episode.get('air_date') or None
+                        existing_episode.guest_star = guest_names
+                        existing_episode.director = directors
+                        existing_episode.writer = writers
+                        existing_episode.banner_poster = episode.get('still_path')
+                        existing_episode.tmdb_id = episode.get('id')
+                        existing_episode.updated_at = timezone.now() # trigger updated_at as Bulk_update do not use .save()
+                    
+                        update_episodes_obj.append(existing_episode)  # Add to the list for bulk update
+                        # print(f"Updating existing episode: {existing_episode}\n")
+                    
                     else:
-                        print(f"Updated existing episode: *{episode}*")
-                # except IntegrityError:
-                #     # Fetch the serie again if the constraint is hit
-                #     episode = Episode.objects.get(tmdb_id=serie_data["tmdb_id"])
-                #     created = False
+                        # Create a new episode instance if it doesn't exist
+                        new_episodes_obj.append(Episode(
+                            season = season,
+                            episode_number = episode_number,
+                            title = episode.get("name", "Unknown Title"),
+                            description = episode.get('overview', "No description available"),
+                            length = episode.get("runtime") or None,
+                            release_date = episode.get('air_date') or None,
+                            guest_star = guest_names,
+                            director = directors,
+                            writer = writers,
+                            banner_poster = episode.get('still_path'),
+                            tmdb_id = episode.get('id'),
+                        ))
 
                 except Exception as e:
                     print(f"An error occurred while saving/updating episode: {str(e)}")
                     print(f"Episode: '{episode.get('name', 'Unknown Title')}' failed to add fully to DB.\n")# log print
                     print("----------")
-                time.sleep(0.1) # space time between episodes to avoid overcharging cpu
+                    # continue  # Skip to the next episode if an error occurs
+                # time.sleep(0.1) # space time between episodes to avoid overcharging cpu
+
+
+            # bulk create new episodes
+            if new_episodes_obj:
+                Episode.objects.bulk_create(new_episodes_obj)
+                print(f"Added {len(new_episodes_obj)} new episodes to DB.")
+
+            # bulk update for existing episodes
+            if update_episodes_obj:
+                Episode.objects.bulk_update(update_episodes_obj, [
+                    'title', 'description', 'length', 'release_date',
+                    'guest_star', 'director', 'writer', 'banner_poster',
+                    'tmdb_id', 'updated_at'
+                ])
+                print(f"Updated {len(update_episodes_obj)} existing episodes in DB.")
+
 
         print(f"title: {serie.title} -- (id {serie.id}) -- Contains:")
         print(datas_season)

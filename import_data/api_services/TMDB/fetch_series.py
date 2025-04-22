@@ -14,12 +14,12 @@ def get_series_list(page, endpoint):
 
     try:
         response = requests.get(url, headers=headers)
-        print(f"API call made.\n")  # debug print
+        print(f"API call made.")  # debug print
         if response.status_code == 200:
-            print(f"Response received. success\n")  # debug print
+            print(f"Response received. success")  # debug print
             return response.json()
         else:
-            print(f"Error: {response}\n")  # debug print
+            print(f"Error: {response}")  # debug print
             # print(f"Error: {response.status_code}\n")  # debug print
             return None
     
@@ -42,6 +42,7 @@ def get_serie_data(tmdb_id: int):
     # append credits to the movie to get those extra datas about casting and videos for the youtube trailer id.
     url = f"{tmdb_client.BASE_URL}/tv/{tmdb_id}?append_to_response=videos,credits,external_ids"
     headers = tmdb_client.HEADERS # send the headers with bearer Token
+    print(f"Url called for Serie: {url}")  # debug print
 
     # Retry logic
     while attempt < MAX_RETRIES:
@@ -83,7 +84,7 @@ def get_season_data(tmdb_id: int, season_number: int):
     tmdb_client = TMDBClient() # instance of TMDB to create the authorization and Token retrieval.
     url = f"{tmdb_client.BASE_URL}/tv/{tmdb_id}/season/{season_number}?append_to_response=videos,credits"
     headers = tmdb_client.HEADERS # send the headers with bearer Token
-    print(f"Url called: {url}\n")  # debug print
+    print(f"Url called for season: {url}")  # debug print
 
     # Retry logic
     while attempt < MAX_RETRIES:
