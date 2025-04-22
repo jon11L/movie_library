@@ -36,11 +36,11 @@ def task_update_movies(self):
         call_command('update_tmdb_movies')
         logger.info('Management command Task: *update movies* completed successfully')
         return True
-    except Exception as exc:
-        logger.error('Task failed: %s', exc, exc_info=True)  # Include traceback
+    except Exception as e:
+        logger.error('Task failed: %s', e, exc_info=True)  # Include traceback
         retry_countdown = self.request.retries * 30
         logger.info(f'Retrying task in {retry_countdown} seconds...')
-        raise self.retry(exc=exc, countdown=retry_countdown)
+        raise self.retry(exc=e, countdown=retry_countdown)
 
 
 @shared_task(bind=True, max_retries=3)

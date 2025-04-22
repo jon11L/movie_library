@@ -71,7 +71,7 @@ class Command(BaseCommand):
         # retry feature if the url page brings error.
         while attempt < MAX_RETRIES:
             try:
-                self.stdout.write(f"Fetching series from '{selected_endpoint}' list, With page n: {page}\n") # debug print
+                self.stdout.write(f"Fetching series from '{selected_endpoint}' list, With page n: {page}") # debug print
                 list_series = get_series_list(page, selected_endpoint)
 
                 if not list_series:
@@ -91,13 +91,13 @@ class Command(BaseCommand):
 
         # If all retries failed, exit early
         if attempt == MAX_RETRIES:
-            self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated series. -- Task ending.\n"))
+            self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated series. -- Task ending."))
             return  
 
         # give some random to index to look through for the series list.
         r_index = random.randint(0, len(list_series['results']) - 4) 
 
-        self.stdout.write("Processing the list of series to get the individual serie's data.\n")
+        self.stdout.write(f"Processing the list of series to get the individual serie's data.")
         for new_serie in list_series['results'][r_index:r_index+4]:
             imported_count += 1
             

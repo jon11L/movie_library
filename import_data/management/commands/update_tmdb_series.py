@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
                 break
 
-            self.stdout.write(f"Processing serie {imported_count} of {len(updated_serie_list)}...")
+            self.stdout.write(f"-------- Processing serie {imported_count} of {len(updated_serie_list)}... ---------")
             tmdb_id = tmdb_serie_id['id']
             self.stdout.write(f" Serie id: {tmdb_id}") # debug print
             time.sleep(3) # give some time between fetching a new page list of movies.
@@ -124,7 +124,7 @@ class Command(BaseCommand):
                     self.stdout.write("---------")
                 elif new_serie and not is_created:
                     updated += 1
-                    self.stdout.write(self.style.SUCCESS(f"Imported! Updated serie: **{new_serie}** \n"))
+                    self.stdout.write(self.style.SUCCESS(f"Imported! Updated serie: **{new_serie}**"))
                     self.stdout.write("---------")
                 else:
                     self.stdout.write(self.style.WARNING(f"**failed to register in DB.**"))
