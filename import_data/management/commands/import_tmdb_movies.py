@@ -50,14 +50,17 @@ class Command(BaseCommand):
         3. Check if the movies already exists otherwise saves it in the database.
         """
         MAX_RETRIES = 3
-        endpoint = ("popular", "top_rated", "now_playing", "upcoming")
-        selected_endpoint = random.choice(endpoint)
-
         # Track the number of movies imported and skipped
         created = 0
         skipped_count = 0  # Tracks how many movies already existed
         imported_count = 0  # Tracks how many movies were imported
 
+
+        endpoint = ("popular", "top_rated", "now_playing", "upcoming")
+        selected_endpoint = random.choice(endpoint)
+
+
+    #     # adjust the number of pages based on the selected endpoint
         if selected_endpoint == "now_playing":
             max_pages = 200
         elif  selected_endpoint == "upcoming":
@@ -65,7 +68,8 @@ class Command(BaseCommand):
         else:
             max_pages = 500  # Define the range of pages to fetch
 
-        pages_to_fetch = random.sample(range(1, max_pages + 1), 5)  # Randomly select 5 pages
+        # Randomly select 5 pages
+        pages_to_fetch = random.sample(range(1, max_pages + 1), 5)  
 
         for page in pages_to_fetch:
             attempt = 0  # Track the number of retries in case of failure
@@ -112,7 +116,7 @@ class Command(BaseCommand):
                     continue
 
                 # Check if movie exists
-                time.sleep(0.5)  # Wait for 1 second before checking the database
+                time.sleep(1)  # Wait for 1 second before checking the database
                 if not Movie.objects.filter(tmdb_id=movie_id).exists():
                     try:
                         save_or_update_movie(movie_id)

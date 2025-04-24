@@ -53,7 +53,12 @@
                     
                     <div class="card-body">
                         <div style="text-align: center;">
+                            {% if serie.title != serie.original_title %}
+                            <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
+                            {% else %}
                             <h4 class="card-title">{{ serie.title }}</h4>
+                            {% endif %}
+
                             {% if serie.tagline %}
                             <p> ({{ serie.tagline }})</p>
                             {% endif %}
@@ -72,11 +77,14 @@
                         </ul>
                     </div>
 
-                    <!-- Display the seasons here and episodes -->
+                    <!------- Display the seasons here and episodes ---------->
                     <p style="text-align: center;">Seasons:</p>
                     <div style="display: flex; flex-wrap: wrap; width: 87%; margin-left: 80px;">
                         {% for season in seasons %}
 
+                        <!-- try to not display season if no episode are present -->
+                        {% if season.episodes != None %}
+                        
                         <div style=" margin-left: 10px;">
                             <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 20px; ">
                                 {{ season.season_number }} - {{ season.name }}
@@ -96,28 +104,21 @@
                                         </iframe>
 
                                     </div>
-                                    <!-- <p>https://www.youtube.com/watch?v={{ trailer.key }}</p> -->
-                                    
-                                    <!-- src="https://www.youtube.com/watch?v={{ trailer.key }}" -->
                                     {% endfor %}
                                     {% endif %}
                                 </div>
                                 <ul>
                                     {% for episode in season.episodes.all %}
-                                        <li>
-                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.length }}min  --  (released on {{episode.release_date}})</small>
-                                            <p>{{ episode.description }}</p>
-                                        </li>
+                                    <li>
+                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
+                                        <p>{{ episode.description }}</p>
+                                    </li>
                                     {% endfor %}
                                 </ul>
                             </div>
                         </div>
-
-
-                        <!-- <div class="" style=" margin-left: 10px;">
-                            <p style="margin-left: 25px;">{{ season.season_number }}-{{ season.name }}</p>
+                        {% endif %}
                         
-                        </div> -->
                         {% endfor %}
                     </div>
                 </div>

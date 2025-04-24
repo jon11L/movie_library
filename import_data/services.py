@@ -27,7 +27,6 @@ def save_or_update_movie(tmdb_id: int):
         director = []
         writers = []
         cast = []
-        # origin_country = []
         youtube_trailer = []
         spoken_languages = []
 
@@ -61,8 +60,7 @@ def save_or_update_movie(tmdb_id: int):
         languages = movie_data.get("spoken_languages", [])
         spoken_languages = [language["english_name"] for language in languages]
 
-        production = [company["name"] for company in movie_data.get("production_companies", [])] # List of production companies  #Tuple of list instead of list why ?
-
+        production = [company["name"] for company in movie_data.get("production_companies", [])] # List of production companies
 
         movie, created = Movie.objects.update_or_create(
             tmdb_id=movie_data.get('id'), # check if the movie is already existing in the database
@@ -98,23 +96,13 @@ def save_or_update_movie(tmdb_id: int):
                     }
                 )
 
-        # print(f"Movie: '{movie_data.get('title')}' was added to DB.\n")
-        # if created:
-        #     print(f"New movie created: '{movie}'")
-        #     print("---------")
-        # else:
-        #     print(f"Existing movie Updated: '{movie}'")
-            # print("---------")
-
         print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
         print("---------")
-        time.sleep(0.5) # to not trigger rate limit
         return (movie, created)
 
     except Exception as e:
         print(f"an error occurred while saving/updating movie: '{movie}' ", str(e))
         return None, False
-
 
 
 

@@ -143,7 +143,7 @@ class Movie(models.Model):
         if self.trailers:
             trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
             return trailer_link
-        return 'Trailer Not found'
+        return 'Trailers Not found'
     
 
     def render_spoken_languages(self):
@@ -151,7 +151,7 @@ class Movie(models.Model):
         if self.spoken_languages:
             spoken_languages = ', '.join(self.spoken_languages)
             return spoken_languages
-        pass
+        return 'N/a'
 
     def render_banner_poster(self):
         ''' return the Movie.banner_poster with a formatted string'''
@@ -166,4 +166,11 @@ class Movie(models.Model):
             image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
             return image_poster
         return None
+
+    def render_release_date(self):
+        '''return the Episode.release_date with a formatted string'''
+        if self.release_date:
+            release_date = self.release_date.strftime("%b. %d, %Y")
+            return release_date
+        return 'N/a'
     

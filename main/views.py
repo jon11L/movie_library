@@ -17,7 +17,6 @@ def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
-# def home(request, *args, **kwargs):
 def home(request):
     '''
     Homepage landing, with display of some latest content (Movies and Series)
@@ -27,6 +26,9 @@ def home(request):
 
         def pick_content(list_sample):
             '''Takes a list sample from the queryset or list given'''
+            if len(list_sample) < 6:
+                return list(list_sample) 
+            
             return random.sample(list(list_sample), 6) 
             
 
@@ -34,6 +36,7 @@ def home(request):
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)  # yesterday
         week_ago = today - datetime.timedelta(days=7)  # 7 days ago
+        week_later = today + datetime.timedelta(days=7)  # 14 days later
         bi_week_later = today + datetime.timedelta(days=14)  # 14 days later
         fortnight_ago = today - datetime.timedelta(days=14)  # 2 weeks ago
         month_ago = today - datetime.timedelta(days=30)  # 30 days ago
@@ -55,7 +58,7 @@ def home(request):
         print(f"\n random pick movies:\n\n{random_pick_movies}\n") # debug print
 
         # series = Serie.objects.filter(last_air_date__range=(week_start, week_end))[:8] 
-        coming_back_series = series.filter(last_air_date__range=(fortnight_ago, bi_week_later))
+        coming_back_series = series.filter(last_air_date__range=(fortnight_ago, week_later))
         print(f"\n coming back series: {len(coming_back_series)}\n") # debug print
         coming_back_series = pick_content(coming_back_series)  # retrieve 8 random movies from the last 30 days
 
@@ -70,7 +73,7 @@ def home(request):
         movies_count = movies.count() # display the amount of movies in the database
         series_count = series.count() 
 
-        # ------ Get the user's watchlist content (movies, series)  -------
+        # --------- Get the user's watchlist content (movies, series)  -----------
         user_watchlist_movies = []
         user_watchlist_movies = WatchList.objects.filter(
                                             user=request.user.id, content_type='movie'
@@ -84,7 +87,7 @@ def home(request):
         # print(f"\n user has in watchlist:\nMovie: {user_watchlist_movies}") # debug print
         # print(f"Serie: {user_watchlist_series}\n") # debug print
 
-        # ----- Get the user's like content (movies, series)  -----
+        # -------- Get the user's like content (movies, series)  ----------
         user_liked_movies = []
         user_liked_movies = Like.objects.filter(
                                             user=request.user.id, content_type='movie'
@@ -98,43 +101,45 @@ def home(request):
         # print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
         # print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
 
-
-        user = User.objects.get(id=request.user.id)
-        print(f"\n user:\n\n{user}\n") # debug print
-        watchlist = WatchList.objects.filter(user=request.user.id)
-        print(f"\n user watchlist:\n\n{watchlist[:3]}\n") # debug print
-
+            
         watchlist_content = [] # intialize the list of watchlist instances 
-        for item in watchlist:
-            if item.content_type == "movie":
-                try:
-                    movie = Movie.objects.get(id=item.object_id)
-                    watchlist_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_on.strftime("%d %B %Y")})
-                    # print(f"movie: {movie}\n") #debug print
-                except Movie.DoesNotExist:
-                    continue
 
-            elif item.content_type == "serie":
-                try:
-                    serie = Serie.objects.get(id=item.object_id)
-                    watchlist_content.append({'content_type': item.content_type, 'object': serie, 'added_on': item.created_on.strftime("%d %B %Y")})
-                    # print(f"serie: {serie}\n") #debug print
-                except Serie.DoesNotExist:
-                    continue
+        if request.user.is_authenticated:
 
+            user = User.objects.get(id=request.user.id)
+            print(f"\n user:\n\n{user}\n") # debug print
+            watchlist = WatchList.objects.filter(user=request.user.id)
+            print(f"\n user watchlist:\n\n{watchlist[:3]}\n") # debug print
 
-        watchlist_content = pick_content(watchlist_content)  # retrieve 6 random content from the user's watchlist
+            for item in watchlist:
+                if item.content_type == "movie":
+                    try:
+                        movie = Movie.objects.get(id=item.object_id)
+                        watchlist_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        # print(f"movie: {movie}\n") #debug print
+                    except Movie.DoesNotExist:
+                        continue
+
+                elif item.content_type == "serie":
+                    try:
+                        serie = Serie.objects.get(id=item.object_id)
+                        watchlist_content.append({'content_type': item.content_type, 'object': serie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        # print(f"serie: {serie}\n") #debug print
+                    except Serie.DoesNotExist:
+                        continue
+
+            watchlist_content = pick_content(watchlist_content)  # retrieve 6 random content from the user's watchlist
 
         context = {
-            'movies': recently_released_movies,
-            'coming_soon': coming_soon_movies,
+            'recent_movies': recently_released_movies,
+            'movies_coming_soon': coming_soon_movies,
             'random_movies': random_pick_movies,
-            'series': coming_back_series,
+            'returning_series': coming_back_series,
             'coming_up_series': coming_up_series,
             'random_series': random_pick_series,
             'movies_count': movies_count,
             'series_count': series_count,
-            'watchlist_content': watchlist_content,
+            'watchlist_content': watchlist_content if watchlist_content else None,
 
             'user_liked_movies': user_liked_movies,
             'user_liked_series': user_liked_series,

@@ -189,7 +189,7 @@ class Episode(models.Model):
     
 
     def render_length(self):
-        '''return the Movie.length with a formatted string
+        '''return the episode length with a formatted string
         (e.g., 1h 30m)
         '''
         if self.length:
@@ -224,3 +224,9 @@ class Episode(models.Model):
             return writer
         return 'N/a'
     
+    def render_release_date(self):
+        '''return the Episode.release_date with a formatted string'''
+        if self.release_date:
+            release_date = self.release_date.strftime("%b. %d, %Y")
+            return release_date
+        return 'N/a'
