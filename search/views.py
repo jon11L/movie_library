@@ -35,8 +35,7 @@ def search(request):
             has_filter_values = True
             break
     
-    print(f"has_filter_values: {has_filter_values}")  # Debug print
-
+    print(f"\n\nhas_filter_values: {has_filter_values}")  # Debug print
 
     # Initialize the filter form (without queryset for form rendering)
     Media_filter = SharedMediaFilter(request.GET)
@@ -59,6 +58,7 @@ def search(request):
         #  when no filtes are selected; return only the filter form
         if not has_filter_values:
             print("no filter values applied")
+            
             context = {
                 'filter': Media_filter,
                 'filters_applied': False  # Flag to show a message in the template
@@ -80,7 +80,6 @@ def search(request):
                 filtered_series = serie_filter.qs
                 # print(f"Filtered series: {filtered_series}")
 
-
             for movie in filtered_movies:
                 results.append({
                     'object': movie,
@@ -94,7 +93,6 @@ def search(request):
                 })
 
             results = sorted(results, key=lambda x: x['object'].title, reverse=False)
-
 
             total_found = len(results)
             print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print

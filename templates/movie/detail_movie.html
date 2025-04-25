@@ -56,7 +56,14 @@
                     
                     <div class="card-body">
                         <div style="text-align: center;">
+                            <!-- <h4 class="card-title">{{ movie.title }}</h4> -->
+                            {% if movie.title != movie.original_title %}
+                            <h4 class="card-title">{{ movie.title }}   ({{ movie.original_title }})</h4>
+                            {% else %}
                             <h4 class="card-title">{{ movie.title }}</h4>
+                            {% endif %}
+
+
                             {% if movie.tagline %}
                             <p> ({{ movie.tagline }})</p>
                             {% endif %}
@@ -66,7 +73,7 @@
                         <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
                         <br>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Released:</strong> {{ movie.release_date }}</li>
+                            <li class="list-group-item"><strong>Released:</strong> {{ movie.render_release_date }}</li>
                             <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
                             <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li>
                             <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li>

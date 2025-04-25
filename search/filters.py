@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 from django import forms
 
 from movie.models import Movie
@@ -36,6 +37,7 @@ class SharedMediaFilter(django_filters.FilterSet):
     )
 
     title = django_filters.CharFilter(
+        method='filter_title',
         lookup_expr="icontains",
         label="Title",
         widget=forms.TextInput(attrs={
@@ -186,10 +188,29 @@ class SharedMediaFilter(django_filters.FilterSet):
         ''' This is a placeholder - actual filtering happens in the view '''
         return queryset
 
+    # create a function to allow the title filter query to also check and return "original_title" if it is not found in the title field.
+    def filter_title(self, queryset, name, value):
+        """Custom filter method for title
+        check if content_type is movie or serie
+        and filter the queryset accordingly
+        """
+        print(f"Filtering by {name}: {value}")
+        print(f"self.data is: {self.data}")
+        print(f"queryset_model is: {queryset.model}")
+        try:
+            if not value:  # If no search term provided
+                return queryset
+
+            title_query = Q(title__icontains=value) | Q(original_title__icontains=value)
+
+            return queryset.filter(title_query).distinct()
+        
+        except Exception as e:
+            print(f"Error filtering by title: {e}")
+
 
     class Meta:
-        # This meta class is required, but we'll override it in each instance
-        model = Movie  # Default model, will be overridden when creating filter instances
+        model = Movie  # Default model, will be overridden when creating filter instances in views.py
         fields = ['title', 'vote_average', 'genre', 'release_date']
 
 

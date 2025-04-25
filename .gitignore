@@ -34,4 +34,4 @@ tmdb_access.html
 #  ------ files to fix some issues/bugs or simply update some models fields. ----
 correct_production_movies.py
 update_serie_date.py
-correct_movie_images
+correct_movie_images.py
