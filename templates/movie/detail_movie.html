@@ -131,7 +131,7 @@
                 <br>
                 <div class="card" style="width: 85%; margin: auto; border: solid 2px darkslategray;">
                     <div class="card-body">
-                        <div style="display: flex; flex-wrap: wrap; justify-content:space-between ;">
+                        <div style="display: flex; justify-content:space-between ;">
                             <div class="d-flex">
                                 {% if comment.user.profile.profile_picture %}
                                 <img src="{{ comment.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
@@ -140,8 +140,11 @@
                                 {% endif %}
                                 <p style="margin-top: 12px; margin-left: 5px;"><strong>{{ comment.user.username }}</strong></p>
                             </div>
-                            <div>
-                                <p><small class="text-muted">{{ comment.created_at }}</small></p>
+                            <div class="d-flex" style="font-size: 14px;">
+                                {% if comment.created_at != comment.updated_at %}
+                                <p style="margin-right: 8px;">(Edited) </p>
+                                {% endif %}
+                                <p class="text-muted"> {{ comment.created_at }}</p>
                             </div>
                             
                         </div>
@@ -151,17 +154,21 @@
                             
                             <!-- delete option for comments of user 'owner' of the comment -->
                             <div style="margin-top: auto;">
-                                {% if comment.user.id == request.user.id %}
-                                <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 10px;">
-                                    <i class="fa fa-trash"></i>
-                                </a>
+                                <div class="d-flex" >
+    
+                                    {% if comment.user.id == request.user.id %}
+                                    <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 10px;">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if comment.created_at == comment.updated_at %}
+                                    <!-- implemeting editing of comment -->
+                                    <a href="{% url 'comment:edit' comment.id %} " style="color: inherit;">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    {% endif %}
 
-                                
-                                <!-- implemeting editing of comment -->
-                                <a href="{% url 'comment:edit' comment.id %} " style="color: inherit;">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>

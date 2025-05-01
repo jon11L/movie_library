@@ -6,6 +6,9 @@ from comment.forms import CommentForm
 
 import traceback
 
+from movie.models import Movie
+from serie.models import Serie
+
 # Create your views here.
 def delete_comment(request, pk):
     '''delete a comment from the database'''
@@ -41,16 +44,14 @@ def edit_comment(request, pk):
 
     comment = Comment.objects.get(pk=pk)
 
-    print(f"comment to edit: {comment}")
     print(f"request.user: {request.user}")
-    print(f"comment.user: {comment.user}")
 
     if not request.user.is_authenticated or request.user.is_authenticated and comment.user != request.user:
-        print("\n* Unauthorised acces: user tried to access editing Comment of another user *\n")
+        print(f"\n* Unauthorised acces: User {request.user} tried to access the editing  Comment belonging to another user *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='main:home')
 
-    else:
+    elif request.user.is_authenticated and comment.user == request.user:
         try:
             print(f"comment to edit: {comment}")
             form = CommentForm(request.POST or None, instance=comment)
@@ -73,13 +74,24 @@ def edit_comment(request, pk):
                     # form.instance.object_id = movie.pk
                     form.instance.body = form.cleaned_data['body']
                     form.save(commit=True)
+                    print(f"The comment has been edited: {comment}")
+                    messages.success(request, "Comment edited successfully")
+                    if comment.content_type == "movie":
+                        movie = Movie.objects.get(pk=comment.object_id)
+                        slug = movie.slug
+                        return redirect('movie:detail', slug=slug)
+                    elif comment.content_type == "serie":
+                        serie = Serie.objects.get(pk=comment.object_id)
+                        slug = serie.slug
+                        return redirect('serie:detail', slug=slug)
+
+
 
             # context = {
             #     'form': form,
             #     'comment': comment,
             # }
             # return render(request, 'comment/edit.html', context)
-            return redirect(request.META.get('HTTP_REFERER')) # , 'movie:movie_overview'
 
 
         
