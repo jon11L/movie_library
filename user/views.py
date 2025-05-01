@@ -10,6 +10,9 @@ from django.contrib.auth import update_session_auth_hash
 from .models import Profile
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
 from user_library.models import Like
+from comment.models import Comment
+from movie.models import Movie
+from serie.models import Serie
 
 
 def register_user(request):
@@ -88,10 +91,36 @@ def profile_page(request, pk):
 
         total_like = like.count()
 
+        # Displaying the comment posted by the user
+        comments = Comment.objects.filter(user=pk).order_by('-created_at')
+
+        # fetch the movies and series that are commented by the user
+        comment_content = []
+        for comment in comments:
+            if comment.content_type == "movie":
+                try:
+                    movie = Movie.objects.get(id=comment.object_id)
+                    # comment_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_at.strftime("%d %B %Y")})
+                    comment_content.append({'comment': comment, 'object': movie, 'added_on': comment.created_at.strftime("%d %B %Y")})
+                    # print(f"movie: {movie}\n") #debug print
+                except Movie.DoesNotExist:
+                    continue
+                    
+            elif comment.content_type == "serie":
+                try:
+                    serie = Serie.objects.get(id=comment.object_id)
+                    comment_content.append({'comment': comment, 'object': serie, 'added_on': comment.created_at.strftime("%d %B %Y")})
+                    # print(f"serie: {serie}\n") #debug print
+                except Serie.DoesNotExist:
+                    continue
+
+        print(f"comment_content: {comment_content}") #debug print
+
         context = {
             'profile': profile,
             'like': like,
             'total_like': total_like,
+            'comment_content': comment_content,
         }
 
         return render(request, 'user/profile_page.html', context=context)

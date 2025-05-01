@@ -1,6 +1,7 @@
 from django.db import models
+from core.models import BaseModel
 
-class Movie(models.Model):
+class Movie(BaseModel):
 
     # External unique identifier / sources for api references
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
@@ -37,14 +38,9 @@ class Movie(models.Model):
     banner_poster = models.URLField(blank=True, null=True) # banner image ( wide format)
     # trailers
     trailers = models.JSONField(max_length=11, blank=True, null=True)
-
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
 
-    # Time stamp
-    added_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
 
     class Meta:
         db_table = 'movie'

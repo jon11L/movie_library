@@ -23,6 +23,6 @@ from . import views
 urlpatterns = [
     
     path('list_serie/', views.list_serie, name='list_serie'),
-    path('serie_overview/<int:pk>', views.serie_overview, name='serie_overview'),
+    path('detail/<slug:slug>', views.serie_overview, name='detail'),
 
 ]

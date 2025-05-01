@@ -210,7 +210,7 @@ class SharedMediaFilter(django_filters.FilterSet):
 
 
     class Meta:
-        model = Movie  # Default model, will be overridden when creating filter instances in views.py
+        model = Serie  # Default model, will be overridden when creating filter instances in views.py
         fields = ['title', 'vote_average', 'genre', 'release_date']
 
 

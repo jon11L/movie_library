@@ -6,13 +6,11 @@
 <div style="text-align: center; margin-top: 20%;">
     <h2 >You are already connected, {{ user.username }}!</h2>
     <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 30px 45px;">Home</a>
-
 </div>
+
 {% else %}
-
-
 <div class="col-md-6 offset-md-3">
-    <h4 style="padding-top:250px; text-align: center;">Login</h4>
+    <h3 style="padding-top:250px; text-align: center;">Login</h3>
     <br>
 
     <form method="POST" action="{% url 'user:login' %}">
@@ -32,7 +30,7 @@
         </div>
         <div style="text-align: center; margin: 8px 170px 0px 0px;">
             <a href="{% url 'user:register' %}" style="text-decoration: none; color: #000;">
-                <p><small>Register here</small></p></a>
+                <p><small style="color: antiquewhite;">Register here</small></p></a>
         </div>
     </form>
 </div>

@@ -1,13 +1,13 @@
 from django.db import models
 # from django.contrib.contenttypes.models import ContentType
 # from django.contrib.contenttypes.fields import GenericForeignKey
-
+from core.models import BaseModel
 from user.models import User 
 from movie.models import Movie
 from serie.models import Serie
 
 
-class WatchedContent(models.Model):
+class WatchedContent(BaseModel):
 
     MOVIE = 'movie'
     SERIE = 'serie'
@@ -43,23 +43,20 @@ class WatchedContent(models.Model):
     rewatch = models.CharField(choices=RewatchChoice.choices, blank=True, null=True)
     personal_note = models.TextField(max_length=2000, blank=True, null=True)
 
-    # track time
-    watched_on = models.DateTimeField(auto_now_add=True) # track when added to watched list.
 
     class Meta:
         db_table = 'watched_content'
         verbose_name = 'watched_content'
         verbose_name_plural = 'watched_contents'
         unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-watched_on']
+        ordering = ['-created_at']
 
 
     def __str__(self):
         return f"{self.user.username} watched {self.content_type}: '{self.object_id}'"
-    
 
 
-class WatchList(models.Model):
+class WatchList(BaseModel):
 
     MOVIE = 'movie'
     SERIE = 'serie'
@@ -82,23 +79,19 @@ class WatchList(models.Model):
     personal_note = models.TextField(max_length=500, blank=True, null=True)
     status = models.CharField(choices=Status.choices, blank=True, null=True)
 
-    # track time    # track time
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'watch_list'
         verbose_name = 'Watch_List'
         verbose_name_plural = 'Watch_Lists'
         unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-created_on']
-
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.user.username} added {self.content_type}: '{self.object_id}' to watchlist"
-    
 
-class Like(models.Model):
+
+class Like(BaseModel):
 
     MOVIE = 'movie'
     SERIE = 'serie'
@@ -112,15 +105,13 @@ class Like(models.Model):
     content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES)
     object_id = models.PositiveIntegerField()
 
-    # Time stamp
-    liked_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "like"
         verbose_name = 'like'
         verbose_name_plural = 'likes'
         unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-liked_on']
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.user.username} liked {self.content_type} {self.object_id}"

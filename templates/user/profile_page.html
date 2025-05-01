@@ -3,19 +3,17 @@
 {% block content %}
 {% load static %}
 
-
 <br>
 <br>
 
+<div style="width: 85%; margin: auto;">   
 
-<div class="container-fluid" style="width: 85%; margin-bottom: 60px;">   
     <div class="card text-center">
         <div class="card-header">
             <h5 class="card-title">{{ profile.user.username.capitalize }}</h5>
         </div>
 
         <div class="card-body">
-
             <div style="display: flex;">
 
                 <div class="col-md-1" style="margin-left: 15px; margin-right: 40px;">
@@ -45,13 +43,10 @@
         <div class="card-footer text-body-secondary d-flex">
             
             <div style="margin-left: 150px; margin-right: 100px;">
-                test
             </div>
             <div style="margin-left: 100px; margin-right: 70px;">
                 <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13);">Watchlist</a>
-                <!-- <a class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" aria-current="page" href="{% url 'user_library:watch_list' request.user.id %}"><strong>My watchlist</strong></a> -->
             </div>
-
 
             <div style="margin-left: 100px; margin-right: 20px; margin-top: -50px;">
                 <br><br>
@@ -65,10 +60,90 @@
 
         </div>
     </div>
-</div>
-<br>
-<br>
-<br>
 
+
+
+
+    <!--  Last User's activity -->
+    <div class="d-flex" style="margin-left: 100px;">
+        
+
+        <!--  Last comments -->
+        <div class="col-sm-5">
+            <div class="row">
+
+                <div>
+        
+                    <h5 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">Last activity:</h5>
+                    
+                    {% if comment_content %}
+                    {% for item in comment_content %}
+                    <div class="mb-4">
+            
+                        <div class="card text-center" style="border: solid 2px darkslategray;">
+                            
+                            <div class="card-body d-flex">
+                                <p class="card-text" style="width: 95%;">{{ item.comment.body }}</p>
+                            </div>
+                
+                            <div class="card-footer text-body-secondary d-flex" style="justify-content: space-between;">
+                                <p></p>
+                                <div>
+                                    <small>Commented on: {{ item.comment.created_at }}</small>
+                
+                                    {% if item.comment.content_type == 'movie' %}
+                                    <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
+                                        <span style="font-weight: bold;">| {{ item.object.title|slice:":50"  }}</span>
+                                    </a>
+                
+                                    {% elif item.comment.content_type == 'serie' %}
+                                    <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
+                                        <span style="font-weight: bold;">| {{ item.object.title|slice:":50"  }}</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+            
+                                <!-- delete option for Comments if user is owner of comment -->
+                                <div style="margin-top: auto;">
+                                    {% if item.comment.user.id == request.user.id %}
+                                    <a href="{% url 'comment:delete_comment' item.comment.id %}">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+            
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No comments available.</p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        
+        
+        
+
+        <!--  Last comments -->
+        <div class="col-sm-5">
+            <div class="row">
+                <div style="margin-left: 100px;">
+                    <h5 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">TEST placeholder (movie liked, added to watchlist will appear here):</h5>
+
+                    
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+</div>
 
 {% endblock %}

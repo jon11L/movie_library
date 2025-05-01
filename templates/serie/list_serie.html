@@ -50,7 +50,7 @@
             </div>
 
             <div class="" style="width: auto;">
-                <a href="{% url 'serie:serie_overview' serie.id %}" style="text-decoration: none;">
+                <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
                 <h4 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ serie.title|slice:":70" }}</h4>
                 </a>
             </div>

@@ -109,13 +109,13 @@ def home(request):
             user = User.objects.get(id=request.user.id)
             print(f"\n user:\n\n{user}\n") # debug print
             watchlist = WatchList.objects.filter(user=request.user.id)
-            print(f"\n user watchlist:\n\n{watchlist[:3]}\n") # debug print
+            print(f"\n user watchlist:\n\n{watchlist[:3]}...\n") # debug print
 
             for item in watchlist:
                 if item.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type, 'object': movie})
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
@@ -123,7 +123,7 @@ def home(request):
                 elif item.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'object': serie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type, 'object': serie})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue

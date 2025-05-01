@@ -34,7 +34,7 @@ def liked_content_view(request, pk):
                 if like.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_on': like.liked_on.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_on': like.created_at.strftime("%d %B %Y")})
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
@@ -42,7 +42,7 @@ def liked_content_view(request, pk):
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.liked_on.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.created_at.strftime("%d %B %Y")})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
@@ -156,7 +156,7 @@ def watch_list_view(request, pk):
                 if item.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'content': movie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type, 'content': movie, 'added_on': item.created_at.strftime("%d %B %Y")})
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
@@ -164,7 +164,7 @@ def watch_list_view(request, pk):
                 elif item.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'content': serie, 'added_on': item.created_on.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type, 'content': serie, 'added_on': item.created_at.strftime("%d %B %Y")})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
@@ -172,17 +172,15 @@ def watch_list_view(request, pk):
             # -- paginate over the results --
             paginator = Paginator(watchlist_content, 24)
             page_number = request.GET.get('page')
-            page_object = paginator.get_page(page_number)
-            print(f"List content: {page_object}")
+            watchlist_pages = paginator.get_page(page_number)
+            print(f"List content: {watchlist_pages}")
 
 
             total_content = watchlist.count()
 
             context = {
                 'user': user,
-                # 'watchlist': watchlist,
-                'watchlist_page': page_object,
-                # 'watch_list_content': watchlist_content,
+                'watchlist_page': watchlist_pages,
                 'total_content': total_content,
             }
 
@@ -221,19 +219,20 @@ def toggle_watchlist(request, content_type: str, object_id: int):
     # user clicked the 'like' button
     if request.method == "POST":
 
-        # if the Model is not recognized as in the <Like model> set throw message error
-        valid_type = dict(WatchList.CONTENT_TYPE_CHOICES)
+        # if the Model is not recognized as in the <Watchlist model> set throw message error
+        # valid_type = dict(WatchList.CONTENT_TYPE_CHOICES)
 
-        if content_type not in valid_type:
-            # messages.error(request, "Invalid content.")
-            print(f"\n targeted model type not valid:\n") # debugging
+        # if content_type not in valid_type:
+        #     # messages.error(request, "Invalid content.")
+        #     print(f"\n targeted model type not valid:\n") # debugging
 
-            return JsonResponse({
-                'error': 'Invalid content type',
-                'message': "Invalid content."
-                }, status=400)
+        #     return JsonResponse({
+        #         'error': 'Invalid content type',
+        #         'message': "Invalid content."
+        #         }, status=400)
         
-        else:
+        # else:
+        
             # check if the Like already exists
             watchlist = WatchList.objects.filter(
                 user=request.user,
