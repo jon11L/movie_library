@@ -195,11 +195,11 @@
 
             <div class="" style="width: auto;">
                 {% if item.type == 'movie' %}
-                <a href="{% url 'movie:movie_overview' item.object.id %}"  style="text-decoration: none;">
+                <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
                     <h4 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":70" }}</h4>
                 </a>
                 {% else %}
-                <a href="{% url 'serie:serie_overview' item.object.id %}" style="text-decoration: none;">
+                <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                     <h4 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":70" }}</h4>
                 </a>
                 {% endif %}

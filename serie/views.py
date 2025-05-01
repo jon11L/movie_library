@@ -52,15 +52,15 @@ def list_serie(request):
 
 
 
-def serie_overview(request, pk):
+def serie_overview(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
     try:
         if Serie:
         # retrieve the specified serie requested by user
-            serie = get_object_or_404(Serie, id=pk)
+            serie = get_object_or_404(Serie, slug=slug)
             # Get the seasons and episodes
             seasons = serie.seasons.all().prefetch_related("episodes")
-            print(f"{len(seasons)}")
+            # print(f"{len(seasons)}")
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_series = []
@@ -104,10 +104,10 @@ def serie_overview(request, pk):
                         print(f" User: {request.user.username} posted a comment!")# debug log
                         print(f" comment: {form.cleaned_data['body']}") # debug log
 
-                        return redirect('serie:serie_overview', pk=pk)
+                        return redirect('serie:detail', slug=slug)
                     else:
                         messages.error(request, "it seems your comment is not valid, please check and try again")
-                        return redirect('serie:serie_overview', pk=pk)
+                        return redirect('serie:detail', slug=slug)
 
 
                 context = {
@@ -121,7 +121,6 @@ def serie_overview(request, pk):
                     }
 
                 return render(request,'serie/detail_serie.html', context=context)
-
 
             else:
                 context = {
@@ -139,3 +138,4 @@ def serie_overview(request, pk):
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
+        redirect('serie:list_serie')

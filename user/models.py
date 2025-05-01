@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from datetime import datetime
 
-
-
 # Create a Profile models here that inherit from the django built-in User.
 class Profile(models.Model):
 
@@ -16,12 +14,17 @@ class Profile(models.Model):
     profile_picture = models.ImageField(upload_to='images/profile_pictures/', null=True, blank=True)
     background_picture = models.ImageField(upload_to='images/background_pictures/', null=True, blank=True)
     bio = models.TextField(max_length=2000, blank=True)
-
-
     # Time stamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    
+
+    # Meta
+    class Meta:
+        db_table = 'profile'
+        verbose_name = 'Profile'
+        verbose_name_plural = 'Profiles'
+        ordering = ['id']
+
 
     def __str__(self):
         return self.user.username
@@ -38,7 +41,7 @@ class Profile(models.Model):
             age = today.year - birthdate.year
             if (today.month < birthdate.month) or (today.month == birthdate.month and today.day < birthdate.day):
                 age -= 1
-                return age
+            return age
         else:
             print("No age found ?")
             return None
@@ -89,4 +92,3 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
 
 post_save.connect(create_profile, sender=User)
-

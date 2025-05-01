@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from core.models import BaseModel
 
-
-class Serie(models.Model):
+class Serie(BaseModel):
 
     # External unique identifier / sources for api references
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
@@ -31,10 +31,6 @@ class Serie(models.Model):
     image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
     banner_poster = models.URLField(blank=True, null=True) # ["backdrop_path"]
     status = models.CharField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
-
-    # Time stamp
-    added_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'serie'
@@ -107,7 +103,7 @@ class Serie(models.Model):
     #     '''
         # pass
 
-class Season(models.Model):
+class Season(BaseModel):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') 
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -119,9 +115,6 @@ class Season(models.Model):
     trailers = models.JSONField(max_length=11, blank=True, null=True) 
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)
-    # Time stamp
-    added_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'season'
@@ -151,7 +144,7 @@ class Season(models.Model):
         return 'Trailer Not found'
 
 
-class Episode(models.Model):
+class Episode(BaseModel):
 
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.PositiveSmallIntegerField(blank=True, null=True)# loop through ["episodes"] first then: ["episode_number"]
@@ -171,9 +164,6 @@ class Episode(models.Model):
     banner_poster = models.URLField(blank=True, null=True) # ["still_path"]
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-    # Time stamp
-    added_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
 

@@ -29,12 +29,12 @@
                 <div class="card-body">
                     <!-- display if it is a movie or a serie -->
                     {% if item.content_type == 'movie' %}
-                    <a href="{% url 'movie:movie_overview' item.content.id %}" style="text-decoration: none; color: #000;">
+                    <a href="{% url 'movie:movie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
                         <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
                     </a>
                     
                     {% elif item.content_type == 'serie' %}
-                    <a href="{% url 'serie:serie_overview' item.content.id %}" style="text-decoration: none; color: #000;">
+                    <a href="{% url 'serie:serie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
                         <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
                     </a>
                     {% endif %}

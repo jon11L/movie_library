@@ -79,6 +79,26 @@ def task_update_series(self):
         raise self.retry(exc=exc, countdown=retry_countdown)
 
 
+
+
+@shared_task(bind=True, max_retries=3)
+def task_create_slug_for_episode(self):
+    """
+    Periodic Celery task to generate slugs for new episodes imported.
+    """
+    try:
+        logger.info('Invoking command Task: Slugify episodes.')        
+        call_command('slug_episode_title')
+        logger.info('Management command to slug episodes completed successfully')
+        return True
+    
+    except Exception as exc:
+        logger.error('Task failed: %s', exc, exc_info=True)  # Include traceback
+        retry_countdown = self.request.retries * 30
+        logger.info(f'Retrying task in {retry_countdown} seconds...') 
+        raise self.retry(exc=exc, countdown=retry_countdown)
+
+
 # just to correct the production field in movies // issues with creation of nested list instead of list
 # @shared_task(bind=True, max_retries=3)
 # def task_correct_movies(self):

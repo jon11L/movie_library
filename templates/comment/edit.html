@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+
+<div style="padding-top: 250px;">
+    <div class="row">
+        <div class="col-sm-6 offset-md-3" style="margin-top: auto;">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Edit Comment</h4>
+                    <p class="card-text"><small class="text-body-secondary">{{ comment.body }}</small></p>
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="content">Edit here:</label>  
+                            {{ form.body }}
+                            <!-- <input type="text" class="form-control" id="content" name="content" value="{{ comment.body }}" required> -->
+                            <button type="submit" class="btn btn-secondary" style="width: auto; margin: auto; margin-top: 10px;">
+                                Post
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

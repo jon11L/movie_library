@@ -118,7 +118,6 @@ $(document).ready(function() {
         // Disable button during request to prevent double-clicks
         button.prop('disabled', true);
 
-        
         $.ajax({
             url: url,
             method: 'POST',

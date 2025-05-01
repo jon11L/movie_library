@@ -40,16 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
     'main',
-    'user',
     'movie',
     'serie',
+    'user',
     'user_library',
-    'import_data',
-    'search',
     'comment',
-    'django_celery_beat',
+    'search',
     'django_filters',
+    'import_data',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [

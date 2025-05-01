@@ -15,9 +15,7 @@ def list_movie(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
-
-    user_liked_movies = []
-    
+    # user_liked_movies = []
     try:
         if Movie:
         
@@ -55,14 +53,14 @@ def list_movie(request):
 
 
 
-def movie_overview(request, pk):
+def movie_overview(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.
         will pass on with the necessary information such as 'Like' 
     '''
     try:
         if Movie:
         # retrieve the specified movie requested by user
-            movie = Movie.objects.get(id=pk)
+            movie = Movie.objects.get(slug=slug)
             # Check if user's like the movie
 
             # Get the user's watchlist content (movies, series)
@@ -79,7 +77,6 @@ def movie_overview(request, pk):
                                             ).values_list('object_id', flat=True)
 
             print(f"user_liked :{user_liked_movie}") # debug print
-
 
             # get the comments related to the movie
             comments = Comment.objects.filter(
@@ -107,10 +104,10 @@ def movie_overview(request, pk):
                         print(f" User: {request.user.username} posted a comment!")# debug log
                         print(f" comment: {form.cleaned_data['body']}") # debug log
 
-                        return redirect('movie:movie_overview', pk=pk)
+                        return redirect('movie:detail', slug=slug)
                     else:
                         messages.error(request, "it seems your comment is not valid, please check and try again")
-                        return redirect('movie:movie_overview', pk=pk)
+                        return redirect('movie:detail', slug=slug)
 
                 context = {
                     'movie': movie,
