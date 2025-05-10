@@ -9,10 +9,8 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Search engine  -->
+    <!-- Search content by title / redirect to search page  -->
     <form class="d-flex ms-5" role="search" method="GET" action="{% url 'search:search' %}">
-      <!-- {% csrf_token %} --> 
-      <!-- {{ filter.form.title }} -->
       <input type="text" class="form-control ms-5 me-2"  placeholder="search..." name="title" aria-label="Search">
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>

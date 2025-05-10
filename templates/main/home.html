@@ -8,24 +8,25 @@
 <div style="width: 90%; margin: auto; margin-top: 20px;">
 
     <div class="ms-auto mb-2 me-auto" style="text-align: center; margin-top: 15px; color: antiquewhite;">
-
-        <h1 class="mt-1 mb-3">Welcome to Vault7</h1>
-        <!-- Reference the amount of content in the Database -->
-        {% if movies_count %}
-        <strong>
-            {{ movies_count }} movies {% else %}No movies{% endif %} and
-            {% if series_count %}
-            {{ series_count }} series
-            {% else %}
-            No series
-            {% endif %}
-            available in the library
-        </strong>
         <div>
-            <br>
-            <p>Save your favorit movies and TV shows. add your thoughts and critics to it in a note.</p>
+            <h1 class="mt-1 mb-3">Welcome to Medial7</h1>
+            <!-- Reference the amount of content in the Database -->
+            <div>
+                <p>Browse through an extensive collection</p>
+                <p>Save your favorit movies and TV shows. Share your thoughts, join discussion amongst Movies afficionados</p>
+            </div>
+            
+            {% if movies_count %}
+            <strong style="color: rgb(146, 19, 19); font-size: 18px;">
+                {{ movies_count }} movies {% else %}No movies{% endif %} and
+                {% if series_count %}
+                {{ series_count }} series
+                {% else %}
+                No series
+                {% endif %}
+                available in the library
+            </strong>
         </div>
-        
     </div>
 
     <br>

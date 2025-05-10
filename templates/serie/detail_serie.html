@@ -4,230 +4,427 @@
 {% block content %}
 
 <div>
-   
-    <div class="row">
-        <div class="col-sm-8 offset-md-2">
-            {% if serie %}
-                <div class="card">
+    <br>
+    <div class="col-sm-8 offset-md-2">
+        {% if serie %}
+        <div class="card">
+            <div class="movie-card" style="width: 100%;">
+                <div id="image-background">
+                    {% if serie.render_banner_poster %}
+                    <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+                    {% endif %}
+                </div>
+            </div>
 
-                    <div class="movie-card">
-                        {% if serie.render_banner_poster %}
-                        <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded" style="width: fit-content;" alt="Profile photo">
-                        {% else %}
-                        <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
-                        {% endif %}
-                    </div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; margin-right: 10px;">
+        
+                <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
+                <!-- Display the like and watchlist buttons -->
+                <div class="feature-btn">
 
-                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 15px; margin-right: 10px;">
+                    <!-- Watchlist button feature -->
+                    <button class="watchlist-button"
+                        data-type="serie"
+                        data-id="{{ serie.id }}"
+                        data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                        <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                    </button>
+                    <!-- like button feature -->
+                    <button class="like-button"
+                            data-type="serie"
+                            data-id="{{ serie.id }}"
+                            data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                            <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                    </button>
+
+                </div>
+
+            </div>
+            <!-- Display Serie poster and title  -->
+            <div class="d-flex flex-wrap">
             
-                        <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
-                        <div>
-                            <!-- Watchlist button feature -->
-                            <button class="watchlist-button"
-                                data-type="serie"
-                                data-id="{{ serie.id }}"
-                                data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                            </button>
-
-                            <!-- like button feature -->
-                            <button class="like-button"
-                                    data-type="serie"
-                                    data-id="{{ serie.id }}"
-                                    data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
-                                    <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                            </button>
-                        </div>
-
-                    </div>
-
-
-                    <div class="card-img-top" style="text-align: center; margin-top: 0px;">
-                        {% if serie.render_image_poster %}
-                        <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
+                    
+                    {% if serie.render_image_poster %}
+                    <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
+                    {% else %}
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                    {% endif %}
+                    
+                    <div style="text-align: center;">
+                        {% if serie.title != serie.original_title %}
+                        <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
                         {% else %}
-                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        <h4 class="card-title">{{ serie.title }}</h4>
+                        {% endif %}
+                        
+                        {% if serie.tagline %}
+                        <p> ({{ serie.tagline }})</p>
                         {% endif %}
                     </div>
-                    <br>
-                    
-                    <div class="card-body">
-                        <div style="text-align: center;">
-                            {% if serie.title != serie.original_title %}
-                            <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
-                            {% else %}
-                            <h4 class="card-title">{{ serie.title }}</h4>
-                            {% endif %}
+                </div>
+                
+            </div>
 
-                            {% if serie.tagline %}
-                            <p> ({{ serie.tagline }})</p>
-                            {% endif %}
-                            
-                        </div>
-                        <br>
-                        <p class="card-text"> Description: {{ serie.description }}</p>
-                        <br>
+            <br>
+            <!-- display serie content data -->
+            <div class="card-body">
+                    
+                <div class="d-flex">
+                
+                    <div style="width: 33%; margin-left: 1em;">
+                        <p class="card-text" style="text-align: center; padding: 0px;"> <strong>Overview:</strong></p>
+                        <p class="card-text">{{ serie.description }}</p>
+                    </div>
+                    
+                    <div style="width: 33%; margin-left: 1em;">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Year:</strong> {{ serie.first_air_date }}</li>
-                            <li class="list-group-item"><strong>Genre:</strong>  {{ serie.render_genre }}</li>
-                            <li class="list-group-item"><strong>Length:</strong> {{ serie.length }}min</li>
-                            <li class="list-group-item"><strong>Created by:</strong> {{ serie.render_created_by }}</li>
-                            <li class="list-group-item"><strong>Production:</strong> {{ serie.render_production }}</li>
-                            <li class="list-group-item"><strong>Origin country:</strong> {{ serie.render_origin_country }}</li>
+                            <div style="display: flex;">
+                                <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px"><strong>Release:</strong> {{ serie.first_air_date }}</li>
+                                <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px;"><strong>Length:</strong> {{ serie.length }}min</li>
+                            </div>
+                        </ul>
+                        
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                            </li>
+                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                <strong>Genre:</strong>
+                                <p>{{ serie.render_genre }}</p>
+                            </li>
+                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                <strong>Created by:</strong>
+                                <p>{{ serie.render_created_by }}</p>
+                            </li>
+                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                <strong>Production:</strong>
+                                <p>{{ serie.render_production }}</p>
+                            </li>
+                            <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
+                                <strong>Origin country:</strong>
+                                <p>{{ serie.render_origin_country }}</p>
+                            </li>
                         </ul>
                     </div>
 
-                    <!------- Display the seasons here and episodes ---------->
-                    <p style="text-align: center;">Seasons:</p>
-                    <div style="display: flex; flex-wrap: wrap; width: 87%; margin-left: 80px;">
-                        {% for season in seasons %}
+                    <div style="width: 33%; text-align: center;">
+                        <p>Test placeholder</p>
+                    </div>
+                </div>
+                    
+            </div>
 
-                        <!-- try to not display season if no episode are present -->
-                        {% if season.episodes != None %}
-                        
-                        <div style=" margin-left: 10px;">
-                            <button class="season-toggle" data-season="{{ season.id }}" style="margin-left: 20px; ">
-                                {{ season.season_number }} - {{ season.name }}
-                            </button>
-                            <!-- display the Trailer and episodes when user click on the season -->
-                            <div id="season-{{ season.id }}" class="episode-list" style="display: none;">
-                                <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
-                                    {% if season.trailers %}
-                                    {% for trailer in season.trailers %}
-                                    <div class="ms-3 mb-2">
-                                        <iframe width="300" height="200"
-                                            src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                            title="YouTube video player"
-                                            frameborder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen>
-                                        </iframe>
+            <!------- Display the seasons here and episodes ---------->
+            <section class="season-episode-content">
 
-                                    </div>
-                                    {% endfor %}
-                                    {% endif %}
-                                </div>
-                                <ul>
-                                    {% for episode in season.episodes.all %}
-                                    <li>
-                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
-                                        <p>{{ episode.description }}</p>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
+                <div style="padding-left: 5em;">
+                    <p><strong>Seasons:</strong></p>
+                </div>
+
+                <div class="season-btn" style="display: flex; flex-wrap: wrap; width: 85%; margin-left: 80px;">
+                    {% for season in seasons %}
+                    <!-- try to not display season if no episode are present -->
+                    {% if season.episodes %}
+                    <div style="margin-left: 10px; margin-bottom: 20px;  width: fit-content;">
+                        <button class="season-toggle" data-season="{{ season.id }}" style="padding:8px 15px 8px 15px;">
+                            {{ season.season_number }} - {{ season.name }}
+                        </button>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <br>
+                
+                
+                <!-- will display the data through js when seasons btn clicked -->
+                <div id="season-content">
+                    
+                    <!-- display the Trailer and episodes when user click on the season -->
+                    {% for season in seasons %}
+                    <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none;">
+                        <!-- Trailers -->
+                        {% if season.trailers %}
+                        <div style="text-align: center; margin: auto; padding-top: 10px; width: fit-content;">
+                            <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                        </div>
+                        <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                            {% for trailer in season.trailers %}
+                            <div class="ms-3 mb-2">
+                                <iframe width="300" height="200"
+                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                                </iframe>
                             </div>
+                            {% endfor %}
                         </div>
                         {% endif %}
                         
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <br>
-
-
-
-                <div>
-                    <div style="justify-items: center; margin-top: 20px;">
-                        <h3>Comments:</h3>
-                    </div>
+                        <div>
+                            {% for episode in season.episodes.all %}
+                            <li>
+                                <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
+                                {% if episode.description %}
+                                <p>{{ episode.description|slice:":120"}}...</p>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </div>
                     
-                    <!-------- Comment Form section --------->
-                    {% if form %}
-                    <form action="" method="POST" style="margin-top: 10px;" label="">
-                        {% csrf_token %}
-                        
-                        <div class="row" style="width: 85%; margin: auto; ">
-                            {{ form.body }}
-                            <button type="submit" class="btn btn-secondary" style="width: auto; margin: auto; margin-top: 10px;">
-                                Post
-                            </button>
-                        </div>
-                    </form>
-                    {% endif %}
-                </div>
-    
-    
-                <!--------- Comment Objects Section here -------->
-                <section>
-                    {% if comments %}
-                    {% for comment in comments %}
-                    <br>
-                    <div class="card" style="width: 85%; margin: auto; border: solid 2px darkslategray;">
-                        <div class="card-body">
-                            <div style="display: flex; justify-content:space-between ;">
-                                <div class="d-flex">
-                                    {% if comment.user.profile.profile_picture %}
-                                    <img src="{{ comment.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
-                                    {% else %}
-                                    <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
-                                    {% endif %}
-                                    <p style="margin-top: 12px; margin-left: 5px;"><strong>{{ comment.user.username }}</strong></p>
-                                </div>
-                                <div class="d-flex" style="font-size: 14px;">
-                                    {% if comment.created_at != comment.updated_at %}
-                                    <p style="margin-right: 8px;">(Edited) </p>
-                                    {% endif %}
-                                    <p class="text-muted"> {{ comment.created_at }}</p>
-                                </div>
-                                
-                            </div>
-    
-                            <div class="d-flex" style="flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
-                                <p style="width: 90%; text-align: left;">{{ comment.body }}</p>
-                                
-                                <!-- delete option for comments of user 'owner' of the comment -->
-                                <div style="margin-top: auto;">
-                                    <div class="d-flex" >
-        
-                                        {% if comment.user.id == request.user.id %}
-                                        <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 10px;">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                        {% endif %}
-                                        {% if comment.created_at == comment.updated_at %}
-                                        <!-- implemeting editing of comment -->
-                                        <a href="{% url 'comment:edit' comment.id %} " style="color: inherit;">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        {% endif %}
-    
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- end of div per season id -->
                     </div>
                     {% endfor %}
-                    {% endif %}
-                </section>
-        </div>
-        
-    </div>
 
-            {% else %}
-                <p>No series found...</p>
+                </div>
+
+                
+            </section>
+        </div>
+        <br>
+            
+        <!------- Comment Form -------->
+        <div class="post-comment">
+            <div style="justify-items: center; margin-top: 20px;">
+                <h3>Comments:</h3>
+            </div>
+            
+            <!---- Comment Form section ----->
+            {% if form %}
+            <form action="" method="POST" style="margin-top: 10px;" label="">
+                {% csrf_token %}
+                
+                <div class="row" style="width: 80%; margin: auto; ">
+                    {{ form.body }}
+                    <button type="submit" 
+                        class="btn btn-secondary" 
+                        style="width: auto; margin: auto; margin-top: 10px;">
+                        Post
+                    </button>
+                </div>
+            </form>
             {% endif %}
+        </div>
+
+
+        <!--------- Comment Objects Section here -------->
+        <section class="comment-section">
+            {% if comments %}
+            {% for comment in comments %}
+            <br>
+            <div class="card" style="width: 80%; margin: auto; border: solid 2px darkslategray;">
+                <div class="card-body" style="padding: 6px; ">
+                    <div style="display: flex; justify-content: space-between;">
+                        <!-- Show user who posted comment -->
+                        <div class="d-flex">
+                            {% if comment.user.profile.profile_picture %}
+                            <img src="{{ comment.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
+                            {% else %}
+                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
+                            {% endif %}
+                            <p style="margin-top: 2px; margin-left: 5px;"><strong>{{ comment.user.username }}</strong></p>
+                        </div>
+                        <!-- Created or edited  -->
+                        <div class="d-flex" style="font-size: 14px;">
+                            {% if comment.created_at != comment.updated_at %}
+                            <p style="margin-right: 8px;">(Edited) </p>
+                            {% endif %}
+                            <p class="text-muted"> {{ comment.created_at }}</p>
+                        </div>
+                    </div>
+                    <div id="comment-{{ comment.pk }}" class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
+                        
+                        <!-- Comment Body here -->
+                        <div class="comment-body" style="width: 90%; text-align: left; padding-left: 12px;">
+                            <p>{{ comment.body|linebreaksbr }}</p>
+                        </div>
+                        
+                        <!---------- IN PROGRESS Implementing the Edit comment within the comment /no page change ------>
+                        <div class="edit-comment-form" style="display: none; padding-left: 12px; width: 90%;">
+                            {% if form %}
+                            <form action="{% url 'comment:edit' comment.pk %}" method="POST" style="margin-top: 10px;" label="">
+                                {% csrf_token %}
+                                
+                                <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; resize: none; padding-bottom: 30px;">
+                                    {{ comment.body }}
+                                </textarea>
+                                
+                                <div>
+                                    <div style="text-align: center;">
+                                        <button type="button" class="cancel-btn btn btn-sm btn-secondary" style="margin-top: 10px;">
+                                            Cancel
+                                        </button>
+                                    
+                                        <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 10px;">
+                                            Confirm
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                        <!-- Delete and Edit option for comments if user 'owner' of the comment -->
+                        <div class="comment-buttons" style="margin-top: auto;">
+                            <div class="d-flex" >
+                                <!--  User can only Edit their Comment once -->
+                                {% if comment.created_at == comment.updated_at %}
+                                <div id="edit-comment">
+                                    <!-- <a href="{% url 'comment:edit' comment.id %}" style="color: inherit; margin-right: 10px;">
+                                        <i class="fa fa-edit"></i>
+                                    </a> -->
+                                    <button 
+                                        class="edit-comment-btn" 
+                                        data-comment-id="{{ comment.pk }}"
+                                        data-comment-body="{{ comment.body }}"
+                                        style="color: inherit; border: none; background: none; cursor: pointer;">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                                {% if comment.user.id == request.user.id %}
+                                <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 2px;">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                                {% endif %}
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </section>
+    
+        {% else %}
+        <h4>Serie not found...</h4>
+        {% endif %}
     <br/>
+    </div>
     
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".season-toggle").forEach(button => {
-            button.addEventListener("click", function () {
-                let seasonId = this.getAttribute("data-season");
-                let episodeList = document.getElementById("season-" + seasonId);
 
-                // Toggle visibility
-                if (episodeList.style.display === "none") {
-                    episodeList.style.display = "block";
-                } else {
-                    episodeList.style.display = "none";
+
+
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // select all the seasons button
+        const seasonButtons = document.querySelectorAll('.season-toggle');
+        // const seasonContent = document.getElementById("season-content");
+
+        // Select all the Seasons content (trailer and episode) per seasons
+        const seasonContent = document.querySelectorAll('.trailer-episode-data');
+
+        // action when a season button is clicked
+        seasonButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const seasonId = button.getAttribute("data-season");
+                console.log(`user clicked on season id: ${seasonId}`)
+                
+            
+                //  hide any other opened season data and display the one being clicked
+                seasonContent.forEach(div => {
+                    div.style.display = 'none';
+                    console.log(`Closing other seasons content`)
+                });
+
+                console.log('yo yo just between these')
+                console.log(seasonContent)
+
+                // display the datas from the clicked season
+                const selectedSeason = document.getElementById('season-' +seasonId);
+                // Trying to close current opened season if clicked while already opened
+                if (selectedSeason.style.display == 'block') {
+                    console.log(`content from season ${seasonId} already displaying, making disappear`)
+                    selectedSeason.style.display = 'none';
                 }
+                
+                //  If season clicked display is None then turn to Block
+                if (selectedSeason) {
+
+
+
+                    selectedSeason.style.display = 'block';
+                    console.log(`displaying content from season ${seasonId}.`)
+                }
+
+
             });
         });
     });
 </script>
+
+
+
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButtons = document.querySelectorAll('.edit-comment-btn');
+        // const cancelButtons = document.querySelectorAll('.cancel-btn');
+        let cancelButtons;
+
+        // Prevent from opening several edit comment form, Ensure one Edit form at a time 
+        function closeAllEdits() {
+            document.querySelectorAll('.edit-comment-form').forEach(div => div.style.display = 'none');
+            document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'block');
+            document.querySelectorAll('.comment-body').forEach(div => div.style.display = 'block');
+        }
+        
+        
+        // On click edit
+        editButtons.forEach(button => {
+            button.addEventListener('click', function (){
+                // fetch the comment.id
+                const commentId = this.dataset.commentId;
+                const originalBody = this.dataset.commentBody;
+                
+                // Close possible other edit
+                closeAllEdits();
+                
+                //  display the new edit form with the current comment.b and hide plain text
+                const commentBlock = document.getElementById(`comment-${commentId}`);
+                commentBlock.querySelector('.comment-body').style.display = 'none';
+                document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'none');
+                commentBlock.querySelector('.edit-comment-form').style.display = 'block';
+                
+                const textarea = commentBlock.querySelector('textarea[name="body"]');
+                textarea.value = originalBody;
+                
+                // Cancel button on edit comments.
+                cancelButtons = document.querySelectorAll('.cancel-btn');
+                cancelButtons.forEach(button =>{
+                    button.addEventListener('click', function() {
+                        closeAllEdits();
+                        textarea.value = originalBody;
+
+                        // document.querySelectorAll('#comment-buttons').forEach(div => div.style.display = 'block');
+
+                    });
+                });
+
+
+            });
+        });
+
+    });
+
+</script>
+
+
+
+<!-- class="season-episode" ---- trigger the whole section  -->
+<!-- class="season-toggle" -->
+<!-- data-season="{{ season.id }}" -- pass the season id -->
+<!-- id="season-{{ season.id }}" -->
+<!-- class="episode-list" -- trigger the  --> 
 
 
 {% endblock %}
