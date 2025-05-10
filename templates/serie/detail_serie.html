@@ -120,7 +120,7 @@
             <section class="season-episode-content">
 
                 <div style="padding-left: 5em;">
-                    <p><strong>Seasons:</strong></p>
+                    <h5 style="color: inherit;">Seasons:</h5>
                 </div>
 
                 <div class="season-btn" style="display: flex; flex-wrap: wrap; width: 85%; margin-left: 80px;">
@@ -318,44 +318,47 @@
     document.addEventListener("DOMContentLoaded", function () {
         // select all the seasons button
         const seasonButtons = document.querySelectorAll('.season-toggle');
-        // const seasonContent = document.getElementById("season-content");
-
         // Select all the Seasons content (trailer and episode) per seasons
         const seasonContent = document.querySelectorAll('.trailer-episode-data');
 
         // action when a season button is clicked
-        seasonButtons.forEach(button => {
-            button.addEventListener("click", () => {
-                const seasonId = button.getAttribute("data-season");
+        seasonButtons.forEach(selectedButton => {
+            selectedButton.addEventListener("click", () => {
+                const seasonId = selectedButton.getAttribute("data-season");
                 console.log(`user clicked on season id: ${seasonId}`)
+                const selectedSeason = document.getElementById('season-' + seasonId);
                 
+                // Check if the season clicked was already displayed
+                const isCurrentSeasonOpen = selectedSeason.style.display === 'block';
             
-                //  hide any other opened season data and display the one being clicked
+                //  hide all seasons data and display the one being clicked
                 seasonContent.forEach(div => {
                     div.style.display = 'none';
                     console.log(`Closing other seasons content`)
                 });
+                
+                // Remove 'active' class from all buttons, set to original color
+                seasonButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    console.log(` original btn color`);
+                });
 
-                console.log('yo yo just between these')
+                console.log('checking selected season')
                 console.log(seasonContent)
 
                 // display the datas from the clicked season
-                const selectedSeason = document.getElementById('season-' +seasonId);
-                // Trying to close current opened season if clicked while already opened
-                if (selectedSeason.style.display == 'block') {
-                    console.log(`content from season ${seasonId} already displaying, making disappear`)
-                    selectedSeason.style.display = 'none';
-                }
+                // const selectedSeason = document.getElementById('season-' +seasonId);
+
                 
                 //  If season clicked display is None then turn to Block
-                if (selectedSeason) {
-
-
-
+                if (!isCurrentSeasonOpen) {
                     selectedSeason.style.display = 'block';
                     console.log(`displaying content from season ${seasonId}.`)
+                    // Add 'active' class to clicked button
+                    selectedButton.classList.add('active');
+                    console.log(`change btn color on current clicked season`);
                 }
-
+                
 
             });
         });
