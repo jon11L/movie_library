@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -21,15 +22,13 @@ def list_serie(request):
             page = request.GET.get('page') 
             serie_list = p.get_page(page)
 
-
             # Get the user's watchlist content (series only here)
-            user_watchlist_series = []
             user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id, content_type='serie'
+                                                user=request.user.id,
+                                                content_type='serie'
                                                 ).values_list('object_id', flat=True)
 
             # Get the user's like content
-            user_liked_series = []
             user_liked_series = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='serie'
@@ -44,11 +43,15 @@ def list_serie(request):
             return render(request, 'serie/list_serie.html', context=context)
         
         else:
-            return f'No series found in the database'
+            # if the serie does not exist in the database
+            messages.error(request, "No Tv Show with this title found in the database")
+            print(f" error :\n{e}")
+            return redirect('main:home')
         
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
+        return redirect('main:home')
 
 
 
@@ -60,23 +63,21 @@ def serie_overview(request, slug):
             serie = get_object_or_404(Serie, slug=slug)
             # Get the seasons and episodes
             seasons = serie.seasons.all().prefetch_related("episodes")
-            # print(f"{len(seasons)}")
+            print(f"serie {serie.title} contains: {len(seasons)} seasons")
 
             # Get the user's watchlist content (movies, series)
-            user_watchlist_series = []
             user_watchlist_series = WatchList.objects.filter(
                                                 user=request.user.id, content_type='serie'
                                                 ).values_list('object_id', flat=True)
 
             # Check if user's like the serie
-            user_liked_serie = False
             user_liked_serie = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='serie',
                                             object_id=serie.pk
                                             ).values_list('object_id', flat=True)
 
-            print(f"user_liked :{user_liked_serie}") # debug print
+            print(f"user like {serie.title} :{user_liked_serie}") # debug print
 
             # get the comments related to the movie
             comments = Comment.objects.filter(
@@ -85,30 +86,11 @@ def serie_overview(request, slug):
                 object_id=serie.pk
                 ).order_by('-created_at')
             
-            print(f"comments:\n {comments}")
+            print(f"number of comments: {len(comments)}")
 
             # display the Comment form if user is connected
             if request.user.is_authenticated:
                 form = CommentForm(request.POST or None)
-                if request.method == "POST":
-                    print(f" User: {request.user.username} posting a comment!")
-                    if form.is_valid():
-                        form.save(commit=False)
-                        form.instance.user = request.user
-                        form.instance.content_type = "serie"
-                        form.instance.object_id = serie.pk
-                        form.instance.body = form.cleaned_data['body']
-                        form.save(commit=True)
-                        
-                        messages.success(request, "your post has been posted") # debug log
-                        print(f" User: {request.user.username} posted a comment!")# debug log
-                        print(f" comment: {form.cleaned_data['body']}") # debug log
-
-                        return redirect('serie:detail', slug=slug)
-                    else:
-                        messages.error(request, "it seems your comment is not valid, please check and try again")
-                        return redirect('serie:detail', slug=slug)
-
 
                 context = {
                     'serie': serie,
@@ -116,8 +98,7 @@ def serie_overview(request, slug):
                     'user_watchlist_series': user_watchlist_series,
                     'seasons': seasons,
                     'form': form,
-                    'comments': comments
-
+                    'comments': comments,
                     }
 
                 return render(request,'serie/detail_serie.html', context=context)
@@ -130,12 +111,14 @@ def serie_overview(request, slug):
                     'comments': comments
                     }
                 return render(request,'serie/detail_serie.html', context=context)
-
-
+            
+        # if the serie does not exist in the database
         else:
-            return f'No series found in the database'
+            messages.error(request, "No Tv Show with this title found in the database")
+            print(f" error :\n{e}")
+            return redirect('serie:list_serie')
         
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
-        redirect('serie:list_serie')
+        return redirect('main:home')

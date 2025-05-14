@@ -9,18 +9,21 @@ $(document).ready(function() {
 
     function showMessage(message, type="success") {
         const messageContainer = $('#message-container');
-        messageContainer.html(`<div class="alert alert-${type}">${message}</div>`);
+        messageContainer.html(
+            `<div class="alert alert-${type}">${message}</div>
+            `
+        );
         messageContainer.fadeIn();
         
-        // Hide message after 3 seconds
-        setTimeout(() => messageContainer.fadeOut(), 3000);
+        // Hide message after 3,5 seconds
+        setTimeout(() => messageContainer.fadeOut(), 3500);
     }
 
 
     // Listen for clicks on any element with class 'like-button'
     $('.like-button').click(function(e) {
         console.log('Like button clicked!');
-        e.preventDefault();
+        e.preventDefault(); // Prevent the page from reloading
         
         const button = $(this);
         const contentType = button.data('type'); // e.g., 'serie'
@@ -178,8 +181,8 @@ $(document).ready(function() {
             }
             
     //------------------- end of TRial for watchlist-------------------------
+        });
     });
-});
 
 
 });
