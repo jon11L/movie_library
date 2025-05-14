@@ -22,6 +22,7 @@ app_name = 'comment'
 
 urlpatterns = [
     # path('show_comment/<int:pk>/', views.show_comment, name='show_comment'),
+    path('create', views.create_comment, name='create'),
     path('delete_comment/<int:pk>/', views.delete_comment, name='delete_comment'),
     path('edit/<int:pk>/', views.edit_comment, name='edit'),
 

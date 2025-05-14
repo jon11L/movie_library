@@ -15,6 +15,7 @@
 	{% csrf_token %}
 	{% include 'navbar.html' %}
 
+	<!-- To display the pop-up notification from Django /backend-->
 	<div style="position: fixed; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
 		{% if messages %}
 		{% for message in messages %}
@@ -26,7 +27,11 @@
 			{% endfor %}
 		</div>
 		{% endif %}
-		<div id="message-container"> <!-- display the messages handled by AJAX // dynamic placeholder--> </div>
+
+		<div id="message-container">
+			<!-- display the messages handled by AJAX/fetch api // dynamic placeholder-->
+		</div>
+		
     </div>
 	
 	{% block content %}
@@ -44,23 +49,24 @@
 	
 	<!-- jQuery / allow AJAX to function -->
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 	<!-- custom js script -->
-	<script src="{% static 'js/script.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			// Auto dismiss alerts after a few seconds
 			setTimeout(function() {
-				var alerts = document.querySelectorAll('.alert');
+				let alerts = document.querySelectorAll('.alert');
 				alerts.forEach(function(alert) {
 					// Create a Bootstrap alert instance
-					var bsAlert = new bootstrap.Alert(alert);
+					let bsAlert = new bootstrap.Alert(alert);
 					// Close it
 					bsAlert.close();
 				});
 			}, 3500); // 3500 milliseconds (3.5s)
 		});
-		</script>
+	</script>
 		
 </body>
 </html>

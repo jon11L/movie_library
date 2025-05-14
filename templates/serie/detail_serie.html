@@ -8,7 +8,7 @@
     <div class="col-sm-8 offset-md-2">
         {% if serie %}
         <div class="card">
-            <div class="movie-card" style="width: 100%;">
+            <div class="serie-card" style="width: 100%;">
                 <div id="image-background">
                     {% if serie.render_banner_poster %}
                     <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
@@ -22,7 +22,7 @@
         
                 <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
                 <!-- Display the like and watchlist buttons -->
-                <div class="feature-btn">
+                <div class="user-feature-btn">
 
                     <!-- Watchlist button feature -->
                     <button class="watchlist-button"
@@ -138,7 +138,6 @@
                 
                 <br>
                 
-                
                 <!-- will display the data through js when seasons btn clicked -->
                 <div id="season-content">
                     
@@ -187,39 +186,23 @@
         </div>
         <br>
             
-        <!------- Comment Form -------->
-        <div class="post-comment">
-            <div style="justify-items: center; margin-top: 20px;">
-                <h3>Comments:</h3>
-            </div>
-            
-            <!---- Comment Form section ----->
-            {% if form %}
-            <form action="" method="POST" style="margin-top: 10px;" label="">
-                {% csrf_token %}
-                
-                <div class="row" style="width: 80%; margin: auto; ">
-                    {{ form.body }}
-                    <button type="submit" 
-                        class="btn btn-secondary" 
-                        style="width: auto; margin: auto; margin-top: 10px;">
-                        Post
-                    </button>
-                </div>
-            </form>
-            {% endif %}
-        </div>
+
+        <!------- Comment Post form -------->
+        <section class="comment-post-section">
+            {% include "comment/comment_form.html" %}
+        </section>
 
 
         <!--------- Comment Objects Section here -------->
-        <section class="comment-section">
+        <section class="comment-list-section">
+
             {% if comments %}
             {% for comment in comments %}
             <br>
             <div class="card" style="width: 80%; margin: auto; border: solid 2px darkslategray;">
                 <div class="card-body" style="padding: 6px; ">
                     <div style="display: flex; justify-content: space-between;">
-                        <!-- Show user who posted comment -->
+                        <!-- Show user who the posted comment -->
                         <div class="d-flex">
                             {% if comment.user.profile.profile_picture %}
                             <img src="{{ comment.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
@@ -239,43 +222,22 @@
                     <div id="comment-{{ comment.pk }}" class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
                         
                         <!-- Comment Body here -->
-                        <div class="comment-body" style="width: 90%; text-align: left; padding-left: 12px;">
+                        <div class="comment-body" style="width: 90%; text-align: left; padding-left: 3em;">
                             <p>{{ comment.body|linebreaksbr }}</p>
                         </div>
                         
                         <!---------- IN PROGRESS Implementing the Edit comment within the comment /no page change ------>
-                        <div class="edit-comment-form" style="display: none; padding-left: 12px; width: 90%;">
-                            {% if form %}
-                            <form action="{% url 'comment:edit' comment.pk %}" method="POST" style="margin-top: 10px;" label="">
-                                {% csrf_token %}
-                                
-                                <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; resize: none; padding-bottom: 30px;">
-                                    {{ comment.body }}
-                                </textarea>
-                                
-                                <div>
-                                    <div style="text-align: center;">
-                                        <button type="button" class="cancel-btn btn btn-sm btn-secondary" style="margin-top: 10px;">
-                                            Cancel
-                                        </button>
-                                    
-                                        <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 10px;">
-                                            Confirm
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                            {% endif %}
-                        </div>
+                        <!-- include edit_comment html instead of the whole div-->
+                        {% include "comment/edit_comment.html" %}
+
+
                         <!-- Delete and Edit option for comments if user 'owner' of the comment -->
                         <div class="comment-buttons" style="margin-top: auto;">
                             <div class="d-flex" >
                                 <!--  User can only Edit their Comment once -->
                                 {% if comment.created_at == comment.updated_at %}
                                 <div id="edit-comment">
-                                    <!-- <a href="{% url 'comment:edit' comment.id %}" style="color: inherit; margin-right: 10px;">
-                                        <i class="fa fa-edit"></i>
-                                    </a> -->
+
                                     <button 
                                         class="edit-comment-btn" 
                                         data-comment-id="{{ comment.pk }}"
@@ -298,8 +260,9 @@
             </div>
             {% endfor %}
             {% endif %}
+            
         </section>
-    
+
         {% else %}
         <h4>Serie not found...</h4>
         {% endif %}
@@ -309,12 +272,12 @@
 </div>
 
 
-
-
+<script src="{% static 'js/create_comment.js' %}"></script>
+<script src="{% static 'js/edit_comment.js' %}"></script>
 
 
 <script>
-
+    // ------------- Display the seasons Trailers and episodes when clicked --------------
     document.addEventListener("DOMContentLoaded", function () {
         // select all the seasons button
         const seasonButtons = document.querySelectorAll('.season-toggle');
@@ -325,8 +288,8 @@
         seasonButtons.forEach(selectedButton => {
             selectedButton.addEventListener("click", () => {
                 const seasonId = selectedButton.getAttribute("data-season");
-                console.log(`user clicked on season id: ${seasonId}`)
                 const selectedSeason = document.getElementById('season-' + seasonId);
+                console.log(`user clicked on season id: ${seasonId}`)
                 
                 // Check if the season clicked was already displayed
                 const isCurrentSeasonOpen = selectedSeason.style.display === 'block';
@@ -334,100 +297,28 @@
                 //  hide all seasons data and display the one being clicked
                 seasonContent.forEach(div => {
                     div.style.display = 'none';
-                    console.log(`Closing other seasons content`)
+                    console.log(`previous displayed season closed.`);
                 });
                 
                 // Remove 'active' class from all buttons, set to original color
                 seasonButtons.forEach(btn => {
                     btn.classList.remove('active');
-                    console.log(` original btn color`);
+                    console.log(`unactive seasons gets original btn color`);
                 });
-
-                console.log('checking selected season')
-                console.log(seasonContent)
-
-                // display the datas from the clicked season
-                // const selectedSeason = document.getElementById('season-' +seasonId);
-
                 
                 //  If season clicked display is None then turn to Block
                 if (!isCurrentSeasonOpen) {
                     selectedSeason.style.display = 'block';
-                    console.log(`displaying content from season ${seasonId}.`)
+                    console.log(`displaying content from season ${seasonId}.`);
                     // Add 'active' class to clicked button
                     selectedButton.classList.add('active');
                     console.log(`change btn color on current clicked season`);
                 }
                 
-
             });
         });
     });
 </script>
-
-
-
-<script>
-    
-    document.addEventListener("DOMContentLoaded", function () {
-        const editButtons = document.querySelectorAll('.edit-comment-btn');
-        // const cancelButtons = document.querySelectorAll('.cancel-btn');
-        let cancelButtons;
-
-        // Prevent from opening several edit comment form, Ensure one Edit form at a time 
-        function closeAllEdits() {
-            document.querySelectorAll('.edit-comment-form').forEach(div => div.style.display = 'none');
-            document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'block');
-            document.querySelectorAll('.comment-body').forEach(div => div.style.display = 'block');
-        }
-        
-        
-        // On click edit
-        editButtons.forEach(button => {
-            button.addEventListener('click', function (){
-                // fetch the comment.id
-                const commentId = this.dataset.commentId;
-                const originalBody = this.dataset.commentBody;
-                
-                // Close possible other edit
-                closeAllEdits();
-                
-                //  display the new edit form with the current comment.b and hide plain text
-                const commentBlock = document.getElementById(`comment-${commentId}`);
-                commentBlock.querySelector('.comment-body').style.display = 'none';
-                document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'none');
-                commentBlock.querySelector('.edit-comment-form').style.display = 'block';
-                
-                const textarea = commentBlock.querySelector('textarea[name="body"]');
-                textarea.value = originalBody;
-                
-                // Cancel button on edit comments.
-                cancelButtons = document.querySelectorAll('.cancel-btn');
-                cancelButtons.forEach(button =>{
-                    button.addEventListener('click', function() {
-                        closeAllEdits();
-                        textarea.value = originalBody;
-
-                        // document.querySelectorAll('#comment-buttons').forEach(div => div.style.display = 'block');
-
-                    });
-                });
-
-
-            });
-        });
-
-    });
-
-</script>
-
-
-
-<!-- class="season-episode" ---- trigger the whole section  -->
-<!-- class="season-toggle" -->
-<!-- data-season="{{ season.id }}" -- pass the season id -->
-<!-- id="season-{{ season.id }}" -->
-<!-- class="episode-list" -- trigger the  --> 
 
 
 {% endblock %}

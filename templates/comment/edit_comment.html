@@ -1,0 +1,25 @@
+{% load static %}
+
+<div class="edit-comment-form" style="display: none; padding-left: 12px; width: 90%;">
+    
+    <form action="{% url 'comment:edit' comment.pk %}" method="POST" style="margin-top: 10px;" label="">
+        {% csrf_token %}
+        
+        <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; resize: none; padding-bottom: 30px;">
+            {{ comment.body }}
+        </textarea>
+        
+        <div>
+            <div style="text-align: center;">
+                <button type="button" class="cancel-btn btn btn-sm btn-secondary" style="margin-top: 10px;">
+                    Cancel
+                </button>
+            
+                <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 10px;">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </form>
+    
+</div>

@@ -157,6 +157,12 @@ img {
     text-align: left;
 }
 
+
+.season-toggle.active {
+    background-color: #007bff;
+    color: white;
+}
+
 .trailer-episode-data {
     padding: 10px;
     border-top: 3px solid black;
