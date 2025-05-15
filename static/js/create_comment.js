@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log('comment js feature loading');
+    console.log('Add Comment js feature loading');
 
     const postComment = this.querySelector('.comment-post-section');
     const commentForm = this.getElementById('comment-form');
@@ -58,13 +58,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (typeof editComment === 'function') {
                         editComment();
                     }
+                    if (typeof deleteComment === 'function') {
+                        deleteComment();
+                    }
 
                     // Show success message
                     // const messageContainer = document.getElementById('message-container');
                     const messageContainer = document.getElementById('comment-form');
                     const alert = document.createElement('div');
                     alert.className = 'alert alert-success alert-dismissible fade show';
-                    alert.style = 'width: fit-content; margin: auto; z-index: 9999; ';
+                    // alert.style = 'width: fit-content; margin: auto; z-index: 101; position: relative;';
+                    alert.style = 'width: fit-content; margin: auto;';
                     alert.innerHTML = `
                         Comment posted!
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -78,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         bsAlert.close();
                     }, 3500);
                 }
-
             })
+            
         .catch(error => {
             console.error('Error', error);
             alert('Failed to post the comment, please reload the page')
@@ -88,10 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
             commentForm.reset(); // Clear the comment form after submission
         });
 
-
         });
 
     };
 
 });    
-
