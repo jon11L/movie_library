@@ -1,8 +1,7 @@
 {% load static %}
-
 <br>
 <!-- NEW Comment posted -->
-<div class="card" style="width: 80%; margin: auto; border: solid 2px darkslategray;">
+<div id="comment-{{ comment.pk }}" class="card" style="width: 80%; margin: auto; border: solid 2px rgb(21, 49, 49);">
     <div class="card-body" style="padding: 6px; ">
         <div style="display: flex; justify-content: space-between;">
             <!-- Show user who posted the comment -->
@@ -22,7 +21,7 @@
                 <p class="text-muted"> {{ comment.created_at }}</p>
             </div>
         </div>
-        <div id="comment-{{ comment.pk }}" class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
+        <div  class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
             
             <!-- Comment Body here -->
             <div class="comment-body" style="width: 90%; text-align: left; padding-left: 3em;">
@@ -31,7 +30,6 @@
             
             <!----------  Edit comment block ------>
             {% include "comment/edit_comment.html" %}
-
 
             <!-- Delete and Edit option for comments if user 'owner' of the comment -->
             <div class="comment-buttons" style="margin-top: auto;">
@@ -49,9 +47,15 @@
                     </div>
                     {% endif %}
                     {% if comment.user.id == request.user.id %}
-                    <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 2px;">
-                        <i class="fa fa-trash"></i>
-                    </a>
+                    <div id="delete-comment">
+                        <button class="delete-comment-btn" 
+                            data-comment-id="{{ comment.pk }}"
+                            data-content-type="{% if serie %}serie{% else %}movie{% endif %}"
+                            data-object-id="{% if serie %}{{ serie.id }}{% elif movie %}{{ movie.id }}{% endif %}"
+                            style="border: none;  background: none;  color: inherit; margin-right: 0px;">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
                     {% endif %}
                     
                 </div>

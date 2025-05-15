@@ -44,7 +44,7 @@ def create_comment(request):
                 context = {
                     'comment': comment,
                 }
-                comment_html = render_to_string('comment/new_comment.html', context=context, request=request )
+                comment_html = render_to_string('comment/block_comment.html', context=context, request=request )
                 # message = f"Comment posted successfully!"
 
                 return JsonResponse({
@@ -66,37 +66,37 @@ def create_comment(request):
 
 
 
-
 # Create your views here.
 def delete_comment(request, pk):
     '''delete a comment from the database'''
-    if request.user.is_authenticated:
+    comment = Comment.objects.get(pk=pk)
+    if request.user.is_authenticated and comment.user == request.user:
         try:
-            comment = Comment.objects.get(pk=pk)
+            if request.method == "DELETE":
+                print(f"request.user: {request.user}")
+                print(f"request.method: {request.method}")
+                # print(f"request.POST: {request}")
+                
+            print(f"comment to delete: {comment}")
+            comment.delete()
+            # messages.success(request, "Comment deleted successfully")
+            return JsonResponse({'success': True, 'message': f'Comment of {request.user} was deleted.'}, status=200)
 
-            if comment.user == request.user:
-                print(f"comment to delete: {comment}")
 
-                comment.delete()
-                print(f"The comment has been deleted: {comment}")
-                messages.success(request, "Comment deleted successfully")
-                return redirect(request.META.get('HTTP_REFERER'))
-            else:
-                messages.error(request, "Error deleting comment, Comment does not exist or you are not the owner")
-                return redirect("main:home")
-        
         except Exception as e:
             print(f"Error in trying to delete a comment\n Error: {e}")
-            messages.error(request, "The comment does not exist or you are not the owner")
+            # messages.error(request, "The comment does not exist or you are not the owner")
+            return JsonResponse({'success': False, 'message': f'Comment of {request.user} could not be deleted.'}, status=404)
+
             # return redirect("main:home")
-            if comment.content_type == "movie":
-                movie = Movie.objects.get(pk=comment.object_id)
-                slug = movie.slug
-                return redirect('movie:detail', slug=slug)
-            elif comment.content_type == "serie":
-                serie = Serie.objects.get(pk=comment.object_id)
-                slug = serie.slug
-                return redirect('serie:detail', slug=slug)
+            # if comment.content_type == "movie":
+            #     movie = Movie.objects.get(pk=comment.object_id)
+            #     slug = movie.slug
+            #     return redirect('movie:detail', slug=slug)
+            # elif comment.content_type == "serie":
+            #     serie = Serie.objects.get(pk=comment.object_id)
+            #     slug = serie.slug
+            #     return redirect('serie:detail', slug=slug)
 
 
 

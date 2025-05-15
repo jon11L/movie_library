@@ -191,76 +191,17 @@
         <section class="comment-post-section">
             {% include "comment/comment_form.html" %}
         </section>
-
-
-        <!--------- Comment Objects Section here -------->
+        <br>
+        
+        <!---------Display the Comment Objects here -------->
         <section class="comment-list-section">
-
             {% if comments %}
             {% for comment in comments %}
-            <br>
-            <div class="card" style="width: 80%; margin: auto; border: solid 2px darkslategray;">
-                <div class="card-body" style="padding: 6px; ">
-                    <div style="display: flex; justify-content: space-between;">
-                        <!-- Show user who the posted comment -->
-                        <div class="d-flex">
-                            {% if comment.user.profile.profile_picture %}
-                            <img src="{{ comment.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
-                            {% else %}
-                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="Profile photo">
-                            {% endif %}
-                            <p style="margin-top: 2px; margin-left: 5px;"><strong>{{ comment.user.username }}</strong></p>
-                        </div>
-                        <!-- Created or edited  -->
-                        <div class="d-flex" style="font-size: 14px;">
-                            {% if comment.created_at != comment.updated_at %}
-                            <p style="margin-right: 8px;">(Edited) </p>
-                            {% endif %}
-                            <p class="text-muted"> {{ comment.created_at }}</p>
-                        </div>
-                    </div>
-                    <div id="comment-{{ comment.pk }}" class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
-                        
-                        <!-- Comment Body here -->
-                        <div class="comment-body" style="width: 90%; text-align: left; padding-left: 3em;">
-                            <p>{{ comment.body|linebreaksbr }}</p>
-                        </div>
-                        
-                        <!---------- IN PROGRESS Implementing the Edit comment within the comment /no page change ------>
-                        <!-- include edit_comment html instead of the whole div-->
-                        {% include "comment/edit_comment.html" %}
-
-
-                        <!-- Delete and Edit option for comments if user 'owner' of the comment -->
-                        <div class="comment-buttons" style="margin-top: auto;">
-                            <div class="d-flex" >
-                                <!--  User can only Edit their Comment once -->
-                                {% if comment.created_at == comment.updated_at %}
-                                <div id="edit-comment">
-
-                                    <button 
-                                        class="edit-comment-btn" 
-                                        data-comment-id="{{ comment.pk }}"
-                                        data-comment-body="{{ comment.body }}"
-                                        style="color: inherit; border: none; background: none; cursor: pointer;">
-                                        <i class="fa fa-edit"></i>
-                                    </button>
-                                </div>
-                                {% endif %}
-                                {% if comment.user.id == request.user.id %}
-                                <a href="{% url 'comment:delete_comment' comment.id %} " style="color: inherit; margin-right: 2px;">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                                {% endif %}
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
+            {% include "comment/block_comment.html" %}
+            
             {% endfor %}
             {% endif %}
-            
         </section>
 
         {% else %}
@@ -274,6 +215,7 @@
 
 <script src="{% static 'js/create_comment.js' %}"></script>
 <script src="{% static 'js/edit_comment.js' %}"></script>
+<script src="{% static 'js/delete_comment.js' %}"></script>
 
 
 <script>

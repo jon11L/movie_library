@@ -5,7 +5,6 @@
         const editButtons = document.querySelectorAll('.edit-comment-btn');
         console.log('edit comment loaded');
         // const cancelButtons = document.querySelectorAll('.cancel-btn');
-        // let cancelButtons;
 
         // Prevent from opening several edit comment form, Ensure one Edit form at a time 
         function closeAllEdits() {
@@ -36,7 +35,6 @@
                 } else {
                     console.log(`comment block found for ID comment-${commentId}`);
                 }
-
 
                 commentBlock.querySelector('.comment-body').style.display = 'none';
                 document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'none');
