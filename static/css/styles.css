@@ -4,6 +4,14 @@
   box-sizing: border-box;
 }
 
+
+
+@media (prefers-reduced-motion: no-preference) {
+    :root {
+        scroll-behavior: smooth;
+    }
+}
+
 @media screen and (max-width: 768px) {
     #container {
         width: 90%;
@@ -14,12 +22,6 @@
     }
 }
 
-
-@media (prefers-reduced-motion: no-preference) {
-    :root {
-        scroll-behavior: smooth;
-    }
-}
 
 .navbar {
     width: 100%;
@@ -51,10 +53,9 @@ h1, h2, h3, h5, h6 {
     background-color:rgb(191, 195, 188) ;
 }
 
-
+/*  For images in movie/serie detail  */
 img {
-    /* size: 200px; */
-    width: 20%;
+    width: 25%;
     height: auto;
 }
 
@@ -129,20 +130,6 @@ img {
 }
 
 
-/*-------- FOOTER --------- */
-.footer {
-    position: relative;
-    flex-shrink: 0;
-    text-align: center;
-    background-color: rgb(93, 93, 93);
-    bottom: 0;
-    left: 0px;
-    right: 0px;
-    margin-bottom: 0px;
-}
-
-
-
 
 
 
@@ -183,4 +170,92 @@ img {
     padding: 10px;
     width: 100%;
     border-radius: 5px;
+}
+
+
+
+
+/* custom display depending on screen size */
+@media (min-width: 960px) {
+  .col-xl-1-5 {
+    flex: 0 0 auto;
+    width: 12.5%;
+  }
+  
+  .custom-wide {
+      max-width: 1920px;
+      width: 100%;
+      margin: auto;
+    }
+
+    .custom-col-1-5 {
+      flex: 0 0 12.5%;
+      max-width: 12.5%;
+    }
+    
+    .custom-col-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    
+}
+
+
+/* Optional: make sure .row has no gaps pushing layout */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+
+
+/* Screen sizes for Bootstrap 5
+xs    >576px
+sm	<576px
+md	720px
+lg	960px
+xl	1140px
+xxl	1320px */
+
+
+.poster-wrapper {
+    
+  height: max-content;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #111; fallback bg */
+}
+
+.poster-wrapper img {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    /* object-fit: cover; */
+}
+
+
+
+
+
+
+/*-------- FOOTER --------- */
+.footer {
+    position: relative;
+    width: 100%;
+    flex-shrink: 0;
+    text-align: center;
+    background-color: rgb(93, 93, 93);
+    /* background-color: rgb(60, 18, 24); */
+    /* color: antiquewhite; */
+
+    bottom: 0;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 0px;
+}
+
+.footer a {
+    color: antiquewhite;
 }

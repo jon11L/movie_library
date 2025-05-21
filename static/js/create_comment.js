@@ -1,11 +1,9 @@
-document.addEventListener("DOMContentLoaded", function () {
-    console.log('Add Comment js feature loading');
+function createComment() {
+    console.log('Add Comment feature loaded');
 
-    const postComment = this.querySelector('.comment-post-section');
+    // const postComment = this.querySelector('.comment-post-section');
+    const postComment = this.querySelector('.comment-list-section');
     const commentForm = this.getElementById('comment-form');
-    
-    console.log(`postComment contains: ${postComment}`);
-    console.log(`commentForm contains: ${commentForm}`);
 
     if (commentForm) {
         commentForm.addEventListener('submit', function (e) {
@@ -17,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const submitButton = commentForm.querySelector('button[type="submit"]');
             // fetch the info from the data attribute in the button
-            const contentType = submitButton.dataset.contentType;  // 'movie' or 'serie'
+            const contentType = submitButton.dataset.contentType;  // 'movie' or 'serie' model
             const objectId = submitButton.dataset.objectId; // Id of the object.
 
             console.log(`Submit Button contains the following: ${formData}`);
@@ -52,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     // insert the new comment into the comment section
-                    postComment.insertAdjacentHTML('afterend', data.comment_html);
+                    postComment.insertAdjacentHTML('afterbegin', data.comment_html);
                     
                     // call the editComment();
                     if (typeof editComment === 'function') {
@@ -63,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     // Show success message
-                    // const messageContainer = document.getElementById('message-container');
                     const messageContainer = document.getElementById('comment-form');
                     const alert = document.createElement('div');
                     alert.className = 'alert alert-success alert-dismissible fade show';
@@ -81,9 +78,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
                         bsAlert.close();
                     }, 3500);
+                    console.log(`*New comment posted* - ${formBodyValue}`);
                 }
             })
-            
         .catch(error => {
             console.error('Error', error);
             alert('Failed to post the comment, please reload the page')
@@ -96,4 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     };
 
-});    
+}
+
+
+document.addEventListener("DOMContentLoaded", createComment);

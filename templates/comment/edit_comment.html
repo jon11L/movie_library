@@ -1,12 +1,13 @@
 {% load static %}
 
-<div class="edit-comment-form" style="display: none; padding-left: 12px; width: 90%;">
+
+<div class="edit-comment-block" style="display: none; padding-left: 12px; width: 90%;">
     
-    <form action="{% url 'comment:edit' comment.pk %}" method="POST" style="margin-top: 10px;" label="">
+    <form action=""  method="PUT" id="edit-comment-form" style="margin-top: 10px;" label="">
         {% csrf_token %}
         
         <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; resize: none; padding-bottom: 30px;">
-            {{ comment.body }}
+            {{ comment.body|escapejs }}
         </textarea>
         
         <div>
@@ -15,7 +16,11 @@
                     Cancel
                 </button>
             
-                <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 10px;">
+                <button type="submit" 
+                    data-content-type = '{% if serie %}serie{% else %}movie{% endif %}'
+                    data-object-id = '{% if serie %}{{ serie.id }}{% elif movie %}{{ movie.id }}{% endif %}'
+                    class="btn btn-sm btn-secondary" 
+                    style="margin-top: 10px;">
                     Confirm
                 </button>
             </div>

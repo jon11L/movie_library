@@ -1,8 +1,8 @@
 {% load static %}
-<br>
-<!-- NEW Comment posted -->
-<div id="comment-{{ comment.pk }}" class="card" style="width: 80%; margin: auto; border: solid 2px rgb(21, 49, 49);">
-    <div class="card-body" style="padding: 6px; ">
+<!-- Display the content of a comment. -->
+<!-- Use to list existing ones and to place a new one -->
+<div id="comment-{{ comment.pk }}" class="card" style="width: 80%; margin: auto; border: solid 2px rgb(21, 49, 49); margin-bottom: 1em;">
+    <div class="card-body" style="padding: 6px;">
         <div style="display: flex; justify-content: space-between;">
             <!-- Show user who posted the comment -->
             <div class="d-flex">
@@ -14,7 +14,7 @@
                 <p style="margin-top: 2px; margin-left: 5px;"><strong>{{ comment.user.username }}</strong></p>
             </div>
             <!-- Created or edited  -->
-            <div class="d-flex" style="font-size: 14px;">
+            <div class="d-flex created-at" style="font-size: 14px;">
                 {% if comment.created_at != comment.updated_at %}
                 <p style="margin-right: 8px;">(Edited) </p>
                 {% endif %}
@@ -35,10 +35,10 @@
             <div class="comment-buttons" style="margin-top: auto;">
                 <div class="d-flex" >
                     <!--  User can only Edit their Comment once -->
-                    {% if comment.created_at == comment.updated_at %}
-                    <div id="edit-comment">
+                    {% if comment.user.id == request.user.id and comment.created_at == comment.updated_at %}
+                    <div class="edit-comment-button">
                         <button 
-                            class="edit-comment-btn" 
+                            class="edit-comment-form-btn" 
                             data-comment-id="{{ comment.pk }}"
                             data-comment-body="{{ comment.body }}"
                             style="color: inherit; border: none; background: none; cursor: pointer;">
