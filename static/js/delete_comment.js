@@ -1,14 +1,13 @@
-// document.addEventListener("DOMContentLoaded", function () {
 
 function deleteComment() {
 
     const deleteButtons = document.querySelectorAll('.delete-comment-btn');
-    console.log('Del Comment js feature loading');
+    console.log('Del Comment feature loaded');
 
     // Get CSRF token for AJAX calls
     function getCSRFToken() {
         console.log('getCSRFToken function called');
-        console.log(`CSRF token: ${$('[name=csrfmiddlewaretoken]').val()}`);
+        // console.log(`CSRF token: ${$('[name=csrfmiddlewaretoken]').val()}`);
         // CSRF token is usually stored in a hidden input field in the form... is it ?
         return $('[name=csrfmiddlewaretoken]').val();
     }
@@ -16,7 +15,10 @@ function deleteComment() {
     function showMessage(message, type="success") {
         const messageContainer = $('#message-container');
         messageContainer.html(
-            `<div class="alert alert-${type}">${message}</div>
+            `<div class="alert alert-${type} alert-dismissible fade show">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             `
         );
         messageContainer.fadeIn();
