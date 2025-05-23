@@ -3,7 +3,7 @@
 <!-- Use to list existing ones and to place a new one -->
 <div id="comment-{{ comment.pk }}" class="card" style="width: 80%; margin: auto; border: solid 2px rgb(21, 49, 49); margin-bottom: 1em;">
     <div class="card-body" style="padding: 6px;">
-        <div style="display: flex; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0; padding-bottom: 0;">
             <!-- Show user who posted the comment -->
             <div class="d-flex">
                 {% if comment.user.profile.profile_picture %}
@@ -21,8 +21,12 @@
                 <p class="text-muted"> {{ comment.created_at }}</p>
             </div>
         </div>
+        <!-- trial to separate with a line -->
+        <div style="width: 90%; margin: auto; margin-top: 0; padding-top: 0;">
+            <hr style="padding: 0; margin-top: 0;">
+        </div>
+
         <div  class="comment-block" style="display: flex; flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
-            
             <!-- Comment Body here -->
             <div class="comment-body" style="width: 90%; text-align: left; padding-left: 3em;">
                 <p>{{ comment.body|linebreaksbr }}</p>
@@ -47,7 +51,8 @@
                     </div>
                     {% endif %}
                     {% if comment.user.id == request.user.id %}
-                    <div id="delete-comment">
+                    <!-- <div id="delete-comment"> -->
+                    <div>
                         <button class="delete-comment-btn" 
                             data-comment-id="{{ comment.pk }}"
                             data-content-type="{% if serie %}serie{% else %}movie{% endif %}"
