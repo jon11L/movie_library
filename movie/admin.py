@@ -13,5 +13,4 @@ from .models import Movie
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
     list_display = ("pk", "title", "slug", "created_at", "updated_at")
-    
     prepopulated_fields = {"slug": ("title",)}

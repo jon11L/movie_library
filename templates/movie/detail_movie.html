@@ -3,8 +3,8 @@
 
 {% block content %}
 
-<div style="padding-top: 40px;">
-
+<div>
+    <br>
     <div class="row">
         <div class="col-sm-8 offset-md-2">
             {% if movie %}
@@ -24,8 +24,7 @@
                     
                     <div style="align-self: flex-end; margin-top: 15px; margin-right: 10px;">
                         
-                        <div>
-
+                        <div class="user-feature-btn">
                             <!-- watchlist button feature -->
                             <button class="watchlist-button"
                                     data-type="movie"
@@ -101,15 +100,16 @@
 
                 </div>
             </div>
+            <br>
                 
 
-            <div>
+            <!-- <div>
                 <div style="justify-items: center; margin-top: 20px;">
                     <h3>Comments:</h3>
-                </div>
+                </div> -->
                 
                 <!-------- Comment Form section --------->
-                {% if form %}
+                <!-- {% if form %}
                 <form action="" method="POST" style="margin-top: 10px;" label="">
                     {% csrf_token %}
                     
@@ -121,14 +121,24 @@
                     </div>
                 </form>
                 {% endif %}
-            </div>
+            </div> -->
+
+            <!------- Comment Post form -------->
+            <section class="comment-post-section">
+                {% include "comment/comment_form.html" %}
+            </section>
+            <br>
 
 
             <!--------- Comment Objects Section here -------->
-            <section>
+            <section  class="comment-list-section">
                 {% if comments %}
                 {% for comment in comments %}
-                <br>
+
+
+                {% include "comment/block_comment.html" %}
+
+                <!-- <br>
                 <div class="card" style="width: 85%; margin: auto; border: solid 2px darkslategray;">
                     <div class="card-body">
                         <div style="display: flex; justify-content:space-between ;">
@@ -151,9 +161,9 @@
 
                         <div class="d-flex" style="flex-wrap: wrap; justify-content:space-between ; margin-top: 5px;">
                             <p style="width: 90%; text-align: left;">{{ comment.body }}</p>
-                            
+                             -->
                             <!-- delete option for comments of user 'owner' of the comment -->
-                            <div style="margin-top: auto;">
+                            <!-- <div style="margin-top: auto;">
                                 <div class="d-flex" >
     
                                     {% if comment.user.id == request.user.id %}
@@ -161,9 +171,9 @@
                                         <i class="fa fa-trash"></i>
                                     </a>
                                     {% endif %}
-                                    {% if comment.created_at == comment.updated_at %}
+                                    {% if comment.created_at == comment.updated_at %} -->
                                     <!-- implemeting editing of comment -->
-                                    <a href="{% url 'comment:edit' comment.id %} " style="color: inherit;">
+                                    <!-- <a href="{% url 'comment:edit' comment.id %} " style="color: inherit;">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                     {% endif %}
@@ -172,19 +182,30 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 {% endfor %}
+
+                {% else %}
+                <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
                 {% endif %}
+
             </section>
             
             
         </div>
-        
+    
+        {% else %}
+        <h4>Movie not found...</h4>
         {% endif %}
 
+        <br/>
     </div>
-    <br/>
     
 </div>
+
+
+<script src="{% static 'js/create_comment.js' %}"></script>
+<script src="{% static 'js/edit_comment.js' %}"></script>
+<script src="{% static 'js/delete_comment.js' %}"></script>
 
 {% endblock %}

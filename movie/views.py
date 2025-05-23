@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 
@@ -60,16 +60,16 @@ def movie_overview(request, slug):
     try:
         if Movie:
         # retrieve the specified movie requested by user
-            movie = Movie.objects.get(slug=slug)
-            # Check if user's like the movie
+            # movie = Movie.objects.get(slug=slug)
+            movie = get_object_or_404(Movie, slug=slug)
 
             # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = []
             user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+                                                    user=request.user.id,
+                                                    content_type='movie'
+                                                    ).values_list('object_id', flat=True)
 
-            user_liked_movie = False
+            # Check if user liked the movie
             user_liked_movie = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='movie',
@@ -85,29 +85,11 @@ def movie_overview(request, slug):
                 object_id=movie.pk
                 ).order_by('-created_at')
             
-            print(f"comments:\n {comments}")
+            print(f"Number of comments:\n {len(comments)}")
 
             # display the Comment form if user is connected
             if request.user.is_authenticated:
                 form = CommentForm(request.POST or None)
-                if request.method == "POST":
-                    print(f" User: {request.user.username} posting a comment!")
-                    if form.is_valid():
-                        form.save(commit=False)
-                        form.instance.user = request.user
-                        form.instance.content_type = "movie"
-                        form.instance.object_id = movie.pk
-                        form.instance.body = form.cleaned_data['body']
-                        form.save(commit=True)
-                        
-                        messages.success(request, "your post has been posted") # debug log
-                        print(f" User: {request.user.username} posted a comment!")# debug log
-                        print(f" comment: {form.cleaned_data['body']}") # debug log
-
-                        return redirect('movie:detail', slug=slug)
-                    else:
-                        messages.error(request, "it seems your comment is not valid, please check and try again")
-                        return redirect('movie:detail', slug=slug)
 
                 context = {
                     'movie': movie,
@@ -119,8 +101,10 @@ def movie_overview(request, slug):
                 return render(request,'movie/detail_movie.html', context=context)
             
             else:
+                form = CommentForm()
                 context = {
                     'movie': movie,
+                    'form': form,
                     'user_liked_movie': user_liked_movie,
                     'user_watchlist_movies': user_watchlist_movies,
                     'comments': comments
@@ -129,8 +113,11 @@ def movie_overview(request, slug):
 
         
         else:
-            return f'No movies found in the database'
+            messages.error(request, "No Movie found in the database with this title")
+            print(f" error :\n{e}")
+            return redirect('movie:list_movie')
         
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")
+        return redirect('main:home')

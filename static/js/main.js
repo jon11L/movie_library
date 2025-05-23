@@ -10,7 +10,10 @@ $(document).ready(function() {
     function showMessage(message, type="success") {
         const messageContainer = $('#message-container');
         messageContainer.html(
-            `<div class="alert alert-${type}">${message}</div>
+            `<div class="alert alert-${type} alert-dismissible fade show">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             `
         );
         messageContainer.fadeIn();
