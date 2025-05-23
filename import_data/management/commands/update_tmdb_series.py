@@ -60,7 +60,8 @@ class Command(BaseCommand):
         skipped_count = 0
 
         while attempt < MAX_RETRIES:
-            page = str(random.randint(1, 15))  # Randomly select a page
+            page = str(random.randint(1, 20))  # Randomly select a page
+            
             # calculate date up to two weeks before now for the list of updated movies
             today = datetime.datetime.now()
             start_date = (today - datetime.timedelta(days=random.randint(2, 14)))
