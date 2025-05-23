@@ -42,9 +42,9 @@
 
                 <div>
                     {% if serie.image_poster %}
-                    <img src="{{ serie.render_image_poster }}" alt="{{ serie.title }} poster" class="img-fluid rounded" style="width: fit-content; height: 350px;">
+                    <img src="{{ serie.render_image_poster }}" alt="{{ serie.title }} poster" class="img-fluid rounded w-100 h-100" style="width: fit-content; height: 350px;">
                     {% else %}
-                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo" style="width: fit-content; height: 350px;">
+                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded w-100 h-100" alt="Profile photo" style="width: fit-content; height: 350px;">
                     {% endif %}
                 </div>
             </div>

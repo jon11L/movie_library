@@ -104,8 +104,10 @@ def serie_overview(request, slug):
                 return render(request,'serie/detail_serie.html', context=context)
 
             else:
+                form = CommentForm()
                 context = {
                     'serie': serie,
+                    'form': form,
                     'user_liked_serie': user_liked_serie,
                     'user_watchlist_series': user_watchlist_series,
                     'comments': comments
