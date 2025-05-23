@@ -104,6 +104,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Looping through the list of updated movies and pass the Ids to fetch the datas.\n")
         for tmdb_movie_id in updated_movie_list['results']: # add a random index to go through
+            time.sleep(1) 
             imported_count += 1
             if imported_count > 50:
                 break # stop the iteration to fetch for updated movies.

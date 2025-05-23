@@ -19,7 +19,14 @@ def admin_check(user):
 
 def home(request):
     '''
-    Homepage landing, with display of some latest content (Movies and Series)
+    Home landing page. Display some of latest content
+    (Movies and Series) up to 6 randomly selected each.
+    - Recently released.
+    - coming up soon.
+    - Random pick
+    - from user Watchlist
+    - coming back (Series only)
+
     '''
     # Check if they are Movie datas and display them if so
     try:
@@ -54,54 +61,43 @@ def home(request):
         print(f"\n coming soon movies: {len(coming_soon_movies)}\n") # debug print
         coming_soon_movies = pick_content(coming_soon_movies) 
 
-        random_pick_movies = random.sample(list(movies.exclude(length__range=(0, 45))), 6)  # retrieve 8 random movies from the last 30 days
-        print(f"\n random pick movies:\n\n{random_pick_movies}\n") # debug print
+        random_pick_movies = random.sample(list(movies.exclude(length__range=(0, 45))), 6)  # retrieve 6 random movies from the last 30 days
+        print(f"\n random pick movies: {random_pick_movies}\n") # debug print
 
         # series = Serie.objects.filter(last_air_date__range=(week_start, week_end))[:8] 
         coming_back_series = series.filter(last_air_date__range=(fortnight_ago, week_later))
         print(f"\n coming back series: {len(coming_back_series)}\n") # debug print
         coming_back_series = pick_content(coming_back_series)  # retrieve 8 random movies from the last 30 days
 
-        coming_up_series = series.filter(first_air_date__range=(fortnight_ago, bi_week_later))  # retrieve the 8 latest content added
+        coming_up_series = series.filter(first_air_date__range=(fortnight_ago, bi_week_later))  # retrieve the 6 latest content added
         print(f"\n coming up series: {len(coming_up_series)}\n") # debug print
         coming_up_series = pick_content(coming_up_series)  # retrieve 8 random movies from the last 30 days
         
-        # random_pick_series = random.sample(list(series.exclude(length__range=(0, 45))), 6)  # retrieve 8 random movies from the last 30 days
-        random_pick_series = pick_content(series)  # retrieve 8 random movies from the last 30 days
+        random_pick_series = pick_content(series)  # retrieve 6 random movies from the last 30 days
         print(f"\n random pick series:\n\n{random_pick_series}\n") # debug print
 
-        movies_count = movies.count() # display the amount of movies in the database
+        # display the amount of Movies & Series available from the database
+        movies_count = movies.count() 
         series_count = series.count() 
 
         # --------- Get the user's watchlist content (movies, series)  -----------
-        user_watchlist_movies = []
         user_watchlist_movies = WatchList.objects.filter(
                                             user=request.user.id, content_type='movie'
                                             ).values_list('object_id', flat=True)
 
-        user_watchlist_series = []
         user_watchlist_series = WatchList.objects.filter(
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
 
-        # print(f"\n user has in watchlist:\nMovie: {user_watchlist_movies}") # debug print
-        # print(f"Serie: {user_watchlist_series}\n") # debug print
-
         # -------- Get the user's like content (movies, series)  ----------
-        user_liked_movies = []
         user_liked_movies = Like.objects.filter(
                                             user=request.user.id, content_type='movie'
                                             ).values_list('object_id', flat=True)
 
-        user_liked_series = []
         user_liked_series = Like.objects.filter(
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
-        
-        # print(f"\n user liked:\n\n{user_liked_movies}\n") # debug print
-        # print(f"\n user liked:\n\n{user_liked_series}\n") # debug print
 
-            
         watchlist_content = [] # intialize the list of watchlist instances 
 
         if request.user.is_authenticated:
@@ -145,7 +141,6 @@ def home(request):
             'user_liked_series': user_liked_series,
             'user_watchlist_movies': user_watchlist_movies,
             'user_watchlist_series': user_watchlist_series,
-
         }
 
         return render(request, 'main/home.html', context=context)
@@ -154,7 +149,6 @@ def home(request):
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')
-
 
 
 
@@ -173,9 +167,8 @@ def show_documentaries(request):
         # Check if they are Movie datas and display them if so
         movies = Movie.objects.filter(genre__icontains = "documentary")
         series = Serie.objects.filter(genre__icontains = "documentary")
-        print(f"\n documentaries movies: {len(movies)}\n") # debug print
-        print(f"\n documentaries series: {len(series)}\n") # debug print
-        
+        print(f"\nDocumentaries has:\n{len(movies)} Movies\n{len(series)} Series:\n") # debug print
+
         # combine movies and series into a single list or object to pass in paginator
         for movie in movies:
                 documentaries.append({
@@ -189,38 +182,32 @@ def show_documentaries(request):
                 'type': 'serie',
             })
 
-
         # Sort the documentaries by title (ascending order)
-        documentaries = sorted(documentaries, key=lambda x: x['object'].title, reverse=False)  # sort by release date
+        documentaries = sorted(documentaries, key=lambda x: x['object'].title, reverse=False)
 
         # -- paginate over the results --
         paginator = Paginator(documentaries, 24)
         page_number = request.GET.get('page')
         page_object = paginator.get_page(page_number)
-        print(f"List content: {page_object}")
+        print(f"Number of pages: {page_object}") # debug print
 
         # Get the user's like content (movies, series)
-        user_liked_movies = []
         user_liked_movies = Like.objects.filter(
                                             user=request.user.id, content_type='movie'
                                             ).values_list('object_id', flat=True)
 
-        user_liked_series = []
         user_liked_series = Like.objects.filter(
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
         
         # Get the user's watchlist content (movies, series)
-        user_watchlist_movies = []
         user_watchlist_movies = WatchList.objects.filter(
                                             user=request.user.id, content_type='movie'
                                             ).values_list('object_id', flat=True)
 
-        user_watchlist_series = []
         user_watchlist_series = WatchList.objects.filter(
                                             user=request.user.id, content_type='serie'
                                             ).values_list('object_id', flat=True)
-
 
         context = {
             'movies': movies,

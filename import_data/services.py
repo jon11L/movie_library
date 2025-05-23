@@ -184,6 +184,40 @@ def save_or_update_series(tmdb_id):
         number_of_seasons = [season["season_number"] for season in seasons]
         print(f"Number of seasons: {len(number_of_seasons)}")
 
+        # ------------IN PROGRESS Trying to not update every single season if only one is new ------------------
+
+        if not is_created and len(number_of_seasons) == 0:
+            print(f"Serie: {serie} has no seasons to update.")
+            return (serie, is_created)
+
+
+        # TODO
+        # check what seasons already exist
+        # if not is_created and len(number_of_seasons) > 0:
+        #     # check if the seasons already exist in the database
+        #     existing_seasons = Season.objects.filter(serie_id=serie.pk).values_list('season_number', flat=True).order_by('season_number')
+        #     if existing_seasons:
+        #         existing_seasons = list(existing_seasons)
+        #         print(f"Existing seasons: {existing_seasons}\nlen: {len(existing_seasons)}") # debug print
+        #     print(f"TEST TEST TEST\n")
+
+
+        # # check if current seasons fetched has more than one season ahead that what is already DB,
+        # # if so, we can skip the seasons that are already in the DB and only update the new ones and the last in DB.
+        #     if existing_seasons and number_of_seasons:
+        #         print(f"Serie: {serie} has no new seasons to update., updating the last one.")
+        #         # check if the last season in DB is the same as the last one in TMDB
+        #         last_season_in_db = existing_seasons[-1]
+        #         if last_season_in_db.season_name == number_of_seasons[-1].season_name:
+        #             print(f"Serie: {serie} has no new seasons to update., updating the last one.")
+        #             print(f"TEST TEST TEST22\n")
+        #             time.sleep(4) # so i can check what is happening
+        #             pass
+            
+
+        # ------------END OF IN PROGRESS  ------------------
+
+
         for season_number in number_of_seasons:
             time.sleep(3) # to avoid hitting the TMDB API too quickly
             print("--------------")
@@ -238,14 +272,6 @@ def save_or_update_series(tmdb_id):
                         }
                     )
 
-            # TODO
-            # check what seasons already exist
-            # check if current seasons has more than one season ahead, skip
-            # example: looping season 4, if more than 6 seasons available, skip
-            # one season behind the last one, might need episode updates, and create the latest season
-            # or check if the season was updated recently, if so skip it (probably nothing to really update) if not, go ahead save instance.
-            # What operation is more consuming? checking and possibly skipping or just update all seasons?
-
             season, created = Season.objects.update_or_create(
                 tmdb_id = season_data.get('id'),
                 defaults={  # Fields to update if the object exists
@@ -257,7 +283,6 @@ def save_or_update_series(tmdb_id):
                 "description" : season_data.get('overview'),
                 "image_poster" : season_data.get('poster_path'),
                 "trailers" : youtube_trailer,
-                # banner_poster=season_data['still_path'],  will go in episode  ["episode"] and loop through for each episode
                 }
             )
 
@@ -283,12 +308,8 @@ def save_or_update_series(tmdb_id):
             existing_episodes = {
                 ep.episode_number: ep for ep in Episode.objects.filter(season=season)
             }
-            print(f"Existing episodes: {existing_episodes}") # debug print
+            print(f"Existing episodes: {len(existing_episodes)}") # debug print
 
-
-            # Retrieve existing slugs for this season (to differentiate between new & existing episodes)
-            # existing_slugs = set(Episode.objects.filter(season=season).values_list('slug', flat=True))
-            # new_slugs = set()
 
             # Loop through each episode, Update existing episode or create new ones.
             for episode in list_episodes:
@@ -357,7 +378,6 @@ def save_or_update_series(tmdb_id):
                             writer = writers,
                             banner_poster = episode.get('still_path'),
                             tmdb_id = episode.get('id'),
-                            # slug = unique_slug,  # Use the unique slug generated above
                         ))
 
                 except Exception as e:
@@ -377,7 +397,7 @@ def save_or_update_series(tmdb_id):
                 Episode.objects.bulk_update(update_episodes_obj, [
                     'title', 'description', 'length', 'release_date',
                     'guest_star', 'director', 'writer', 'banner_poster',
-                    'tmdb_id', 'updated_at' # 'slug'  # Add slug if needed
+                    'tmdb_id', 'updated_at'
                 ])
                 print(f"Updated {len(update_episodes_obj)} existing episodes in DB.")
 
@@ -386,7 +406,6 @@ def save_or_update_series(tmdb_id):
 
         print(f"title: {serie.title} -- (id {serie.id}) -- Contains:")
         print(datas_season)
-
 
         # return serie if Created or Updated, is_created allow to log differece between these 2
         return (serie, is_created)
@@ -419,7 +438,6 @@ def generate_episode_slug(season):
 
     existing_slugs = set(Episode.objects.filter(season=season).values_list('slug', flat=True))
     new_slugs = set()
-    
 
     for episode in episodes:
         count += 1
@@ -427,7 +445,6 @@ def generate_episode_slug(season):
             base_slug = slugify(f"{episode.season.serie.slug} S{episode.season.season_number} E{episode.episode_number} {episode.title}")
             unique_slug = base_slug
             counter = 1
-
 
             # ensure slug is unique in the database and in the new slugs set
             while unique_slug in existing_slugs or unique_slug in new_slugs:
@@ -440,13 +457,10 @@ def generate_episode_slug(season):
 
     if updated_episodes:
         Episode.objects.bulk_update(updated_episodes, ['slug'])
-        print(f"✅ Successfully updated {len(updated_episodes)} Episodes slugs.\n")
-        
+        print(f"✅ Successfully Added slugs to {len(updated_episodes)} Episodes .")
     else:
-        print("⚠️ No Episodes needed updating.\n")
+        print("⚠️ No Episodes needed updating.")
 
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"time: {elapsed_time:.2f} seconds.")
-    print(f"Done! Populated slugs for {episodes.count()} Episodes.")
-    print(f" {count} Episodes have been processed for slug generation.")
+    print(f"time: {elapsed_time:.2f} seconds.\n")

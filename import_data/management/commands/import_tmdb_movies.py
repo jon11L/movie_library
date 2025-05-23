@@ -1,5 +1,6 @@
 # import requests
 import logging
+import datetime
 import time
 import random
 import os
@@ -55,10 +56,13 @@ class Command(BaseCommand):
         skipped_count = 0  # Tracks how many movies already existed
         imported_count = 0  # Tracks how many movies were imported
 
+        pages_to_fetch = []  # List to store the pages to fetch
+
+
+
 
         endpoint = ("popular", "top_rated", "now_playing", "upcoming")
         selected_endpoint = random.choice(endpoint)
-
 
     #     # adjust the number of pages based on the selected endpoint
         if selected_endpoint == "now_playing":
@@ -70,6 +74,14 @@ class Command(BaseCommand):
 
         # Randomly select 5 pages
         pages_to_fetch = random.sample(range(1, max_pages + 1), 5)  
+
+        # ------TRIAL/ once every month ensure it takes from page 1&2 to get latest ------
+        today = datetime.date.today()
+        if today.day == 1 or today.day == 16:
+            # selected_endpoint = "now_playing"
+            pages_to_fetch.append(1)  # Only fetch the first page
+            pages_to_fetch.append(2)  # Only fetch the first page
+
 
         for page in pages_to_fetch:
             attempt = 0  # Track the number of retries in case of failure
@@ -161,7 +173,7 @@ class Command(BaseCommand):
 #                     'title': exisiting_movie.title
 #                 }, status=200)
             
-#             # if the movie is not then we try to fetch it.
+#             # if the movie is not in the DB then we try to fetch it.
 #             except Movie.DoesNotExist:
 #                 result = add_movies_from_tmdb(tmdb_id)
 
