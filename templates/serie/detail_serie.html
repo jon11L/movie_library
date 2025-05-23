@@ -201,8 +201,13 @@
             {% include "comment/block_comment.html" %}
             
             {% endfor %}
+
+            {% else %}
+            <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
             {% endif %}
+            
         </section>
+
 
         {% else %}
         <h4>Serie not found...</h4>

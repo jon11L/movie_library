@@ -70,7 +70,7 @@ def serie_overview(request, slug):
                                                 user=request.user.id, content_type='serie'
                                                 ).values_list('object_id', flat=True)
 
-            # Check if user's like the serie
+            # Check if user liked the serie
             user_liked_serie = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='serie',
@@ -94,9 +94,9 @@ def serie_overview(request, slug):
 
                 context = {
                     'serie': serie,
+                    'seasons': seasons,
                     'user_liked_serie': user_liked_serie,
                     'user_watchlist_series': user_watchlist_series,
-                    'seasons': seasons,
                     'form': form,
                     'comments': comments,
                     }
@@ -107,6 +107,7 @@ def serie_overview(request, slug):
                 form = CommentForm()
                 context = {
                     'serie': serie,
+                    'seasons': seasons,
                     'form': form,
                     'user_liked_serie': user_liked_serie,
                     'user_watchlist_series': user_watchlist_series,
@@ -116,7 +117,7 @@ def serie_overview(request, slug):
             
         # if the serie does not exist in the database
         else:
-            messages.error(request, "No Tv Show with this title found in the database")
+            messages.error(request, "No Tv Show found in the database with this title")
             print(f" error :\n{e}")
             return redirect('serie:list_serie')
         
