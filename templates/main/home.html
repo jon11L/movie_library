@@ -163,7 +163,7 @@
 
                 <!----- Displaying Some content from the user's watchlist ------->
                 {% if watchlist_content %}
-                <div class="row" style="justify-content: center; ">
+                <div class="row" style="justify-content: center;">
                     <div style="text-align: center; background-color: black; padding: 5px;">
                         <h2>
                             <a href="{% url 'user_library:watch_list' request.user.id %}" style="text-decoration: none; color: inherit;">
@@ -179,7 +179,7 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
                             
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
+                                <small style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
                                     
                                 {% if item.content_type == 'movie' %}
                                 <div>
@@ -475,12 +475,7 @@
                 <p>No series found...</p>
                 {% endif %}
 
-
             </main>
-            
-
-
-            
             
             <!-- Right section of the screen -->
             <aside class="custom-col-1-5 d-none d-md-block">
@@ -488,9 +483,7 @@
                 </div>
             </aside>
             
-            
         </div>
-
     </div>
 </div>
 

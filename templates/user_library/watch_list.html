@@ -4,105 +4,127 @@
 {% load static %}
 
 
-<div style="width: 90%; margin: auto; margin-top: 20px;">
 
-    <h1 style="text-align: center; margin-top: 20px;">Your watch list:</h1>
-    <h5 style="text-align: center; margin-top: 20px;"> You currently have {{ total_content }} item in your watch list</h5>
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
 
-    <br><br>
-    <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;" >
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div></div>
+            </aside>
+            
+            
+            <!-- Main/middle section of the screen -->
+            <main class="custom-col-9">
 
-        {% if watchlist_page %}
-        {% for item in watchlist_page %}
-        <div style="margin-right: 30px; width: 280px;" >
-            <div class="card">
+
+                <h1 style="text-align: center; margin-top: 20px;">Your watch list:</h1>
+                <h5 style="text-align: center; margin-top: 20px;"> You currently have {{ total_content }} item in your watch list</h5>
+
+                <br><br>
+                <div class="row" style="justify-content: center;" >
                 
+                    {% if watchlist_page %}
+                    
+                    {% for item in watchlist_page %}
+                    <div  class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;  margin-top: 2em">
+                        <div class="card w-100 h-100">
+
+
+                            <div class="card-img-top" style="text-align: center; margin-top: 25px;">
+                                {% if item.content.render_image_poster %}
+                                <img src="{{ item.content.render_image_poster }}" class="img-fluid rounded" style="width: fit-content; height: 350px;"  alt="{{ item.content.title }}">
+                                {% else %}
+                                <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.content.title }}" style="width: fit-content; height: 350px;">
+                                {% endif %}
+                            </div>
+
+                            <div class="card-body">
+                                <!-- display if it is a movie or a serie -->
+                                {% if item.content_type == 'movie' %}
+                                <a href="{% url 'movie:detail' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
+                                    <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                </a>
+
+                                {% elif item.content_type == 'serie' %}
+                                <a href="{% url 'serie:detail' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
+                                    <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                </a>
+                                {% endif %}
+
+                                <p><small> ({{ item.content_type }})</small></p>
+
+                                <br>
+                                <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":100" }}...</p>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>Released in:</strong> {{ item.content.release_date.year }}</li>
+                                    <li class="list-group-item"><strong>Genre:</strong> {{ item.content.render_genre }}</li>
+                                    <li class="list-group-item"><strong>Rating:</strong> {{item.content.render_vote_average }}</li>
+                                    <li class="list-group-item"><strong>Length:</strong> {{item.content.length }}min</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
                 
-                <div class="card-img-top" style="text-align: center; margin-top: 25px;">
-                    {% if item.content.render_image_poster %}
-                    <img src="{{ item.content.render_image_poster }}" class="img-fluid rounded" style="width: fit-content; height: 350px;"  alt="{{ item.content.title }}">
+
+
                     {% else %}
-                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.content.title }}" style="width: fit-content; height: 350px;">
+                    <h5 style="color: bisque; margin: auto;">No content in Watchlist yet...</h5>
                     {% endif %}
-                </div>
                 
-                <div class="card-body">
-                    <!-- display if it is a movie or a serie -->
-                    {% if item.content_type == 'movie' %}
-                    <a href="{% url 'movie:movie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
-                        <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
-                    </a>
-                    
-                    {% elif item.content_type == 'serie' %}
-                    <a href="{% url 'serie:serie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
-                        <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
-                    </a>
-                    {% endif %}
-                    
-                    <p><small> ({{ item.content_type }})</small></p>
-                    
-                    <br>
-                    <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":100" }}...</p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Released in:</strong> {{ item.content.release_date.year }}</li>
-                        <li class="list-group-item"><strong>Genre:</strong> {{ item.content.render_genre }}</li>
-                        <li class="list-group-item"><strong>Rating:</strong> {{item.content.render_vote_average }}</li>
-                        <li class="list-group-item"><strong>Length:</strong> {{item.content.length }}min</li>
-                    </ul>
                 </div>
-            </div>
-                
+
+                <br/>
+            
+            
+                <!----- Pagination system ------->
+                <div style="display: flex; justify-content: center;">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            {% if watchlist_page.has_previous %}
+                            <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                            <!-- previous page -->
+                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                            {% endif %}
+
+                            {% for num in watchlist_page.paginator.page_range %}
+                                <!-- enumerate pages around current page -->
+                                {% if num == watchlist_page.number %}
+                                <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                                {% elif num > watchlist_page.number|add:'-5' and num < watchlist_page.number|add:'5' %}
+                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if watchlist_page.has_next %}
+                            <!-- Next page -->
+                            <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ watchlist_page.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                        
+                            <!-- Last page -->
+                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.paginator.num_pages}}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                            {% endif %}
+
+                            <!-- Current page and how many pages are there -->
+                            <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ watchlist_page.number }} of {{ watchlist_page.paginator.num_pages }}</h6></li>
+                        </ul>
+                    </nav>
+                </div>
+
+
+            </main>
+            
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div>
+                </div>
+            </aside>
+            
         </div>
-        {% endfor %}
-
-        
-        
-        {% else %}
-        <h5 style="color: bisque; margin: auto;">No content in Watchlist yet...</h5>
-        {% endif %}
-
     </div>
-    
-    <br/>
-
-
-    <!----- Pagination system ------->
-    <div style="display: flex; justify-content: center;">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination">
-                {% if watchlist_page.has_previous %}
-                <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
-                <!-- previous page -->
-                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
-                {% endif %}
-                
-                {% for num in watchlist_page.paginator.page_range %}
-                    <!-- enumerate pages around current page -->
-                    {% if num == watchlist_page.number %}
-                    <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
-                    {% elif num > watchlist_page.number|add:'-5' and num < watchlist_page.number|add:'5' %}
-                    <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                    
-                {% if watchlist_page.has_next %}
-                <!-- Next page -->
-                <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ watchlist_page.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
-    
-                <!-- Last page -->
-                <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ watchlist_page.paginator.num_pages}}" class="btn btn-outline-info mb-4">Last Page</a></li>
-                {% endif %}
-                
-                <!-- Current page and how many pages are there -->
-                <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ watchlist_page.number }} of {{ watchlist_page.paginator.num_pages }}</h6></li>
-            </ul>
-        </nav>
-    </div>
-
-
-
-
-    
 </div>
+
 
 {% endblock %}

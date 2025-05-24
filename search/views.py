@@ -10,7 +10,9 @@ from serie.models import Serie
 from user_library.models import Like, WatchList
 
 
-# ----- attempt using the django-filters module -------
+
+
+# ----- Need to fiy Bug if user only put space char in title, then all Movie&Serie pass through filter -------
 def search(request):
     """
     View function for search page
@@ -30,10 +32,15 @@ def search(request):
 
     # Check if any filter parameters have values
     has_filter_values = False
+    print(f"items from the get request:\n\n {request.GET.items()}")
+
+
     for key, value in request.GET.items():
+        print(f"key'{key}' :  value '{value}'")
         if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type']:
             has_filter_values = True
             break
+
     
     print(f"\n\nhas_filter_values: {has_filter_values}")  # Debug print
 
@@ -56,7 +63,7 @@ def search(request):
         print("-- User submit a filtered search --") # debug print
 
         #  when no filtes are selected; return only the filter form
-        if not has_filter_values:
+        if not has_filter_values :
             print("no filter values applied")
             
             context = {

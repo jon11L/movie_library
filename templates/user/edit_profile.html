@@ -1,54 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load static %}
 
 
-<div style="display: flex;">
-    <!-- Links to update credentials: user name, password -->
-    <div class="card" style="text-align: center; background-color: #f5f5f5; border-right: solid darkgrey;">
-        <div style="margin: 50px 50px; padding-right: 20px;">
-            <h5>To edit your user account</h5>
-            <p><small>(user-name, password, first and last name.)</small></p>
-            <div class="row">
-                <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
-                    <small>Update your account</small>
-                </a>
-                <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
-                    <small>change password</small>
-                </a>
-            </div>
+
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
+            
+            
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block" style="padding: 0; margin: 0;">
+
+                <!-- Links to update credentials: user name, password -->
+                <div class="card w-100 h-100" style="text-align: center; background-color: #f5f5f5; border-right: solid darkgrey;">
+                    <div style="margin: 50px 50px; padding-right: 20px;">
+                        <h5 style="color: inherit;">To edit your user account</h5>
+                        <p><small>(user-name, password, first and last name.)</small></p>
+                        <div class="row">
+                            <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
+                                <small>Update your account</small>
+                            </a>
+                            <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 10px 0px; padding: 0px 0px;">
+                                <small>change password</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+            
+            <main class="custom-col-9">
+
+                <!-- Forms input to edit profile -->
+                <div class="col-md-8 offset-md-2" style="margin: 10px 100px;">
+                    <h1 style="margin-bottom: 25px;">Edit your profile here:</h1>
+                
+                    <form  style="color:antiquewhite" method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
+                        {% csrf_token %}
+                        {% for field in form %}
+                    
+                        <div class="mb-2 ms-3" style="display: flex;">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}  {{ field }}</label>        
+                            {% if field.help_text %}
+                                <div class="form-text" style="color:antiquewhite">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    
+                        <div style="padding-top: 25px;">
+                            <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
+                                Update
+                            </button>
+                            <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
+                                Go Back
+                            </a>
+                        </div>
+                    </form>
+                
+                </div>
+
+            </main>
+
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div>
+                </div>
+            </aside>
+
         </div>
     </div>
-    
-    <!-- Forms input to edit profile -->
-    <div class="col-md-6 offset-md-3" style="margin: 10px 100px;">
-        <h1 style="margin-bottom: 25px;">Edit your profile here:</h1>
-    
-        <form  style="color:antiquewhite" method="POST" enctype="multipart/form-data" action="{% url 'user:update_profile' request.user.id %}">
-            {% csrf_token %}
-            {% for field in form %}
-
-            <div class="mb-2 ms-3" style="display: flex;">
-                <label for="{{ field.id_for_label }}">{{ field.label }}  {{ field }}</label>        
-                {% if field.help_text %}
-                    <div class="form-text" style="color:antiquewhite">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
-                {% endif %}
-            </div>
-            {% endfor %}
-    
-            <div style="padding-top: 25px;">
-                <button type="submit" class="btn btn-outline-secondary" style="margin: 0px 20px;">
-                    Update
-                </button>
-                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
-                    Go Back
-                </a>
-            </div>
-        </form>
-    
-    </div>
-    
-
 </div>
 
 {% endblock %}
