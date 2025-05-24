@@ -3,219 +3,239 @@
 
 {% block content %}
 
-<div>
-    <br>
-    <div class="col-sm-8 offset-md-2">
-        {% if serie %}
-        <div class="card">
-            <div class="serie-card" style="width: 100%;">
-                <div id="image-background">
-                    {% if serie.render_banner_poster %}
-                    <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
-                    {% else %}
-                    <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
-                    {% endif %}
-                </div>
-            </div>
-
-            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; margin-right: 10px;">
-        
-                <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
-                <!-- Display the like and watchlist buttons -->
-                <div class="user-feature-btn">
-
-                    <!-- Watchlist button feature -->
-                    <button class="watchlist-button"
-                        data-type="serie"
-                        data-id="{{ serie.id }}"
-                        data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                        <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                    </button>
-                    <!-- like button feature -->
-                    <button class="like-button"
-                            data-type="serie"
-                            data-id="{{ serie.id }}"
-                            data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
-                            <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                    </button>
-
-                </div>
-
-            </div>
-            <!-- Display Serie poster and title  -->
-            <div class="d-flex flex-wrap">
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
             
-                <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
-                    
-                    {% if serie.render_image_poster %}
-                    <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
-                    {% else %}
-                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
-                    {% endif %}
-                    
-                    <div style="text-align: center;">
-                        {% if serie.title != serie.original_title %}
-                        <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
-                        {% else %}
-                        <h4 class="card-title">{{ serie.title }}</h4>
-                        {% endif %}
-                        
-                        {% if serie.tagline %}
-                        <p> ({{ serie.tagline }})</p>
-                        {% endif %}
-                    </div>
-                </div>
+            
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div></div>
+            </aside>
+            
+            <main class="custom-col-9">
                 
-            </div>
-
-            <br>
-            <!-- display serie content data -->
-            <div class="card-body">
-                    
-                <div class="d-flex">
-                
-                    <div style="width: 33%; margin-left: 1em;">
-                        <p class="card-text" style="text-align: center; padding: 0px;"> <strong>Overview:</strong></p>
-                        <p class="card-text">{{ serie.description }}</p>
-                    </div>
-                    
-                    <div style="width: 33%; margin-left: 1em;">
-                        <ul class="list-group list-group-flush">
-                            <div style="display: flex;">
-                                <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px"><strong>Release:</strong> {{ serie.first_air_date }}</li>
-                                <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px;"><strong>Length:</strong> {{ serie.length }}min</li>
-                            </div>
-                        </ul>
-                        
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                            </li>
-                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                <strong>Genre:</strong>
-                                <p>{{ serie.render_genre }}</p>
-                            </li>
-                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                <strong>Created by:</strong>
-                                <p>{{ serie.render_created_by }}</p>
-                            </li>
-                            <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                <strong>Production:</strong>
-                                <p>{{ serie.render_production }}</p>
-                            </li>
-                            <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
-                                <strong>Origin country:</strong>
-                                <p>{{ serie.render_origin_country }}</p>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div style="width: 33%; text-align: center;">
-                        <p>Test placeholder</p>
-                    </div>
-                </div>
-                    
-            </div>
-
-            <!------- Display the seasons here and episodes ---------->
-            <section class="season-episode-content">
-
-                <div style="padding-left: 5em;">
-                    <h5 style="color: inherit;">Seasons:</h5>
-                </div>
-
-                <div class="season-btn" style="display: flex; flex-wrap: wrap; width: 85%; margin-left: 80px;">
-                    {% for season in seasons %}
-                    <!-- try to not display season if no episode are present -->
-                    {% if season.episodes %}
-                    <div style="margin-left: 10px; margin-bottom: 20px;  width: fit-content;">
-                        <button class="season-toggle" data-season="{{ season.id }}" style="padding:8px 15px 8px 15px;">
-                            {{ season.season_number }} - {{ season.name }}
-                        </button>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-                
-                <br>
-                
-                <!-- will display the data through js when seasons btn clicked -->
-                <div id="season-content">
-                    
-                    <!-- display the Trailer and episodes when user click on the season -->
-                    {% for season in seasons %}
-                    <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none;">
-                        <!-- Trailers -->
-                        {% if season.trailers %}
-                        <div style="text-align: center; margin: auto; padding-top: 10px; width: fit-content;">
-                            <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                {% if serie %}
+                <div class="card" style="width: 90%; justify-content: center; margin: auto;">
+                    <div class="serie-card">
+                        <div id="image-background">
+                            {% if serie.render_banner_poster %}
+                            <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
+                            {% else %}
+                            <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+                            {% endif %}
                         </div>
-                        <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
-                            {% for trailer in season.trailers %}
-                            <div class="ms-3 mb-2">
-                                <iframe width="300" height="200"
-                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                    title="YouTube video player"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen>
-                                </iframe>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+                    </div>
+                
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; margin-right: 10px;">
+                    
+                        <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
+                        <!-- Display the like and watchlist buttons -->
+                        <div class="user-feature-btn">
                         
-                        <div>
-                            {% for episode in season.episodes.all %}
-                            <li>
-                                <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
-                                {% if episode.description %}
-                                <p>{{ episode.description|slice:":120"}}...</p>
+                            <!-- Watchlist button feature -->
+                            <button class="watchlist-button"
+                                data-type="serie"
+                                data-id="{{ serie.id }}"
+                                data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                            </button>
+                            <!-- like button feature -->
+                            <button class="like-button"
+                                    data-type="serie"
+                                    data-id="{{ serie.id }}"
+                                    data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                                    <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                            </button>
+                        
+                        </div>
+                    
+                    </div>
+                    <!-- Display Serie poster and title  -->
+                    <div class="d-flex flex-wrap">
+                    
+                        <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
+
+                            {% if serie.render_image_poster %}
+                            <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
+                            {% else %}
+                            <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                            {% endif %}
+
+                            <div style="text-align: center;">
+                                {% if serie.title != serie.original_title %}
+                                <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
+                                {% else %}
+                                <h4 class="card-title">{{ serie.title }}</h4>
                                 {% endif %}
-                            </li>
-                            {% endfor %}
+
+                                {% if serie.tagline %}
+                                <p> ({{ serie.tagline }})</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                
+                    <br>
+                    <!-- display serie content data -->
+                    <div class="card-body">
+
+                        <div class="d-flex">
+                        
+                            <div style="width: 33%; margin-left: 1em;">
+                                <p class="card-text" style="text-align: center; padding: 0px;"> <strong>Overview:</strong></p>
+                                <p class="card-text">{{ serie.description }}</p>
+                            </div>
+
+                            <div style="width: 33%; margin-left: 1em;">
+                                <ul class="list-group list-group-flush">
+                                    <div style="display: flex;">
+                                        <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px"><strong>Release:</strong> {{ serie.first_air_date }}</li>
+                                        <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px;"><strong>Length:</strong> {{ serie.length }}min</li>
+                                    </div>
+                                </ul>
+
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                    </li>
+                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                        <strong>Genre:</strong>
+                                        <p>{{ serie.render_genre }}</p>
+                                    </li>
+                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                        <strong>Created by:</strong>
+                                        <p>{{ serie.render_created_by }}</p>
+                                    </li>
+                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
+                                        <strong>Production:</strong>
+                                        <p>{{ serie.render_production }}</p>
+                                    </li>
+                                    <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
+                                        <strong>Origin country:</strong>
+                                        <p>{{ serie.render_origin_country }}</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        
+                            <div style="width: 33%; text-align: center;">
+                                <p>Test placeholder</p>
+                            </div>
+                        </div>
+
+                    </div>
+                
+                    <!------- Display the seasons here and episodes ---------->
+                    <section class="season-episode-content">
+                    
+                        <div style="padding-left: 5em;">
+                            <h5 style="color: inherit;">Seasons:</h5>
                         </div>
                     
-                    <!-- end of div per season id -->
-                    </div>
-                    {% endfor %}
+                        <div class="season-btn" style="display: flex; flex-wrap: wrap; width: 85%; margin-left: 80px;">
+                            {% for season in seasons %}
+                            <!-- try to not display season if no episode are present -->
+                            {% if season.episodes %}
+                            <div style="margin-left: 10px; margin-bottom: 20px;  width: fit-content;">
+                                <button class="season-toggle" data-season="{{ season.id }}" style="padding:8px 15px 8px 15px;">
+                                    {{ season.season_number }} - {{ season.name }}
+                                </button>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
 
+                        <br>
+
+                        <!-- will display the data through js when seasons btn clicked -->
+                        <div id="season-content">
+
+                            <!-- display the Trailer and episodes when user click on the season -->
+                            {% for season in seasons %}
+                            <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none;">
+                                <!-- Trailers -->
+                                {% if season.trailers %}
+                                <div style="text-align: center; margin: auto; padding-top: 10px; width: fit-content;">
+                                    <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                                </div>
+                                <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                                    {% for trailer in season.trailers %}
+                                    <div class="ms-3 mb-2">
+                                        <iframe width="300" height="200"
+                                            src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                            title="YouTube video player"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <div>
+                                    {% for episode in season.episodes.all %}
+                                    <li>
+                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
+                                        {% if episode.description %}
+                                        <p>{{ episode.description|slice:":120"}}...</p>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </div>
+                            
+                            <!-- end of div per season id -->
+                            </div>
+                            {% endfor %}
+                        
+                        </div>
+                    
+
+                    </section>
                 </div>
+                <br>
 
+            
+                <!------- Comment Post form -------->
+                <section class="comment-post-section">
+                    {% include "comment/comment_form.html" %}
+                </section>
+                <br>
+
+                <!---------Display the Comment Objects here -------->
+                <section class="comment-list-section">
+                    {% if comments %}
+                    {% for comment in comments %}
+
+                    {% include "comment/block_comment.html" %}
+
+                    {% endfor %}
                 
-            </section>
+                    {% else %}
+                    <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
+                    {% endif %}
+
+                </section>
+            
+            
+                {% else %}
+                <h4>Serie not found...</h4>
+                {% endif %}
+
+
+            </main>
+
+
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div>
+                </div>
+            </aside>
+
         </div>
-        <br>
-            
-
-        <!------- Comment Post form -------->
-        <section class="comment-post-section">
-            {% include "comment/comment_form.html" %}
-        </section>
-        <br>
-        
-        <!---------Display the Comment Objects here -------->
-        <section class="comment-list-section">
-            {% if comments %}
-            {% for comment in comments %}
-            
-            {% include "comment/block_comment.html" %}
-            
-            {% endfor %}
-
-            {% else %}
-            <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
-            {% endif %}
-            
-        </section>
-
-
-        {% else %}
-        <h4>Serie not found...</h4>
-        {% endif %}
-    <br/>
     </div>
-    
 </div>
+<br/>
 
 
 <script src="{% static 'js/create_comment.js' %}"></script>

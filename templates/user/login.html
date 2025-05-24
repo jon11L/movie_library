@@ -2,37 +2,65 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<div style="text-align: center; margin-top: 20%;">
-    <h2 >You are already connected, {{ user.username }}!</h2>
-    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 30px 45px;">Home</a>
-</div>
 
-{% else %}
-<div class="col-md-6 offset-md-3">
-    <h3 style="padding-top:250px; text-align: center;">Login</h3>
-    <br>
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
+            
+            
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div></div>
+            </aside>
+            
+            <main class="custom-col-9">
 
-    <form method="POST" action="{% url 'user:login' %}">
-        {% csrf_token %}
-        <div class="mb-4" style="width: 40%; margin: auto;">
-            <input type="text" class="form-control" placeholder="Enter Your Username" name="username">
+
+                {% if user.is_authenticated %}
+                <div style="text-align: center;">
+                    <h2 >You are already connected, {{ user.username }}!</h2>
+                    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 30px 45px;">Home</a>
+                </div>
+            
+                {% else %}
+                <div class="col-md-8 offset-md-2">
+                    <h3 style="padding-top:5em; text-align: center;">Login</h3>
+                    <br>
+                
+                    <form method="POST" action="{% url 'user:login' %}">
+                        {% csrf_token %}
+                        <div class="mb-4" style="width: 40%; margin: auto;">
+                            <input type="text" class="form-control" placeholder="Enter Your Username" name="username">
+                        </div>
+                        <div class="mb-4" style="width: 40%; margin: auto;">
+                            <input type="password" class="form-control" placeholder="Enter Your Password" name="password">
+                        </div>
+                    
+                        <div style="text-align: center; padding-top: 10px;">
+                            <button type="submit" class="btn btn-secondary" style="margin: 0 45px; display: inline-block;">
+                                Log In
+                            </button>
+                            <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 0 45px;">Go Back</a>
+                        </div>
+                        <div style="text-align: center; margin: 8px 170px 0px 0px;">
+                            <a href="{% url 'user:register' %}" style="text-decoration: none; color: #000;">
+                                <p><small style="color: antiquewhite;">Register here</small></p></a>
+                        </div>
+                    </form>
+                </div>
+
+
+            </main>
+
+
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div>
+                </div>
+            </aside>
+
         </div>
-        <div class="mb-4" style="width: 40%; margin: auto;">
-            <input type="password" class="form-control" placeholder="Enter Your Password" name="password">
-        </div>
-        
-        <div style="text-align: center; padding-top: 10px;">
-            <button type="submit" class="btn btn-secondary" style="margin: 0 45px; display: inline-block;">
-                Log In
-            </button>
-            <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 0 45px;">Go Back</a>
-        </div>
-        <div style="text-align: center; margin: 8px 170px 0px 0px;">
-            <a href="{% url 'user:register' %}" style="text-decoration: none; color: #000;">
-                <p><small style="color: antiquewhite;">Register here</small></p></a>
-        </div>
-    </form>
+    </div>
 </div>
 
 {% endif %}

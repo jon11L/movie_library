@@ -84,9 +84,9 @@ class UpdateUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UpdateUserForm, self).__init__(*args, **kwargs)
 
-        self.fields['last_name'].help_text = '<span class="form-text text-muted text-align:"><small>100 characters max. Letters and /-/ only for First and Last name .</small></span>'
+        self.fields['last_name'].help_text = '<span class="form-text text-muted text-align:"><small style="color:antiquewhite">100 characters max. Letters and /-/ only for First and Last name .</small></span>'
 
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['username'].widget.attrs['placeholder'] = 'User Name'
         self.fields['username'].label = ''
-        self.fields['username'].help_text = '<span class="form-text text-muted"><small>(Field required). 150 characters max. Letters, digits and @/./+/-/_ only.</small></span>'
+        self.fields['username'].help_text = '<span class="form-text text-muted"><small style="color:antiquewhite">(Field required). 150 characters max. Letters, digits and @/./+/-/_ only.</small></span>'

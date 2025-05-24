@@ -3,85 +3,96 @@
 {% block content %}
 {% load static %}
 
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
 
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div></div>
+            </aside>
+            
+            
+            <!-- Main/middle section of the screen -->
+            <main class="custom-col-9">
 
-<div class="mt-4">
-    <h1 style="text-align: center;">{{ total_like }} content liked:</h1>
-</div>
-
-<br><br>
-{% if liked_content %}
-    {% for item in liked_content %}
-
-    <div style="width: 80%; margin: auto;" >
-        <div style="justify-items: center; padding-bottom: 50px;" >
-        
-
-            <div style=" margin-right: 30px; color: bisque;">
-                <p><strong>liked on:</strong> {{ item.liked_on }}</p>
-            </div>
-
-            <div class="card w-25">
-                <div class="card-body">
-                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                        
-                        <!-- Displaying the movies Liked by the user -->
-                        <div class="card-title" style="display: inline-flex;">
-                            
-                            <!-- display if it is a movie or a serie -->
-                            {% if item.content_type == 'movie' %}
-                            <a href="{% url 'movie:movie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
-                                <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
-                            </a>
-
-                            {% elif item.content_type == 'serie' %}
-                            <a href="{% url 'serie:serie_overview' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
-                                <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
-                            </a>
-                            {% endif %}
-
-                            <p><small> ({{ item.content_type }})</small></p> 
-
-                        </div>
-                        
-                        <!-- Trigger the Like button / should remove the item from likes. -->
-                        <button class="like-button"
-                                data-type="{{ item.content_type }}"
-                                data-id="{{ item.content.id }}"
-                                style="background-color: rgb(137, 141, 251);">
-                            <span class="like-text">
-                                Unlike
-                            </span>
-                            <i class="fas fa-heart liked"></i>
-                        </button>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-
-                            <div class="card-img-top">
-                                {% if item.content.render_image_poster %}
-                                    <img src=" {{ item.content.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
-                                {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
-                                {% endif %}
-                            </div>
-                            
-                            <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
-
-                        </div>
-                        
-                    </div>
+                <div class="mt-4">
+                    <h1 style="text-align: center;">{{ total_like }} content liked:</h1>
                 </div>
-            </div>
 
-        </div>
-    </div>
+                <br><br>
+                {% if liked_content %}
+                <div class="row" style="justify-content: center; ">
+                    {% for item in liked_content %}
 
-    {% endfor %}
-{% else %}
-<h5 style="text-align: center;">No content liked yet...</h5>
-{% endif %}
+                        <div style="justify-items: center; padding-bottom: 50px;" >
+                        
+                        
+                            <div style=" margin-right: 30px; color: bisque;">
+                                <p><strong>liked on:</strong> {{ item.liked_on }}</p>
+                            </div>
+                        
+                            <div class="card">
+                                <div class="card-body">
+                                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+                                        <!-- Displaying the movies Liked by the user -->
+                                        <div class="card-title" style="display: inline-flex;">
+
+                                            <!-- display if it is a movie or a serie -->
+                                            {% if item.content_type == 'movie' %}
+                                            <a href="{% url 'movie:detail' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
+                                                <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                            </a>
+                                        
+                                            {% elif item.content_type == 'serie' %}
+                                            <a href="{% url 'serie:detail' slug=item.content.slug %}" style="text-decoration: none; color: #000;">
+                                                <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                            </a>
+                                            {% endif %}
+                                        
+                                            <p><small> ({{ item.content_type }})</small></p> 
+                                        
+                                        </div>
+
+                                        <!-- Trigger the Like button / should remove the item from likes. -->
+                                        <button class="like-button"
+                                                data-type="{{ item.content_type }}"
+                                                data-id="{{ item.content.id }}"
+                                                style="background-color: rgb(137, 141, 251);">
+                                            <span class="like-text">
+                                                Unlike
+                                            </span>
+                                            <i class="fas fa-heart liked"></i>
+                                        </button>
+                                    
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col">
+                                        
+                                            <div class="card-img-top">
+                                                {% if item.content.render_image_poster %}
+                                                    <img src=" {{ item.content.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
+                                                {% else %}
+                                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                                                {% endif %}
+                                            </div>
+
+                                            <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
+                                        
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        
+                        </div>
+                    </div>
+                
+                    {% endfor %}
+                {% else %}
+                <h5 style="text-align: center;">No content liked yet...</h5>
+                {% endif %}
 
 {% endblock %}
