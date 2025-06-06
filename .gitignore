@@ -9,7 +9,7 @@ movievenv
 /venv/
 .venv/
 venv
-
+.movenv/
 .env
 
 # IDE files

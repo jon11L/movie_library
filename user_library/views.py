@@ -82,7 +82,7 @@ def toggle_like(request, content_type: str, object_id: int):
         # messages.error(request, "You must be logged in to like contents.")
         return JsonResponse({
             'error': 'Login required',
-            'message': "You must be logged-in to like content."
+            'message': "You must be logged-in to like content. LINK to log here"
             }, status=401)
 
     # User clicked the 'like' button.

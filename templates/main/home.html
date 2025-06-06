@@ -202,9 +202,6 @@
                                 </div>
                                 
                                 {% elif item.content_type == 'serie' %}
-                                    <!-- <div style="display: flex; justify-content: space-between;">
-                                        <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
-                                        -->
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
@@ -249,8 +246,8 @@
                         </div>
                     </div>
                     {% endfor %}
-                    {% endif %}
                 </div>
+                {% endif %}
 
 
                 <!--------- Displaying the Media coming soon ------------>
@@ -476,6 +473,7 @@
                 {% endif %}
 
             </main>
+            
             
             <!-- Right section of the screen -->
             <aside class="custom-col-1-5 d-none d-md-block">

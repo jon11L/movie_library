@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="container-fluid my-4">
+<div class="container-fluid">
     <div class="custom-wide">
         <div class="row">
 
@@ -16,8 +16,6 @@
                 
                 <h1 style="text-align: center; margin-top: 1em;">Movies:</h1>
                 {% if movie_list %}
-                <br>
-                <br>
                 <div class="row" style="justify-content: center;">
                     {% for movie in movie_list %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
@@ -69,40 +67,69 @@
                 <p>No movies found...</p>
                 {% endif %}
                 
-                
+
+                <br><br><br>
 
                 <!----- Pagination system ------->
+                {% if movie_list.paginator.num_pages > 1 %}
                 <div style="display: flex; justify-content: center;">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
                             {% if movie_list.has_previous %}
-                            <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                            <li class="page-item">
+                                <a  href="?page=1" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo first
+                                </a>
+                            </li>
                             <!-- previous page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ movie_list.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ movie_list.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo Previous page
+                                </a>
+                            </li>
                             {% endif %}
 
                             {% for num in movie_list.paginator.page_range %}
                                 <!-- enumerate pages around current page -->
                                 {% if num == movie_list.number %}
-                                <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;"><a  href="#" class="btn btn-info disabled" style="border: none;">{{ num }}</a></li>
                                 {% elif num > movie_list.number|add:'-5' and num < movie_list.number|add:'5' %}
-                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a></li>
                                 {% endif %}
                             {% endfor %}
 
                             {% if movie_list.has_next %}
                             <!-- Next page -->
-                            <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ movie_list.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ movie_list.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Next Page
+                                </a>
+                            </li>
                         
                             <!-- Last page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ movie_list.paginator.num_pages}}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ movie_list.paginator.num_pages}}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Last Page
+                                </a>
+                            </li>
                             {% endif %}
 
                             <!-- Current page and how many pages are there -->
-                            <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }}</h6></li>
+                            <li class="page-item" style="margin: 8px 0px 0px 20px;">
+                                <h6 style="color: darkgray;">( Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }} )</h6>
+                            </li>
                         </ul>
                     </nav>
                 </div>
+                {% elif movie_list and movie_list.paginator.num_pages == 1 %}
+                <!-- Show only page info when there's just one page -->
+                <div style="text-align: center;">
+                    <h6 style="color: darkgray;">( Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }} )</h6>
+                </div>
+                {% else %}
+                <h4>No movies found...</h4>
+                {% endif %}
+
 
             </main>
 

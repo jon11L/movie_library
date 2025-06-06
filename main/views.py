@@ -50,8 +50,11 @@ def home(request):
         week_start = today - datetime.timedelta(days=today.weekday())  # Monday of the current week
         week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
 
-        movies = Movie.objects.all()
-        series = Serie.objects.all()
+        if Movie:
+            movies = Movie.objects.all()
+
+        if Serie:
+            series = Serie.objects.all()
         
         recently_released_movies = movies.filter(release_date__range=(fortnight_ago, yesterday)).exclude(length__range=(0, 45))  # retrieve the 10 latest content added
         print(f"\n recently released movies: {len(recently_released_movies)}\n") # debug print

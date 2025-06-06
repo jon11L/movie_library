@@ -16,6 +16,9 @@ from user_library.models import Like, WatchList
 def search(request):
     """
     View function for search page
+    - request.method == 'GET' and not request.GET -> render the filter landing page
+    - if request.method == 'GET' and request.GET -> user search with Filtering system
+    or from search bar (title filter only)
     """
 
     # Initialize with empty values
@@ -39,12 +42,13 @@ def search(request):
         print(f"key'{key}' :  value '{value}'")
         if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type']:
             has_filter_values = True
+            if value.strip() == "":
+                has_filter_values = False
             break
 
-    
-    print(f"\n\nhas_filter_values: {has_filter_values}")  # Debug print
+    print(f"\n--has_filter_values: {has_filter_values}")  # Debug print
 
-    # Initialize the filter form (without queryset for form rendering)
+    # Render/Initialize the filter form (without queryset)
     Media_filter = SharedMediaFilter(request.GET)
     print(f"content_filter: {Media_filter}")  # Debug print
 
@@ -55,7 +59,6 @@ def search(request):
         context ={
             'filter': Media_filter,
         }
-
         return render(request, 'search/search.html', context=context)
 
     # Handle GET requests with parameters // action from the Filter Form Button
@@ -130,7 +133,7 @@ def search(request):
             page_object = paginator.get_page(page_number)
             print(f"List content: {page_object}")
 
-            # Preserve all GET parameters except 'page'
+            # Preserve all GET parameters except 'page' for the Paginator system
             query_params = request.GET.copy()
             print(f"Query params: {query_params}")  # Debug print
             # Remove the 'page' parameter to avoid pagination issues

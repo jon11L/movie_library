@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<div class="container-fluid my-4">
+<div class="container-fluid" style="margin-bottom: 0;">
     <div class="custom-wide">
         <div class="row">
 
@@ -50,13 +50,9 @@
                                         <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                     </button>
                                 </div>
-                            <!-- </div> -->
                         
                                 {% elif item.type == 'serie' %}
-                        
-                            <!-- <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
-                                <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p> -->
+
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
@@ -87,14 +83,14 @@
                             </div>
 
                             
-                            <div class="" style="width: auto;">
+                            <div class="" style="width: fit-content;">
                                 {% if item.type == 'movie' %}
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
-                                    <h4 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":40" }}</h4>
+                                    <h5 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
                                 {% else %}
                                 <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
-                                    <h4 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":40" }}</h4>
+                                    <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
                                 {% endif %}
                             </div>
@@ -105,45 +101,65 @@
                     {% endif %}
                 </div>
             
+                <br><br><br>
+
             
-            
-            
-            
-            
-                {% if list_content %}
+                {% if list_content and list_content.paginator.num_pages > 1 %}
                 <!----- Pagination system ------->
                 <div style="display: flex; justify-content: center;">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
+
                             {% if list_content.has_previous %}
-                            <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                            <li class="page-item">
+                                <a  href="?page=1" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo first
+                                </a>
+                            </li>
                             <!-- previous page -->
-                            <!-- <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li> -->
-                            <!-- previous page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo Previous page
+                                </a>
+                            </li>
                             {% endif %}
 
                             <!-- enumerate pages around current page -->
                             {% for num in list_content.paginator.page_range %}
 
-                                {% if num == list_content.number %}
-                                <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
-                                {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
-                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
-                                {% endif %}
+                            {% if num == list_content.number %}
+                            <li class="page-item" style="margin: 0px 1px;">
+                                <a  href="#" class="btn btn-info disabled" style="border: none;">{{ num }}</a>
+                            </li>
+                            {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
+                            <li class="page-item" style="margin: 0px 1px;">
+                                <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a>
+                            </li>
+                            {% endif %}
                             {% endfor %}
 
                             {% if list_content.has_next %}
                             <!-- Next page -->
-                            <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">Next Page</a>
+                            </li>
                             <!-- Last page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">Last Page</a>
+                            </li>
                             {% endif %}
 
                             <!-- Show the current page and how many pages there are -->
-                            <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ list_content.number }} of {{ list_content.paginator.num_pages }}</h6></li>
+                            <li class="page-item disabled" style="margin: 8px 0px 0px 20px;">
+                                <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
+                            </li>
                         </ul>
                     </nav>
+                </div>
+                {% elif list_content and list_content.paginator.num_pages == 1 %}
+                <!-- Show only page info when there's just one page -->
+                <div style="text-align: center;">
+                    <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
                 </div>
                 {% endif %}
                 <!-- --- End of Pagination system ----- -->

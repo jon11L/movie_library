@@ -45,7 +45,7 @@ def list_serie(request):
         else:
             # if the serie does not exist in the database
             messages.error(request, "No Tv Show with this title found in the database")
-            print(f" error :\n{e}")
+            # print(f" error :\n{e}")
             return redirect('main:home')
         
     except Exception as e:

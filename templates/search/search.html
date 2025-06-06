@@ -208,45 +208,81 @@
                 </div>
                 {% endif %}
 
-                <br>
-                <br>
-                {% if filters_applied or list_content %}
+                <br><br><br>
+
                 <!----- Pagination system ------->
+                {% if filters_applied and list_content.paginator.num_pages > 1  %}
                 <div style="display: flex; justify-content: center;">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
                             {% if list_content.has_previous and query_params  %}
-                            <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                            <li class="page-item">
+                                <a  href="?page=1&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo first
+                                </a>
+                            </li>
                             <!-- previous page -->
-                            <!-- <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li> -->
-                            {% elif list_content.has_previous and not query_params  %}
-                            <li class="page-item" style="margin: 0px 0px;"><a  href="?page=1" class="btn btn-outline-info mb-4">&laquo first</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo Previous page
+                                </a>
+                            </li>
+                            <!-- {% elif list_content.has_previous and not query_params  %} -->
+                            <!-- <li class="page-item" style="margin: 0px 0px;">
+                                <a  href="?page=1" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo first
+                                </a>
+                            </li> -->
                             <!-- previous page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info mb-4">&laquo Previous page</a></li>
+                            <!-- <li class="page-item" style="margin: 0px 10px 0px 0px;">
+                                <a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    &laquo Previous page
+                                </a>
+                            </li> -->
                             {% endif %}
 
                             <!-- enumerate pages around current page -->
                             {% for num in list_content.paginator.page_range %}
 
                                 {% if num == list_content.number %}
-                                <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info mb-4">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;">
+                                    <a  href="#" class="btn btn-info disabled" style="border: none;">{{ num }}</a>
+                                </li>
                                 {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
-                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info mb-4">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;">
+                                    <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a>
+                                </li>
                                 {% endif %}
                             {% endfor %}
 
                             {% if query_params and list_content.has_next %}
                             <!-- Next page -->
-                            <li class="page-item" style="margin: 0px 0px 0px 10px;"><a href="?page={{ list_content.next_page_number }}&{{ query_url }}" class="btn btn-outline-info mb-4">Next Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.next_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Next Page
+                                </a>
+                            </li>
                             <!-- Last page -->
-                            <li class="page-item" style="margin: 0px 10px 0px 0px;"><a href="?page={{ list_content.paginator.num_pages }}&{{ query_url }}" class="btn btn-outline-info mb-4">Last Page</a></li>
+                            <li class="page-item">
+                                <a href="?page={{ list_content.paginator.num_pages }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Last Page
+                                </a>
+                            </li>
                             {% endif %}
 
                             <!-- Show the current page and how many pages there are -->
-                            <li class="page-item disabled" style="margin: 10px 10px 0px 0px;"><h6>Page {{ list_content.number }} of {{ list_content.paginator.num_pages }}</h6></li>
+                            <li class="page-item" style="margin: 8px 0px 0px 20px;">
+                                <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
+                            </li>
                         </ul>
                     </nav>
                 </div>
+                {% elif list_content and list_content.paginator.num_pages == 1 %}
+                <!-- Show only page info when there's just one page -->
+                <div style="display: flex; justify-content: center; margin: 10px 0;">
+                    <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
+                </div>
+                <!-- {% else %} -->
                 {% endif %}
                 <!-- --- End of Pagination system ----- -->
 
