@@ -141,11 +141,15 @@
                             {% if list_content.has_next %}
                             <!-- Next page -->
                             <li class="page-item">
-                                <a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">Next Page</a>
+                                <a href="?page={{ list_content.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Next &raquo
+                                </a>
                             </li>
                             <!-- Last page -->
                             <li class="page-item">
-                                <a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">Last Page</a>
+                                <a href="?page={{ list_content.paginator.num_pages }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                    Last &raquo
+                                </a>
                             </li>
                             {% endif %}
 

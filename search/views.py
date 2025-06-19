@@ -40,7 +40,7 @@ def search(request):
 
     for key, value in request.GET.items():
         print(f"key'{key}' :  value '{value}'")
-        if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type']:
+        if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type'] and value.strip() != "":
             has_filter_values = True
             if value.strip() == "":
                 has_filter_values = False

@@ -76,7 +76,7 @@
                         </div>
 
                     </div>
-                
+
                     <br>
                     <!-- display serie content data -->
                     <div class="card-body">
@@ -175,10 +175,11 @@
 
                                 <div>
                                     {% for episode in season.episodes.all %}
-                                    <li>
-                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong><small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
+                                    <li style="width: 90%;">
+                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong>
+                                        <small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
                                         {% if episode.description %}
-                                        <p>{{ episode.description|slice:":120"}}...</p>
+                                        <p style="margin-left: 1em;">{{ episode.description|slice:":120"}}...</p>
                                         {% endif %}
                                     </li>
                                     {% endfor %}
