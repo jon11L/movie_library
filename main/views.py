@@ -166,39 +166,53 @@ def about_page(request):
 
 
 
-def show_documentaries(request):
+def show_content(request, content):
     '''
     Display the documentaries available in the database
     '''
-    documentaries = []
+    media = []
 
     try:
-        # Check if they are Movie datas and display them if so
-        movies = Movie.objects.filter(genre__icontains = "documentary")
-        series = Serie.objects.filter(genre__icontains = "documentary")
-        print(f"\nDocumentaries has:\n{len(movies)} Movies\n{len(series)} Series:\n") # debug print
+        if content == 'documentaries':
+        
+            # Check if they are Movie datas and display them if so
+            movies = Movie.objects.filter(genre__icontains = "documentary")
+            series = Serie.objects.filter(genre__icontains = "documentary")
+            print(f"\nDocumentaries has:\n{len(movies)} Movies\n{len(series)} Series:\n") # debug print
+
+        elif content == 'short films':
+            # Check if they are short Movies under 45 minutes
+            movies = Movie.objects.filter(length__lte=45, length__gt=0)  # Movies with length between 0 and 45 minutes
+            series = Serie.objects.none()  # No series for short content
+
+        elif content == 'anime':
+            # Check if they are Anime Movies and Series
+            movies = Movie.objects.filter(genre__icontains='Animation')
+            series = Serie.objects.filter(genre__icontains='Animation')
+
 
         # combine movies and series into a single list or object to pass in paginator
         for movie in movies:
-                documentaries.append({
+                media.append({
                     'object': movie,
                     'type': 'movie',
                 })
 
         for serie in series:
-            documentaries.append({
+            media.append({
                 'object': serie,
                 'type': 'serie',
             })
 
         # Sort the documentaries by title (ascending order)
-        documentaries = sorted(documentaries, key=lambda x: x['object'].title, reverse=False)
+        media = sorted(media, key=lambda x: x['object'].title, reverse=False)
 
         # -- paginate over the results --
-        paginator = Paginator(documentaries, 24)
+        paginator = Paginator(media, 24)
         page_number = request.GET.get('page')
         page_object = paginator.get_page(page_number)
         print(f"Number of pages: {page_object}") # debug print
+        
 
         # Get the user's like content (movies, series)
         user_liked_movies = Like.objects.filter(
@@ -219,6 +233,7 @@ def show_documentaries(request):
                                             ).values_list('object_id', flat=True)
 
         context = {
+            'content': content.capitalize(),
             'movies': movies,
             'series': series,
             'list_content': page_object,
