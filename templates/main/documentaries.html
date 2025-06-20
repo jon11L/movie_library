@@ -16,7 +16,7 @@
 
             <main class="custom-col-9">
 
-                <h1 style="text-align: center; margin-top: 2rem;">Documentaries:</h1>
+                <h1 style="text-align: center; margin-top: 2rem;">{{ content }}:</h1>
                 {% if list_content %}
                 <br>
                 <br>
@@ -88,7 +88,7 @@
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
-                                {% else %}
+                                {% elif item.type == 'serie' %}
                                 <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
