@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 # from django.contrib.auth.decorators import user_passes_test
 import datetime
 import random
+import traceback
 
 from movie.models import Movie
 from serie.models import Serie
@@ -33,9 +34,10 @@ def home(request):
 
         def pick_content(list_sample):
             '''Takes a list sample from the queryset or list given'''
-            if len(list_sample) < 6:
+            if len(list_sample) == 0:
+                return []
+            elif len(list_sample) < 6:
                 return list(list_sample) 
-            
             return random.sample(list(list_sample), 6) 
             
 
@@ -50,10 +52,12 @@ def home(request):
         week_start = today - datetime.timedelta(days=today.weekday())  # Monday of the current week
         week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
 
-        if Movie:
+        movies = Movie.objects.none()  # initialize empty queryset
+        if Movie.objects.exists():
             movies = Movie.objects.all()
 
-        if Serie:
+        series = Serie.objects.none() 
+        if Serie.objects.exists():
             series = Serie.objects.all()
         
         recently_released_movies = movies.filter(release_date__range=(fortnight_ago, yesterday)).exclude(length__range=(0, 45))  # retrieve the 10 latest content added
@@ -111,31 +115,30 @@ def home(request):
             print(f"\n user watchlist:\n\n{watchlist[:3]}...\n") # debug print
 
             for item in watchlist:
-                if item.content_type == "movie":
-                    try:
+                try:
+                    if item.content_type == "movie":
                         movie = Movie.objects.get(id=item.object_id)
                         watchlist_content.append({'content_type': item.content_type, 'object': movie})
                         # print(f"movie: {movie}\n") #debug print
-                    except Movie.DoesNotExist:
-                        continue
-
-                elif item.content_type == "serie":
-                    try:
+                    elif item.content_type == "serie":
+                    
                         serie = Serie.objects.get(id=item.object_id)
                         watchlist_content.append({'content_type': item.content_type, 'object': serie})
                         # print(f"serie: {serie}\n") #debug print
-                    except Serie.DoesNotExist:
-                        continue
+                except (Movie.DoesNotExist, Serie.DoesNotExist):
+                    continue
+
+
 
             watchlist_content = pick_content(watchlist_content)  # retrieve 6 random content from the user's watchlist
 
         context = {
-            'recent_movies': recently_released_movies,
-            'movies_coming_soon': coming_soon_movies,
-            'random_movies': random_pick_movies,
-            'returning_series': coming_back_series,
-            'coming_up_series': coming_up_series,
-            'random_series': random_pick_series,
+            'recent_movies': recently_released_movies if recently_released_movies else None,
+            'movies_coming_soon': coming_soon_movies if coming_soon_movies else None,
+            'random_movies': random_pick_movies if random_pick_movies else None,
+            'returning_series': coming_back_series if coming_back_series else None,
+            'coming_up_series': coming_up_series if coming_up_series else None,
+            'random_series': random_pick_series if random_pick_series else None,
             'movies_count': movies_count,
             'series_count': series_count,
             'watchlist_content': watchlist_content if watchlist_content else None,
@@ -149,6 +152,9 @@ def home(request):
         return render(request, 'main/home.html', context=context)
     
     except Exception as e:
+        # use traceback to get more details about the error
+        traceback.print_exc()
+
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to='main:home')
