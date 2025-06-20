@@ -18,7 +18,6 @@
             <!-- Main/middle section of the screen -->
             <main class="custom-col-9">
 
-
                 <h1 style="text-align: center; margin-top: 20px;">Your watch list:</h1>
                 
                 <br><br>
@@ -34,9 +33,9 @@
 
                             <div class="card-img-top" style="text-align: center; margin-top: 25px;">
                                 {% if item.content.render_image_poster %}
-                                <img src="{{ item.content.render_image_poster }}" class="img-fluid rounded" style="width: fit-content; height: 350px;"  alt="{{ item.content.title }}">
+                                <img src="{{ item.content.render_image_poster }}" class="img-fluid rounded" style="width: fit-content; height: fit-content;"  alt="{{ item.content.title }}">
                                 {% else %}
-                                <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.content.title }}" style="width: fit-content; height: 350px;">
+                                <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.content.title }}" style="width: fit-content; height: fit-content;">
                                 {% endif %}
                             </div>
 
@@ -82,7 +81,7 @@
                 </div>
 
                 <br><br><br><br><br><br><br><br><br>
-                <br><br><br><br><br><br><br><br><br>
+
             
             
                 <!----- Pagination system ------->
