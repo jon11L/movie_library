@@ -24,7 +24,7 @@ def liked_content_view(request, pk):
         if request.method == "GET":
 
             user = User.objects.get(id=pk)
-            print(f" user place a like is: {user}\n")
+            print(f" user {user} clicked like button\n")
 
             likes = Like.objects.filter(user=pk)
             
@@ -41,7 +41,7 @@ def liked_content_view(request, pk):
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_at': like.created_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_on': like.created_at.strftime("%d %B %Y")})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
