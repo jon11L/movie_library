@@ -22,7 +22,7 @@ from . import views
 
 urlpatterns = [
     
-    path('list/', views.list_serie, name='list_serie'),
+    path('list/', views.list_serie, name='list'),
     path('detail/<slug:slug>', views.serie_overview, name='detail'),
 
 ]
