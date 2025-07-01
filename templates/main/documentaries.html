@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<div class="container-fluid" style="margin-bottom: 0;">
+<div class="container-fluid">
     <div class="custom-wide">
         <div class="row">
 
@@ -16,10 +16,8 @@
 
             <main class="custom-col-9">
 
-                <h1 style="text-align: center; margin-top: 2rem;">Documentaries:</h1>
+                <h1 style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">{{ content }}:</h1>
                 {% if list_content %}
-                <br>
-                <br>
                 
                 <!-- Display of Documentaries media genre -->
                 <div class="row" style="justify-content: center;">
@@ -88,7 +86,7 @@
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
-                                {% else %}
+                                {% elif item.type == 'serie' %}
                                 <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
