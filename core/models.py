@@ -1,16 +1,12 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
-# import django.utils.timezone as timezone
-
-# from movie.models import Movie
-# from serie.models import Serie, Season, Episode
 
 # Create your models here.
 class BaseModel(models.Model):
     """
     Base model to be inherited by all models in the project
-    Abstract Base Model for:
+    Abstract Base Model for the following fields:
     - created_at
     - updated_at
     - is_active
@@ -29,15 +25,15 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
 
         now = timezone.now()
-    #     now = timezone.now()
-    #     if not self.id:
-    #         self.created_at = now
-    #     else:
-    #         self.updated_at = now
-    #     super().save(*args, **kwargs)
+        #     now = timezone.now()
+        #     if not self.id:
+        #         self.created_at = now
+        #     else:
+        #         self.updated_at = now
+        #     super().save(*args, **kwargs)
 
-        if not self.slug:
         # Generate a slug if it doesn't exist 
+        if not self.slug:
             if self.__class__.__name__ == 'Episode' and hasattr(self, 'season') and hasattr(self, 'episode_number') and hasattr(self, 'title'):
                 base_slug = slugify(f"{self.season.serie.slug} S{self.season.season_number} E{self.episode_number} {self.title}")
 
@@ -46,8 +42,16 @@ class BaseModel(models.Model):
                 base_slug = slugify(f"{self.serie.slug} {self.name}")
 
             # For Movie or Serie objects
-            elif self.__class__.__name__ in ['Movie', 'Serie']  and hasattr(self, 'title'):
-                base_slug = slugify(self.title)
+            elif self.__class__.__name__ in ['Movie', 'Serie'] and hasattr(self, 'title'):
+                # check if the object has a release date (for the movies)
+                if hasattr(self, 'release_date') and self.release_date is not None:
+                    base_slug = slugify(f"{self.title} {self.release_date.strftime('%Y')}")
+                elif hasattr(self, 'first_air_date') and self.first_air_date is not None:
+                    base_slug = slugify(f"{self.title} {self.first_air_date.strftime('%Y')}")
+                else:
+                    base_slug = slugify(f"{self.title}")
+                # base_slug = slugify(f"{self.title} {self.release_date.strftime('%Y')}")
+                # else base slug on the title only
 
             # fallback
             else:
@@ -64,7 +68,6 @@ class BaseModel(models.Model):
             self.slug = slug
 
         super().save(*args, **kwargs)
-
 
     # def soft_delete(self):
     #     """ Instead of deleting, just deactivate the object """

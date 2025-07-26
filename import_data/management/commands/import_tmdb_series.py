@@ -95,15 +95,15 @@ class Command(BaseCommand):
             return  
 
         # give some random to index to look through for the series list.
-        r_index = random.randint(0, len(list_series['results']) - 4) 
+        r_index = random.randint(0, len(list_series['results']) - 5) 
 
         self.stdout.write(f"Processing the list of series to get the individual serie's data.")
-        for new_serie in list_series['results'][r_index:r_index+4]:
+        for new_serie in list_series['results'][r_index:r_index+5]:
             imported_count += 1
             
             #------- temporary break here after 5 series to check feature is going well with adding episode--------
-            if imported_count > 4:
-                self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
+            if imported_count > 5:
+                self.stdout.write(f"Breaking after 5 series for testing purpose.\n")
                 break
 
             # tmdb_title = new_serie['title']

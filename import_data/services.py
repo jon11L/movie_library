@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 import traceback
 from django.utils import timezone
 from django.utils.text import slugify
@@ -64,6 +65,16 @@ def save_or_update_movie(tmdb_id: int):
 
         production = [company["name"] for company in movie_data.get("production_companies", [])] # List of production companies
 
+        # Convert the release date to a datetime object if it exists
+        release_date = None
+        if movie_data.get('release_date'):
+            try:
+                release_date = datetime.strptime(movie_data.get('release_date'), '%Y-%m-%d').date()
+            except ValueError:
+                # If the release date is not available, it stays set to None
+                print(f"Invalid date format: {movie_data.get('release_date')}")
+
+        # Store the new movie in DB
         movie, created = Movie.objects.update_or_create(
             tmdb_id=movie_data.get('id'), # check if the movie is already existing in the database
                 defaults={
@@ -72,7 +83,7 @@ def save_or_update_movie(tmdb_id: int):
                     # Core Movie Details
                     "original_title" : movie_data.get("original_title"),
                     "title" : movie_data.get("title") or movie_data.get("original_title"),  # Use original_title if title is missing
-                    "release_date" : movie_data.get("release_date") or None,
+                    "release_date" : release_date,
                     "origin_country" : movie_data.get("origin_country"),
                     "original_language" : movie_data.get("original_language"),
                     "production" : production, # List of production companies
@@ -103,9 +114,8 @@ def save_or_update_movie(tmdb_id: int):
         return (movie, created)
 
     except Exception as e:
-        print(f"an error occurred while saving/updating movie: '{movie}' ", str(e))
+        print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
         return None, False
-
 
 
 def save_or_update_series(tmdb_id):
@@ -138,6 +148,16 @@ def save_or_update_series(tmdb_id):
         # external_ids = serie_data.get("External_ids", [])
         imdb_id = serie_data.get("external_ids", {}).get("imdb_id")
 
+        # Convert the first air date (first released) to a datetime object if it exists
+        first_air_date = None
+        if serie_data.get('first_air_date'):
+            try:
+                first_air_date = datetime.strptime(serie_data.get('first_air_date'), '%Y-%m-%d').date()
+            except ValueError:
+                # If the first_air_date is not available, it stays set to None
+                print(f"Invalid date format: {serie_data.get('first_air_date')}")
+
+
         try:
             # Store the new serie in DB
             serie, is_created = Serie.objects.update_or_create(
@@ -154,7 +174,7 @@ def save_or_update_series(tmdb_id):
                     "tagline": serie_data['tagline'],
                     "production": [company["name"] for company in serie_data.get("production_companies", [])],
                     "created_by": [creator["name"] for creator in serie_data.get("created_by", [])],
-                    "first_air_date": serie_data.get('first_air_date')  or None,
+                    "first_air_date": first_air_date,
                     "last_air_date": serie_data.get('last_air_date')  or None,
                     "vote_average": serie_data.get('vote_average'),
                     "vote_count": serie_data.get('vote_count'),
