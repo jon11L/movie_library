@@ -35,8 +35,6 @@ logger.addHandler(file_handler)
 logger.propagate = False
 
 
-
-
 class Command(BaseCommand):
     help = 'Import movies from TMDB'
 
@@ -59,8 +57,6 @@ class Command(BaseCommand):
         pages_to_fetch = []  # List to store the pages to fetch
 
 
-
-
         endpoint = ("popular", "top_rated", "now_playing", "upcoming")
         selected_endpoint = random.choice(endpoint)
 
@@ -79,8 +75,8 @@ class Command(BaseCommand):
         today = datetime.date.today()
         if today.day == 1 or today.day == 16:
             # selected_endpoint = "now_playing"
-            pages_to_fetch.append(1)  # Only fetch the first page
-            pages_to_fetch.append(2)  # Only fetch the first page
+            pages_to_fetch.append(1)  # Only fetch the first and 2nd page
+            pages_to_fetch.append(2)
 
 
         for page in pages_to_fetch:
