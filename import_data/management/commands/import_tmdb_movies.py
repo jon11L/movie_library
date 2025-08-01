@@ -8,8 +8,8 @@ import os
 from django.core.management.base import BaseCommand
 
 from movie.models import Movie
-from import_data.api_services.TMDB.fetch_movies import get_movie_list
-from import_data.services import save_or_update_movie
+from import_data.api_clients.TMDB.fetch_movies import get_movie_list
+from import_data.services.create_movies import save_or_update_movie
 
 
 # Configure Logging
@@ -49,18 +49,15 @@ class Command(BaseCommand):
         3. Check if the movies already exists otherwise saves it in the database.
         """
         MAX_RETRIES = 3
-        # Track the number of movies imported and skipped
-        created = 0
-        skipped_count = 0  # Tracks how many movies already existed
-        imported_count = 0  # Tracks how many movies were imported
-
+        created = 0 # Track the number of movies actually created/saved
+        skipped_count = 0  # Tracks how many movies already existed/skipped
+        imported_count = 0  # Tracks how many movies were imported 
         pages_to_fetch = []  # List to store the pages to fetch
-
 
         endpoint = ("popular", "top_rated", "now_playing", "upcoming")
         selected_endpoint = random.choice(endpoint)
 
-    #     # adjust the number of pages based on the selected endpoint
+        # adjust the number of pages based on the selected endpoint
         if selected_endpoint == "now_playing":
             max_pages = 200
         elif  selected_endpoint == "upcoming":
@@ -71,20 +68,20 @@ class Command(BaseCommand):
         # Randomly select 5 pages
         pages_to_fetch = random.sample(range(1, max_pages + 1), 5)  
 
-        # ------TRIAL/ once every month ensure it takes from page 1&2 to get latest ------
+        # ------TRIAL/ once every 10 days ensure it takes from page 1&2 to get latest content ------
         today = datetime.date.today()
-        if today.day == 1 or today.day == 16:
+        if today.day in [1, 5, 10, 20, 30]:
             # selected_endpoint = "now_playing"
             pages_to_fetch.append(1)  # Only fetch the first and 2nd page
             pages_to_fetch.append(2)
 
 
         for page in pages_to_fetch:
+            # Loop over pages 
             attempt = 0  # Track the number of retries in case of failure
 
             while attempt < MAX_RETRIES:
                 try:
-                # Loop pages 
                     self.stdout.write(f"----------------------------") # debug print
                     self.stdout.write(f"Fetching movies from '{selected_endpoint}' list, With page n: {page}\n") # debug print
                     list_movies = get_movie_list(page, selected_endpoint)

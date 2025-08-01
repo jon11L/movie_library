@@ -1,14 +1,15 @@
 # import requests
 import logging
+import datetime
 import time
 import random
 import os
+
 from django.core.management.base import BaseCommand
 
-
 from serie.models import Serie
-from import_data.api_services.TMDB.fetch_series import get_series_list
-from import_data.services import save_or_update_series
+from import_data.api_clients.TMDB.fetch_series import get_series_list
+from import_data.services.create_series import save_or_update_series
 
 
 # Configure Logging
@@ -55,10 +56,9 @@ class Command(BaseCommand):
         created = 0
 
         endpoint = ("popular", "top_rated", "on_the_air")
-
         selected_endpoint = random.choice(endpoint)
         # Define the range of pages to fetch
-        # set on max available with the corresponding query of TMDB
+        # set on max available pages with the corresponding query of TMDB Api.
         if  selected_endpoint == "on_the_air":
             max_pages = 50
         elif  selected_endpoint == "top_rated":
@@ -66,7 +66,13 @@ class Command(BaseCommand):
         else:
             max_pages = 500
 
-        page = random.randint(1, max_pages)  # Randomly select a page
+        # ------TRIAL/ once every 10 days ensure it takes from page 1&2 to get latest content ------
+        today = datetime.date.today()
+        # if today.day == 1 or today.day == 10 or today.day == 29:
+        if today.day in [1, 10, 20, 29]:
+            page = 1
+        else:
+            page = random.randint(1, max_pages) # Randomly select a page
 
         # retry feature if the url page brings error.
         while attempt < MAX_RETRIES:

@@ -43,15 +43,14 @@ class BaseModel(models.Model):
 
             # For Movie or Serie objects
             elif self.__class__.__name__ in ['Movie', 'Serie'] and hasattr(self, 'title'):
-                # check if the object has a release date (for the movies)
+                # check if the new object has a release_date(Movie) or first_air_date(Serie) field
                 if hasattr(self, 'release_date') and self.release_date is not None:
                     base_slug = slugify(f"{self.title} {self.release_date.strftime('%Y')}")
                 elif hasattr(self, 'first_air_date') and self.first_air_date is not None:
                     base_slug = slugify(f"{self.title} {self.first_air_date.strftime('%Y')}")
                 else:
+                    # else base slug on the title only
                     base_slug = slugify(f"{self.title}")
-                # base_slug = slugify(f"{self.title} {self.release_date.strftime('%Y')}")
-                # else base slug on the title only
 
             # fallback
             else:

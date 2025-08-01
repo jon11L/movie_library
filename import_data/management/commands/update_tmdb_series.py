@@ -7,9 +7,8 @@ import os
 
 from django.core.management.base import BaseCommand
 
-# from serie.models import Serie
-from import_data.api_services.TMDB.fetch_series import get_series_list
-from import_data.services import save_or_update_series
+from import_data.api_clients.TMDB.fetch_series import get_series_list
+from import_data.services.create_series import save_or_update_series
 
 # Configure Logging
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

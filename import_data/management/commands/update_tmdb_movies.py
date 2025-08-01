@@ -7,11 +7,8 @@ import os
 
 from django.core.management.base import BaseCommand
 
-
-
-from movie.models import Movie
-from import_data.api_services.TMDB.fetch_movies import get_movie_list
-from import_data.services import save_or_update_movie
+from import_data.api_clients.TMDB.fetch_movies import get_movie_list
+from import_data.services.create_movies import save_or_update_movie
 
 # Configure Logging
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
