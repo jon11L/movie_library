@@ -79,8 +79,6 @@ def task_update_series(self):
         raise self.retry(exc=exc, countdown=retry_countdown)
 
 
-
-
 @shared_task(bind=True, max_retries=3)
 def task_create_slug_for_episode(self):
     """

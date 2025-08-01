@@ -4,118 +4,8 @@ import traceback
 from django.utils import timezone
 from django.utils.text import slugify
 
-from import_data.api_services.TMDB.fetch_movies import get_movie_data
-from import_data.api_services.TMDB.fetch_series import get_serie_data, get_season_data
-from movie.models import Movie
+from import_data.api_clients.TMDB.fetch_series import get_serie_data, get_season_data
 from serie.models import Serie, Season, Episode
-
-
-def save_or_update_movie(tmdb_id: int):
-    """
-    Fetches a single movie and it'S content datas from TMDB API 
-    Check if the movie already exists otherwise saves it in the database.
-    """
-    try:
-        # search for the movie
-        movie_data = get_movie_data(tmdb_id)
-
-        # check if te API was called correctly and returned the datas
-        if not movie_data:
-            print(f"Failed to fetch movie data from TMDB api with ID: {tmdb_id}")
-            return  None, False
-        else:
-            print(f"Movie found with TMDB ID: {tmdb_id}")
-        
-        # initialize empty list, for future jsonfield reference ... 
-        director = []
-        writers = []
-        cast = []
-        youtube_trailer = []
-        spoken_languages = []
-
-        # Extract credits from the combined response
-        movie_credit = movie_data.get('credits', {})
-
-        if movie_credit:
-            for person in movie_credit.get("crew", []):
-                # append the directors for the  director field
-                if person["job"] == "Director":
-                    director.append(person["name"])
-                # append the writers for the Writer field
-                if person["job"] in ["Writer", "Screenplay"]:
-                    writers.append(person["name"])
-
-        # Top 10 cast members (takes the name and role)
-        cast = [
-            {"name": member["name"], "role": member["character"]}
-            for member in movie_credit.get("cast", [])[:10]
-        ]
-
-        # Extract trailer from the combined response
-        trailer_data = movie_data.get("videos", {}).get("results", [])
-
-        for trailer in trailer_data[:4]:
-            if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
-                youtube_trailer.append(
-                    {"website": trailer["site"], "key": trailer["key"]}
-                )
-
-        languages = movie_data.get("spoken_languages", [])
-        spoken_languages = [language["english_name"] for language in languages]
-
-        production = [company["name"] for company in movie_data.get("production_companies", [])] # List of production companies
-
-        # Convert the release date to a datetime object if it exists
-        release_date = None
-        if movie_data.get('release_date'):
-            try:
-                release_date = datetime.strptime(movie_data.get('release_date'), '%Y-%m-%d').date()
-            except ValueError:
-                # If the release date is not available, it stays set to None
-                print(f"Invalid date format: {movie_data.get('release_date')}")
-
-        # Store the new movie in DB
-        movie, created = Movie.objects.update_or_create(
-            tmdb_id=movie_data.get('id'), # check if the movie is already existing in the database
-                defaults={
-                    # External unique identifier
-                    'imdb_id' : movie_data.get("imdb_id"),
-                    # Core Movie Details
-                    "original_title" : movie_data.get("original_title"),
-                    "title" : movie_data.get("title") or movie_data.get("original_title"),  # Use original_title if title is missing
-                    "release_date" : release_date,
-                    "origin_country" : movie_data.get("origin_country"),
-                    "original_language" : movie_data.get("original_language"),
-                    "production" : production, # List of production companies
-                    "director" : director,
-                    "writer" : writers,
-                    "casting" : cast,
-                    "length" : movie_data.get("runtime"),
-                    "vote_average" : movie_data.get("vote_average"),
-                    "description" : movie_data.get("overview"),
-                    "genre" : [genre["name"] for genre in movie_data.get("genres", [])],
-                    "budget" : movie_data.get("budget"),
-                    "revenue" : movie_data.get("revenue"),
-                    "tagline" : movie_data.get("tagline"),
-                    "spoken_languages" : spoken_languages,
-                    # Metrics
-                    "released" : True if movie_data.get("status") == "Released" else False,
-                    "vote_count" : movie_data.get("vote_count"),
-                    "popularity" : movie_data.get("popularity"),
-                    # images & trailer
-                    "image_poster" : movie_data.get('poster_path') if movie_data.get("poster_path") else None,
-                    "banner_poster" : movie_data.get('backdrop_path') if movie_data.get("backdrop_path") else None,
-                    "trailers" : youtube_trailer
-                    }
-                )
-
-        print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
-        print("---------")
-        return (movie, created)
-
-    except Exception as e:
-        print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
-        return None, False
 
 
 def save_or_update_series(tmdb_id):
@@ -157,7 +47,6 @@ def save_or_update_series(tmdb_id):
                 # If the first_air_date is not available, it stays set to None
                 print(f"Invalid date format: {serie_data.get('first_air_date')}")
 
-
         try:
             # Store the new serie in DB
             serie, is_created = Serie.objects.update_or_create(
@@ -175,7 +64,7 @@ def save_or_update_series(tmdb_id):
                     "production": [company["name"] for company in serie_data.get("production_companies", [])],
                     "created_by": [creator["name"] for creator in serie_data.get("created_by", [])],
                     "first_air_date": first_air_date,
-                    "last_air_date": serie_data.get('last_air_date')  or None,
+                    "last_air_date": serie_data.get('last_air_date') or None,
                     "vote_average": serie_data.get('vote_average'),
                     "vote_count": serie_data.get('vote_count'),
                     "image_poster": serie_data.get('poster_path'),
@@ -349,15 +238,27 @@ def save_or_update_series(tmdb_id):
                     if isinstance(guest, dict) and guest.get("known_for_department") == "Acting"
                 ]
 
-                directors = [
-                    director["name"] for director in episode.get("crew", [])[:3]
-                    if isinstance(director, dict) and director.get("department") == "Directing"
-                    ]
+                # Extract directors and writers
+                # ---- try update better the data structure for director and writer
+                crew_members = episode.get("crew", []) or []
+
+                for member in crew_members:
+                    if isinstance(member, dict):
+                        if member.get("department") == "Directing":
+                            directors.append(member["name"])
+                        elif member.get("department") == "Writing":
+                            writers.append(member["name"])
+
+                # directors = [
+                #     director["name"] for director in episode.get("crew", [])[:3]
+                #     if isinstance(director, dict) and director.get("department") == "Directing"
+                #     ]
                 
-                writers = [
-                    writer["name"] for writer in episode.get("crew", [])[:4]
-                    if isinstance(writer, dict) and  writer.get("department") == "Writing"
-                    ]
+                # writers = [
+                    
+                #     writer["name"] for writer in episode.get("crew", [])[:4]
+                #     if isinstance(writer, dict) and  writer.get("department") == "Writing"
+                #     ]
                 # print(f"directors :{directors}\n") # debug print
                 # print(f"{writers}") # debug print
 
@@ -375,8 +276,8 @@ def save_or_update_series(tmdb_id):
                         existing_episode.length = episode.get("runtime") or None
                         existing_episode.release_date = episode.get('air_date') or None
                         existing_episode.guest_star = guest_names
-                        existing_episode.director = directors
-                        existing_episode.writer = writers
+                        existing_episode.director = directors[:4]  # Limit to first 5 directors
+                        existing_episode.writer = writers[:4]
                         existing_episode.banner_poster = episode.get('still_path')
                         existing_episode.tmdb_id = episode.get('id')
                         existing_episode.updated_at = timezone.now() # trigger updated_at as Bulk_update do not use .save()
@@ -421,7 +322,6 @@ def save_or_update_series(tmdb_id):
                 ])
                 print(f"Updated {len(update_episodes_obj)} existing episodes in DB.")
 
-
             generate_episode_slug(season)
 
         print(f"title: {serie.title} -- (id {serie.id}) -- Contains:")
@@ -435,8 +335,6 @@ def save_or_update_series(tmdb_id):
         print(traceback.format_exc())
         print(f"An error occurred: {str(e)}")
         return (None, False)
-
-
 
 
 def generate_episode_slug(season):
