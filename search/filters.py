@@ -21,7 +21,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         ('music', 'Music'), ('musical', 'Musical'), ('mystery', 'Mystery'),
         ("reality", "Reality Show"), ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
         ('short', 'Short'), ("soap", "Soap"), ('sport', 'Sport'), ('superhero', 'Superhero'),
-        ("talk", "Talk"), ('thriller', 'Thriller'), ('war', 'War'), ('western', 'Western')
+        ("talk", "Talk"), ('thriller', 'Thriller'), ('tv movie', 'TV Movie'), ('war', 'War'), ('western', 'Western')
     )
 
     content_type = django_filters.ChoiceFilter(
@@ -46,7 +46,6 @@ class SharedMediaFilter(django_filters.FilterSet):
         })
     )
 
-    # title = django_filters.CharFilter(lookup_expr='icontains')
     genre = django_filters.MultipleChoiceFilter(
         choices=GENRE_CHOICES,
         method='filter_genres', 
@@ -90,7 +89,6 @@ class SharedMediaFilter(django_filters.FilterSet):
             })
     )
 
-
     release_date = django_filters.NumberFilter(
         method='check_release_date',
         lookup_expr='year',
@@ -109,7 +107,7 @@ class SharedMediaFilter(django_filters.FilterSet):
             'type': 'number',
             })
         )
-    
+
     release_date_lte = django_filters.NumberFilter(
         method='check_release_date',
         lookup_expr='year__lte',
@@ -119,17 +117,32 @@ class SharedMediaFilter(django_filters.FilterSet):
             })
         )
     
-
+# ------- Ongoing work -------
+#TODO:
 # filter by length
 # check if movies are less than 30min, 90min() or more than 120min, in between medium 
+# find movies/series by the Cast/actors/directors/productions
+# filter by original_language
 
+    # Will include filter for casting, Also Director and Writer at the moment
+    casting = django_filters.CharFilter(
+        field_name="casting__name",
+        lookup_expr="icontains",
+        label="Casting",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search by casting name...',
+        })
+    )
+
+# --------- End of ongoing work -------
 
     def check_release_date(self, queryset, name, value: int):
         """Custom filter method for release_date
         check if content_type is movie or serie
         and filter the queryset accordingly
         """
-        # debug print
+        # debug print below
         print(f"*Filtering by {name}: {value}")
         print(f"self.data is: {self.data}")
         print(f"self.data is: {queryset}")

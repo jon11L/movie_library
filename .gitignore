@@ -26,13 +26,16 @@ celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
 
-
 #  ------ files to fix some issues/bugs or simply update some models fields. ----
+correct_movie_images.py
 correct_production_movies.py
-correct_movie_images.py
-update_serie_date.py
-correct_movie_images.py
+delete_movies.py
 slug_episode_title.py
 slug_movie_title.py
 slug_season_title.py
 slug_serie_title.py
+update_serie_date.py
+
+# import_data/management/commands/
+
+buttons.html

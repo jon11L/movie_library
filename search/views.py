@@ -61,7 +61,7 @@ def search(request):
         }
         return render(request, 'search/search.html', context=context)
 
-    # Handle GET requests with parameters // action from the Filter Form Button
+    # Handle GET requests with parameters // action from the Filter Form Button (in the search page)
     if request.method == 'GET' and request.GET:
         print("-- User submit a filtered search --") # debug print
 
