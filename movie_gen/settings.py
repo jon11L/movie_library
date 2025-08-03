@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_filters',
     'import_data',
     'django_celery_beat',
+    'devtools',  # Custom app for development tools// to remove in Production
 ]
 
 MIDDLEWARE = [
