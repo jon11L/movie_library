@@ -188,20 +188,21 @@
                                 {% endif %}
                             </div>
 
+                            <div style="width: auto;">
+                                {% if item.type == 'movie' %}
+                                <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
+                                    <h5 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
+                                    <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
+                                </a>
+                                {% endif %}
+                            </div>
+                            
                         </div>
                     
                     
-                        <div class="" style="width: auto;">
-                            {% if item.type == 'movie' %}
-                            <a href="{% url 'movie:detail' slug=item.object.slug %}"  style="text-decoration: none;">
-                                <h5 style="color: rgb(99, 192, 161);  margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
-                            </a>
-                            {% else %}
-                            <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
-                                <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
-                            </a>
-                            {% endif %}
-                        </div>
                     </div>
                     {% endfor %}
                 </div>

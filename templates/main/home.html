@@ -16,36 +16,25 @@
             <!-- Main/middle section of the screen -->
             <main class="custom-col-9">
 
-                <div class="ms-auto mb-2 me-auto" style="text-align: center; margin-top: 15px; color: antiquewhite;">
+                <div class="ms-auto mb-5 me-auto mt-2" style="text-align: center; color: antiquewhite;">
                     <div>
                         <h1 class="mt-1 mb-3">Welcome to Medial7</h1>
+                        
                         <!-- Reference the amount of content in the Database -->
                         <div>
-                            <p>Browse through an extensive collection</p>
-                            <p>Save your favorit movies and TV shows. Share your thoughts, join discussion amongst Movies afficionados</p>
+                            <strong>
+                                <p>Browse through an extensive collection</p>
+                                <p>Save your favorit movies and TV shows. Share your thoughts, join discussion amongst Movies afficionados</p>
+                            </strong>
                         </div>
 
-                        {% if movies_count %}
-                        <strong style="color: rgb(146, 19, 19); font-size: 18px;">
-                            {{ movies_count }} movies {% else %}No movies{% endif %} and
-                            {% if series_count %}
-                            {{ series_count }} series
-                            {% else %}
-                            No series
-                            {% endif %}
-                            available in the library
-                        </strong>
                     </div>
                 </div>
 
-                <br>
-                <br>
-
                 <!------ Displaying the movies recently released ------->
                 {% if recent_movies %}
-                <h2 style="text-align: center; background-color: black; padding: 5px;">Recently released:</h2>
-                <h5>Movies</h5>
-
+                <h2 style="text-align: center; background-color: black; padding: 5px;">Movies recently released:</h2>
+                
                 <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
                 <div class="row" style="justify-content: center;">
 
@@ -54,7 +43,7 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                                <small style="margin: 10px 0px 0 5px; color: aquamarine;">{{ movie.render_vote_average }}/10</small>
+                                <small style="margin: 10px 0px 0px 5px; color: aquamarine;">{{ movie.render_vote_average }}/10</small>
                             
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -99,7 +88,6 @@
                 {% endif %}
 
 
-
                 <!------ Displaying the new series coming up here -------->
                 {% if returning_series %}
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Ongoing TV Shows:</h2>
@@ -107,14 +95,12 @@
                 <div class="row" style="justify-content: center; margin-top: 2em;">
 
                     {% for serie in returning_series %}
-
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xxl-2" style="height: 100%;">
-
 
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
+                                <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
                             
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -160,7 +146,6 @@
                 {% endif %}
 
 
-
                 <!----- Displaying Some content from the user's watchlist ------->
                 {% if watchlist_content %}
                 <div class="row" style="justify-content: center;">
@@ -190,7 +175,7 @@
                                         data-bookmarked="{% if item.object.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
-                                
+
                                     <!-- like button feature -->
                                     <button class="like-button"
                                         id="like_button"
@@ -200,7 +185,7 @@
                                         <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                     </button>
                                 </div>
-                                
+
                                 {% elif item.content_type == 'serie' %}
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -210,7 +195,7 @@
                                         data-bookmarked="{% if item.object.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
-                                
+
                                     <!-- like button feature  -->
                                     <button class="like-button"
                                         id="like_button"
@@ -222,7 +207,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            
+
                             <div class="poster-wrapper">
                                 {% if item.object.render_image_poster %}
                                 <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded">
@@ -230,7 +215,7 @@
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.object.title }} poster">
                                 {% endif %}
                             </div>
-                            
+
                             <div class="" style="width: auto;">
                                 {% if item.content_type == 'movie' %}
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none;">
@@ -242,7 +227,7 @@
                                 </a>
                                 {% endif %}
                             </div>
-                            
+
                         </div>
                     </div>
                     {% endfor %}
@@ -253,7 +238,7 @@
                 <!--------- Displaying the Media coming soon ------------>
                 <h2 style="text-align: center; padding-top: 10px; padding-bottom: 10px; background-color: black;">Upcoming:</h2>
                 {% if movies_coming_soon %}
-                <h5 style="margin-top: 15px; margin-left: 40px;">Movies</h5>
+                <h5 style="margin-top: 15px;">Movies</h5>
 
                 <div class="row" style="justify-content: center;">
                     {% for movie in movies_coming_soon %}
@@ -261,7 +246,7 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ movie.render_vote_average }}/10</small></p>
+                                <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ movie.render_vote_average }}/10</small></p>
                             
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -271,7 +256,7 @@
                                             data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                             <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
-                                
+
                                     <!-- like button feature -->
                                     <button class="like-button"
                                             id="like_button"
@@ -296,6 +281,7 @@
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ movie.title|slice:":35" }}</h5>
                                 </a>
                             </div>
+
                         </div>
                     </div>
                     {% endfor %}
@@ -307,7 +293,7 @@
 
                 <!-- displaying Series being released soon -->
                 {% if coming_up_series %}
-                <h5 style="margin-top: 15px; margin-left: 40px;"> Series</h5>
+                <h5 style="margin-top: 15px;"> Series</h5>
 
                 <div class="row" style="justify-content: center;">
                     {% for serie in coming_up_series %}
@@ -315,7 +301,7 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
+                                <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
                             
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -351,6 +337,7 @@
                                 <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ serie.title|slice:":35" }}</h5>
                                 </a>
                             </div>
+
                         </div>
                     </div>
                     {% endfor %}
@@ -360,12 +347,11 @@
                 {% endif %}
 
 
-
                 <!------ Displaying Randmom pick  --------->
                 <h2 style="text-align: center; background-color: black; padding: 10px;">Random Pick</h2>
 
                 {% if random_movies %}
-                <h5 style="margin-top: 15px; margin-left: 40px;">Movies</h5>
+                <h5 style="margin-top: 15px;">Movies</h5>
 
                 <div class="row" style="justify-content: center;">
                     {% for movie in random_movies %}
@@ -373,8 +359,8 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;">{{ movie.render_vote_average }}/10</p>
-                            
+                                <p style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ movie.render_vote_average }}/10</p>
+
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
@@ -383,7 +369,7 @@
                                             data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                             <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
-                                
+
                                     <!-- like button feature -->
                                     <button class="like-button"
                                             id="like_button"
@@ -402,7 +388,7 @@
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}
                             </div>
-                            
+
                             <div class="" style="width: auto;">
                                 <a href="{% url 'movie:detail' slug=movie.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ movie.title|slice:":35" }}</h5>
@@ -417,10 +403,9 @@
                 <p>No movies found...</p>
                 {% endif %}
 
-
                 <!-- displaying Random pick series -->
                 {% if random_series %}
-                <h5 style="margin-top: 15px; margin-left: 40px;">Series</h5>
+                <h5 style="margin-top: 0px;">Series</h5>
 
                 <div class="row" style="justify-content: center;">
                     {% for serie in random_series %}
@@ -428,8 +413,8 @@
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
-                            
+                                <p style=" margin: 10px 0px 0 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
+
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
@@ -438,7 +423,7 @@
                                             data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                             <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
-                                
+
                                     <!-- like button feature -->
                                     <button class="like-button"
                                             id="like_button"
@@ -457,7 +442,7 @@
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}
                             </div>
-                            
+
                             <div class="" style="width: auto;">
                                 <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ serie.title|slice:":35" }}</h5>
@@ -473,14 +458,38 @@
                 {% endif %}
 
             </main>
-            
-            
+
+
             <!-- Right section of the screen -->
             <aside class="custom-col-1-5 d-none d-md-block">
-                <div>
+                <div class="mb-2" style="text-align: center;">
+
+                    <strong style="color: rgb(146, 19, 19); font-size: 18px;">
+                        <p style="margin: 0;">
+                            {% if movies_count %}
+                            {{ movies_count }} movies 
+                            {% else %}No movies
+                            {% endif %}
+                        </p>
+                    </strong>
+                    <strong style="color: rgb(146, 19, 19); font-size: 18px;">
+                        <p style="margin: 0;">
+                            {% if series_count %}
+                            {{ series_count }} series
+                            {% else %}
+                            No series
+                            {% endif %}
+                        </p>
+                    </strong>
+                    <strong style="color: rgb(146, 19, 19); font-size: 18px;">
+                        <p style="margin: 0;">
+                            available in the library
+                        </p>
+                    </strong>
+
                 </div>
             </aside>
-            
+
         </div>
     </div>
 </div>

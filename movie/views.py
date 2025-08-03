@@ -15,10 +15,11 @@ def list_movie(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
-    # user_liked_movies = []
+    user_liked_movies = []
+    user_watchlist_movies = []
+
     try:
         if Movie:
-        
             # paginator implementation
             paginator = Paginator(Movie.objects.all().order_by('-id'), 24)
             # Get the current page number from the GET request
@@ -26,7 +27,6 @@ def list_movie(request):
             movie_list = paginator.get_page(page)
 
             # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = []
             user_watchlist_movies = WatchList.objects.filter(
                                                 user=request.user.id, content_type='movie'
                                                 ).values_list('object_id', flat=True)
@@ -38,18 +38,21 @@ def list_movie(request):
                                             ).values_list('object_id', flat=True)
 
             context = {
-                'user_liked_movies': user_liked_movies,
                 'movie_list' : movie_list,
+                'user_liked_movies': user_liked_movies,
                 'user_watchlist_movies': user_watchlist_movies, 
                 }
 
             return render(request, 'movie/list_movie.html', context=context)
             
         else:
-            return f'No movies found in the database'
+            messages.error(request, 'No movies found in the database')
+            return redirect('main:home')
+        
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
+        return redirect('main:home')
 
 
 

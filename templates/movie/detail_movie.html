@@ -72,8 +72,15 @@
 
 
                                 {% if movie.tagline %}
-                                <p> ({{ movie.tagline }})</p>
+                                <p>({{ movie.tagline }})</p>
                                 {% endif %}
+
+                                {% if request.user.is_superuser %}
+                                <small>id: {{ movie.pk }} </small>
+
+                                <small> -- last updated ({{ movie.updated_at }})</small>
+                                {% endif %}
+
                             </div>   
                             <br>
 
@@ -112,13 +119,11 @@
                 <br>
 
 
-
                 <!------- Comment Post form -------->
                 <section class="comment-post-section">
                     {% include "comment/comment_form.html" %}
                 </section>
                 <br>
-
 
                 <!--------- Comment Objects Section here -------->
                 <section  class="comment-list-section">
@@ -133,13 +138,9 @@
                     {% endif %}
                 </section>
 
-
-
                 {% else %}
                 <h4>Movie not found...</h4>
                 {% endif %}
-            
-
 
             </main>
 
