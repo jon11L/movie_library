@@ -24,7 +24,7 @@ def liked_content_view(request, pk):
         if request.method == "GET":
 
             user = User.objects.get(id=pk)
-            print(f" user {user} clicked like button\n")
+            print(f" user {user} visit their Liked media list page\n")
 
             likes = Like.objects.filter(user=pk)
             
@@ -34,14 +34,18 @@ def liked_content_view(request, pk):
                 if like.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': movie, 'liked_on': like.created_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type,
+                                              'object': movie,
+                                              'liked_on': like.created_at.strftime("%d %B %Y")})
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type, 'content': serie, 'liked_on': like.created_at.strftime("%d %B %Y")})
+                        liked_content.append({'content_type': like.content_type,
+                                              'object': serie,
+                                              'liked_on': like.created_at.strftime("%d %B %Y")})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
@@ -55,7 +59,6 @@ def liked_content_view(request, pk):
 
             return render(request, 'user_library/liked_content.html', context=context)
 
-            # user clicked the 'like' button
         elif request.method == "POST":
             # user clicked the 'unlike' button
             if request.POST.get('like_button_clicked') == 'true':
@@ -123,7 +126,7 @@ def watch_list_view(request, pk):
 
     # Need to add a check that only current user can visit their own Like page.
     if request.user.is_authenticated and request.user.id != pk:
-        print("\n* Unauthorised acces: user tried to access another User_watchlist *\n")
+        print("\n** Unauthorised acces: user tried to access another User_watchlist **\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
 
@@ -139,7 +142,9 @@ def watch_list_view(request, pk):
                 if item.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'content': movie, 'added_on': item.created_at.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type,
+                                                  'object': movie,
+                                                  'added_on': item.created_at.strftime("%d %B %Y")})
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
@@ -147,10 +152,22 @@ def watch_list_view(request, pk):
                 elif item.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'content': serie, 'added_on': item.created_at.strftime("%d %B %Y")})
+                        watchlist_content.append({'content_type': item.content_type,
+                                                  'object': serie,
+                                                  'added_on': item.created_at.strftime("%d %B %Y")})
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
+
+            # ----- Get the user's like content (movies, series)  ------
+            user_liked_movies = Like.objects.filter(
+                                                user=request.user.id, content_type='movie'
+                                                ).values_list('object_id', flat=True)
+
+            user_liked_series = Like.objects.filter(
+                                                user=request.user.id, content_type='serie'
+                                                ).values_list('object_id', flat=True)
+
 
             # -- paginate over the results --
             paginator = Paginator(watchlist_content, 24)
@@ -163,6 +180,9 @@ def watch_list_view(request, pk):
 
             context = {
                 'user': user,
+                'user_liked_movies': user_liked_movies,
+                'user_liked_series': user_liked_series,
+                'watchlist' : watchlist,
                 'watchlist_page': watchlist_pages,
                 'total_content': total_content,
             }

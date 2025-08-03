@@ -12,11 +12,16 @@
                 <div></div>
             </aside>
 
+            <!-- Main/middle section of the screen -->
             <main class="custom-col-9">
 
-                <h1 style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">TV Shows:</h1>
-                {% if serie_list %}
+                <div style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">
+                    <h1>
+                        TV Shows:
+                    </h1>
+                </div>
 
+                {% if serie_list %}
                 <!------- Display the Series.  --------->
                 <div class="row" style="justify-content: center;">
                     {% for serie in serie_list %}
@@ -95,9 +100,15 @@
                             {% for num in serie_list.paginator.page_range %}
                             <!-- enumerate pages around current page -->
                             {% if num == serie_list.number %}
-                            <li class="page-item disabled" style="margin: 0px 1px;"><a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a></li>
+                            <li class="page-item disabled" style="margin: 0px 1px;">
+                                <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
+                            </li>
                             {% elif num > serie_list.number|add:'-5' and num < serie_list.number|add:'5' %}
-                            <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a></li>
+                            <li class="page-item" style="margin: 0px 1px;">
+                                <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">
+                                    {{ num }}
+                                </a>
+                            </li>
                             {% endif %}
                             {% endfor %}
 
@@ -125,7 +136,7 @@
                     </nav>
                 </div>
                 {% elif serie_list and serie_list.paginator.num_pages == 1 %}
-                <!-- Show only page info when there's just one page -->
+                <!-- Show only page info when there is just one single page of items -->
                 <div style="text-align: center;">
                     <h6 style="color: darkgray;">( Page {{ serie_list.number }} of {{ serie_list.paginator.num_pages }} )</h6>
                 </div>

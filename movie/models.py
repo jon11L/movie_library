@@ -27,7 +27,6 @@ class Movie(BaseModel):
     
     budget = models.IntegerField(blank=True, null=True)
     revenue = models.BigIntegerField(blank=True, null=True)  # Movie's box office revenue
-
     # Metrics
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
     vote_count = models.IntegerField(blank=True, null=True)  
@@ -48,13 +47,10 @@ class Movie(BaseModel):
         verbose_name_plural = 'Movies'
         ordering = ['id']
 
-    
     def __str__(self):
         return self.title
-    
 
     # The below functions are to format the fields for a better human readable display.
-
     def render_genre(self):
         '''return the Movie.genre attribute in without quotes and [],
         only comma-separated string.
@@ -63,8 +59,7 @@ class Movie(BaseModel):
             genre = ', '.join(self.genre)
             return genre
         return 'N/a'
-    
-    
+
     def render_casting(self):
         '''return the Movie.casting attribute in without quotes and [],
         only comma-separated string.
@@ -73,7 +68,6 @@ class Movie(BaseModel):
             casting = ', '.join([f"{cast['name']} as {cast['role']}" for cast in self.casting])
             return casting
         return 'N/a'
-
 
     def render_writer(self):
         '''return the Movie.writer attribute in without quotes and [],
@@ -101,7 +95,6 @@ class Movie(BaseModel):
             director = ', '.join(self.director)
             return director
         return 'N/a'
-
 
     def render_vote_average(self):
         '''return the Movie.vote_average with a rounded number'''
