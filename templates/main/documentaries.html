@@ -16,8 +16,8 @@
 
             <main class="custom-col-9">
 
-                <h1 style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">{{ content }}:</h1>
                 {% if list_content %}
+                <h1 style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">{{ content }}:</h1>
                 
                 <!-- Display of Documentaries media genre -->
                 <div class="row" style="justify-content: center;">
@@ -96,6 +96,11 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% elif not list_content %}
+                    <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
+                        <h3>No {{content}} found...</h3>
+                        <p>please visit this page later</p>
+                    </div>
                     {% endif %}
                 </div>
             

@@ -15,11 +15,10 @@
             
             <main class="custom-col-9">
 
-
                 {% if user.is_authenticated %}
-                <div style="text-align: center;">
-                    <h2 >You are already connected, {{ user.username }}!</h2>
-                    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 30px 45px;">Home</a>
+                <div class="mt-5" style="text-align: center;">
+                    <h2>You are already connected, {{ user.username }}!</h2>
+                    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin-top: 3em;">Home</a>
                 </div>
             
                 {% else %}
@@ -48,7 +47,7 @@
                         </div>
                     </form>
                 </div>
-
+                {% endif %}
 
             </main>
 
@@ -63,6 +62,5 @@
     </div>
 </div>
 
-{% endif %}
 
 {% endblock %}

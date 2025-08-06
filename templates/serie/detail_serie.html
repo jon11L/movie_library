@@ -72,6 +72,22 @@
                                 {% if serie.tagline %}
                                 <p> ({{ serie.tagline }})</p>
                                 {% endif %}
+
+
+                                <!-- For dev purpose -->
+                                {% if request.user.is_superuser %}
+                                <div>
+                                    <small>id: {{ serie.pk }} </small>
+                                    
+                                    {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
+                                    <small> -- (Not updated)</small>
+                                    {% elif serie.created_at != serie.updated_at %}
+                                    <small> -- last updated ({{ serie.updated_at }})</small>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                <!-- End of dev purpose -->
+
                             </div>
                         </div>
 

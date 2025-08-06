@@ -14,15 +14,14 @@
 
             <!-- Main/middle section of the screen -->
             <main class="custom-col-9">
-
-                <div style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">
-                    <h1>
-                        TV Shows:
-                    </h1>
-                </div>
-
+                
                 {% if serie_list %}
                 <!------- Display the Series.  --------->
+
+                <div style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">
+                    <h1>TV Shows:</h1>
+                </div>
+
                 <div class="row" style="justify-content: center;">
                     {% for serie in serie_list %}
 
@@ -71,8 +70,11 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No series found...</p>
+                {% elif not serie_list %}
+                <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
+                    <h3>No Series found...</h3>
+                    <p>please visit this page later</p>
+                </div>
                 {% endif %}
             
             
@@ -140,8 +142,6 @@
                 <div style="text-align: center;">
                     <h6 style="color: darkgray;">( Page {{ serie_list.number }} of {{ serie_list.paginator.num_pages }} )</h6>
                 </div>
-                {% else %}
-                <h4>NO Tv Show found...</h4>
                 {% endif %}
 
             </main>
