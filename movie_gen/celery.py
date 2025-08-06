@@ -15,11 +15,16 @@ app = Celery('movie_gen') # create an instance of Celery
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# Load task modules from all registered Django apps.
+# Load task modules from all registered Django apps. that the @shared_task decorator
 app.autodiscover_tasks()
 
 if platform.system() == 'Windows':
+    print("Running on Windows system.")
     app.conf.task_always_eager = False
     app.conf.worker_concurrency = 1
     app.conf.broker_connection_retry_on_startup = True
-    
+else:
+    print("Running on Linux system.")
+    # app.conf.task_always_eager = False
+    app.conf.worker_concurrency = 2  # Adjust based on your CPU cores
+    app.conf.broker_connection_retry_on_startup = True
