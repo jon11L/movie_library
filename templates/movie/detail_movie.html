@@ -52,39 +52,54 @@
                             
                             </div>
                         </div>
+                    </div>
                     
-                        <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                            {% if movie.render_image_poster %}
-                            <img src=" {{ movie.render_image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                    
+                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                        {% if movie.render_image_poster %}
+                        <img src=" {{ movie.render_image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% else %}
+                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% endif %}
+                    </div>
+                    <br>
+
+                    <div class="card-body">
+                        <div style="text-align: center;">
+                            {% if movie.title != movie.original_title %}
+                            <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
                             {% else %}
-                            <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                            <h4 class="card-title">{{ movie.title }}</h4>
                             {% endif %}
-                        </div>
+
+                            {% if movie.tagline %}
+                            <p>({{ movie.tagline }})</p>
+                            {% endif %}
+
+                            <!-- For dev purpose -->
+                            {% if request.user.is_superuser %}
+                            <div>
+                                <small>id: {{ movie.pk }} </small>
+                                
+                                {% if movie.created_at|date:"Y-m-d H" == movie.updated_at|date:"Y-m-d H" %}
+                                <small> -- (Not updated)</small>
+                                {% elif movie.created_at != movie.updated_at %}
+                                <small> -- (last updated on {{ movie.updated_at }})</small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            <!-- End of dev purpose -->
+
+                        </div>   
                         <br>
 
-                        <div class="card-body">
-                            <div style="text-align: center;">
-                                {% if movie.title != movie.original_title %}
-                                <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
-                                {% else %}
-                                <h4 class="card-title">{{ movie.title }}</h4>
-                                {% endif %}
-
-
-                                {% if movie.tagline %}
-                                <p>({{ movie.tagline }})</p>
-                                {% endif %}
-
-                                {% if request.user.is_superuser %}
-                                <small>id: {{ movie.pk }} </small>
-
-                                <small> -- last updated ({{ movie.updated_at }})</small>
-                                {% endif %}
-
-                            </div>   
-                            <br>
-
+                        <div>
+                            {% if movie.description %}
                             <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
+                            {% else %}
+                            <p class="card-text"><strong>Description:</strong> No description available.</p>
+                            {% endif %}
+                            
                             <br>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item"><strong>Released:</strong> {{ movie.render_release_date }}</li>
@@ -98,23 +113,23 @@
                                 <li class="list-group-item"><strong>Spoken languages:</strong> {{ movie.render_spoken_languages }}</li>
                             </ul>
                         </div>
-                        <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
-                            {% if movie.trailers %}
-                            {% for trailer in movie.trailers %}
-                            <div class="ms-3 mb-2">
-                                <iframe width="300" height="200"
-                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                    title="YouTube video player"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen>
-                                </iframe>
-                            </div>
-                            {% endfor %}
-                            {% endif %}
-                        </div>
-
                     </div>
+                    <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                        {% if movie.trailers %}
+                        {% for trailer in movie.trailers %}
+                        <div class="ms-2 mb-2">
+                            <iframe width="300" height="200"
+                                src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                title="YouTube video player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
                 </div>
                 <br>
 
@@ -139,7 +154,7 @@
                 </section>
 
                 {% else %}
-                <h4>Movie not found...</h4>
+                    <h4>Movie not found...</h4>
                 {% endif %}
 
             </main>

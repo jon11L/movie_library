@@ -35,13 +35,14 @@ def register_user(request):
                                 f"Account successfully created!    Hello, {username}! You are now logged in."
                                 f"Click here to complete your profile"
                                 )
-                
+
                 return redirect(to='main:home')
             
             except Exception as e:
                 print(f"An error occurred:\n\n {e}")
-                raise HttpResponse("An error occurred while trying to register the user.\nPlease refresh the page and try again")
-            
+                # raise HttpResponse("An error occurred while trying to register the user.\nPlease refresh the page and try again")
+                return redirect(to='user:register')
+
         else:
             messages.error(request, "It seems some fields entered was not valid, Please check and try again")
             return render(request, 'user/register.html', {'form': form, 'error': 'Form is not valid'})

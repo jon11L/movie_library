@@ -36,7 +36,7 @@
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Movies recently released:</h2>
                 
                 <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                <div class="row" style="justify-content: center;">
+                <div class="row">
 
                     {% for movie in recent_movies %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2">
@@ -83,8 +83,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No movies found...</p>
                 {% endif %}
 
 
@@ -92,7 +90,7 @@
                 {% if returning_series %}
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Ongoing TV Shows:</h2>
                 <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                <div class="row" style="justify-content: center; margin-top: 2em;">
+                <div class="row">
 
                     {% for serie in returning_series %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xxl-2" style="height: 100%;">
@@ -141,14 +139,12 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No series found...</p>
                 {% endif %}
 
 
                 <!----- Displaying Some content from the user's watchlist ------->
                 {% if watchlist_content %}
-                <div class="row" style="justify-content: center;">
+                <div class="row">
                     <div style="text-align: center; background-color: black; padding: 5px;">
                         <h2>
                             <a href="{% url 'user_library:watch_list' request.user.id %}" style="text-decoration: none; color: inherit;">
@@ -236,11 +232,11 @@
 
 
                 <!--------- Displaying the Media coming soon ------------>
-                <h2 style="text-align: center; padding-top: 10px; padding-bottom: 10px; background-color: black;">Upcoming:</h2>
                 {% if movies_coming_soon %}
+                <h2 style="text-align: center; padding-top: 10px; padding-bottom: 10px; background-color: black;">Upcoming:</h2>
                 <h5 style="margin-top: 15px;">Movies</h5>
 
-                <div class="row" style="justify-content: center;">
+                <div class="row">
                     {% for movie in movies_coming_soon %}
                     <div  class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
@@ -286,8 +282,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No movies found...</p>
                 {% endif %}
 
 
@@ -295,7 +289,7 @@
                 {% if coming_up_series %}
                 <h5 style="margin-top: 15px;"> Series</h5>
 
-                <div class="row" style="justify-content: center;">
+                <div class="row">
                     {% for serie in coming_up_series %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
@@ -342,18 +336,18 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No series found...</p>
                 {% endif %}
 
 
                 <!------ Displaying Randmom pick  --------->
+                {% if random_movies or random_series %}
                 <h2 style="text-align: center; background-color: black; padding: 10px;">Random Pick</h2>
+                {% endif %}
 
                 {% if random_movies %}
                 <h5 style="margin-top: 15px;">Movies</h5>
 
-                <div class="row" style="justify-content: center;">
+                <div class="row">
                     {% for movie in random_movies %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
@@ -399,15 +393,13 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No movies found...</p>
                 {% endif %}
 
                 <!-- displaying Random pick series -->
                 {% if random_series %}
                 <h5 style="margin-top: 0px;">Series</h5>
 
-                <div class="row" style="justify-content: center;">
+                <div class="row">
                     {% for serie in random_series %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
@@ -453,9 +445,16 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% else %}
-                <p>No series found...</p>
                 {% endif %}
+
+
+                {% if not movies_count  or not series_count %}
+                <div class="mt-5" style="text-align: center; color: antiquewhite;">
+                    <h2>No Media or database found!</h2>
+                </div>
+                {% endif %}
+
+                
 
             </main>
 
