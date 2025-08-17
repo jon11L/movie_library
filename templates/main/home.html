@@ -89,7 +89,6 @@
                 <!------ Displaying the new series coming up here -------->
                 {% if returning_series %}
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Ongoing TV Shows:</h2>
-                <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
                 <div class="row">
 
                     {% for serie in returning_series %}
@@ -144,29 +143,29 @@
 
                 <!----- Displaying Some content from the user's watchlist ------->
                 {% if watchlist_content %}
+                <div>
+                    <h2 style="text-align: center; background-color: black; padding: 5px;">
+                        <a href="{% url 'user_library:watch_list' request.user.id %}" style="text-decoration: none; color: inherit;">
+                            From your watchlist:
+                        </a>
+                    </h2>
+                </div>
+                
                 <div class="row">
-                    <div style="text-align: center; background-color: black; padding: 5px;">
-                        <h2>
-                            <a href="{% url 'user_library:watch_list' request.user.id %}" style="text-decoration: none; color: inherit;">
-                                From your watchlist:
-                            </a>
-                        </h2>
-                    </div>
-
                     {% for item in watchlist_content %}
 
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;  margin-top: 2em">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
 
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
                             
                             <div style="display: flex; justify-content: space-between;">
                                 <small style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
                                     
-                                {% if item.content_type == 'movie' %}
+                                {% if item.type == 'movie' %}
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
-                                        data-type="{{ item.content_type }}"
+                                        data-type="{{ item.type }}"
                                         data-id="{{ item.object.id }}"
                                         data-bookmarked="{% if item.object.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
@@ -175,14 +174,14 @@
                                     <!-- like button feature -->
                                     <button class="like-button"
                                         id="like_button"
-                                        data-type="{{ item.content_type }}"
+                                        data-type="{{ item.type }}"
                                         data-id="{{ item.object.id }}"
                                         data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                     </button>
                                 </div>
 
-                                {% elif item.content_type == 'serie' %}
+                                {% elif item.type == 'serie' %}
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
@@ -213,7 +212,7 @@
                             </div>
 
                             <div class="" style="width: auto;">
-                                {% if item.content_type == 'movie' %}
+                                {% if item.type == 'movie' %}
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>

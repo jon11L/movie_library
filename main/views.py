@@ -18,7 +18,6 @@ def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
-
 def sample_content(list_content):
     '''Takes a list sample from the queryset or list given'''
     if len(list_content) == 0:
@@ -26,6 +25,11 @@ def sample_content(list_content):
     elif len(list_content) < 6:
         return list_content
     return random.sample(list(list_content), 6) 
+
+
+def about_page(request):
+    return render(request, 'main/about.html')
+
 
 def home(request):
     '''
@@ -60,33 +64,35 @@ def home(request):
         if Serie.objects.exists():
             series = Serie.objects.all()
         
+        # Prepare various content lists (eg: recently released, coming soon, etc.)
+        # and pass them into sample function.
         recently_released_movies = movies.filter(release_date__range=(fortnight_ago, yesterday)).exclude(length__range=(0, 45))  # retrieve the 10 latest content added
         if recently_released_movies:
             print(f"\n- Recently released movies: {len(recently_released_movies)}") # debug print
             recently_released_movies = sample_content(recently_released_movies)  # retrieve 6 random movies from the last week
 
-        coming_soon_movies = movies.filter(release_date__range=(today, bi_week_later)).exclude(length__range=(0, 45))  # retrieve the movies coming soon.
-        if coming_soon_movies:
-            print(f"- Coming soon movies: {len(coming_soon_movies)}") # debug print
-            coming_soon_movies = sample_content(coming_soon_movies)
+        upcoming_movies = movies.filter(
+            release_date__range=(today, bi_week_later)
+            ).exclude(length__range=(0, 45)) # retrieve the movies coming soon.
+        if upcoming_movies:
+            print(f"- Coming soon movies: {len(upcoming_movies)}") # debug print
+            upcoming_movies = sample_content(upcoming_movies)
 
-        # random_pick_movies = random.sample(list(movies.exclude(length__range=(0, 45))), 6)  # retrieve 6 random movies from the last 30 days
-        random_pick_movies = sample_content(movies.exclude(length__range=(0, 45))) # retrieve 6 random movies from the last 30 days
-        print(f"- Random pick movies: {random_pick_movies}") # debug print
+        random_movies = sample_content(movies.exclude(length__range=(0, 45))) # retrieve 6 random movies from the last 30 days
+        print(f"- Random pick movies: {random_movies}") # debug print
 
-        # series = Serie.objects.filter(last_air_date__range=(week_start, week_end))[:8] 
         coming_back_series = series.filter(last_air_date__range=(fortnight_ago, week_later))
         if coming_back_series:
             print(f"- Coming back series: {len(coming_back_series)}")
             coming_back_series = sample_content(coming_back_series)  # retrieve 8 random movies from the last 30 days
 
-        coming_up_series = series.filter(first_air_date__range=(fortnight_ago, bi_week_later))  # retrieve the 6 latest content added
-        if coming_up_series:
-            print(f"- Coming up series: {len(coming_up_series)}")
-            coming_up_series = sample_content(coming_up_series)  # retrieve 8 random movies from the last 30 days
+        upcoming_series = series.filter(first_air_date__range=(fortnight_ago, bi_week_later)) # retrieve the 6 latest content added
+        if upcoming_series:
+            print(f"- Coming up series: {len(upcoming_series)}")
+            upcoming_series = sample_content(upcoming_series)  # retrieve 8 random movies from the last 30 days
         
-        random_pick_series = sample_content(series)  # retrieve 6 random movies from the last 30 days
-        print(f"- Random pick series: {random_pick_series}\n")
+        random_series = sample_content(series)  # retrieve 6 random movies from the last 30 days
+        print(f"- Random pick series: {random_series}\n")
 
         # display the amount of Movies & Series available from the database
         movies_count = movies.count() 
@@ -94,25 +100,26 @@ def home(request):
 
         context = {
             'recent_movies': recently_released_movies if recently_released_movies else None,
-            'movies_coming_soon': coming_soon_movies if coming_soon_movies else None,
-            'random_movies': random_pick_movies if random_pick_movies else None,
+            'movies_coming_soon': upcoming_movies if upcoming_movies else None,
+            'random_movies': random_movies if random_movies else None,
             'returning_series': coming_back_series if coming_back_series else None,
-            'coming_up_series': coming_up_series if coming_up_series else None,
-            'random_series': random_pick_series if random_pick_series else None,
+            'coming_up_series': upcoming_series if upcoming_series else None,
+            'random_series': random_series if random_series else None,
             'movies_count': movies_count,
             'series_count': series_count,
         }
 
         if request.user.is_authenticated:
-
             # --------- Get the user's watchlist content (movies, series)  -----------
             user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+                                                user=request.user.id,
+                                                movie__isnull=False
+                                                ).values_list('movie_id', flat=True)
 
             user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
+                                                user=request.user.id,
+                                                serie__isnull=False
+                                                ).values_list('serie_id', flat=True)
 
             # -------- Get the user's like content (movies, series)  ----------
             user_liked_movies = Like.objects.filter(
@@ -125,24 +132,32 @@ def home(request):
 
 
             user = User.objects.get(id=request.user.id)
-            print(f"\n user:\n\n{user}\n") # debug print
+            print(f"user: {user}\n") # debug print
+
             watchlist = WatchList.objects.filter(user=request.user.id)
-            print(f"\n user watchlist:\n\n{watchlist[:3]}...\n") # debug print
+            print(f"user's Watchlist:\n{watchlist[:3]}...\n") # debug print
 
             watchlist_content = [] 
-            # intialize the list of watchlist instances 
+            # initialize the list of watchlist instances 
             for item in watchlist:
                 try:
-                    if item.content_type == "movie":
-                        movie = Movie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'object': movie})
+                    if item.movie:
+                        watchlist_content.append({
+                            'object': item.movie,
+                            # 'type': type(item.movie).__name__.lower()
+                            'type': item.kind
+                            })
                         # print(f"movie: {movie}\n") #debug print
-                    elif item.content_type == "serie":
-                    
-                        serie = Serie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type, 'object': serie})
-                        # print(f"serie: {serie}\n") #debug print
+                    elif item.serie:
+                        watchlist_content.append({
+                            'object': item.serie,
+                            # 'type': type(item.serie).__name__.lower()
+                            'type': item.kind
+
+                            })
+                        
                 except (Movie.DoesNotExist, Serie.DoesNotExist):
+                    print(f"Item with id {item} does not exist in the database.\n")
                     continue
 
             watchlist_content = sample_content(watchlist_content)  # retrieve 6 random content from the user's watchlist
@@ -168,10 +183,6 @@ def home(request):
         return redirect(to='user:login')
 
 
-def about_page(request):
-    return render(request, 'main/about.html')
-
-
 def show_content(request, content):
     '''
     Display the content media available in the database per style:
@@ -182,9 +193,7 @@ def show_content(request, content):
     media = [] # list to hold the content (movies, series)
 
     try:
-
         if content == 'documentaries':
-        
             # Check if they are Movie datas and display them if so
             movies = Movie.objects.filter(genre__icontains = "documentary")
             series = Serie.objects.filter(genre__icontains = "documentary")
@@ -232,13 +241,20 @@ def show_content(request, content):
                                             ).values_list('object_id', flat=True)
         
         # Get the user's watchlist content (movies, series)
-        user_watchlist_movies = WatchList.objects.filter(
-                                            user=request.user.id, content_type='movie'
-                                            ).values_list('object_id', flat=True)
+        user_watchlist_movies = set(
+            WatchList.objects.filter(
+                            user=request.user.id, movie__isnull=False
+                            ).values_list('movie_id', flat=True)
+        )
 
-        user_watchlist_series = WatchList.objects.filter(
-                                            user=request.user.id, content_type='serie'
-                                            ).values_list('object_id', flat=True)
+        user_watchlist_series = set(
+            WatchList.objects.filter(
+                            user=request.user.id, serie__isnull=False
+                            ).values_list('serie_id', flat=True)
+        )
+        
+        # print(f"User's watchlist movies: {user_watchlist_movies}...\n")  # debug print
+        # print(f"User's watchlist series: {user_watchlist_series}...\n")
 
         context = {
             'content': content.capitalize(),
@@ -252,7 +268,7 @@ def show_content(request, content):
         }
 
         return render(request, 'main/documentaries.html', context=context)
-    
+
     except Exception as e:
         print(f"An error occurred while loading the documentaries page: {e}\n")
         messages.error(request, f"An error occurred while loading the page. {e}")

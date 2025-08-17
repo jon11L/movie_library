@@ -1,6 +1,5 @@
 from django.db import models
-# from django.contrib.contenttypes.models import ContentType
-# from django.contrib.contenttypes.fields import GenericForeignKey
+
 from core.models import BaseModel
 from user.models import User 
 from movie.models import Movie
@@ -73,9 +72,11 @@ class WatchList(BaseModel):
         DROPPED = 'dropped', 'Dropped'
 
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watch_list')
-    content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watchlist')
+    # content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES) # to remove when everything is updated
+    # object_id = models.PositiveIntegerField(null=True, blank=True) # to remove when everything is updated
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
+    serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     personal_note = models.TextField(max_length=500, blank=True, null=True)
     status = models.CharField(choices=Status.choices, blank=True, null=True)
 
@@ -84,11 +85,63 @@ class WatchList(BaseModel):
         db_table = 'watch_list'
         verbose_name = 'Watch_List'
         verbose_name_plural = 'Watch_Lists'
-        unique_together = ('user', 'content_type', 'object_id')
-        ordering = ['-created_at']
+        ordering = ['-id']
+
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(movie__isnull=False, serie__isnull=True) |
+                    models.Q(movie__isnull=True, serie__isnull=False)
+            ),
+                name="only_one_content_type"
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'movie'],
+                condition=models.Q(movie__isnull=False),
+                name='unique_movie_watchlist'
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'serie'],
+                condition=models.Q(serie__isnull=False),
+                name='unique_serie_watchlist'
+            ),
+            
+        ]
+
 
     def __str__(self):
-        return f"{self.user.username} added {self.content_type}: '{self.object_id}' to watchlist"
+        object = self.movie or self.serie
+        return f"{self.user.username} added {object}' to their watchlist"
+
+    @property
+    def kind(self) -> str:
+        return 'movie' if self.movie != None else 'serie'
+
+    @property
+    def content_object(self):
+        """Allow access to the movie or serie directly."""
+        return self.movie or self.serie
+
+# --------------------------------------------------------------
+
+    # def clean(self):
+    #     super().clean()
+    #     if self.movie and self.serie:
+    #         raise ValidationError("WatchList can only reference either a Movie or a Serie, not both.")
+    #     if not self.movie and not self.serie:
+    #         raise ValidationError("WatchList must reference either a Movie or a Serie.")
+ 
+
+    # def save(self, *args, **kwargs):
+        # self.full_clean()
+        # return super().save(*args, **kwargs)
+ 
+
+# --------------------------------------------------------------
+
+
+
+
 
 
 class Like(BaseModel):

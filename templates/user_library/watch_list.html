@@ -36,35 +36,35 @@
                             <div style="display: flex; justify-content: space-between;">
                                 <small style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
                                     
-                                {% if item.content_type == 'movie' %}
                                 <div>
                                     <!-- Watchlist button feature -->
                                     <button class="watchlist-button"
-                                        data-type="{{ item.content_type }}"
+                                        data-type="{{ item.type }}"
                                         data-id="{{ item.object.id }}"
                                         data-bookmarked="true">
                                         <i class="fa fa-bookmark"></i>
                                     </button>
-                                
+                                    
+                                    {% if item.type == 'movie' %}
                                     <!-- like button feature -->
                                     <button class="like-button"
                                         id="like_button"
-                                        data-type="{{ item.content_type }}"
+                                        data-type="{{ item.type }}"
                                         data-id="{{ item.object.id }}"
                                         data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                     </button>
-                                </div>
+                                <!-- </div> -->
                                 
-                                {% elif item.content_type == 'serie' %}
-                                <div>
+                                    {% elif item.type == 'serie' %}
+                                <!-- <div> -->
                                     <!-- Watchlist button feature -->
-                                    <button class="watchlist-button"
+                                    <!-- <button class="watchlist-button"
                                         data-type="{{ item.content_type }}"
                                         data-id="{{ item.object.id }}"
                                         data-bookmarked="{% if item.object.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                         <i class="fa fa-bookmark"></i>
-                                    </button>
+                                    </button> -->
                                 
                                     <!-- like button feature  -->
                                     <button class="like-button"
@@ -74,8 +74,8 @@
                                         data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
                                         <i class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                     </button>
+                                    {% endif %}
                                 </div>
-                                {% endif %}
                             </div>
                             
                             <div class="poster-wrapper">
@@ -87,11 +87,11 @@
                             </div>
                             
                             <div class="" style="width: auto;">
-                                {% if item.content_type == 'movie' %}
+                                {% if item.type == 'movie' %}
                                 <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>
-                                {% elif item.content_type == 'serie' %}
+                                {% elif item.type == 'serie' %}
                                 <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
                                     <h5 style="color: rgb(99, 192, 161); margin-top: 5px;">{{ item.object.title|slice:":35" }}</h5>
                                 </a>

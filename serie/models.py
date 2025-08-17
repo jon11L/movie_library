@@ -98,6 +98,13 @@ class Serie(BaseModel):
             return image_poster
         return None
     
+    def render_first_air_date(self):
+        '''return the Episode.release_date with a formatted string'''
+        if self.first_air_date:
+            first_air_date = self.first_air_date.strftime("%b. %d, %Y")
+            return first_air_date
+        return 'N/a'
+    
     # def render_average_time(self):
     #     '''return the Serie' length in average per episode time
     #     '''
