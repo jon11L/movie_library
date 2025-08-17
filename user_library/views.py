@@ -4,7 +4,7 @@ from django.http import JsonResponse
 # from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
 
-from.models import WatchList, Like
+from .models import WatchList, Like
 from user.models import User
 from movie.models import Movie
 from serie.models import Serie
@@ -70,7 +70,6 @@ def liked_content_view(request, pk):
         return redirect('user:login')
 
 
-
 def toggle_like(request, content_type: str, object_id: int):
     '''When triggered or called in pair with AJAX on the front-end, 
     this function will check in the 'Like' models data
@@ -118,9 +117,6 @@ def toggle_like(request, content_type: str, object_id: int):
                 return JsonResponse({'liked': True, 'message': message}) # responding to Ajax on front-end.
 
 
-
-
-
 def watch_list_view(request, pk):
     '''retrieve the user's watchlist from the database and display them in the template'''
 
@@ -139,25 +135,24 @@ def watch_list_view(request, pk):
 
             watchlist_content = [] # intialize the list of watchlist instances 
             for item in watchlist:
-                if item.content_type == "movie":
-                    try:
-                        movie = Movie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type,
-                                                  'object': movie,
-                                                  'added_on': item.created_at.strftime("%d %B %Y")})
-                        # print(f"movie: {movie}\n") #debug print
-                    except Movie.DoesNotExist:
-                        continue
+                try:
+                    if item.movie:
+                        watchlist_content.append({
+                            'object': item.movie,
+                            # 'type': "movie"
+                            'type': item.kind
+                            })
 
-                elif item.content_type == "serie":
-                    try:
-                        serie = Serie.objects.get(id=item.object_id)
-                        watchlist_content.append({'content_type': item.content_type,
-                                                  'object': serie,
-                                                  'added_on': item.created_at.strftime("%d %B %Y")})
-                        # print(f"serie: {serie}\n") #debug print
-                    except Serie.DoesNotExist:
-                        continue
+                    elif item.serie:
+                        watchlist_content.append({
+                            'object': item.serie,
+                            # 'type': "serie"
+                            'type': item.kind
+                            })
+
+                except (Movie.DoesNotExist, Serie.DoesNotExist):
+                    print(f"Item with id {item} does not exist in the database.\n")
+                    continue
 
             # ----- Get the user's like content (movies, series)  ------
             user_liked_movies = Like.objects.filter(
@@ -168,13 +163,11 @@ def watch_list_view(request, pk):
                                                 user=request.user.id, content_type='serie'
                                                 ).values_list('object_id', flat=True)
 
-
             # -- paginate over the results --
             paginator = Paginator(watchlist_content, 24)
             page_number = request.GET.get('page')
             watchlist_pages = paginator.get_page(page_number)
             print(f"List content: {watchlist_pages}")
-
 
             total_content = watchlist.count()
 
@@ -189,17 +182,15 @@ def watch_list_view(request, pk):
 
             return render(request, 'user_library/watch_list.html', context=context)
 
-        elif request.method == "POST":
-            # user clicked the 'unlike' button
-            if request.POST.get('watchlist_button_clicked') == 'true':
-                print(f"watchlist button clicked\n") # debugging
-            pass
+        # elif request.method == "POST":
+        #     # user clicked the button
+        #     if request.POST.get('watchlist_button_clicked') == 'true':
+        #         print(f"watchlist button clicked\n") # debugging
+        #     pass
 
     else:
-        messages.error(request, "You must be logged in to view your liked content.")
+        messages.error(request, "You must be logged in to view your watchlist .")
         return redirect('user:login')
-
-
 
 
 def toggle_watchlist(request, content_type: str, object_id: int):
@@ -209,42 +200,47 @@ def toggle_watchlist(request, content_type: str, object_id: int):
     if it does not, it will then create a new instance in the database,
     if the instance already exists, it will delete the instance.
     With AJAX implemented on the front-end, the updates on the data are made without reloading the page
+            \n---
+    #### - content_type is either 'movie' or 'serie' reference to the model type
+    #### - object_id is the id/pk of the object movie or serie
     '''
+    # content_type is either 'movie' or 'serie' reference to the model type
 
     # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:
+        message = "You must be logged to use the Watchlist"
         # messages.error(request, "You must be logged in to like contents.")
         return JsonResponse({
             'error': 'Login required',
-            'message': "You must be logged to use the Watchlist feature."
+            'message': message
             }, status=401)
 
     # user clicked the 'like' button
     if request.method == "POST":
-        
-            # check if the Like already exists
+            # check if the object already exists in the watchlist
             watchlist = WatchList.objects.filter(
                 user=request.user,
-                content_type=content_type,
-                object_id=object_id
+                movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+                serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
                 ).first()
-            print(f"\n content exist in watchlist?: {watchlist}\n") # debugging 
+            
+            print(f"Content exist in watchlist?: {watchlist}\n") # debugging 
 
             if watchlist: # If the like already exists, it will be removed.
                 watchlist.delete()
-                print(f"'{watchlist}' removed from watchlist")
-                message = f"{content_type}-{object_id} removed from your watchlist."
+                print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
+                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
                 # return JsonResponse({'liked': False, 'message': message}) # responding to Ajax on front-end.
                 return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
             
             else: # the Like is created with the user id, model type and the respective id of this model
                 watchlist = WatchList.objects.create(
                     user=request.user,
-                    content_type=content_type,
-                    object_id=object_id
+                    movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+                    serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
                     )
                 
-                print(f"**ADDED** to watchlist.\n{watchlist}\n")
+                print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist.\n")
                 # messages.success(request, f"{content_type} added to your likes.")
-                message = f"{content_type}-{object_id} added to your watchlist."
+                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.

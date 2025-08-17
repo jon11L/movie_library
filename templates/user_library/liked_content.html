@@ -39,12 +39,12 @@
                                         <!-- display if it is a movie or a serie -->
                                         {% if item.content_type == 'movie' %}
                                         <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none; color: #000;">
-                                            <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                            <h5 style="margin-right: 5px;">{{ item.object.title }}</h5>
                                         </a>
                                     
                                         {% elif item.content_type == 'serie' %}
                                         <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none; color: #000;">
-                                            <h5 style="margin-right: 5px;">{{ item.content.title }}</h5>
+                                            <h5 style="margin-right: 5px;">{{ item.object.title }}</h5>
                                         </a>
                                         {% endif %}
                                     
@@ -68,13 +68,13 @@
                                     <div class="col">
                                     
                                         <div class="card-img-top">
-                                            {% if item.content.render_image_poster %}
-                                                <img src=" {{ item.content.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
+                                            {% if item.object.render_image_poster %}
+                                                <img src=" {{ item.object.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
                                             {% else %}
                                             <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                                             {% endif %}
                                         </div>
-                                        <p class="card-text"><strong>Overview</strong>: {{ item.content.description|slice:":40" }}...</p>
+                                        <p class="card-text"><strong>Overview</strong>: {{ item.object.description|slice:":40" }}...</p>
                                     
                                     </div>
                                 </div>

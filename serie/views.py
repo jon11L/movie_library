@@ -25,8 +25,8 @@ def list_serie(request):
             # Get the user's watchlist content (series only here)
             user_watchlist_series = WatchList.objects.filter(
                                                 user=request.user.id,
-                                                content_type='serie'
-                                                ).values_list('object_id', flat=True)
+                                                serie__isnull=False
+                                                ).values_list('serie_id', flat=True)
 
             # Get the user's like content
             user_liked_series = Like.objects.filter(
@@ -66,8 +66,9 @@ def serie_overview(request, slug):
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
+                                                user=request.user.id,
+                                                serie__isnull=False
+                                                ).values_list('serie_id', flat=True)
 
             # Check if user liked the serie
             user_liked_serie = Like.objects.filter(
@@ -117,7 +118,7 @@ def serie_overview(request, slug):
         # if the serie does not exist in the database
         else:
             messages.error(request, "No Tv Show found in the database with this title")
-            print(f" error :\n{e}")
+            print(f" error : Serie model not found in the database")
             return redirect('serie:list_serie')
         
     except Exception as e:

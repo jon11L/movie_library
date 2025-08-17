@@ -35,6 +35,8 @@ slug_movie_title.py
 slug_season_title.py
 slug_serie_title.py
 update_serie_date.py
+watchlist_fk_fields.py
+
 
 # import_data/management/commands/
 

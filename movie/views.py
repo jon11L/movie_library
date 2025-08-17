@@ -28,14 +28,16 @@ def list_movie(request):
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+                                                user=request.user.id, 
+                                                movie__isnull=False
+                                                ).values_list('movie_id', flat=True)
 
             # Get the user's like content
             user_liked_movies = Like.objects.filter(
                                             user=request.user.id,
                                             content_type='movie'
                                             ).values_list('object_id', flat=True)
+            
 
             context = {
                 'movie_list' : movie_list,
@@ -69,8 +71,8 @@ def movie_overview(request, slug):
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = WatchList.objects.filter(
                                                     user=request.user.id,
-                                                    content_type='movie'
-                                                    ).values_list('object_id', flat=True)
+                                                    movie__isnull=False
+                                                    ).values_list('movie_id', flat=True)
 
             # Check if user liked the movie
             user_liked_movie = Like.objects.filter(
@@ -117,7 +119,7 @@ def movie_overview(request, slug):
         
         else:
             messages.error(request, "No Movie found in the database with this title")
-            print(f" error :\n{e}")
+            print(f"Movie model not found in the database")
             return redirect('movie:list_movie')
         
     except Exception as e:
