@@ -54,7 +54,7 @@ class Command(BaseCommand):
         imported_count = 0  # Tracks how many movies were imported 
         pages_to_fetch = []  # List to store the pages to fetch
 
-        endpoint = ("popular", "top_rated", "now_playing", "upcoming")
+        endpoint = ("popular", "top_rated", "now_playing", "upcoming", "discover")
         selected_endpoint = random.choice(endpoint)
 
         # adjust the number of pages based on the selected endpoint
@@ -74,7 +74,6 @@ class Command(BaseCommand):
             # selected_endpoint = "now_playing"
             pages_to_fetch.append(1)  # Only fetch the first and 2nd page
             pages_to_fetch.append(2)
-
 
         for page in pages_to_fetch:
             # Loop over pages 
@@ -104,7 +103,7 @@ class Command(BaseCommand):
             # If all retries failed, exit early
             if attempt == MAX_RETRIES:
                 self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated movies. -- Task ending.\n"))
-                continue # Skip this page abd go to the next.
+                continue # Skip this page and go to the next.
 
             # --- Fetch and process each movie from the selected endpoint ----
             self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
@@ -147,50 +146,8 @@ class Command(BaseCommand):
         self.stdout.write(f"-----") # debug print
 
 
-# ------ To import a single movie ---- NOT in use.
-
-# def import_movie(request, tmdb_id):
-#     '''Import a movie in making a request to TMDB api and store it in the database'''
-#     print(f"request importing a new movie")
-#     try:
-#         if request.method == 'GET' and request.user.is_superuser:
-
-#             try:
-#                 # check if the movie is already in our database
-#                 exisiting_movie = Movie.objects.get(tmdb_id=tmdb_id)
-#                 print(f"Movie already exists: movie {exisiting_movie.id}: {exisiting_movie.title}")
-#                 return JsonResponse({
-#                     'status': 'already exists in DB', 
-#                     'tmdb_id': exisiting_movie.tmdb_id, 
-#                     'movie_id': exisiting_movie.id,
-#                     'title': exisiting_movie.title
-#                 }, status=200)
-            
-#             # if the movie is not in the DB then we try to fetch it.
-#             except Movie.DoesNotExist:
-#                 result = add_movies_from_tmdb(tmdb_id)
-
 #                 # Determine appropriate HTTP status code
 #                 status_code = {
 #                     'added': 201,
 #                     'exists': 200,
 #                     'error': 404
-#                 }.get(result['status'], 400)
-
-#                 return JsonResponse(result, status=status_code)
-
-#         else:
-#             print(f"Unauthorized access to 'import_movie' page.")
-#             messages.error(request, "You are not authorized to import movies")
-#             return redirect('main:home')
-        
-#     except Exception as e:
-#         messages.error(request, "the page seem to experience some issue, please try again later")
-#         print(f" error :{e}")
-#         # return JsonResponse()
-#         return JsonResponse({
-#             'status': 'error',
-#             'message': 'An unexpected error occurred'
-#         }, status=500)
-
-

@@ -1,5 +1,6 @@
 from .base_client import TMDBClient
 import time
+import random
 import requests
 
 def get_movie_data(tmdb_id: int):
@@ -30,18 +31,17 @@ def get_movie_data(tmdb_id: int):
             # if Url response fails, it try agains and to catch exception why it failed 
             print(f"Response api call failed. Status:{response.status_code}")
 
+        except requests.exceptions.RequestException as e:
+            print(f"Request exception Error getting serie details: {e}")
+            return None
         except Exception as e:
             print(f"Fail, an error occured getting the movie data. Reason: {e}")
             print("---------")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"Request exception Error getting serie details: {e}")
             return None
         
         attempt += 1
         print(f"Retrying... Attempt {attempt}/{MAX_RETRIES}")
         time.sleep(attempt*3)
-
 
 
 def get_movie_list(page: int, endpoint: str):
@@ -55,7 +55,12 @@ def get_movie_list(page: int, endpoint: str):
 
     # add date at the end of url for the updated movies call.
     #  Date should only be for the update not for other endpoints.. need to work with that constraint
-    url = f"{tmdb_client.BASE_URL}/movie/{endpoint}?page={page}" # &start_date=2025-03-22&end_date=2025-03-23
+    if endpoint == "discover":
+        sort_by = random.choice(["popularity.desc", "popularity.asc","release_date.desc", "vote_count.desc"])
+        url = f"{tmdb_client.BASE_URL}/discover/movie?include_adult=false&language=en-US&page={page}&sort_by={sort_by}"
+    else:
+        url = f"{tmdb_client.BASE_URL}/movie/{endpoint}?language=en-US&page={page}" # &start_date=2025-03-22&end_date=2025-03-23
+
     headers = tmdb_client.HEADERS
 
     # Retry logic

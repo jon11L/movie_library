@@ -55,7 +55,7 @@ class Command(BaseCommand):
         skipped_count = 0  # Tracks how many series already existed
         created = 0
 
-        endpoint = ("popular", "top_rated", "on_the_air")
+        endpoint = ("popular", "top_rated", "on_the_air", "discover", "airing_today")
         selected_endpoint = random.choice(endpoint)
         # Define the range of pages to fetch
         # set on max available pages with the corresponding query of TMDB Api.
@@ -69,7 +69,7 @@ class Command(BaseCommand):
         # ------TRIAL/ once every 10 days ensure it takes from page 1&2 to get latest content ------
         today = datetime.date.today()
         # if today.day == 1 or today.day == 10 or today.day == 29:
-        if today.day in [1, 10, 20, 29]:
+        if today.day in [1, 10, 20, 25]:
             page = 1
         else:
             page = random.randint(1, max_pages) # Randomly select a page
