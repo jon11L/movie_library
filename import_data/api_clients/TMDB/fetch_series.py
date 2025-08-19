@@ -1,5 +1,6 @@
 from .base_client import TMDBClient
 
+import random
 import requests
 import time
 
@@ -8,7 +9,13 @@ def get_series_list(page, endpoint):
     Fetch paginated list of popular series
     """
     tmdb_client = TMDBClient()
-    url = f"{tmdb_client.BASE_URL}/tv/{endpoint}?page={page}" # &start_date=2025-03-22&end_date=2025-03-23
+    
+    if endpoint == "discover":
+        sort_by = random.choice(["popularity.desc", "popularity.asc","release_date.desc", "vote_count.desc"])
+        url =f"{tmdb_client.BASE_URL}/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en-US&page={page}&sort_by={sort_by}"
+    else:
+        url = f"{tmdb_client.BASE_URL}/tv/{endpoint}?page={page}" # &start_date=2025-03-22&end_date=2025-03-23
+    
     headers = tmdb_client.HEADERS
     print(f"Url called: {url}\n")  # debug print
 
