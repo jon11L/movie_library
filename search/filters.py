@@ -5,6 +5,8 @@ from django import forms
 from movie.models import Movie
 from serie.models import Serie
 
+import datetime
+
 class SharedMediaFilter(django_filters.FilterSet):
     '''Filter through both Movies and Series'''
     CONTENT_CHOICES = (
@@ -14,14 +16,53 @@ class SharedMediaFilter(django_filters.FilterSet):
         )
     
     GENRE_CHOICES = (
-        ('action', 'Action'), ('adventure', 'Adventure'), ('animation', 'Animation'),
-        ('biography', 'Biography'), ('comedy', 'Comedy'), ('crime', 'Crime'),
-        ('documentary', 'Documentary'), ('drama', 'Drama'), ('family', 'Family'),
-        ('fantasy', 'Fantasy'), ('history', 'History'), ('horror', 'Horror'),
-        ('music', 'Music'), ('musical', 'Musical'), ('mystery', 'Mystery'),
-        ("reality", "Reality Show"), ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
-        ('short', 'Short'), ("soap", "Soap"), ('sport', 'Sport'), ('superhero', 'Superhero'),
-        ("talk", "Talk"), ('thriller', 'Thriller'), ('tv movie', 'TV Movie'), ('war', 'War'), ('western', 'Western')
+        ('action', 'Action'), ('adventure', 'Adventure'),
+        ('animation', 'Animation'), ('biography', 'Biography'),
+        ('comedy', 'Comedy'), ('crime', 'Crime'),
+        ('documentary', 'Documentary'), ('drama', 'Drama'),
+        ('family', 'Family'), ('fantasy', 'Fantasy'),
+        ('history', 'History'), ('horror', 'Horror'),
+        ('music', 'Music'), ('mystery', 'Mystery'),
+        ("news", "News"), ("reality", "Reality Show"),
+        ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
+        ("soap", "Soap"), ("talk", "Talk"),
+        ('thriller', 'Thriller'), ('tv movie', 'TV Movie'),
+        ('war', 'War'), ('western', 'Western')
+    )
+# ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
+
+    LANGUAGE_CHOICES = (
+        ("da", 'Danish'), ("ar", 'Arabic'),
+        ('bg', 'Bulgarian'), ('cs', 'Czech'),
+        ('da', 'Danish'), ('de', 'German'),
+        ('en', 'English'), ('fi', 'Finnish'),
+        ('fr', 'French'), ('el', 'Greek'),
+        ('nl', 'Dutch'), ('pl', 'Polish'),
+        ('he', 'Hebrew'), ('hi', 'Hindi'),
+        ('hu', 'Hungarian'), ('id', 'Indonesian'),
+        ('it', 'Italian'), ('ja', 'Japanese'),
+        ('no', 'Norwegian'), ('sv', 'Swedish'),
+        ('pt', 'Portuguese'), ('es', 'Spanish'),
+        ('ro', 'Romanian'), ('ru', 'Russian'),
+        ('ko', 'Korean'), ('th', 'Thai'),
+        ('tr', 'Turkish'), ('uk', 'Ukrainian'),
+        ('vi', 'Vietnamese'), ('zh', 'Chinese')
+    )
+
+    curr_year = datetime.date.today().year
+
+
+    language = django_filters.ChoiceFilter(
+        choices=LANGUAGE_CHOICES,
+        field_name='original_language',
+        lookup_expr='exact',
+        empty_label="select a language",   
+        initial='all',
+        label='Language',
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'placeholder': 'Select content type...',
+            })
     )
 
     content_type = django_filters.ChoiceFilter(
@@ -53,6 +94,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         widget=forms.SelectMultiple(attrs={
             'class': 'form-control',
             'placeholder': 'Select a genre...',
+            'style': 'height: 150px;',
             })
         )
 
@@ -75,6 +117,7 @@ class SharedMediaFilter(django_filters.FilterSet):
             'class': 'form-control',
             'placeholder': 'Rating from..  eg: 2',
             'type': 'number',
+            'min': '0',
             })
     )
 
@@ -86,6 +129,7 @@ class SharedMediaFilter(django_filters.FilterSet):
             'class': 'form-control',
             'placeholder': 'Rating to..  eg: 7.5',
             'type': 'number',
+            'max': '10',
             })
     )
 
@@ -95,7 +139,11 @@ class SharedMediaFilter(django_filters.FilterSet):
         label='Release Date',
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Type in an exact year',
+            'placeholder': 'Type an exact year',
+            'type': 'number',
+            'min': '1900',  # set to start search from 1900
+            'max': f'{curr_year}', # Max set to current year
+            'style': 'width: 75%;',
             })
     )
 
@@ -103,8 +151,11 @@ class SharedMediaFilter(django_filters.FilterSet):
         method='check_release_date',
         lookup_expr='year__gte',
         widget=forms.DateInput(attrs={
-            'class': 'form-control', 'placeholder':'Enter a starting range..',
+            'class': 'form-control', 'placeholder':'Starting range..',
             'type': 'number',
+            'min': '1900',
+            'style': 'width: 75%;',
+
             })
         )
 
@@ -112,8 +163,10 @@ class SharedMediaFilter(django_filters.FilterSet):
         method='check_release_date',
         lookup_expr='year__lte',
         widget=forms.NumberInput(attrs={
-            'class': 'form-control', 'placeholder':'Enter a ending range...',
+            'class': 'form-control', 'placeholder':'Ending range...',
             'type': 'number',
+            'max': f'{curr_year}',
+            'style': 'width: 75%;',
             })
         )
     
@@ -122,18 +175,17 @@ class SharedMediaFilter(django_filters.FilterSet):
 # filter by length
 # check if movies are less than 30min, 90min() or more than 120min, in between medium 
 # find movies/series by the Cast/actors/directors/productions
-# filter by original_language
 
     # Will include filter for casting, Also Director and Writer at the moment
-    casting = django_filters.CharFilter(
-        field_name="casting__name",
-        lookup_expr="icontains",
-        label="Casting",
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Search by casting name...',
-        })
-    )
+    # casting = django_filters.CharFilter(
+    #     field_name="casting__name",
+    #     lookup_expr="icontains",
+    #     label="Casting",
+    #     widget=forms.TextInput(attrs={
+    #         'class': 'form-control',
+    #         'placeholder': 'Search by casting name...',
+    #     })
+    # )
 
 # --------- End of ongoing work -------
 
@@ -230,8 +282,5 @@ class SharedMediaFilter(django_filters.FilterSet):
 
 
     class Meta:
-        model = Serie  # Default model, will be overridden when creating filter instances in views.py
-        fields = ['title', 'vote_average', 'genre', 'release_date']
-
-
-
+        model = Movie  # Default model, will be overridden when creating filter instances in views.py
+        fields = ['title', 'vote_average', 'genre', 'release_date', 'original_language']
