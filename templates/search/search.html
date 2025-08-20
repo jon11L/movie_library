@@ -22,10 +22,10 @@
                     </div>
 
                     <!------------------ Search Filter  form  ----------------->
-                    <div class="card-body" style="margin-top: 25px;">
+                    <div class="card-body" style="margin-top: 1em;">
                         <form method="get" action="{% url 'search:search' %}">
                             <!-- {% csrf_token %} -->
-                            <div class="" style="display: flex; justify-content: center;">
+                            <div class="d-flex" style="justify-content: center;">
 
                                 <div class="row">
                                     <div class="col">
@@ -34,7 +34,7 @@
                                             {{ filter.form.content_type }}
                                         </div>
 
-                                        <div class="form-group me-3" style="margin-top: 1em;">
+                                        <div class="form-group me-3" style="margin-top: 1em;" id="genre">
                                             <label for="genre">Genre:</label>
                                             {{ filter.form.genre }}
                                         </div>
@@ -59,42 +59,49 @@
                                 </div>
                             
                                 <!-- Date fields / option between exact and range filter -->
-                                <div class="form-group me-2" id="exactDateField">
-                                    <label for="release_date">Filter by Date:</label>
-                                    {{ filter.form.release_date }}
-                                </div>
-                            
-                                <div id="rangeDateField" style="display: none;">
-                                    <div class="form-group mb-2 me-2">
-                                        <label for="release_date_from">year From:</label>
-                                        {{ filter.form.release_date_gte }}
+                                <div class="form-group" id="dateFieldsContainer">
+
+                                    <div class="form-group me-2" id="exactDateField">
+                                        <label for="release_date">Date:</label>
+                                        {{ filter.form.release_date }}
                                     </div>
                                 
-                                    <div class="form-group me-2">
-                                        <label for="release_date_to">year To:</label>
-                                        {{ filter.form.release_date_lte }}
+                                    <div id="rangeDateField" style="display: none;">
+                                        <div class="form-group mb-2 me-2">
+                                            <label for="release_date_from">year From:</label>
+                                            {{ filter.form.release_date_gte }}
+                                        </div>
+                                    
+                                        <div class="form-group me-2">
+                                            <label for="release_date_to">year To:</label>
+                                            {{ filter.form.release_date_lte }}
+                                        </div>
                                     </div>
-                                </div>
                             
-                                <!-- toggle the release date field between Excact or Rangefilter -->
-                                <div class="form-group">
+                                    <!-- toggle the release date field between Exact or Range-filter -->
                                     <div class="form-check mb-2">
                                         <input class="form-check-input" type="checkbox" id="toggleDateRange">
                                         <label class="form-check-label" for="toggleDateRange">
-                                            <small>Click to use a range instead of an exact year</small>
+                                            <small>Use range period instead</small>
                                         </label>
                                     </div>
+
                                 </div>
                             
-                            </div>
-                                
-                                <div style="display: flex; justify-content: center; margin-top: 20px;">
-                                    <button type="submit" class="btn btn-secondary" style="margin-top: 40px; margin-right: 35px;">
-                                        <a class="nav-link active" aria-current="page" href="{% url 'search:search' %}">Reset filters</a>
-                                    </button>
-                                    
-                                    <button type="submit" class="btn btn-secondary" style="margin-top: 40px; margin-right: 35px; background-color: darkcyan;">Apply filters</button>
+                                <div class="form-group mb-2" id="language">
+                                    <label for="language">Language:</label>
+                                    {{ filter.form.language }}
                                 </div>
+                                    
+                            </div>
+
+                            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                                <button type="submit" class="btn btn-secondary" style="margin: 0 35px;">
+                                    <a class="nav-link active" aria-current="page" href="{% url 'search:search' %}">Reset filters</a>
+                                </button>
+                                
+                                <button type="submit" class="btn btn-secondary" style="margin: 0 35px; background-color: darkcyan;">Apply filters</button>
+                            </div>
                         
                         </form>
                     </div>
