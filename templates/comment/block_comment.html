@@ -15,7 +15,7 @@
             </div>
             <!-- Created or edited  -->
             <div class="d-flex created-at" style="font-size: 14px;">
-                {% if comment.created_at != comment.updated_at %}
+                {% if comment.created_at|date:"Y-m-d H:i:s" != comment.updated_at|date:"Y-m-d H:i:s" %}
                 <p style="margin-right: 8px;">(Edited) </p>
                 {% endif %}
                 <p class="text-muted"> {{ comment.created_at }}</p>
@@ -39,7 +39,7 @@
             <div class="comment-buttons" style="margin-top: auto;">
                 <div class="d-flex" >
                     <!--  User can only Edit their Comment once -->
-                    {% if comment.user.id == request.user.id and comment.created_at == comment.updated_at %}
+                    {% if comment.user.id == request.user.id and comment.created_at|date:"Y-m-d H:i:s" == comment.updated_at|date:"Y-m-d H:i:s" %}
                     <div class="edit-comment-button">
                         <button 
                             class="edit-comment-form-btn" 

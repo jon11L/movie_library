@@ -14,7 +14,7 @@ from serie.models import Serie
 
 def create_comment(request):
     '''
-    Views to create/post a new comment.
+    Views to create/post a new comment.\n
     This will be handle with Fetch api from Js between the front and back-end
     to display the new post without page reload.
     '''
@@ -44,13 +44,14 @@ def create_comment(request):
                 comment.body = form.cleaned_data['body']
                 comment.user = request.user
                 print(f"form contains:")
-                print(f"{comment.body}, -contentT: {comment.content_type} objectId: {comment.object_id} is type of {type(comment.object_id)}")
+                print(f"{comment.body}\n-contentType: '{comment.content_type}' -- objectId: '{comment.object_id}''")
                 comment.save() # save the comment to the database
 
                 context = {
                     'comment': comment,
                 }
-
+                # Render the comment block to be returned as HTML to be insterted with Js/AJAX on the current page
+                # This will be used to display the new comment without reloading the page
                 comment_html = render_to_string('comment/block_comment.html',
                                                 context=context, request=request
                                                 )
@@ -75,7 +76,6 @@ def create_comment(request):
 
     else:
         return JsonResponse({'success': False, 'error': 'invalid request!'}, status=400)
-
 
 
 # Create your views here.
@@ -108,12 +108,12 @@ def delete_comment(request, pk):
 
 
 
-
-
 def edit_comment(request, pk):
-    '''edit a comment from the database'''
-    # display the Comment form if user is connected
-    # Need to add a check that only current user can visit their own Like page.
+    '''edit a comment from the database
+    ### display the Comment form if user is authenticated and the comment belongs to them
+     -  The user can only edit their comment once, the edit button will not longer be displayed if the comment was already edited.
+     - Aswell as a (Edited) tag will be displayed next to the comment creation date.
+    '''
     try:
         # comment = Comment.objects.get(pk=pk)
         comment = get_object_or_404(Comment.objects, pk=pk)
@@ -121,7 +121,6 @@ def edit_comment(request, pk):
     except Comment.DoesNotExist:
         print(f"Comment with id {pk} does not exist.")
         return JsonResponse({'success': False, 'message': f'Comment with id {pk} does not exist.'}, status=404)
-
 
     # print(f"request.user: {request.user}")
     print(f"comment to edit: {comment}")
@@ -132,7 +131,7 @@ def edit_comment(request, pk):
         return redirect(to='main:home')
     
     # if user somehow tries to edit a comment that was already edited, redirect to the detail page of the movie or serie that the comment belongs to
-    elif request.user.is_authenticated and comment.user == request.user and comment.created_at != comment.updated_at:
+    elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") != comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
         print(f"\n* Unauthorised acces: User {request.user} tried to edit a  Comment more than once. Forbidden *\n")
         messages.error(request, ("You are not authorized to acces this page. This comment was already edited."))
         if comment.content_type == "movie":
@@ -144,8 +143,7 @@ def edit_comment(request, pk):
             slug = serie.slug
             return redirect('serie:detail', slug=slug)
 
-
-    elif request.user.is_authenticated and comment.user == request.user and comment.created_at == comment.updated_at:
+    elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") == comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
         try:
             print(f"comment to edit: {comment}")
             # create a comment form  with the existing comment body instance
