@@ -111,24 +111,32 @@ def home(request):
 
         if request.user.is_authenticated:
             # --------- Get the user's watchlist content (movies, series)  -----------
-            user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id,
-                                                movie__isnull=False
-                                                ).values_list('movie_id', flat=True)
+            user_watchlist_movies = set(
+                WatchList.objects.filter(
+                    user=request.user.id,
+                    movie__isnull=False
+                    ).values_list('movie_id', flat=True)
+            )
 
-            user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id,
-                                                serie__isnull=False
-                                                ).values_list('serie_id', flat=True)
+            user_watchlist_series = set(
+                WatchList.objects.filter(
+                    user=request.user.id,
+                    serie__isnull=False
+                    ).values_list('serie_id', flat=True)
+            )
 
             # -------- Get the user's like content (movies, series)  ----------
-            user_liked_movies = Like.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+            user_liked_movies = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type='movie'
+                    ).values_list('object_id', flat=True)
+            )
 
-            user_liked_series = Like.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
+            user_liked_series = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type='serie'
+                    ).values_list('object_id', flat=True)
+            )
 
 
             user = User.objects.get(id=request.user.id)
@@ -232,13 +240,17 @@ def show_content(request, content):
         print(f"Number of pages: {page_object}") # debug print
 
         # Get the user's like content (movies, series)
-        user_liked_movies = Like.objects.filter(
-                                            user=request.user.id, content_type='movie'
-                                            ).values_list('object_id', flat=True)
+        user_liked_movies = set(
+            Like.objects.filter(
+                user=request.user.id, content_type='movie'
+                ).values_list('object_id', flat=True)
+        )
 
-        user_liked_series = Like.objects.filter(
-                                            user=request.user.id, content_type='serie'
-                                            ).values_list('object_id', flat=True)
+        user_liked_series = set(
+            Like.objects.filter(
+                user=request.user.id, content_type='serie'
+                ).values_list('object_id', flat=True)
+        )
         
         # Get the user's watchlist content (movies, series)
         user_watchlist_movies = set(

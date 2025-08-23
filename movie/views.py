@@ -21,23 +21,30 @@ def list_movie(request):
     try:
         if Movie:
             # paginator implementation
-            paginator = Paginator(Movie.objects.all().order_by('-id'), 24)
+            if request.user.is_superuser:
+                paginator = Paginator(Movie.objects.all().order_by('-id'), 24)
+            else:
+                paginator = Paginator(Movie.objects.all().order_by('-popularity'), 24)
+                
             # Get the current page number from the GET request
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)
 
             # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = WatchList.objects.filter(
-                                                user=request.user.id, 
-                                                movie__isnull=False
-                                                ).values_list('movie_id', flat=True)
+            user_watchlist_movies = set(
+                WatchList.objects.filter(
+                    user=request.user.id, 
+                    movie__isnull=False
+                    ).values_list('movie_id', flat=True)
+            )
 
             # Get the user's like content
-            user_liked_movies = Like.objects.filter(
-                                            user=request.user.id,
-                                            content_type='movie'
-                                            ).values_list('object_id', flat=True)
-            
+            user_liked_movies = set(
+                Like.objects.filter(
+                    user=request.user.id,
+                    content_type='movie'
+                    ).values_list('object_id', flat=True)
+            )
 
             context = {
                 'movie_list' : movie_list,
@@ -57,7 +64,6 @@ def list_movie(request):
         return redirect('main:home')
 
 
-
 def movie_overview(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.
         will pass on with the necessary information such as 'Like' 
@@ -69,17 +75,21 @@ def movie_overview(request, slug):
             movie = get_object_or_404(Movie, slug=slug)
 
             # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = WatchList.objects.filter(
-                                                    user=request.user.id,
-                                                    movie__isnull=False
-                                                    ).values_list('movie_id', flat=True)
+            user_watchlist_movies = set(
+                WatchList.objects.filter(
+                    user=request.user.id,
+                    movie__isnull=False
+                    ).values_list('movie_id', flat=True)
+            )
 
             # Check if user liked the movie
-            user_liked_movie = Like.objects.filter(
-                                            user=request.user.id,
-                                            content_type='movie',
-                                            object_id=movie.pk
-                                            ).values_list('object_id', flat=True)
+            user_liked_movie = set(
+                Like.objects.filter(
+                    user=request.user.id,
+                    content_type='movie',
+                    object_id=movie.pk
+                    ).values_list('object_id', flat=True)
+            )
 
             print(f"user_liked :{user_liked_movie}") # debug print
 
@@ -115,7 +125,6 @@ def movie_overview(request, slug):
                     'comments': comments
                     }
                 return render(request,'movie/detail_movie.html', context=context)
-
         
         else:
             messages.error(request, "No Movie found in the database with this title")

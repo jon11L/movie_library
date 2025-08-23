@@ -10,14 +10,14 @@ class Movie(BaseModel):
     # Core Movie Details
     original_title = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
+    genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings
     release_date = models.DateField(blank=True, null=True)
     origin_country = models.JSONField(blank=True, null=True)
     original_language = models.CharField(max_length=50, blank=True, null=True)  # Movie's original language
     spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spokent_languages'] "english_name"
-    description = models.TextField(blank=True, null=True)
     length = models.IntegerField(blank=True, null=True) # will display the Movie time in minutes
-    genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings
-    tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
     released = models.BooleanField(blank=True, null=True)
     # Cast and Prod
     production = models.JSONField(blank=True, null=True)
@@ -56,7 +56,7 @@ class Movie(BaseModel):
         only comma-separated string.
         '''
         if self.genre:
-            genre = ', '.join(self.genre)
+            genre = ' - '.join(self.genre)
             return genre
         return 'N/a'
 
@@ -65,7 +65,7 @@ class Movie(BaseModel):
         only comma-separated string.
         '''
         if self.casting:
-            casting = ', '.join([f"{cast['name']} as {cast['role']}" for cast in self.casting])
+            casting = ' || '.join([f"{cast['name']} as {cast['role']}" for cast in self.casting])
             return casting
         return 'N/a'
 

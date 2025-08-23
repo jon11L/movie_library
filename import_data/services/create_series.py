@@ -67,6 +67,7 @@ def save_or_update_series(tmdb_id):
                     "last_air_date": serie_data.get('last_air_date') or None,
                     "vote_average": serie_data.get('vote_average'),
                     "vote_count": serie_data.get('vote_count'),
+                    "popularity" : serie_data.get("popularity"),
                     "image_poster": serie_data.get('poster_path'),
                     "banner_poster": serie_data.get('backdrop_path'),
                     "status": serie_data.get('status'),
