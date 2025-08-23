@@ -12,21 +12,22 @@ class Serie(BaseModel):
     original_title = models.CharField(max_length=255, blank=True, null=True) # if title not english get from: ["original_name"]
     title = models.CharField(max_length=255) # ["name"]
     description = models.TextField(blank=True, null=True)
-    genre = models.JSONField(blank=True, null=True)
-    origin_country = models.JSONField(blank=True, null=True) # ["origin_country", []]
-    original_language = models.CharField(max_length=50, blank=True, null=True)  # Movie's original language
-    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spoken_languages', []] "english_name"
     tagline = models.TextField(blank=True, null=True) # ["tagline"]
+    genre = models.JSONField(blank=True, null=True)
+    first_air_date = models.DateField(blank=True, null=True) # ["first_air_date"]
+    last_air_date = models.DateField(blank=True, null=True) # ["last_air_date"]
+    origin_country = models.JSONField(blank=True, null=True) # ["origin_country", []]
+    original_language = models.CharField(max_length=50, blank=True, null=True)  # languages
+    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spoken_languages', []] "english_name"
     # Cast and Prod
     production = models.JSONField(blank=True, null=True) # ["production_companies"]
     created_by = models.JSONField(blank=True, null=True) # ["created_by"]
-    first_air_date = models.DateField(blank=True, null=True) # ["first_air_date"]
-    last_air_date = models.DateField(blank=True, null=True) # ["last_air_date"]
     # casting = models.JSONField(blank=True, null=True) # ["credits", {}] ['cast', []] as main actors  ---/ guest stars [""guest_stars""] loop through 8 or so.... make a list of dict with key, main and guest star (inside each names and roles)
 
     # Metrics
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
     vote_count = models.IntegerField(blank=True, null=True)
+    popularity = models.FloatField(blank=True, null=True)  # for TMDB popularity
     # images
     image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
     banner_poster = models.URLField(blank=True, null=True) # ["backdrop_path"]
@@ -46,7 +47,7 @@ class Serie(BaseModel):
         only comma-separated string.
         '''
         if self.genre:
-            genre = ', '.join(self.genre)
+            genre = ' - '.join(self.genre)
             return genre
         else:
             return None
@@ -59,7 +60,6 @@ class Serie(BaseModel):
             production = ', '.join(self.production)
             return production 
         return 'N/a' 
-    
 
     def render_created_by(self):
         '''return the Movie.production attribute in without quotes and [],

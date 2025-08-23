@@ -62,7 +62,6 @@
                         <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% endif %}
                     </div>
-                    <br>
 
                     <div class="card-body">
                         <div style="text-align: center;">
@@ -79,12 +78,12 @@
                             <!-- For dev purpose -->
                             {% if request.user.is_superuser %}
                             <div>
-                                <small>id: {{ movie.pk }} </small>
+                                <strong>id: {{ movie.pk }} </strong>
                                 
                                 {% if movie.created_at|date:"Y-m-d H" == movie.updated_at|date:"Y-m-d H" %}
-                                <small> -- (Not updated)</small>
+                                <strong> -- (Not updated)</strong>
                                 {% elif movie.created_at != movie.updated_at %}
-                                <small> -- (last updated on {{ movie.updated_at }})</small>
+                                <strong> -- (last updated on {{ movie.updated_at }})</strong>
                                 {% endif %}
                             </div>
                             {% endif %}
@@ -93,25 +92,59 @@
                         </div>   
                         <br>
 
-                        <div>
+                        <div style="text-align:  center; margin: auto;">
                             {% if movie.description %}
-                            <p class="card-text"><strong>Description:</strong> {{ movie.description }}</p>
+                            <p class="card-text" style="width: 10%; margin: auto;"><strong>Description:</strong></p>
+                            <p style="width: 75%; margin: auto;">{{ movie.description }}</p>
                             {% else %}
                             <p class="card-text"><strong>Description:</strong> No description available.</p>
                             {% endif %}
-                            
-                            <br>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Released:</strong> {{ movie.render_release_date }}</li>
-                                <li class="list-group-item"><strong>Genre:</strong>  {{ movie.render_genre }}</li>
-                                <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li>
-                                <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li>
-                                <li class="list-group-item"><strong>Production:</strong> {{ movie.render_production }}</li>
-                                <li class="list-group-item"><strong>director:</strong> {{ movie.render_director }}</li>
-                                <li class="list-group-item"><strong>Writer:</strong> {{ movie.render_writer }}</li>
-                                <li class="list-group-item"><strong>Origin country:</strong> {{ movie.render_origin_country }}</li>
-                                <li class="list-group-item"><strong>Spoken languages:</strong> {{ movie.render_spoken_languages }}</li>
-                            </ul>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6" style="margin-top: 2em;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <div class="d-flex" style="justify-content:space-around;">
+                                            <div>
+                                                <strong>Released:</strong> {{ movie.render_release_date }}
+                                            </div>
+                                            <div>
+                                                <strong>Length:</strong> {{ movie.render_length }}
+                                            </div>
+                                        </div>
+                                        </li>
+                                    <li class="list-group-item">
+                                        <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
+                                        <p style="padding: 0; margin: 0; text-align: center;">
+                                            {{ movie.render_genre }}
+                                        </p>
+                                    </li>
+                                    <!-- <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li> -->
+                                    <!-- <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li> -->
+                                    <li class="list-group-item"><p style="text-align: center; width: 40%;"><strong>Casting:</strong></p>
+                                        
+                                        <!-- <p> -->
+                                            {% if movie.casting %}
+                                            {% for cast in movie.casting %}
+                                            <p style="margin: 0 0 0 2em;  padding: 0;">    {{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                            {% endfor %}
+                                            {% endif %}
+                                            
+                                        <!-- </p> -->
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                            <div class="col-md-6" style="margin-top: 2em;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>Production:</strong> {{ movie.render_production }}</li>
+                                    <li class="list-group-item"><strong>director:</strong> {{ movie.render_director }}</li>
+                                    <li class="list-group-item"><strong>Writer:</strong> {{ movie.render_writer }}</li>
+                                    <li class="list-group-item"><strong>Origin country:</strong> {{ movie.render_origin_country }}</li>
+                                    <li class="list-group-item"><strong>Spoken languages:</strong> {{ movie.render_spoken_languages }}</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="display-trailer" style="display: flex; flex-wrap: wrap;">

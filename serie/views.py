@@ -17,6 +17,7 @@ def list_serie(request):
     try:
         if Serie:
             # paginator implementation
+            # p = Paginator(Serie.objects.all().order_by('-popularity'), 24)
             p = Paginator(Serie.objects.all().order_by('-id'), 24)
             # Get the current page number from the GET request
             page = request.GET.get('page') 
@@ -51,7 +52,6 @@ def list_serie(request):
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
         return redirect('main:home')
-
 
 
 def serie_overview(request, slug):
