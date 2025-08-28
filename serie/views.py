@@ -17,11 +17,14 @@ def list_serie(request):
     try:
         if Serie:
             # paginator implementation
-            # p = Paginator(Serie.objects.all().order_by('-popularity'), 24)
-            p = Paginator(Serie.objects.all().order_by('-id'), 24)
+            if request.user.is_superuser:
+                paginator = Paginator(Serie.objects.all().order_by('-id'), 24)
+            else:
+                paginator = Paginator(Serie.objects.all().order_by('-popularity'), 24)
+
             # Get the current page number from the GET request
             page = request.GET.get('page') 
-            serie_list = p.get_page(page)
+            serie_list = paginator.get_page(page)
 
             # Get the user's watchlist content (series only here)
             user_watchlist_series = WatchList.objects.filter(
@@ -58,9 +61,9 @@ def serie_overview(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
     try:
         if Serie:
-        # retrieve the specified serie requested by user
+            # retrieve the specified serie requested by user
+            # Get the seasons and episodes related to the serie
             serie = get_object_or_404(Serie, slug=slug)
-            # Get the seasons and episodes
             seasons = serie.seasons.all().prefetch_related("episodes")
             print(f"serie {serie.title} contains: {len(seasons)} seasons")
 
