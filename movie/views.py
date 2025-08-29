@@ -11,7 +11,7 @@ from comment.forms import CommentForm
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
 
-def list_movie(request):
+def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
@@ -64,14 +64,13 @@ def list_movie(request):
         return redirect('main:home')
 
 
-def movie_overview(request, slug):
-    ''' get the movie object from the database using the movie_id parameter in the URL request.
-        will pass on with the necessary information such as 'Like' 
+def movie_detail(request, slug):
+    ''' get the movie object from the database using the movie_id parameter in the URL request.\n
+        will also pass on with the necessary information such as 'Like' or 'WatchList' 
     '''
     try:
         if Movie:
         # retrieve the specified movie requested by user
-            # movie = Movie.objects.get(slug=slug)
             movie = get_object_or_404(Movie, slug=slug)
 
             # Get the user's watchlist content (movies, series)
