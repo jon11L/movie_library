@@ -6,12 +6,23 @@ from .models import Serie, Season, Episode
 # admin.site.register(Season)
 # admin.site.register(Episode)
 
+class SeasonInline(admin.StackedInline):
+    model = Season
 
 
 @admin.register(Serie)
 class SerieAdmin(admin.ModelAdmin):
-    list_display = ("title", "slug", "created_at", "updated_at")
+    list_display = ("pk", "title", "slug", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("title",)}
+    search_fields = ("title", "original_title", "tmdb_id")
+    list_filter = ("created_at", "updated_at", "first_air_date")
+
+    inlines = [SeasonInline]
+
+
+admin.site.unregister(Serie)
+# # re register the USer edited for admin display
+admin.site.register(Serie, SerieAdmin)
 
 @admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):

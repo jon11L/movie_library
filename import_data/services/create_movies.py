@@ -1,18 +1,24 @@
 from datetime import datetime
 import traceback
+import random
 
-from import_data.api_clients.TMDB.fetch_movies import get_movie_data
+from import_data.api_clients.TMDB.fetch_data import get_api_data
 from movie.models import Movie
 
 
 def save_or_update_movie(tmdb_id: int):
     """
-    Fetches a single movie and it'S content datas from TMDB API 
-    Check if the movie already exists otherwise saves it in the database.
+    - Fetches a single movie and retrive it's corresponding  datas from TMDB API\n
+    - Then create or update the movie and records it in the database.
     """
     try:
         # search for the movie
-        movie_data = get_movie_data(tmdb_id)
+        # movie_data = get_movie_data(tmdb_id)
+
+        movie_data = get_api_data(
+            t_type = 'movie_detail',
+            tmdb_id=tmdb_id
+            )
 
         # check if te API was called correctly and returned the datas
         if not movie_data:
@@ -43,17 +49,20 @@ def save_or_update_movie(tmdb_id: int):
         # Top 10 cast members (takes the name and role)
         cast = [
             {"name": member["name"], "role": member["character"]}
-            for member in movie_credit.get("cast", [])[:10]
+            for member in movie_credit.get("cast", [])
         ]
 
         # Extract trailer from the combined response
         trailer_data = movie_data.get("videos", {}).get("results", [])
 
-        for trailer in trailer_data[:4]:
+        for trailer in trailer_data:
             if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
                 youtube_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
                 )
+        youtube_trailer = random.sample(
+            youtube_trailer, min(len(youtube_trailer), 4)
+            )  # Select up to 4 random trailers
 
         languages = movie_data.get("spoken_languages", [])
         spoken_languages = [language["english_name"] for language in languages]
@@ -84,7 +93,7 @@ def save_or_update_movie(tmdb_id: int):
                     "production" : production, # List of production companies
                     "director" : director,
                     "writer" : writers,
-                    "casting" : cast,
+                    "casting" : cast[:12],
                     "length" : movie_data.get("runtime"),
                     "vote_average" : movie_data.get("vote_average"),
                     "description" : movie_data.get("overview"),
@@ -109,5 +118,6 @@ def save_or_update_movie(tmdb_id: int):
         return (movie, created)
 
     except Exception as e:
-        print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
+        # print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
+        print(f"an error occurred while saving/updating movie: '{tmdb_id}' ", str(e))
         return None, False

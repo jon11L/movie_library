@@ -18,14 +18,6 @@ def admin_check(user):
     return user.is_superuser  # or user.is_staff for staff users
 
 
-# def sample_content(list_content):
-#     '''Takes a list sample from the queryset or list given'''
-#     if len(list_content) == 0:
-#         return []
-#     else:
-#         return random.sample(list(list_content), min(len(list_content), 6))
-
-
 def about_page(request):
     return render(request, 'main/about.html')
 
@@ -55,42 +47,55 @@ def home(request):
         week_start = today - datetime.timedelta(days=today.weekday())  # Monday of the current week
         week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
 
+        recent_movies = None
+        upcoming_movies = None
+        random_movies = None
+        ongoing_series = None
+        new_series = None
+        random_series = None
+        movies_count = None
+        series_count = None
+
         # Prepare various content lists (eg: recently released, coming soon, etc.)
         # and return a sample of it / 6 per selections.
+        if Movie.objects.exists():
+            # recently released movies (in the last 2 weeks)
+            recent_movies = Movie.objects.filter(
+                release_date__range=(fortnight_ago, yesterday), length__gte=45
+            ).order_by("?")[:6]
 
-        recently_released_movies = Movie.objects.filter(
-            release_date__range=(fortnight_ago, yesterday), length__gte=45
-        ).order_by("?")[:6]
+            # retrieve the movies coming out soon.
+            upcoming_movies = Movie.objects.filter(
+                release_date__range=(today, bi_week_later), length__gte=45
+            ).order_by("?")[:6]
 
-        upcoming_movies = Movie.objects.filter(
-            release_date__range=(today, bi_week_later), length__gte=45
-        ).order_by("?")[:6]
-        # retrieve the movies coming soon.
+            random_movies = Movie.objects.filter(length__gte=45).order_by("?")[:6]
+            print(f"- Random pick movies: {random_movies}") # debug print
 
-        random_movies = Movie.objects.filter(length__gte=45).order_by("?")[:6]
-        print(f"- Random pick movies: {random_movies}") # debug print
-
-        coming_back_series = Serie.objects.filter(
-            last_air_date__range=(fortnight_ago, week_later)
-        ).order_by("?")[:6]
-
-        upcoming_series = Serie.objects.filter(
-            first_air_date__range=(fortnight_ago, bi_week_later)
-        ).order_by("?")[:6]
-
-        random_series = Serie.objects.all().order_by("?")[:6] # retrieve 6 random movies from the last 30 days
-        # print(f"- Random pick series: {random_series}\n")
-
-        # display the amount of Movies & Series available from the database
+        # display the amount of Movies available from the database
         movies_count = Movie.objects.count() 
-        series_count = Serie.objects.count() 
+
+        if Serie.objects.exists():
+            ongoing_series = Serie.objects.filter(
+                last_air_date__range=(fortnight_ago, week_later)
+            ).order_by("?")[:6]
+
+            new_series = Serie.objects.filter(
+                first_air_date__range=(fortnight_ago, bi_week_later)
+            ).order_by("?")[:6]
+
+            random_series = Serie.objects.all().order_by("?")[:6] # retrieve 6 random movies from the last 30 days
+            # print(f"- Random pick series: {random_series}\n")
+
+            # display the amount of Movies & Series available from the database
+            series_count = Serie.objects.count() 
 
         context = {
-            'recent_movies': recently_released_movies ,
+            'recent_movies': recent_movies ,
             'movies_coming_soon': upcoming_movies,
             'random_movies': random_movies,
-            'returning_series': coming_back_series,
-            'coming_up_series': upcoming_series,
+            'returning_series': ongoing_series,
+            'new_series': new_series,
             'random_series': random_series,
             'movies_count': movies_count,
             'series_count': series_count,
@@ -149,7 +154,7 @@ def home(request):
             'user_liked_series': user_liked_series,
             'user_watchlist_movies': user_watchlist_movies,
             'user_watchlist_series': user_watchlist_series,
-            'watchlist_content': watchlist_content if watchlist_content else None,
+            'watchlist_content': watchlist_content,
         }
             )
 

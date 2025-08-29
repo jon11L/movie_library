@@ -14,3 +14,5 @@ from .models import Movie
 class MovieAdmin(admin.ModelAdmin):
     list_display = ("pk", "title", "slug", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("title",)}
+    search_fields = ("title", "original_title", "tmdb_id")
+    list_filter = ("created_at", "updated_at", "release_date")
