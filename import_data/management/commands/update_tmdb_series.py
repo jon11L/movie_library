@@ -7,7 +7,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from import_data.api_clients.TMDB.fetch_series import get_series_list
+from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series
 
 # Configure Logging
@@ -47,8 +47,6 @@ class Command(BaseCommand):
         2. Loop through each serie to query their data 
         3. Update the series 
         """
-        # end_date=2025-03-26&start_date=2025-03-27
-        # example url call: https://api.themoviedb.org/3/tv/changes?page=1&start_date=2025-03-18&end_date=2025-03-19
         endpoint = "changes"
 
         MAX_RETRIES = 3
@@ -60,27 +58,32 @@ class Command(BaseCommand):
 
         while attempt < MAX_RETRIES:
             page = str(random.randint(1, 20))  # Randomly select a page
-            
+
             # calculate date up to two weeks before now for the list of updated movies
             today = datetime.datetime.now()
-            start_date = (today - datetime.timedelta(days=random.randint(2, 14)))
-            end_date = start_date + datetime.timedelta(days=1)
+            end_date = (today - datetime.timedelta(days=random.randint(2, 14)))
+            start_date = end_date - datetime.timedelta(days=1)
 
-            start_date = start_date.strftime("%Y-%m-%d")
             end_date = end_date.strftime("%Y-%m-%d")
+            start_date = start_date.strftime("%Y-%m-%d")
 
             # adding date parameters for wider choices of updated movies
-            select_date = f"end_date={start_date}&start_date={end_date}" 
+            select_date = f"end_date={end_date}&start_date={start_date}" 
             self.stdout.write(select_date)
-            page_date = page + select_date # concatenate the date to the page until finding a better solution.
-            self.stdout.write(f"-- page_date: {page_date}") # debug print
+            # page_date = page + select_date # concatenate the date to the page until finding a better solution.
+            # self.stdout.write(f"-- page_date: {page_date}") # debug print
 
             try:
                 self.stdout.write(f"Fetching series from '{endpoint}' endpoint, With page: {page}\n") # debug print
-                updated_serie_list = get_series_list(page_date, endpoint)
-                self.stdout.write(f"-- len list:{len(updated_serie_list['results'])}") # debug print
+                serie_list = get_api_data(
+                    page=page,
+                    endpoint=endpoint,
+                    t_type = 'tv',
+                    select_date=select_date
+                    # update = True
+                    )
 
-                if not updated_serie_list or "results" not in updated_serie_list:
+                if not serie_list or "results" not in serie_list:
                     self.stdout.write(self.style.ERROR(f"The query could not fetch a list of updated series, check the url.\n"))  # debug print
                     attempt += 1
                     self.stdout.write(f"Retrying... Attempt {attempt}/{MAX_RETRIES} in {attempt*3}seconds")
@@ -100,51 +103,68 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated series. -- Task ending.\n"))
             return  
 
-        # When Url return correct response and data, pass each serie in results to create new serie instance
-        r_index = random.randint(0, len(updated_serie_list['results']) - 4) # give some random to index to look through for the series. 
+        if serie_list != None:
+            results = serie_list['results']
+            self.stdout.write(f"-- len list:{len(results)}") # debug print
 
-        for tmdb_serie_id in updated_serie_list['results'][r_index:r_index+4]:
-            imported_count += 1
+            # When Url return correct response and data, pass each serie in results to create new serie instance
+            r_index = random.randint(0, len(results) - 5) # give some random to index to look through for the series. 
 
-            if imported_count > 4:
-                self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
-                break
+            for tmdb_serie_id in results[r_index:r_index+5]:
+                imported_count += 1
 
-            self.stdout.write(f"-------- Processing serie {imported_count} of {len(updated_serie_list)}... ---------")
-            tmdb_id = tmdb_serie_id['id']
-            self.stdout.write(f" Serie id: {tmdb_id}") # debug print
-            time.sleep(3) # give some time between fetching a new page list of movies.
+                if imported_count > 5:
+                    self.stdout.write(f"Breaking after 5 series for testing purpose.\n")
+                    break
 
-            try:
-                new_serie, is_created = save_or_update_series(tmdb_id)
+                tmdb_id = tmdb_serie_id['id']
+                self.stdout.write(
+                    f"-------- Processing serie {imported_count} of {len(results)} ---------"
+                    f" Serie id: {tmdb_id}"
+                    )
 
-                if new_serie and is_created:
-                    created += 1
-                    self.stdout.write(self.style.SUCCESS(f"Imported! Created new serie: **{new_serie}**"))
-                    self.stdout.write("---------")
-                elif new_serie and not is_created:
-                    updated += 1
-                    self.stdout.write(self.style.SUCCESS(f"Imported! Updated serie: **{new_serie}**"))
-                    self.stdout.write("---------")
-                else:
-                    self.stdout.write(self.style.WARNING(f"**failed to register in DB.**"))
+                time.sleep(3) # give some time between fetching a new page list of movies.
+
+                try:
+                    new_serie, is_created = save_or_update_series(tmdb_id)
+
+                    if new_serie and is_created:
+                        created += 1
+                        self.stdout.write(self.style.SUCCESS(
+                            f"Imported! Created new serie: **{new_serie}**\n"
+                            "--------------------\n"
+                            ))
+
+                    elif new_serie and not is_created:
+                        updated += 1
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"Imported! Updated serie: **{new_serie}**\n"
+                                "--------------------\n"
+                                )
+                        )
+                    else:
+                        self.stdout.write(self.style.WARNING(
+                            f"**failed to register in DB.**\n"
+                            "----------------------\n"
+                            ))
+                        skipped_count += 1
+
+                except Exception as e:
                     skipped_count += 1
-                    self.stdout.write("---------")
+                    self.stdout.write(self.style.ERROR(f"Error importing serie {tmdb_serie_id}: {e}"))
+                    # logger.error(f"Error importing serie {tmdb_serie_id}: {e}")
 
-            except Exception as e:
-                skipped_count += 1
-                self.stdout.write(self.style.ERROR(f"Error importing serie {tmdb_serie_id}: {e}"))
-                logger.error(f"Error importing serie {tmdb_serie_id}: {e}")
-
-        self.stdout.write(self.style.SUCCESS(f"Imported list of  updated series successful!\n"))
-        self.stdout.write(f"{imported_count} serie imported.")
-        logger.info(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.") # for the logs
-        self.stdout.write(f"SUMMARY: Series (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.")
-        self.stdout.write(f"-----") # debug print
-
-            # except Exception as e:
-            #     # messages.error(request, "the page seem to experience some issue, please try again later")
-            #     self.stdout.write(self.style.WARNING(f" error :{e}"))
-            #     attempt += 1
-            #     print(f"Retrying... Attempt {attempt}/{MAX_RETRIES} in {attempt*3}seconds")
-            #     time.sleep(attempt*3)  # wait for 1 second before retrying
+        logger.info(
+            f"SUMMARY: Series (update) "
+            f"-- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed."
+            ) # for the logs
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Imported list of  updated series successful!\n"
+                f"{imported_count} serie imported.\n"
+                f"SUMMARY: Series (update) "
+                f"-- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.\n"
+                f"----------------\n"
+                )
+            )
