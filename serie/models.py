@@ -132,7 +132,10 @@ class Season(BaseModel):
 
 
     def __str__(self):
-        return f"season: {self.season_number} - {self.name}"
+        if f"Season {str(self.season_number)}" == self.name:
+            return f"{self.name}"
+        else:
+            return f"Season: {self.season_number} - {self.name}"
 
     def render_casting(self):
         '''return the Movie.casting attribute in without quotes and [],

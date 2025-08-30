@@ -361,6 +361,13 @@ def generate_episode_slug(season):
     updated_episodes = []
     total = episodes.count()
 
+
+    # if the
+    if Serie.objects.filter(title=season.serie.slug).count() > 1:
+        print(f"Other Series have the title or slug {season.serie.slug}")
+        print(f"Other series with same slug: {Serie.objects.filter(title=season.serie.slug)}") 
+        pass 
+
     if total == 0: # no episodes recorded in the season, stops here.
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -372,10 +379,13 @@ def generate_episode_slug(season):
     existing_slugs = set(Episode.objects.filter(season=season).values_list('slug', flat=True))
     new_slugs = set()
 
-    for episode in episodes:
+    for ep in episodes:
         count += 1
-        if episode.season and episode.title:
-            base_slug = slugify(f"{episode.season.serie.slug} S{episode.season.season_number} E{episode.episode_number} {episode.title}")
+        if ep.season and ep.title:
+            base_slug = slugify(
+                f"{ep.season.serie.slug} S{ep.season.season_number}E{ep.episode_number} {ep.title}",
+                allow_unicode=True
+            )
             unique_slug = base_slug
             counter = 1
 
@@ -384,8 +394,8 @@ def generate_episode_slug(season):
                 unique_slug = f"{base_slug}-{counter}"
                 counter += 1
 
-            episode.slug = unique_slug
-            updated_episodes.append(episode)
+            ep.slug = unique_slug
+            updated_episodes.append(ep)
             new_slugs.add(unique_slug)
 
     if updated_episodes:
