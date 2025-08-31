@@ -73,7 +73,9 @@
                             </div>
                         
                             <div class="poster-wrapper">
-                                {% if item.object.render_image_poster %}
+                                {% if item.object.poster_images %}
+                                <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
+                                {% elif item.object.render_image_poster %}
                                 <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">

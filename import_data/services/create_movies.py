@@ -78,6 +78,35 @@ def save_or_update_movie(tmdb_id: int):
                 # If the release date is not available, it stays set to None
                 print(f"Invalid date format: {movie_data.get('release_date')}")
 
+        # can also use 'stills' width:1920 height:1080  for episode, maybe not serie
+        
+        select_posters = [] # will append the images to it an keep the urls only
+        select_banners = [] # will append the images to it an keep the urls only
+        # Fetch and store Poster images
+        images = movie_data["images"]
+
+        # Fetch and store posters images
+        posters = images.get("posters", [])
+        if posters is not None:
+            select_posters = [sel['file_path'] for sel in posters[:4]] 
+
+        if movie_data.get('poster_path') and movie_data.get('poster_path') not in select_posters:
+            # append the original poster // to 1st element
+            select_posters.insert(0, movie_data.get('poster_path')) 
+        
+        poster_images = select_posters # set to save in the object
+
+        # Fetch and store Banner images
+        banners = images.get("backdrops", [])
+        if banners is not None:
+            select_banners = [sel['file_path'] for sel in banners[:4]] 
+
+        if movie_data.get('backdrop_path'):
+            # append the original poster // to 1st element
+            select_banners.insert(0, movie_data.get('backdrop_path')) 
+
+        banner_images = select_banners # set to save in the object
+
         # Store the new movie in DB
         movie, created = Movie.objects.update_or_create(
             tmdb_id=movie_data.get('id'), # check if the movie is already existing in the database
@@ -109,6 +138,8 @@ def save_or_update_movie(tmdb_id: int):
                     # images & trailer
                     "image_poster" : movie_data.get('poster_path') if movie_data.get("poster_path") else None,
                     "banner_poster" : movie_data.get('backdrop_path') if movie_data.get("backdrop_path") else None,
+                    "poster_images" : poster_images,
+                    "banner_images" : banner_images,
                     "trailers" : youtube_trailer
                     }
                 )
