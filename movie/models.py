@@ -27,17 +27,15 @@ class Movie(BaseModel):
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
 
+    # Metrics
     budget = models.IntegerField(blank=True, null=True)
     revenue = models.BigIntegerField(blank=True, null=True)  # Movie's box office revenue
-    # Metrics
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
     vote_count = models.IntegerField(blank=True, null=True)  
     imdb_rating = models.FloatField(blank=True, null=True)  # to fetch externally their rating
     popularity = models.FloatField(blank=True, null=True)  
+    
     # images
-    # image_poster = models.URLField(blank=True, null=True) # vertical poster ( made for list,dvd format..)
-    # banner_poster = models.URLField(blank=True, null=True) # banner image ( wide format)
-
     poster_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     )  # ['images].get("backdrops")
@@ -45,6 +43,7 @@ class Movie(BaseModel):
     banner_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     )
+
     # trailers
     trailers = models.JSONField(max_length=11, blank=True, null=True)
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?

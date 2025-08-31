@@ -136,8 +136,6 @@ def save_or_update_movie(tmdb_id: int):
                     "vote_count" : movie_data.get("vote_count"),
                     "popularity" : movie_data.get("popularity"),
                     # images & trailer
-                    "image_poster" : movie_data.get('poster_path') if movie_data.get("poster_path") else None,
-                    "banner_poster" : movie_data.get('backdrop_path') if movie_data.get("backdrop_path") else None,
                     "poster_images" : poster_images,
                     "banner_images" : banner_images,
                     "trailers" : youtube_trailer
