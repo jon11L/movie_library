@@ -21,6 +21,6 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-    path('list/', views.list_movie, name='list'),
-    path('detail/<slug:slug>', views.movie_overview, name='detail'),
+    path('list/', views.movie_list, name='list'),
+    path('detail/<slug:slug>', views.movie_detail, name='detail'),
 ]

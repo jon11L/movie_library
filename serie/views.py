@@ -10,7 +10,7 @@ from comment.models import Comment
 from comment.forms import CommentForm
 
 
-def list_serie(request):
+def serie_list(request):
     '''retrieve the series from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
@@ -57,7 +57,7 @@ def list_serie(request):
         return redirect('main:home')
 
 
-def serie_overview(request, slug):
+def serie_detail(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
     try:
         if Serie:

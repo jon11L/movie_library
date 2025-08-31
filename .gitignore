@@ -30,10 +30,10 @@ celerybeat-schedule.dir
 correct_movie_images.py
 correct_production_movies.py
 delete_movies.py
-slug_episode_title.py
-slug_movie_title.py
-slug_season_title.py
-slug_serie_title.py
+# slug_episode_title.py
+# slug_movie_title.py
+# slug_season_title.py
+# slug_serie_title.py
 update_serie_date.py
 watchlist_fk_fields.py
 
