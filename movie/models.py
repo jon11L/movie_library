@@ -1,5 +1,7 @@
 from django.db import models
 from core.models import BaseModel
+from django.contrib.postgres.fields import ArrayField
+import random
 
 class Movie(BaseModel):
 
@@ -24,7 +26,7 @@ class Movie(BaseModel):
     director = models.JSONField(blank=True, null=True)
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
-    
+
     budget = models.IntegerField(blank=True, null=True)
     revenue = models.BigIntegerField(blank=True, null=True)  # Movie's box office revenue
     # Metrics
@@ -33,13 +35,20 @@ class Movie(BaseModel):
     imdb_rating = models.FloatField(blank=True, null=True)  # to fetch externally their rating
     popularity = models.FloatField(blank=True, null=True)  
     # images
-    image_poster = models.URLField(blank=True, null=True) # vertical poster ( made for list,dvd format..)
-    banner_poster = models.URLField(blank=True, null=True) # banner image ( wide format)
+    # image_poster = models.URLField(blank=True, null=True) # vertical poster ( made for list,dvd format..)
+    # banner_poster = models.URLField(blank=True, null=True) # banner image ( wide format)
+
+    poster_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    )  # ['images].get("backdrops")
+
+    banner_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    )
     # trailers
     trailers = models.JSONField(max_length=11, blank=True, null=True)
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
-
 
     class Meta:
         db_table = 'movie'
@@ -102,14 +111,14 @@ class Movie(BaseModel):
             return round(self.vote_average, 1)
         else:
             return 0
-        
+
     def render_origin_country(self):
         '''return the Movie.origin_country with a comma-separated string'''
         if self.origin_country:
             origin_country = ', '.join(self.origin_country)
             return origin_country  
         return 'N/a' 
-    
+
     def render_length(self):
         '''return the Movie.length with a formatted string
         (e.g., 1h 30m)
@@ -119,13 +128,12 @@ class Movie(BaseModel):
             hours = self.length // 60
             if hours == 0:
                 return f'{minutes}min'
-            
+
             elif hours > 0 and minutes <= 9:
                 return f'{hours}h0{minutes}'
             else:
                 return f'{hours}h{minutes}'
         return 'N/a'
-    
 
     def render_trailer(self):
         ''' concatenates the field "trailers" to a base url'''
@@ -133,7 +141,6 @@ class Movie(BaseModel):
             trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
             return trailer_link
         return 'Trailers Not found'
-    
 
     def render_spoken_languages(self):
         ''' return the Movie.spoken_languages with a comma-separated string'''
@@ -142,18 +149,24 @@ class Movie(BaseModel):
             return spoken_languages
         return 'N/a'
 
-    def render_banner_poster(self):
+    def render_banner(self):
         ''' return the Movie.banner_poster with a formatted string'''
-        if self.banner_poster:
-            banner_poster = f"https://image.tmdb.org/t/p/w1280{self.banner_poster}" # for a width1280
-            return banner_poster
+        if self.banner_images:
+            if len(self.banner_images) >= 2:
+                num = random.randint(0, len(self.banner_images) -1)
+                banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[num]}" # for a width1280
+
+            else:
+                banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}" # for a width1280
+            return banner
         return None
 
-    def render_image_poster(self):
+    def render_poster(self):
         ''' return the Movie.banner_poster with a formatted string'''
-        if self.image_poster:
-            image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
-            return image_poster
+        # if self.image_poster:
+        if self.poster_images:
+            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            return poster
         return None
 
     def render_release_date(self):
@@ -162,4 +175,3 @@ class Movie(BaseModel):
             release_date = self.release_date.strftime("%b. %d, %Y")
             return release_date
         return 'N/a'
-    

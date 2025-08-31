@@ -20,8 +20,8 @@
                 <div class="card" style="justify-content: center; width: 90%; margin: auto;">
 
                     <div class="banner" style="width: fit-content;">
-                        {% if movie.render_banner_poster %}
-                        <img src="{{ movie.render_banner_poster }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
+                        {% if movie.banner_images %}
+                        <img src="{{ movie.render_banner }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
                         {% else %}
                         <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
                         {% endif %}
@@ -56,8 +56,8 @@
                     
                     
                     <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                        {% if movie.render_image_poster %}
-                        <img src=" {{ movie.render_image_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                        {% if movie.poster_images %}
+                        <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% else %}
                         <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                         {% endif %}

@@ -66,8 +66,8 @@
                             </div>
 
                             <div class="poster-wrapper">
-                                {% if movie.render_image_poster %}
-                                <img src="{{ movie.render_image_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
+                                {% if movie.poster_images %}
+                                <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}
@@ -204,7 +204,9 @@
                             </div>
 
                             <div class="poster-wrapper">
-                                {% if item.object.render_image_poster %}
+                                {% if item.object.poster_images %}
+                                <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded">
+                                {% elif item.object.image_poster %}
                                 <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="{{ item.object.title }} poster">
@@ -264,8 +266,8 @@
 
                             </div>
                             <div class="poster-wrapper">
-                                {% if movie.render_image_poster %}
-                                <img src="{{ movie.render_image_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
+                                {% if movie.poster_images %}
+                                <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}
@@ -285,11 +287,11 @@
 
 
                 <!-- displaying Series being released soon -->
-                {% if coming_up_series %}
+                {% if new_series %}
                 <h5 style="margin-top: 15px;"> Series</h5>
 
                 <div class="row">
-                    {% for serie in coming_up_series %}
+                    {% for serie in new_series %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
                         <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
 
@@ -375,8 +377,8 @@
 
                             </div>
                             <div class="poster-wrapper">
-                                {% if movie.render_image_poster %}
-                                <img src="{{ movie.render_image_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
+                                {% if movie.poster_images %}
+                                <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}

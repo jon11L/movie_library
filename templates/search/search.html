@@ -188,7 +188,9 @@
 
 
                             <div class="poster-wrapper">
-                                {% if item.object.render_image_poster %}
+                                {% if item.object.poster_images %}
+                                <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
+                                {% elif item.object.render_image_poster %}
                                 <img src="{{ item.object.render_image_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
@@ -234,18 +236,6 @@
                                     &laquo Prev
                                 </a>
                             </li>
-                            <!-- {% elif list_content.has_previous and not query_params  %} -->
-                            <!-- <li class="page-item" style="margin: 0px 0px;">
-                                <a  href="?page=1" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    &laquo first
-                                </a>
-                            </li> -->
-                            <!-- previous page -->
-                            <!-- <li class="page-item" style="margin: 0px 10px 0px 0px;">
-                                <a href="?page={{ list_content.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    &laquo Previous page
-                                </a>
-                            </li> -->
                             {% endif %}
 
                             <!-- enumerate pages around current page -->
@@ -289,7 +279,6 @@
                 <div style="display: flex; justify-content: center; margin: 10px 0;">
                     <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
                 </div>
-                <!-- {% else %} -->
                 {% endif %}
                 <!-- --- End of Pagination system ----- -->
 
