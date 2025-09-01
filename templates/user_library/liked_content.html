@@ -70,8 +70,6 @@
                                         <div class="card-img-top">
                                             {% if item.object.poster_images %}
                                             <img src=" {{ item.object.render_poster }} " class="img-fluid rounded"  alt="Profile photo">
-                                            {% elif item.object.render_image_poster %}
-                                            <img src=" {{ item.object.render_image_poster }} " class="img-fluid rounded"  alt="Profile photo">
                                             {% else %}
                                             <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
                                             {% endif %}

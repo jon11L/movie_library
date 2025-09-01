@@ -19,8 +19,8 @@
                 <div class="card" style="width: 90%; justify-content: center; margin: auto;">
                     <div class="serie-card">
                         <div id="image-background">
-                            {% if serie.render_banner_poster %}
-                            <img src="{{ serie.render_banner_poster }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
+                            {% if serie.banner_images %}
+                            <img src="{{ serie.render_banner }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
                             {% else %}
                             <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
                             {% endif %}
@@ -58,8 +58,8 @@
                         
                             <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
     
-                                {% if serie.render_image_poster %}
-                                <img src="{{ serie.render_image_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
+                                {% if serie.poster_images %}
+                                <img src="{{ serie.render_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
                                 {% endif %}
@@ -185,37 +185,53 @@
 
                             <!-- display the Trailer and episodes when user click on the season -->
                             {% for season in seasons %}
-                            <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none;">
+                            <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none; padding: 0;">
                                 <!-- Trailers -->
-                                {% if season.trailers %}
                                 <div style="text-align: center; margin: auto; padding-top: 10px; width: fit-content;">
                                     <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
                                 </div>
-                                <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
-                                    {% for trailer in season.trailers %}
-                                    <div class="me-1 mb-2">
-                                        <iframe width="300" height="200"
-                                            src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                            title="YouTube video player"
-                                            frameborder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen>
-                                        </iframe>
+                                {% if season.trailers %}
+                                <div style="background-color:rgb(131, 125, 125); padding: 0;">
+                                    <div></div>
+                                    <div class="display-trailer" style="display: flex; flex-wrap: wrap;  padding-top: 0.6em; padding-bottom: 0em; padding-left: 0.7em;">
+                                        {% for trailer in season.trailers %}
+                                        <div class="me-1 mb-2" style="padding: 0;">
+                                            <iframe width="300" height="200"
+                                                src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                                title="YouTube video player"
+                                                frameborder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen>
+                                            </iframe>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
+
                                 </div>
+                                {% else %}
+                                <div style="padding-top: 230px; background-color:rgb(131, 125, 125);"></div>
+                                
                                 {% endif %}
 
-                                <div>
-                                    {% for episode in season.episodes.all %}
-                                    <li style="width: 90%;">
-                                        <strong>{{ episode.episode_number }} - {{ episode.title }} </strong>
-                                        <small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
-                                        {% if episode.description %}
-                                        <p style="margin-left: 1em;">{{ episode.description|slice:":120"}}...</p>
+                                <div class="d-flex" style="min-height: 400px; padding-top: 2em;">
+                                    <div style="width: 80%; padding-top: 1em;">
+                                        {% for episode in season.episodes.all %}
+                                        <li>
+                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong>
+                                            <small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
+                                            {% if episode.description %}
+                                            <p style="margin-left: 1em; padding-bottom: 0; margin-bottom: 0.5em;">{{ episode.description|slice:":120"}}...</p>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </div>
+                                    <div id="season-poster" style="width: 25%; padding-right: 2em;">
+                                        {% if season.poster_images %}
+                                        <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="min-width: auto; width: 100%; max-width: fit-content; height: 95%;  max-height: min-content;" alt="Profile photo">
                                         {% endif %}
-                                    </li>
-                                    {% endfor %}
+                                    </div>
+                    
+
                                 </div>
                             
                             <!-- end of div per season id -->

@@ -54,6 +54,34 @@ def save_or_update_series(tmdb_id):
                 # If the first_air_date is not available, it stays set to None
                 print(f"Invalid date format: {serie_data.get('first_air_date')}")
 
+        # ---- Banner and Poster images -----
+        select_posters = [] # will append the images to it an keep the urls only
+        select_banners = [] # will append the images to it an keep the urls only
+        # Fetch and store images
+        images = serie_data["images"]
+
+        # Fetch and store posters images
+        posters = images.get("posters", [])
+        if posters is not None:
+            select_posters = [sel['file_path'] for sel in posters[:4]] 
+
+        if serie_data.get('poster_path') and serie_data.get('poster_path') not in select_posters:
+            # append the original poster // to 1st element
+            select_posters.insert(0, serie_data.get('poster_path')) 
+        
+        poster_images = select_posters # set to save in the object
+
+        # Fetch and store Banner images
+        banners = images.get("backdrops", [])
+        if banners is not None:
+            select_banners = [sel['file_path'] for sel in banners[:4]] 
+
+        if serie_data.get('backdrop_path'):
+            # append the original poster // to 1st element
+            select_banners.insert(0, serie_data.get('backdrop_path')) 
+
+        banner_images = select_banners # set to save in the object
+
         try:
             # Store the new serie in DB
             serie, is_created = Serie.objects.update_or_create(
@@ -75,8 +103,8 @@ def save_or_update_series(tmdb_id):
                     "vote_average": serie_data.get('vote_average'),
                     "vote_count": serie_data.get('vote_count'),
                     "popularity" : serie_data.get("popularity"),
-                    "image_poster": serie_data.get('poster_path'),
-                    "banner_poster": serie_data.get('backdrop_path'),
+                    "poster_images": poster_images,
+                    "banner_images": banner_images,
                     "status": serie_data.get('status'),
                 }
             )
@@ -206,6 +234,23 @@ def save_or_update_series(tmdb_id):
                 youtube_trailer, min(len(youtube_trailer), 4)
                 ) # Select up to 4 random trailers
 
+
+            select_posters_s = [] # will append the images to it an keep the urls only
+            # Fetch and store images
+            images = serie_data["images"]
+
+            # Fetch and store posters images
+            posters_s = images.get("posters", [])
+            if posters_s is not None:
+                select_posters_s = [sel['file_path'] for sel in posters_s[:4]] 
+
+            if serie_data.get('poster_path') and serie_data.get('poster_path') not in select_posters_s:
+                # append the original poster // to 1st element
+                select_posters_s.insert(0, serie_data.get('poster_path')) 
+
+            poster_images_s = select_posters_s # set to save in the object
+
+            # Create or update the season iterated
             season, created = Season.objects.update_or_create(
                 tmdb_id = season_data.get('id'),
                 defaults={  # Fields to update if the object exists
@@ -215,7 +260,7 @@ def save_or_update_series(tmdb_id):
                 "producer" : producers[:8],
                 "casting" :  cast[:10],
                 "description" : season_data.get('overview'),
-                "image_poster" : season_data.get('poster_path'),
+                "poster_images": poster_images_s,
                 "trailers" : youtube_trailer,
                 }
             )
@@ -275,6 +320,8 @@ def save_or_update_series(tmdb_id):
                         elif member.get("department") == "Writing":
                             writers.append(member["name"])
 
+                ep_banner_img = [episode.get('still_path')]
+
                 try:
                     # Check if the episode already exists in the database
                     # If it does, update it; if not, create a new one.
@@ -291,7 +338,7 @@ def save_or_update_series(tmdb_id):
                         existing_episode.guest_star = guest_names[:10]
                         existing_episode.director = directors[:4]  # Limit to first 5 directors
                         existing_episode.writer = writers[:4]
-                        existing_episode.banner_poster = episode.get('still_path')
+                        existing_episode.banner_images = ep_banner_img
                         existing_episode.updated_at = timezone.now() # trigger updated_at as Bulk_update do not use .save()
                     
                         update_episodes_obj.append(existing_episode)  # Add to the list for bulk update
@@ -309,7 +356,7 @@ def save_or_update_series(tmdb_id):
                             guest_star = guest_names[:10],
                             director = directors[:4],
                             writer = writers[:4],
-                            banner_poster = episode.get('still_path'),
+                            banner_images = ep_banner_img,
                             tmdb_id = episode_tmdb_id,
                         ))
 
@@ -330,7 +377,7 @@ def save_or_update_series(tmdb_id):
                 Episode.objects.bulk_update(update_episodes_obj, [
                     'title', 'episode_number', 'description', 'length',
                     'release_date', 'guest_star', 'director', 'writer',
-                    'banner_poster', 'updated_at'
+                    'banner_images', 'updated_at'
                 ])
                 print(f"Updated {len(update_episodes_obj)} existing episodes in DB.")
 

@@ -47,7 +47,8 @@ class TMDBClient:
 
     def generate_url(self, *args, **kwargs):
         '''
-        Allow to receive different keyword argument to build the corresponding url.\n
+        Allow to receive different keyword argument to build the corresponding url.
+        to hit the tmdb api.\n
         Different kwargs: page, endoints, tmdb_id, t_type(target_type eg. movie_list or serie)
         '''
         # this i could create generic function to return the URL for all type)

@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.postgres.fields import ArrayField
 from core.models import BaseModel
+
+import random
 
 class Serie(BaseModel):
 
@@ -29,8 +32,14 @@ class Serie(BaseModel):
     vote_count = models.IntegerField(blank=True, null=True)
     popularity = models.FloatField(blank=True, null=True)  # for TMDB popularity
     # images
-    image_poster = models.URLField(blank=True, null=True) # ["poster_path"]
-    banner_poster = models.URLField(blank=True, null=True) # ["backdrop_path"]
+    poster_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    ) # ['images].get("posters")
+
+    banner_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    ) # ['images].get("backdrops")
+
     status = models.CharField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
 
     class Meta:
@@ -43,7 +52,7 @@ class Serie(BaseModel):
     
 
     def render_genre(self):
-        '''return the Movie.genre attribute in without quotes and [],
+        '''return the Serie.genre attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.genre:
@@ -53,7 +62,7 @@ class Serie(BaseModel):
             return None
         
     def render_production(self):
-        '''return the Movie.production attribute in without quotes and [],
+        '''return the serie.production attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.production:
@@ -62,7 +71,7 @@ class Serie(BaseModel):
         return 'N/a' 
 
     def render_created_by(self):
-        '''return the Movie.production attribute in without quotes and [],
+        '''return the Serie.production attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.created_by:
@@ -71,10 +80,17 @@ class Serie(BaseModel):
         return 'N/a' 
 
     def render_origin_country(self):
-        '''return the Movie.origin_country with a comma-separated string'''
+        '''return the Serie.origin_country with a comma-separated string'''
         if self.origin_country:
             origin_country = ', '.join(self.origin_country)
             return origin_country  
+        return 'N/a'
+    
+    def render_spoken_languages(self):
+        '''return the Serie.spoken_languages with a comma-separated string'''
+        if self.spoken_languages:
+            spoken_languages = ', '.join(self.spoken_languages)
+            return spoken_languages  
         return 'N/a'
     
     def render_vote_average(self):
@@ -84,18 +100,22 @@ class Serie(BaseModel):
         else:
             return 0
 
-    def render_banner_poster(self):
+    def render_banner(self):
         ''' return the Movie.banner_poster with a formatted string'''
-        if self.banner_poster:
-            banner_poster = f"https://image.tmdb.org/t/p/w1280{self.banner_poster}" # for a width1280
-            return banner_poster
+        if self.banner_images:
+            if len(self.banner_images) >= 2:
+                num = random.randint(0, len(self.banner_images) -1)
+                banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[num]}" # for a width1280
+            else:
+                banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}" # for a width1280
+            return banner
         return None
 
-    def render_image_poster(self):
+    def render_poster(self):
         ''' return the Movie.banner_poster with a formatted string'''
-        if self.image_poster:
-            image_poster = f"https://image.tmdb.org/t/p/w500{self.image_poster}" # for a width500
-            return image_poster
+        if self.poster_images:
+            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            return poster
         return None
     
     def render_first_air_date(self):
@@ -118,7 +138,11 @@ class Season(BaseModel):
     producer = models.JSONField(max_length=255, blank=True, null=True)
     casting = models.JSONField(blank=True, null=True) 
     description = models.TextField(blank=True, null=True) 
-    image_poster = models.URLField(blank=True, null=True) 
+
+    poster_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    )  # ['images].get("posters")
+
     trailers = models.JSONField(max_length=11, blank=True, null=True) 
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)
@@ -153,6 +177,14 @@ class Season(BaseModel):
             return trailer_link
         return 'Trailer Not found'
 
+    def render_poster(self):
+        ''' return the Movie.banner_poster with a formatted string'''
+        if self.poster_images:
+            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            return poster
+        return None
+    
+
 
 class Episode(BaseModel):
 
@@ -171,7 +203,11 @@ class Episode(BaseModel):
     director = models.JSONField(blank=True, null=True)
     writer = models.JSONField(blank=True, null=True) # when ['job'] = Writer
     # image
-    banner_poster = models.URLField(blank=True, null=True) # ["still_path"]
+
+    banner_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    ) # ['images].get("stills")
+
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
 
