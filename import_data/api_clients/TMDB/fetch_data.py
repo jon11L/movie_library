@@ -14,6 +14,8 @@ def get_api_data(*args, **kwargs):
     With the following variable arguments:
     - endpoint -> for filter selection (eg. popular, upcoming)
     - page -> the page to hit the api
+    - t_type -> the model type that is targeted (eg. Movie, Serie, Season)
+
     """
     MAX_RETRIES = 3
     retry = 0
@@ -22,7 +24,7 @@ def get_api_data(*args, **kwargs):
 
     # page = kwargs.get("page")
     # endpoint = kwargs.get("endpoint")
-    # t_type = kwargs.get("pt_type")
+    # t_type = kwargs.get("t_type")
     # update = kwargs.get("update")
 
     # Retry logic

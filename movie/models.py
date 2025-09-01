@@ -38,11 +38,11 @@ class Movie(BaseModel):
     # images
     poster_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
-    )  # ['images].get("backdrops")
+    ) # ['images].get("posters")
 
     banner_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
-    )
+    ) # ['images].get("backdrops")
 
     # trailers
     trailers = models.JSONField(max_length=11, blank=True, null=True)

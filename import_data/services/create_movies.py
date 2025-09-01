@@ -82,7 +82,7 @@ def save_or_update_movie(tmdb_id: int):
         
         select_posters = [] # will append the images to it an keep the urls only
         select_banners = [] # will append the images to it an keep the urls only
-        # Fetch and store Poster images
+        # Fetch and store images
         images = movie_data["images"]
 
         # Fetch and store posters images
