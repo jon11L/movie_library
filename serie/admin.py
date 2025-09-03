@@ -9,6 +9,9 @@ from .models import Serie, Season, Episode
 class SeasonInline(admin.StackedInline):
     model = Season
 
+class EpisodeInline(admin.StackedInline):
+    model = Episode
+
 
 @admin.register(Serie)
 class SerieAdmin(admin.ModelAdmin):
@@ -30,6 +33,7 @@ class SeasonAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name", "slug", "tmdb_id")
 
+    inlines = [EpisodeInline]
 
 @admin.register(Episode)
 class EpisodeAdmin(admin.ModelAdmin):

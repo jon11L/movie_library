@@ -56,6 +56,7 @@ class Command(BaseCommand):
         skipped_count = 0  # Tracks how many series already existed
         created = 0
 
+
         endpoints = (
             "popular", "top_rated",
             "on_the_air", "discover",
@@ -88,7 +89,7 @@ class Command(BaseCommand):
 
                 today = datetime.date.today()
                 # To get newest content  as extra in specs days------
-                if today.day in [1, 5, 10, 15, 20, 25]:
+                if today.day in [2, 5, 10, 15, 20, 25]:
                     page = random.randint(1, 3)
                 else:
                     page = random.randint(1, get_max_page(endpoint)) # Randomly select a page

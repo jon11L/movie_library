@@ -192,6 +192,7 @@ class Command(BaseCommand):
 
         - count, created, skipped
         '''
+        
         for movie in list_movies['results']:
             time.sleep(1)  
             imported['count'] += 1
@@ -223,6 +224,8 @@ class Command(BaseCommand):
                     # logger.error(f"Error importing {movie_id}: {e}")
                     continue
             else:
+                # remove line below when enough updates done.
+                save_or_update_movie(movie_id) # grab and save Datas from api into a new single movie's instance 
                 self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
                 print("-----------")
                 imported['skipped'] += 1

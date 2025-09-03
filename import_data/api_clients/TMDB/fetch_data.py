@@ -3,7 +3,7 @@ import time
 import random
 import requests
 
-def get_api_data(*args, **kwargs):
+def get_api_data(*args, **kwargs): 
     """
     Pass on kwargs argument to generate_url()\n
     Build the Headers connection for TMDB api\n
