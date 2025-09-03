@@ -46,6 +46,7 @@ class Command(BaseCommand):
         2. Loop through each movie to query their data 
         3. Update the movies 
         """
+        start_time = time.time()
 
         endpoint = "changes"
         MAX_RETRIES = 3
@@ -163,10 +164,20 @@ class Command(BaseCommand):
                     logger.error(f"Error importing {tmdb_id}: {e}")
                     continue
 
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
+
+
+
         time.sleep(3) # give some time between fetching a new page list of movies. // to correct
         logger.info(
             f"SUMMARY: Movies (update) "
-            f"-- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed."
+            f"-- {created} Created -- {updated} Updated"
+            f" -- {skipped_count} Skipped/Failed"
+            f" -- runtime: {elapsed_time:.2f} seconds"
+            
             )
         self.stdout.write(
             self.style.SUCCESS(f"Imported list of updated movies successfully\n")

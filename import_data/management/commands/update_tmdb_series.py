@@ -47,6 +47,7 @@ class Command(BaseCommand):
         2. Loop through each serie to query their data 
         3. Update the series 
         """
+        start_time = time.time()
         endpoint = "changes"
 
         MAX_RETRIES = 3
@@ -119,8 +120,8 @@ class Command(BaseCommand):
 
                 tmdb_id = tmdb_serie_id['id']
                 self.stdout.write(
-                    f"-------- Processing serie {imported_count} of {len(results)} ---------"
-                    f" Serie id: {tmdb_id}"
+                    f"-------- Processing serie {imported_count}"
+                    f" -- Serie id: {tmdb_id} ---------"
                     )
 
                 time.sleep(3) # give some time between fetching a new page list of movies.
@@ -155,10 +156,17 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.ERROR(f"Error importing serie {tmdb_serie_id}: {e}"))
                     # logger.error(f"Error importing serie {tmdb_serie_id}: {e}")
 
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
+
+
         logger.info(
             f"SUMMARY: Series (update) "
-            f"-- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed."
+            f"-- {created} Created -- {updated} Updated -- {skipped_count} Skipped/Failed"
+            f" -- runtime: {elapsed_time:.2f} seconds"
             ) # for the logs
+        
         self.stdout.write(
             self.style.SUCCESS(
                 f"Imported list of  updated series successful!\n"
