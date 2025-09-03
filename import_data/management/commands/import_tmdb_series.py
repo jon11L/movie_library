@@ -55,7 +55,7 @@ class Command(BaseCommand):
         imported_count = 0  # Tracks how many series were imported
         skipped_count = 0  # Tracks how many series already existed
         created = 0
-
+        start_time = time.time()
 
         endpoints = (
             "popular", "top_rated",
@@ -89,7 +89,7 @@ class Command(BaseCommand):
 
                 today = datetime.date.today()
                 # To get newest content  as extra in specs days------
-                if today.day in [2, 5, 10, 15, 20, 25]:
+                if today.day in [1, 5, 10, 15, 20, 25]:
                     page = random.randint(1, 3)
                 else:
                     page = random.randint(1, get_max_page(endpoint)) # Randomly select a page
@@ -157,32 +157,41 @@ class Command(BaseCommand):
                 )  # debug print
 
                 # Check if serie exists
-                # if not Serie.objects.filter(tmdb_id=new_serie['id']).exists():
-                try:
-                    save_or_update_series(new_serie['id'])
-                    created += 1
-                    self.stdout.write(
-                        f"Imported serie: {new_serie['name']}\n"
-                        "-----------"
-                    )  # not sure it is imported if already exist
-                except Exception as e:
-                    self.stdout.write(f"Error importing {new_serie['id']}- {new_serie['name']}: {e}")
+                if not Serie.objects.filter(tmdb_id=new_serie['id']).exists():
+                    try:
+                        save_or_update_series(new_serie['id'])
+                        created += 1
+                        self.stdout.write(
+                            f"Imported serie: {new_serie['name']}\n"
+                            "-----------"
+                        )  # not sure it is imported if already exist
+                    except Exception as e:
+                        self.stdout.write(f"Error importing {new_serie['id']}- {new_serie['name']}: {e}")
+                        skipped_count += 1
+                        continue
+                else:
                     skipped_count += 1
-                    continue
-                # else:
-
-                #     skipped_count += 1
-                #     self.stdout.write(self.style.WARNING(
-                #         f"{new_serie['name']} already exists in DB.\n"
-                #         "Skipping....\n"
-                #         "------------------\n"
-                #         ))
+                    self.stdout.write(self.style.WARNING(
+                        f"{new_serie['name']} already exists in DB.\n"
+                        "Skipping....\n"
+                        "------------------\n"
+                        ))
 
                 # give some time between fetching new series.
                 time.sleep(3) 
 
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
+
+
         # Log and stream end of import summary
-        logger.info(f"SUMMARY: Series (import) -- {created} Created. -- 0 Updated. -- {skipped_count} Skipped/Failed.")
+        logger.info(
+            f"SUMMARY: Series (import)"
+            f" -- {created} Created -- 0 Updated -- {skipped_count} Skipped/Failed"
+            f" -- time: {elapsed_time:.2f} seconds"
+            )
+        
         self.stdout.write(self.style.SUCCESS(
             f"Imported list of **{endpoint}** series done!\n"
             f"SUMMARY: Series (import) -- {created} Created. "

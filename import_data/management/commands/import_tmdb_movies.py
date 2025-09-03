@@ -58,8 +58,10 @@ class Command(BaseCommand):
         imported = {
             'count' : 0,
             'created' : 0,
-            'skipped' : 0
+            'skipped' : 0,
+            'runtime': 0
         }
+        start_time = time.time()
 
         endpoints = ("popular", "top_rated", "now_playing", "upcoming", "discover")
 
@@ -178,9 +180,20 @@ class Command(BaseCommand):
             imported = batch
             time.sleep(5) # give some time between fetching a new page list of movies.
 
+        
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
         # final summary, logs result into file:
         self.stdout.write(self.style.SUCCESS(f"\nImport batch of movies completed: '{imported['count']}' movies processed\n"))
-        logger.info(f"SUMMARY: Movies (import) -- {imported['created']} Created. -- 0 Updated. -- {imported['skipped']}  Skipped/Failed.")
+        logger.info(
+            f"SUMMARY: Movies (import)"
+            f" -- {imported['created']} Created -- 0 Updated"
+            f" -- {imported['skipped']}  Skipped/Failed"
+            f" -- runtime: {elapsed_time:.2f} seconds"
+            )
+        
+        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
         self.stdout.write(f"SUMMARY: Movies (import) -- {imported['created']} Created. -- 0 Updated. -- {imported['skipped']}  Skipped/Failed.")
         self.stdout.write(f"\n--------------\n\n") # debug print
 
@@ -224,8 +237,6 @@ class Command(BaseCommand):
                     # logger.error(f"Error importing {movie_id}: {e}")
                     continue
             else:
-                # remove line below when enough updates done.
-                save_or_update_movie(movie_id) # grab and save Datas from api into a new single movie's instance 
                 self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
                 print("-----------")
                 imported['skipped'] += 1
