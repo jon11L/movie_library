@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] # place domain names or IP addresses here, e.g. when deploying to production
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'core',
     'main',
     'movie',
@@ -155,12 +156,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 
-
-
 # Detect operating system
 CURRENT_OS = platform.system()
 print(f"Detected OS: {CURRENT_OS}")
-
 
 # ------------- Configuration  for Celery and RabbitMQ/Redis --------------------------------
 if CURRENT_OS == 'Windows':
@@ -182,7 +180,6 @@ elif CURRENT_OS == 'Linux':
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'  # Use Redis as the result backend // for Linux use.
     # print("Using **Redis** as the message broker and result backend for Linux.") # debug log
 
-
     # Redis-specific broker options
     CELERY_BROKER_TRANSPORT_OPTIONS = {
         'visibility_timeout': 3600,
@@ -203,13 +200,6 @@ else: # Fallback for other systems (macOS, etc.) - use Redis
         'retry_on_timeout': True,
     }
 
-# ------------------------------------------------------------
-
-# Celery Configuration Options
-# CELERY_BROKER_URL = f'amqp://{RABBITMQ_USER}:{RABBITMQ_PW}@localhost:5672//'  # Use RabbitMQ as the message broker // for windows use.
-# CELERY_BROKER_URL = f'redis://localhost:6379/0'  # Use Redis as the message broker // for  Linux use.
-
-
 # CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_MAX_LOOP_INTERVAL = 60 # look for change in DB every 60 seconds
@@ -221,11 +211,5 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Berlin'
-
-# CELERY_BROKER_TRANSPORT_OPTIONS = {
-#     'visibility_timeout': 500000,
-#     # 'heartbeat': 0,  
-#     # 'connection_timeout': 5000
-# }
 
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1 # Set to 1 to ensure tasks are processed one at a time
