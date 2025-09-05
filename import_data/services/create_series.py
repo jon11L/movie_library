@@ -153,6 +153,7 @@ def save_or_update_series(tmdb_id):
     else:
         for i in result:
             print(i)
+        print("\n")
 
     return serie, is_created
 
@@ -230,47 +231,49 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                 ) # Select up to 4 random trailers
 
             # Fetch and store images
-            select_posters_s = [] # will append the images to it an keep the urls only
+            posters = [] # will append the images to it an keep the urls only to
             images = season_data["images"]
 
+            posters_data = images.get("posters", [])
+            if posters_data is not None:
+                posters = [sel['file_path'] for sel in posters_data[:4]] 
 
-            posters_s = images.get("posters", [])
-            if posters_s is not None:
-                select_posters_s = [sel['file_path'] for sel in posters_s[:4]] 
-
-            if season_data.get('poster_path') and season_data.get('poster_path') not in select_posters_s:
+            if season_data.get('poster_path') and season_data.get('poster_path') not in posters:
                 # append the original poster // to 1st element
-                select_posters_s.insert(0, season_data.get('poster_path')) 
-
-            poster_images_s = select_posters_s # set to save in the object
+                posters.insert(0, season_data.get('poster_path')) 
 
             try:
+                # probably need to change the key tmdb_id check for serie/season_number unique constraint
+                # as tmdb_id may change
                 # Create or update the season iterated
                 season, created = Season.objects.update_or_create(
                     tmdb_id = season_data.get('id'),
                     defaults={  # Fields to update if the object exists
                     "serie" : serie,
-                    "name" : season_data.get("name"),
                     "season_number" : season_number,
+                    "name" : season_data.get("name"),
                     "producer" : producers[:8],
                     "casting" :  cast[:10],
                     "description" : season_data.get('overview'),
-                    "poster_images": poster_images_s,
+                    "poster_images": posters,
                     "trailers" : yt_trailer,
                     }
                 )
 
             except Exception as e:
-                print(f"An error occurred while saving/updating episode:\n{str(e)}\n")
-                print(f"Season: '{season_data.get('name')}' failed to save into DB.\n")# log print
-                print("----------")
+                print(
+                    f"An error occurred while saving/updating episode:\n{str(e)}\n"
+                    f"Season: '{season_data.get('name')}' failed to save into DB.\n"
+                    "----------"
+                    )# log print
+                    
                 continue  # Skip to the next season if an error occurs
 
             list_episodes = season_data.get('episodes', [])# all episodes here
             print(f"--- Season contains *{season}* {len(list_episodes)} episodes. ---")
 
             datas_season.append(
-                [season_data.get("name"), f"total episodes: {len(list_episodes)}"]
+                f"{season_data.get("name")} -- total episodes: {len(list_episodes)}"
             )
 
 
@@ -287,8 +290,6 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
     return datas_season
 
 
-
-
 def get_episodes(list_episodes, season: object):
     '''
         load any existing episodes from the season given.\n
@@ -300,10 +301,12 @@ def get_episodes(list_episodes, season: object):
     # instantiate lists for new episodes and existing  to pass in bulk (saves on query)
     update_episodes_obj = []
     new_episodes_obj = []
-    
-    # Retrieve existing episode IDs for this season (to differentiate between new & existing episodes)
+
+    # Retrieve existing episode IDs for this season
+    # (to differentiate between new & existing episodes)
     existing_episodes = {
-        (ep.season.pk, ep.episode_number): ep for ep in Episode.objects.filter(season=season)
+        (ep.season.pk, ep.episode_number): ep
+        for ep in Episode.objects.filter(season=season)
     }
     print(f"Existing episodes: {len(existing_episodes)}") # debug print
     print(f"total episode in serie: {len(list_episodes)}")
@@ -366,7 +369,7 @@ def get_episodes(list_episodes, season: object):
 
                 update_episodes_obj.append(existing_episode)  # Add to the list for bulk update
                 # print(f"Updating existing episode: {existing_episode}\n")
-            
+
             else:
                 # Create a new episode instance if it doesn't exist
                 new_episodes_obj.append(Episode(
@@ -380,7 +383,7 @@ def get_episodes(list_episodes, season: object):
                     director = directors[:4],
                     writer = writers[:4],
                     banner_images = ep_banner_img,
-                    tmdb_id = episode_tmdb_id,
+                    tmdb_id = episode_tmdb_id
                 ))
 
         except IntegrityError as e:
@@ -399,9 +402,9 @@ def get_episodes(list_episodes, season: object):
     if update_episodes_obj:
         try:
             Episode.objects.bulk_update(update_episodes_obj, [
-                'title', 'episode_number', 'description', 'length',
+                'episode_number', 'title', 'description', 'length',
                 'release_date', 'guest_star', 'director', 'writer',
-                'banner_images', 'updated_at'
+                'banner_images', "tmdb_id", 'updated_at'
             ])
             print(f"Updated {len(update_episodes_obj)} episodes for season {season}.")
 
@@ -429,10 +432,9 @@ def get_episodes(list_episodes, season: object):
                     print(f"Integrity Error during bulk update of episodes:\n{str(e)}\n")
                     print(f"Skipping duplicate episode '{ep.episode_number}' in season: {season}")
 
-
     if new_episodes_obj:
         try:
-    # bulk create new episodes
+            # bulk create new episodes
             Episode.objects.bulk_create(new_episodes_obj)
             print(f"Added {len(new_episodes_obj)} new episodes for season {season}.")
 
