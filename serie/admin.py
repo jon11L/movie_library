@@ -37,7 +37,7 @@ class SeasonAdmin(admin.ModelAdmin):
 
 @admin.register(Episode)
 class EpisodeAdmin(admin.ModelAdmin):
-    list_display = ("pk", "title", "slug", "episode_number", "season", "created_at", "updated_at")
+    list_display = ("pk", "title", "tmdb_id","slug", "episode_number", "season", "created_at", "updated_at")
     search_fields = ("title", "slug", "tmdb_id")
 
     # Note: no prepopulated_fields for episodes by title because we handle slugs manually
