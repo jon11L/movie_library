@@ -31,4 +31,7 @@ urlpatterns = [
     path('search/', include('search.urls', namespace='search')),
     path('comment/', include('comment.urls', namespace='comment')),
 
+    # API rest routes
+    
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
