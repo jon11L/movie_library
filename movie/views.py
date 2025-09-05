@@ -2,14 +2,30 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+from rest_framework import viewsets
+from .permissions import IsAdminOrReadOnly
+from .serializer import MovieSerializer
+
 from .models import Movie
 from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
 
 
+
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
+
+
+class MovieViewSet(viewsets.ModelViewSet):
+    '''View to serialize Movie model'''
+    queryset = Movie.objects.all().order_by('-id')
+    serializer_class = MovieSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+
+
 
 def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
@@ -94,7 +110,6 @@ def movie_detail(request, slug):
 
             # get the comments related to the movie
             comments = Comment.objects.filter(
-                # user=request.user.id,
                 content_type = "movie",
                 object_id=movie.pk
                 ).order_by('-created_at')

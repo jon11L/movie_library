@@ -17,10 +17,18 @@ Including another URLconf
 
 app_name = "movie"
 
-from django.urls import path
+from django.urls import path, include
 from . import views 
+
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'movies', views.MovieViewSet, basename='movie')
 
 urlpatterns = [
     path('list/', views.movie_list, name='list'),
     path('detail/<slug:slug>', views.movie_detail, name='detail'),
+
+    # including the api route here
+    path('api/', include(router.urls))
 ]
