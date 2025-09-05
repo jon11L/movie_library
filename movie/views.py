@@ -3,13 +3,14 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from rest_framework import viewsets
-# from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .permissions import IsAdminOrReadOnly
 from .serializer import MovieSerializer
 
 from .models import Movie
 from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
+
 
 
 # def admin_check(user):
@@ -20,6 +21,7 @@ class MovieViewSet(viewsets.ModelViewSet):
     '''View to serialize Movie model'''
     queryset = Movie.objects.all().order_by('-id')
     serializer_class = MovieSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 
