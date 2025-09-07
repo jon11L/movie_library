@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from rest_framework import viewsets
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrIsAuthenticatedReadOnly
 from .serializer import MovieSerializer
 
 from .models import Movie
@@ -19,9 +23,11 @@ from comment.forms import CommentForm
 
 class MovieViewSet(viewsets.ModelViewSet):
     '''View to serialize Movie model'''
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
     queryset = Movie.objects.all().order_by('-id')
     serializer_class = MovieSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+
 
 
 
