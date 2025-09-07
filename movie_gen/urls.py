@@ -32,6 +32,7 @@ urlpatterns = [
     path('comment/', include('comment.urls', namespace='comment')),
 
     # API rest routes
-    
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

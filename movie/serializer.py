@@ -12,8 +12,21 @@ from .models import Movie
 # user or externals apps should be able to use this serializer to retrieve movies. by title and genre
 #  limited to read-only access to regular user and POST/PUT/UPDATE for ADMIN/Superuser/staff
 
+class MovieListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = (
+            'id',
+            'title',
+            'release_date',
+            'genre',
+            'origin_country',
+            'original_language',
+            'vote_average',
+        )        
 
-class MovieSerializer(serializers.ModelSerializer):
+
+class MovieDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = (
