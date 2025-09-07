@@ -6,9 +6,14 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from rest_framework import viewsets
+# from rest_framework import viewsets
+from rest_framework import generics
+
 from .permissions import IsAdminOrIsAuthenticatedReadOnly
-from .serializer import MovieSerializer
+# from .serializer import MovieSerializer
+from .serializer import MovieListSerializer, MovieDetailSerializer
+
+
 
 from .models import Movie
 from user_library.models import Like, WatchList
@@ -21,18 +26,28 @@ from comment.forms import CommentForm
 #     return user.is_superuser  # or user.is_staff for staff users
 
 
-class MovieViewSet(viewsets.ModelViewSet):
-    '''View to serialize Movie model'''
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+# class MovieViewSet(viewsets.ModelViewSet):
+#     '''View to serialize Movie model'''
+#     # authentication_classes = [SessionAuthentication, BasicAuthentication]
+#     queryset = Movie.objects.all().order_by('-id')
+#     serializer_class = MovieSerializer
+#     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+
+
+# API views
+class MovieListView(generics.ListCreateAPIView):
     queryset = Movie.objects.all().order_by('-id')
-    serializer_class = MovieSerializer
+    serializer_class = MovieListSerializer
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
 
 
+class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieDetailSerializer
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
 
 
-
-
+# Regular template views
 def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
