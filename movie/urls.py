@@ -30,5 +30,7 @@ urlpatterns = [
     path('detail/<slug:slug>', views.movie_detail, name='detail'),
 
     # including the api route here
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+
 ]
