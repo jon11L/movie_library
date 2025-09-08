@@ -17,7 +17,7 @@ Including another URLconf
 
 app_name = "movie"
 
-from django.urls import path, include
+from django.urls import path
 from . import views 
 
 urlpatterns = [

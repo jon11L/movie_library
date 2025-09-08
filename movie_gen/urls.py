@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
+
+from rest_framework.authtoken.views import obtain_auth_token
 from . import settings
 
 
@@ -33,6 +35,7 @@ urlpatterns = [
 
     # API rest routes
     path('api-auth/', include('rest_framework.urls')),
+    path('api-token-auth/', obtain_auth_token), #create a token for users when posting their cred. to this url
     path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
