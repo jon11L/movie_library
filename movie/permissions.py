@@ -24,7 +24,7 @@ class IsAdminOrIsAuthenticatedReadOnly(BasePermission):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if not request.user or not request.user.is_authenticated:
-            return False
+            return False # No access for anonymous user /requires authentication
 
         if request.method in SAFE_METHODS:
             return True

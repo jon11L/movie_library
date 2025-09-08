@@ -47,6 +47,7 @@ class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
 
 
+
 # Regular template views
 def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
@@ -167,6 +168,6 @@ def movie_detail(request, slug):
             return redirect('movie:list_movie')
         
     except Exception as e:
-        messages.error(request, "the page seem to experience some issue, please try again later")
+        messages.error(request, "the movie requested does not seem to exist. Or the page experiences some issue, please try again later")
         print(f" error :{e}")
         return redirect('main:home')
