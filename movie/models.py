@@ -1,6 +1,8 @@
 from django.db import models
 from core.models import BaseModel
 from django.contrib.postgres.fields import ArrayField
+from django.templatetags.static import static
+
 import random
 
 class Movie(BaseModel):
@@ -158,13 +160,18 @@ class Movie(BaseModel):
             else:
                 banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}" # for a width1280
             return banner
-        return None
+        return static("images/default_banner.jpg") # default banner image if None set.
+        # as it uses as a background image on the frontend.
 
     def render_poster(self):
         ''' return the Movie.banner_poster with a formatted string'''
         # if self.image_poster:
         if self.poster_images:
-            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            if len(self.poster_images) >= 2:
+                num = random.randint(0, len(self.poster_images) -1)
+                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[num]}" # for a width500
+            else:    
+                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             return poster
         return None
 

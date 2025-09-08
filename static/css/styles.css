@@ -66,7 +66,7 @@ img {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 8px;
+    padding: 0.5em 0.5em 0em 0em;
     transition: transform 0.2s;
 }
 
@@ -77,7 +77,7 @@ img {
 
 
 .like-button i {
-    color: #4a4949;
+    color: #e53636;
     transition: all 1.3s ease;
 }
 
@@ -93,7 +93,7 @@ img {
 }
 
 .fa-heart.liked {
-    color: #ff4d4d;
+    color: #e53636;
 }
 
 /* Option 2: Scale with rotation */
@@ -131,8 +131,6 @@ img {
 
 
 
-
-
 /* Temporary display for the seasons and episodes in detail_serie template */
 .season-toggle {
     background-color: rgb(71, 22, 22);
@@ -143,7 +141,6 @@ img {
     width: 100%;
     text-align: left;
 }
-
 
 .season-toggle.active {
     background-color: #007bff;
@@ -159,9 +156,6 @@ img {
 
 
 
-
-
-
 /* ------- Comment form and ...------------ */
 .comment-form {
     background-color: black;
@@ -174,8 +168,8 @@ img {
 
 
 
-
 /* custom display depending on screen size */
+/* To have two sides and a main row on screen (middle being the main) */
 @media (min-width: 960px) {
   .col-xl-1-5 {
     flex: 0 0 auto;

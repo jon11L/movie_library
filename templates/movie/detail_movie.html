@@ -18,7 +18,7 @@
                 {% if movie %}
                 <br>
                 <div class="card" style="justify-content: center; width: 90%; margin: auto;">
-                    <div style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat;">
+                    <div style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: 1280px;">
 
                         <!-- <div class="banner" style="width: fit-content; ">
                             {% if movie.banner_images %}
@@ -59,12 +59,11 @@
                             </div>
                         </div>
                         
-                        
-                        <br><br><br><br><br><br>
-                        <br><br><br><br><br><br>
-                        <br><br><br><br><br><br>
-                        <div class="row">
+                        <!-- To give space between the backcgrounf image and the next parts -->
+                        <div style="padding-bottom: 25.6em;"></div>
 
+
+                        <div class="row">
 
                             <div class="col-4" style="padding-top: 14em;">
 
@@ -113,14 +112,13 @@
                             </div>
 
 
-
                             <div class="col-4">
 
                                 <div class="card-img-top" style="text-align: center; margin-top: 20px;">
                                     {% if movie.poster_images %}
-                                    <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 50%;" alt="Profile photo">
+                                    <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                     {% else %}
-                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; " alt="Profile photo">
+                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                     {% endif %}
                                 </div>
             
@@ -207,8 +205,8 @@
 
 
                         </div>
-                        <br>
                     </div>
+                    <br>
                         
                     <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
                         {% if movie.trailers %}
