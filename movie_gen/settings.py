@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
     'core',
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     'user_library',
     'comment',
     'search',
-    'django_filters',
     'import_data',
     'django_celery_beat',
     'devtools',  # Custom app for development tools// to remove in Production
@@ -103,13 +103,27 @@ REST_FRAMEWORK = {
     # Adding the Throttling /limit rate policy
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        # 'rest_framework.throttling.UserRateThrottle',
+        'movie.throttle.AdminRateThrottle',
+        'movie.throttle.UserBurstThrottle',
+        'movie.throttle.UserSustainThrottle',
+        'movie.throttle.UserDayThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '0/day',
-        'user': '200/day',
-        'user': '20/min'
-    }
+        'user_burst': '15/min',
+        'user_sustain': '100/hour',
+        'user_day': '500/day',
+        # 'user': '25/hour',
+        'admin': '2000/day',
+    },
+    # Filtering
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # 'rest_framework.filters.OrderingFilter',
+        # 'rest_framework.filters.SearchFilter',
+        ],
+
 }
 
 

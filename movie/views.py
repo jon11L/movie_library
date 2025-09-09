@@ -7,12 +7,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 # from rest_framework import viewsets
-from rest_framework import generics
+from rest_framework import generics, filters
 
 from .permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
 from .serializer import MovieListSerializer, MovieDetailSerializer
-
 
 
 from .models import Movie
@@ -20,7 +19,8 @@ from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
 
-
+from movie.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+from rest_framework.throttling import AnonRateThrottle
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
@@ -34,18 +34,45 @@ from comment.forms import CommentForm
 #     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
 
 
+# HTTP_200_OK
+# HTTP_201_CREATED
+# HTTP_400_BAD_REQUEST
+# HTTP_401_UNAUTHORIZED
+# HTTP_403_FORBIDDEN
+
+# HTTP_429_TOO_MANY_REQUESTS  does it exist in rest_framework.status ?
+
+
 # API views
 class MovieListView(generics.ListCreateAPIView):
-    queryset = Movie.objects.all().order_by('-id')
+    # queryset = Movie.objects.all().order_by('-id')
+    queryset = Movie.objects.select_related().prefetch_related() 
+
     serializer_class = MovieListSerializer
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', "genre"]
+    ordering_fields = ['release_date', "vote_average"]
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
 
 
 class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
-
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
 
 
 # Regular template views
