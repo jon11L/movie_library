@@ -167,11 +167,12 @@ class Movie(BaseModel):
         ''' return the Movie.banner_poster with a formatted string'''
         # if self.image_poster:
         if self.poster_images:
-            if len(self.poster_images) >= 2:
-                num = random.randint(0, len(self.poster_images) -1)
-                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[num]}" # for a width500
-            else:    
-                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            # if len(self.poster_images) >= 2:
+            #     num = random.randint(0, len(self.poster_images) -1)
+            #     poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[num]}" # for a width500
+            # else:    
+            #     poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             return poster
         return None
 
