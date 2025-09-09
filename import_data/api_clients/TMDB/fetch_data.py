@@ -29,6 +29,7 @@ def get_api_data(*args, **kwargs):
 
     # Retry logic
     while retry < MAX_RETRIES:
+        # pass the same data as in get_api_data(*args, **kwargs) 
         url = tmdb_client.generate_url(*args, **kwargs)
         headers = tmdb_client.HEADERS
 

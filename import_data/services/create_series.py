@@ -243,7 +243,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                 posters.insert(0, season_data.get('poster_path')) 
 
             try:
-                # probably need to change the key tmdb_id check for serie/season_number unique constraint
+                # probably need to change the key with tmdb_id check for serie/season_number unique constraint
                 # as tmdb_id may change
                 # Create or update the season iterated
                 season, created = Season.objects.update_or_create(
@@ -275,7 +275,6 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
             datas_season.append(
                 f"{season_data.get("name")} -- total episodes: {len(list_episodes)}"
             )
-
 
             if season and created:
                 print(f"New season Created: *{season}* to DB")
