@@ -38,6 +38,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'genre',
             'origin_country',
             'original_language',
+            'casting',
             'director',
             'vote_average',
             'poster_images',
