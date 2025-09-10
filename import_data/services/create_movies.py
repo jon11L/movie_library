@@ -93,7 +93,16 @@ def save_or_update_movie(tmdb_id: int):
         if movie_data.get('poster_path') and movie_data.get('poster_path') not in select_posters:
             # append the original poster // to 1st element
             select_posters.insert(0, movie_data.get('poster_path')) 
+        elif movie_data.get('poster_path') and movie_data.get('poster_path') in select_posters:
+            # remove the 'main' poster path, to append it to the beginning
+            try:
+                select_posters.remove(movie_data.get('poster_path'))
+            except ValueError as e:
+                print(f"Value error: {e}\n")
+                print(f"Could not remove the poster path to append to first index.")
+            select_posters.insert(0, movie_data.get('poster_path'))
         
+
         poster_images = select_posters # set to save in the object
 
         # Fetch and store Banner images
@@ -101,9 +110,17 @@ def save_or_update_movie(tmdb_id: int):
         if banners is not None:
             select_banners = [sel['file_path'] for sel in banners[:4]] 
 
-        if movie_data.get('backdrop_path'):
-            # append the original poster // to 1st element
+        if movie_data.get('backdrop_path')  and movie_data.get('backdrop_path') not in select_banners :
+            # append the original banner // to 1st element
             select_banners.insert(0, movie_data.get('backdrop_path')) 
+        elif movie_data.get('backdrop_path') and movie_data.get('backdrop_path') in select_banners:
+            # remove the 'main' banner path, to append it to the beginning
+            try:
+                select_banners.remove(movie_data.get('backdrop_path'))
+            except ValueError as e:
+                print(f"Value error: {e}\n")
+                print(f"Could not remove the poster path to append to first index.")
+            select_banners.insert(0, movie_data.get('backdrop_path'))
 
         banner_images = select_banners # set to save in the object
 
