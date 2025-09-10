@@ -53,7 +53,7 @@
                             </div>
                         
                             <div class="poster-wrapper">
-                                {% if serie.poster_images %}
+                                {% if serie.render_poster %}
                                 <img src="{{ serie.render_poster }}" alt="{{ serie.title }} poster" class="img-fluid rounded w-100 h-100">
                                 {% else %}
                                 <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded w-100 h-100" alt="Profile photo">

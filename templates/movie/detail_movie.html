@@ -115,7 +115,7 @@
                             <div class="col-4">
 
                                 <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                                    {% if movie.poster_images %}
+                                    {% if movie.render_poster %}
                                     <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                     {% else %}
                                     <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">

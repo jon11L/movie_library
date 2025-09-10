@@ -62,7 +62,8 @@ class Movie(BaseModel):
 
     # The below functions are to format the fields for a better human readable display.
     def render_genre(self):
-        '''return the Movie.genre attribute in without quotes and [],
+        '''
+        return the Movie.genre attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.genre:
@@ -71,7 +72,8 @@ class Movie(BaseModel):
         return 'N/a'
 
     def render_casting(self):
-        '''return the Movie.casting attribute in without quotes and [],
+        '''
+        return the Movie.casting attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.casting:
@@ -80,7 +82,8 @@ class Movie(BaseModel):
         return 'N/a'
 
     def render_writer(self):
-        '''return the Movie.writer attribute in without quotes and [],
+        '''
+        return the Movie.writer attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.writer:
@@ -89,7 +92,8 @@ class Movie(BaseModel):
         return 'N/a'
 
     def render_production(self):
-        '''return the Movie.production attribute in without quotes and [],
+        '''
+        return the Movie.production attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.production:
@@ -144,14 +148,20 @@ class Movie(BaseModel):
         return 'Trailers Not found'
 
     def render_spoken_languages(self):
-        ''' return the Movie.spoken_languages with a comma-separated string'''
+        '''
+        return the Movie.spoken_languages with a comma-separated string
+        '''
         if self.spoken_languages:
             spoken_languages = ', '.join(self.spoken_languages)
             return spoken_languages
         return 'N/a'
 
     def render_banner(self):
-        ''' return the Movie.banner_poster with a formatted string'''
+        '''
+        return the Movie.banner_poster with a formatted string
+        Fallback to a default image if no banners are available
+
+        '''
         if self.banner_images:
             if len(self.banner_images) >= 2:
                 num = random.randint(0, len(self.banner_images) -1)
@@ -164,8 +174,10 @@ class Movie(BaseModel):
         # as it uses as a background image on the frontend.
 
     def render_poster(self):
-        ''' return the Movie.banner_poster with a formatted string'''
-        # if self.image_poster:
+        '''
+        return the Movie.banner_poster with a formatted strin
+        Fallback to a default image if no posters are available
+        '''
         if self.poster_images:
             poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             # if len(self.poster_images) >= 2:
@@ -174,7 +186,7 @@ class Movie(BaseModel):
             # else:    
             #     poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             return poster
-        return None
+        return static("images/default_poster_photo.jpg")
 
     def render_release_date(self):
         '''return the Episode.release_date with a formatted string'''
