@@ -68,10 +68,10 @@
                                     <div class="col">
                                     
                                         <div class="card-img-top">
-                                            {% if item.object.poster_images %}
-                                            <img src=" {{ item.object.render_poster }} " class="img-fluid rounded"  alt="Profile photo">
+                                            {% if item.object.render_poster %}
+                                            <img src="{{ item.object.render_poster }}" class="img-fluid rounded" alt="Poster photo">
                                             {% else %}
-                                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" alt="Profile photo">
+                                            <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" alt="Poster photo">
                                             {% endif %}
                                         </div>
                                         <p class="card-text"><strong>Overview</strong>: {{ item.object.description|slice:":40" }}...</p>

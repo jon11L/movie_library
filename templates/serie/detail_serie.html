@@ -19,10 +19,10 @@
                 <div class="card" style="width: 90%; justify-content: center; margin: auto;">
                     <div class="serie-card">
                         <div id="image-background">
-                            {% if serie.banner_images %}
-                            <img src="{{ serie.render_banner }}" class="img-fluid rounded"  style="width: 100%;" alt="Profile photo">
+                            {% if serie.render_banner %}
+                            <img src="{{ serie.render_banner }}" class="img-fluid rounded"  style="width: 100%;" alt="banner photo">
                             {% else %}
-                            <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+                            <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="banner photo">
                             {% endif %}
                         </div>
                     </div>
@@ -58,10 +58,10 @@
                         
                             <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
     
-                                {% if serie.poster_images %}
-                                <img src="{{ serie.render_poster }}" class="img-fluid rounded" style="margin: 0px" alt="Profile photo">
+                                {% if serie.render_poster %}
+                                <img src="{{ serie.render_poster }}" class="img-fluid rounded" style="margin: 0px" alt="banner photo">
                                 {% else %}
-                                <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Profile photo">
+                                <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Banner photo">
                                 {% endif %}
     
                                 <div style="text-align: center;">

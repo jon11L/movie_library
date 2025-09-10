@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 from core.models import BaseModel
 
 import random
+from django.templatetags.static import static
 
 class Serie(BaseModel):
 
@@ -101,7 +102,11 @@ class Serie(BaseModel):
             return 0
 
     def render_banner(self):
-        ''' return the Movie.banner_poster with a formatted string'''
+        '''
+        return the Movie.banner_poster with a formatted string
+        Fallback to a default image if no banners are available
+
+        '''
         if self.banner_images:
             if len(self.banner_images) >= 2:
                 num = random.randint(0, len(self.banner_images) -1)
@@ -109,14 +114,17 @@ class Serie(BaseModel):
             else:
                 banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}" # for a width1280
             return banner
-        return None
+        return static("images/default_banner_photo.jpg")
 
     def render_poster(self):
-        ''' return the Movie.banner_poster with a formatted string'''
+        '''
+        return the Movie.banner_poster with a formatted string
+        Fallback to a default image if no posters are available
+        '''
         if self.poster_images:
             poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             return poster
-        return None
+        return static("images/default_poster_photo.jpg")
     
     def render_first_air_date(self):
         '''return the Episode.release_date with a formatted string'''
