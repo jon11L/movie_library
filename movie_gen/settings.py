@@ -104,10 +104,10 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         # 'rest_framework.throttling.UserRateThrottle',
-        'movie.throttle.AdminRateThrottle',
-        'movie.throttle.UserBurstThrottle',
-        'movie.throttle.UserSustainThrottle',
-        'movie.throttle.UserDayThrottle',
+        'core.throttle.AdminRateThrottle',
+        'core.throttle.UserBurstThrottle',
+        'core.throttle.UserSustainThrottle',
+        'core.throttle.UserDayThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '0/day',

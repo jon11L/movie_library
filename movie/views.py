@@ -9,7 +9,7 @@ from rest_framework.response import Response
 # from rest_framework import viewsets
 from rest_framework import generics, filters
 
-from .permissions import IsAdminOrIsAuthenticatedReadOnly
+from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
 from .serializer import MovieListSerializer, MovieDetailSerializer
 
@@ -19,7 +19,7 @@ from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
 
-from movie.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from rest_framework.throttling import AnonRateThrottle
 
 # def admin_check(user):

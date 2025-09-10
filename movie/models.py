@@ -158,7 +158,8 @@ class Movie(BaseModel):
 
     def render_banner(self):
         '''
-        return the Movie.banner_poster with a formatted string
+        append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.banner_images url\n
+        in order to be a valid url to display it.\n
         Fallback to a default image if no banners are available
 
         '''
@@ -170,12 +171,13 @@ class Movie(BaseModel):
             else:
                 banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}" # for a width1280
             return banner
-        return static("images/default_banner.jpg") # default banner image if None set.
+        return static("images/default_banner_photo.jpg") # default banner image if None set.
         # as it uses as a background image on the frontend.
 
     def render_poster(self):
         '''
-        return the Movie.banner_poster with a formatted strin
+        append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.poster_images url\n
+        in order to be a valid url to display it.\n
         Fallback to a default image if no posters are available
         '''
         if self.poster_images:
@@ -189,7 +191,7 @@ class Movie(BaseModel):
         return static("images/default_poster_photo.jpg")
 
     def render_release_date(self):
-        '''return the Episode.release_date with a formatted string'''
+        '''return the Episode.release_date in a formatted string version'''
         if self.release_date:
             release_date = self.release_date.strftime("%b. %d, %Y")
             return release_date

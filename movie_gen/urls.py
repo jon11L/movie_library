@@ -21,6 +21,21 @@ from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
 from . import settings
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
+
+
+# a single view to return a list of different api endpoint available
+@api_view(["GET"])
+def api_root(request, format=None):
+    return Response({
+        # "register": reverse("register", request=request, format=format),
+        "token-auth": reverse("token_auth", request=request, format=format),
+        # "api-auth": reverse("api_auth", request=request, format=format),
+        "movie-list": reverse("api_movie:list", request=request, format=format),
+        "movies-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
+    })
 
 
 urlpatterns = [
@@ -34,8 +49,9 @@ urlpatterns = [
     path('comment/', include('comment.urls', namespace='comment')),
 
     # API rest routes
-    path('api-auth/', include('rest_framework.urls')),
-    path('api-token-auth/', obtain_auth_token), #create a token for users when posting their cred. to this url
+    path('api/', api_root, name='api_root'),
+    path('api-auth/', include('rest_framework.urls'), name="api_auth"), #/login or  for the browsable API /logout
+    path('api-token-auth/', obtain_auth_token, name='token_auth'), #create a token for users when posting their cred. to this url. POST {username, password}
     path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
