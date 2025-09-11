@@ -301,7 +301,7 @@ def show_content(request, content):
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"time: {elapsed_time:.2f} seconds.")
-        return render(request, 'main/documentaries.html', context=context)
+        return render(request, 'main/short_doc_anime.html', context=context)
 
     except Exception as e:
         print(f"An error occurred while loading the documentaries page: {e}\n")
