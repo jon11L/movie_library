@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
+import time
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -12,8 +13,6 @@ from rest_framework import generics, filters
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
 from .serializer import MovieListSerializer, MovieDetailSerializer
-
-
 from .models import Movie
 from user_library.models import Like, WatchList
 from comment.models import Comment
@@ -74,12 +73,13 @@ class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
         UserDayThrottle,
     ]
 
-
 # Regular template views
 def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
+    start_time = time.time()
+
     user_liked_movies = []
     user_watchlist_movies = []
 
@@ -87,10 +87,16 @@ def movie_list(request):
         if Movie:
             # paginator implementation
             if request.user.is_superuser:
-                paginator = Paginator(Movie.objects.all().order_by('-id'), 24)
+                movies = Movie.objects.only(
+                    "id", "title", "vote_average", "poster_images", "slug"
+                ).order_by("-id")
             else:
-                paginator = Paginator(Movie.objects.all().order_by('-popularity'), 24)
-                
+                movies = Movie.objects.only(
+                    "id", "title", "vote_average", "poster_images", "slug"
+                ).order_by("-popularity")
+                # paginator = Paginator(Movie.objects.all().order_by('-popularity'), 24)
+
+            paginator = Paginator(movies, 24)
             # Get the current page number from the GET request
             page = request.GET.get('page')
             movie_list = paginator.get_page(page)
@@ -117,12 +123,15 @@ def movie_list(request):
                 'user_watchlist_movies': user_watchlist_movies, 
                 }
 
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"time: {elapsed_time:.2f} seconds.")
             return render(request, 'movie/list_movie.html', context=context)
-            
+
         else:
             messages.error(request, 'No movies found in the database')
             return redirect('main:home')
-        
+
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
@@ -135,7 +144,7 @@ def movie_detail(request, slug):
     '''
     try:
         if Movie:
-        # retrieve the specified movie requested by user
+            # retrieve the specified movie requested by user
             movie = get_object_or_404(Movie, slug=slug)
 
             # Get the user's watchlist content (movies, series)
@@ -162,7 +171,7 @@ def movie_detail(request, slug):
                 content_type = "movie",
                 object_id=movie.pk
                 ).order_by('-created_at')
-            
+
             print(f"Number of comments:\n {len(comments)}")
 
             # display the Comment form if user is connected
@@ -177,7 +186,7 @@ def movie_detail(request, slug):
                     'comments': comments
                     }
                 return render(request,'movie/detail_movie.html', context=context)
-            
+
             else:
                 form = CommentForm()
                 context = {
@@ -188,13 +197,16 @@ def movie_detail(request, slug):
                     'comments': comments
                     }
                 return render(request,'movie/detail_movie.html', context=context)
-        
+
         else:
             messages.error(request, "No Movie found in the database with this title")
             print(f"Movie model not found in the database")
             return redirect('movie:list_movie')
-        
+
     except Exception as e:
-        messages.error(request, "the movie requested does not seem to exist. Or the page experiences some issue, please try again later")
+        messages.error(
+            request,
+            "the movie requested does not exist or the page experiences some issue, please try again later",
+        )
         print(f" error :{e}")
         return redirect('main:home')

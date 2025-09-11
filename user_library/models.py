@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from core.models import BaseModel
 from user.models import User 
@@ -57,24 +58,15 @@ class WatchedContent(BaseModel):
 
 class WatchList(BaseModel):
 
-    MOVIE = 'movie'
-    SERIE = 'serie'
-
-    CONTENT_TYPE_CHOICES = [
-        (MOVIE, 'Movie'),
-        (SERIE, 'Serie'),
-    ]
 
     class Status(models.TextChoices):
         PLANNED = 'plan', 'Plan to Watch'
         WATCHING = 'watching', 'Currently Watching'
         FINISHED = 'finished', 'Finished Watching'
-        DROPPED = 'dropped', 'Dropped'
+        DROPPED = 'dropped', 'Dropped out'
 
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watchlist')
-    # content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES) # to remove when everything is updated
-    # object_id = models.PositiveIntegerField(null=True, blank=True) # to remove when everything is updated
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     personal_note = models.TextField(max_length=500, blank=True, null=True)
@@ -105,7 +97,6 @@ class WatchList(BaseModel):
                 condition=models.Q(serie__isnull=False),
                 name='unique_serie_watchlist'
             ),
-            
         ]
 
 
@@ -122,27 +113,19 @@ class WatchList(BaseModel):
         """Allow access to the movie or serie directly."""
         return self.movie or self.serie
 
+    def clean(self):
+        super().clean()
+        if self.movie and self.serie:
+            raise ValidationError("WatchList can only reference either a Movie or a Serie, not both.")
+        if not self.movie and not self.serie:
+            raise ValidationError("WatchList must reference either a Movie or a Serie.")
+
 # --------------------------------------------------------------
-
-    # def clean(self):
-    #     super().clean()
-    #     if self.movie and self.serie:
-    #         raise ValidationError("WatchList can only reference either a Movie or a Serie, not both.")
-    #     if not self.movie and not self.serie:
-    #         raise ValidationError("WatchList must reference either a Movie or a Serie.")
- 
-
     # def save(self, *args, **kwargs):
         # self.full_clean()
         # return super().save(*args, **kwargs)
- 
 
 # --------------------------------------------------------------
-
-
-
-
-
 
 class Like(BaseModel):
 

@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 
 # from django.contrib.auth.decorators import user_passes_test
 import datetime
+import time
 import random
 import traceback
 
@@ -31,8 +32,9 @@ def home(request):
     - Random pick
     - from user Watchlist
     - coming back (Series only)
-
     '''
+    start_time = time.time()
+
     # Check if they are Movie datas and display them if so
     try: 
 
@@ -60,31 +62,54 @@ def home(request):
         # and return a sample of it / 6 per selections.
         if Movie.objects.exists():
             # recently released movies (in the last 2 weeks)
-            recent_movies = Movie.objects.filter(
-                release_date__range=(fortnight_ago, yesterday), length__gte=45
-            ).order_by("?")[:6]
+            recent_movies = (
+                Movie.objects.filter(
+                    release_date__range=(fortnight_ago, yesterday), length__gte=45
+                )
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )
 
             # retrieve the movies coming out soon.
-            upcoming_movies = Movie.objects.filter(
-                release_date__range=(today, bi_week_later), length__gte=45
-            ).order_by("?")[:6]
+            upcoming_movies = (
+                Movie.objects.filter(
+                    release_date__range=(today, bi_week_later), length__gte=45
+                )
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )
 
-            random_movies = Movie.objects.filter(length__gte=45).order_by("?")[:6]
-            print(f"- Random pick movies: {random_movies}") # debug print
+            random_movies = (
+                Movie.objects.filter(length__gte=45)
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )
+            print(f"- Random pick movies: {random_movies}")  # debug print
 
         # display the amount of Movies available from the database
         movies_count = Movie.objects.count() 
 
         if Serie.objects.exists():
-            ongoing_series = Serie.objects.filter(
-                last_air_date__range=(fortnight_ago, week_later)
-            ).order_by("?")[:6]
 
-            new_series = Serie.objects.filter(
-                first_air_date__range=(fortnight_ago, bi_week_later)
-            ).order_by("?")[:6]
+            ongoing_series = (
+                Serie.objects.filter(last_air_date__range=(fortnight_ago, week_later))
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )
 
-            random_series = Serie.objects.all().order_by("?")[:6] # retrieve 6 random movies from the last 30 days
+            new_series = (
+                Serie.objects.filter(
+                    first_air_date__range=(fortnight_ago, bi_week_later)
+                )
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )
+
+            random_series = (
+                Serie.objects.all()
+                .only("id", "title", "vote_average", "poster_images", "slug")
+                .order_by("?")[:6]
+            )  # retrieve 6 random movies from the last 30 days
             # print(f"- Random pick series: {random_series}\n")
 
             # display the amount of Movies & Series available from the database
@@ -149,15 +174,18 @@ def home(request):
                         })
 
             context.update(
-                        {
-            'user_liked_movies': user_liked_movies,
-            'user_liked_series': user_liked_series,
-            'user_watchlist_movies': user_watchlist_movies,
-            'user_watchlist_series': user_watchlist_series,
-            'watchlist_content': watchlist_content,
-        }
+                {
+                    "user_liked_movies": user_liked_movies,
+                    "user_liked_series": user_liked_series,
+                    "user_watchlist_movies": user_watchlist_movies,
+                    "user_watchlist_series": user_watchlist_series,
+                    "watchlist_content": watchlist_content,
+                }
             )
 
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"time: {elapsed_time:.2f} seconds.")
         return render(request, 'main/home.html', context=context)
 
     except Exception as e:
@@ -176,37 +204,51 @@ def show_content(request, content):
     - Short Films
     - Anime
     '''
+    start_time = time.time()
     media = [] # list to hold the content (movies, series)
 
     try:
         if content == 'documentaries':
-            # Check if they are Movie datas and display them if so
-            movies = Movie.objects.filter(genre__icontains = "documentary")
-            series = Serie.objects.filter(genre__icontains = "documentary")
-            print(f"\nDocumentaries has:\n{len(movies)} Movies\n{len(series)} Series:\n") # debug print
+            # Check in Movies&Series if genre contains 'documentary' then load them for templating
+            movies = Movie.objects.filter(genre__icontains="documentary").only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            )
+
+            series = Serie.objects.filter(genre__icontains="documentary").only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            )
 
         elif content == 'short films':
             # Check if they are short Movies under 45 minutes
-            movies = Movie.objects.filter(length__lte=45, length__gt=0)  # Movies with length between 0 and 45 minutes
-            series = Serie.objects.none()  # No series for short contentAdd commentMore actions
+            movies = Movie.objects.filter(length__lte=45, length__gt=0).only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            )  # length between 0 and 45 minutes
 
+            series = Serie.objects.none() # No series for short content
         elif content == 'anime':
             # Check if they are Anime Movies and Series
-            movies = Movie.objects.filter(genre__icontains='Animation')
-            series = Serie.objects.filter(genre__icontains='Animation')
+            movies = Movie.objects.filter(genre__icontains="Animation").only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            )
+            series = Serie.objects.filter(genre__icontains="Animation").only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            )
 
+        print(f"\n{content} has:\n{len(movies)} Movies\n{len(series)} Series:\n")
         # combine movies and series into a single list or object to pass in paginator
-        for movie in movies:
+        if movies:
+            for movie in movies:
                 media.append({
-                    'object': movie,
-                    'type': 'movie',
-                })
+                        'object': movie,
+                        'type': 'movie',
+                    })
 
-        for serie in series:
-            media.append({
-                'object': serie,
-                'type': 'serie',
-            })
+        if series:
+            for serie in series:
+                media.append({
+                    'object': serie,
+                    'type': 'serie',
+                })
 
         # Sort the content media by title (ascending order)
         media = sorted(media, key=lambda x: x['object'].title, reverse=False)
@@ -229,7 +271,7 @@ def show_content(request, content):
                 user=request.user.id, content_type='serie'
                 ).values_list('object_id', flat=True)
         )
-        
+
         # Get the user's watchlist content (movies, series)
         user_watchlist_movies = set(
             WatchList.objects.filter(
@@ -242,10 +284,9 @@ def show_content(request, content):
                             user=request.user.id, serie__isnull=False
                             ).values_list('serie_id', flat=True)
         )
-        
+
         # print(f"User's watchlist movies: {user_watchlist_movies}...\n")  # debug print
         # print(f"User's watchlist series: {user_watchlist_series}...\n")
-
         context = {
             'content': content.capitalize(),
             'movies': movies,
@@ -257,6 +298,9 @@ def show_content(request, content):
             'user_watchlist_series': user_watchlist_series,
         }
 
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"time: {elapsed_time:.2f} seconds.")
         return render(request, 'main/documentaries.html', context=context)
 
     except Exception as e:

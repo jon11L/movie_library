@@ -4,6 +4,8 @@ from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
 
+import time
+
 from .models import Serie, Season, Episode
 from user_library.models import Like, WatchList
 from comment.models import Comment
@@ -14,16 +16,23 @@ def serie_list(request):
     '''retrieve the series from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
+    start_time = time.time()
+
     try:
         if Serie:
             # paginator implementation
             if request.user.is_superuser:
-                paginator = Paginator(Serie.objects.all().order_by('-id'), 24)
+                series = Serie.objects.only(
+                    "id", "title", "vote_average", "poster_images", "slug"
+                ).order_by("-id")
             else:
-                paginator = Paginator(Serie.objects.all().order_by('-popularity'), 24)
+                series = Serie.objects.raw(
+                    'SELECT id, title, vote_average, poster_images, slug FROM serie ORDER BY popularity DESC NULLS LAST'
+                )
 
-            # Get the current page number from the GET request
-            page = request.GET.get('page') 
+            # paginates over the model
+            paginator = Paginator(series, 24)
+            page = request.GET.get('page') # Get the current page number from the GET request
             serie_list = paginator.get_page(page)
 
             # Get the user's watchlist content (series only here)
@@ -44,13 +53,16 @@ def serie_list(request):
                 'serie_list' : serie_list,
             }
 
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"time: {elapsed_time:.2f} seconds.")
             return render(request, 'serie/list_serie.html', context=context)
-        
+
         else:
             # if the serie does not exist in the database
             messages.error(request, "No Tv-Show found in the database")
             return redirect('main:home')
-        
+
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
