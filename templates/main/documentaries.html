@@ -9,25 +9,24 @@
         <div class="row">
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-md-block" style="padding: 0;">
                 <div></div>
             </aside>
 
 
-            <main class="custom-col-9">
+            <main class="custom-col-9" style="padding: 0;">
 
                 {% if list_content %}
-                <h1 style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">{{ content }}:</h1>
+                <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">{{ content }}:</h1>
                 
                 <!-- Display of Documentaries media genre -->
-                <div class="row" style="justify-content: center;">
+                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 2rem 1.5rem;">
                     {% for item in list_content %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 30px; margin-bottom: 2em;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
-                                <p style="color: aquamarine;"><small>({{ item.type|title }})</small></p>
+                                <p style=" margin: 10px 0px 0 15px; color: aquamarine;"><small>{{ item.object.render_vote_average }}/10</small></p>
                                 {% if item.type == 'movie' %}
                             
                                 <div>
@@ -72,7 +71,7 @@
                                 {% endif %}
                             </div>
                         
-                            <div class="poster-wrapper">
+                            <div class="poster-wrapper" title="({{ item.type|title }})">
                                 {% if item.object.render_poster %}
                                 <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
                                 {% else %}
@@ -103,10 +102,9 @@
                     </div>
                     {% endif %}
                 </div>
-            
-                <br><br><br>
 
-            
+                <br>
+
                 {% if list_content and list_content.paginator.num_pages > 1 %}
                 <!----- Pagination system ------->
                 <div style="display: flex; justify-content: center;">
@@ -175,7 +173,7 @@
             </main>
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-md-block" style="padding: 0;">
                 <div>
                 </div>
             </aside>

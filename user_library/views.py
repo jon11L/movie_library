@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-# from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
+
+import time
 
 from .models import WatchList, Like
 from user.models import User
@@ -27,25 +28,33 @@ def liked_content_view(request, pk):
             print(f" user {user} visit their Liked media list page\n")
 
             likes = Like.objects.filter(user=pk)
-            
+
             liked_content = [] # intialize the list of liked content 
             for like in likes:
 
                 if like.content_type == "movie":
                     try:
                         movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type,
-                                              'object': movie,
-                                              'liked_on': like.created_at.strftime("%d %B %Y")})
+                        liked_content.append(
+                            {
+                                "content_type": like.content_type,
+                                "object": movie,
+                                "liked_on": like.created_at.strftime("%d %B %Y"),
+                            }
+                        )
                         # print(f"movie: {movie}\n") #debug print
                     except Movie.DoesNotExist:
                         continue
                 elif like.content_type == "serie":
                     try:
                         serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append({'content_type': like.content_type,
-                                              'object': serie,
-                                              'liked_on': like.created_at.strftime("%d %B %Y")})
+                        liked_content.append(
+                            {
+                                "content_type": like.content_type,
+                                "object": serie,
+                                "liked_on": like.created_at.strftime("%d %B %Y"),
+                            }
+                        )
                         # print(f"serie: {serie}\n") #debug print
                     except Serie.DoesNotExist:
                         continue
@@ -119,6 +128,7 @@ def toggle_like(request, content_type: str, object_id: int):
 
 def watch_list_view(request, pk):
     '''retrieve the user's watchlist from the database and display them in the template'''
+    start_time = time.time()
 
     # Need to add a check that only current user can visit their own Like page.
     if request.user.is_authenticated and request.user.id != pk:
@@ -139,14 +149,12 @@ def watch_list_view(request, pk):
                     if item.movie:
                         watchlist_content.append({
                             'object': item.movie,
-                            # 'type': "movie"
                             'type': item.kind
                             })
 
                     elif item.serie:
                         watchlist_content.append({
                             'object': item.serie,
-                            # 'type': "serie"
                             'type': item.kind
                             })
 
@@ -180,6 +188,9 @@ def watch_list_view(request, pk):
                 'total_content': total_content,
             }
 
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"time: {elapsed_time:.2f} seconds.")
             return render(request, 'user_library/watch_list.html', context=context)
 
         # elif request.method == "POST":
@@ -194,17 +205,15 @@ def watch_list_view(request, pk):
 
 
 def toggle_watchlist(request, content_type: str, object_id: int):
-    '''When triggered or called in pair with AJAX on the front-end, 
-    this function will check in the 'watchlist' models data
-    if an instance of watchlist exist between user/content_type (movie or serie)/object_id (id of that object) exist or not 
+    '''
+    When triggered or called in pair with AJAX on the front-end, 
+    this function will check in the model 'watchlist' 
+    if an instance exist between user/content_type (movie or serie)/object_id (id of that object) exist or not 
     if it does not, it will then create a new instance in the database,
     if the instance already exists, it will delete the instance.
     With AJAX implemented on the front-end, the updates on the data are made without reloading the page
-            \n---
-    #### - content_type is either 'movie' or 'serie' reference to the model type
-    #### - object_id is the id/pk of the object movie or serie
+    \n---
     '''
-    # content_type is either 'movie' or 'serie' reference to the model type
 
     # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:
@@ -233,7 +242,9 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 # return JsonResponse({'liked': False, 'message': message}) # responding to Ajax on front-end.
                 return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
             
-            else: # the Like is created with the user id, model type and the respective id of this model
+            else: 
+                # the Watchlist instance is created with the user id,
+                # model type and the respective id of this model instance to construct the foreign key
                 watchlist = WatchList.objects.create(
                     user=request.user,
                     movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
