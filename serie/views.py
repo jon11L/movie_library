@@ -6,10 +6,49 @@ from django.core.paginator import Paginator
 
 import time
 
+from rest_framework import generics, filters
+from core.permissions import IsAdminOrIsAuthenticatedReadOnly
+# from .serializer import MovieSerializer
+from .serializer import SerieListSerializer, SerieDetailSerializer
+from rest_framework.throttling import AnonRateThrottle
+
+from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+
 from .models import Serie, Season, Episode
 from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
+
+
+class SerieListView(generics.ListCreateAPIView):
+    # queryset = Movie.objects.all().order_by('-id')
+    queryset = Serie.objects.select_related().prefetch_related() 
+
+    serializer_class = SerieListSerializer
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', "genre"]
+    ordering_fields = ['first_air_date', "vote_average", "status"]
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
+
+
+class SerieDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Serie.objects.all()
+    serializer_class = SerieDetailSerializer
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
 
 
 def serie_list(request):
