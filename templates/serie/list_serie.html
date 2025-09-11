@@ -8,25 +8,25 @@
         <div class="row">
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-md-block" style="padding: 0;">
                 <div></div>
             </aside>
 
             <!-- Main/middle section of the screen -->
-            <main class="custom-col-9">
+            <main class="custom-col-9" style="padding: 0;">
                 
                 {% if serie_list %}
                 <!------- Display the Series.  --------->
 
-                <div style="text-align: center; margin-top: 3rem; margin-bottom: 3rem;">
+                <div style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
                     <h1>TV Shows:</h1>
                 </div>
 
-                <div class="row" style="justify-content: center;">
+                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2%; padding: 2rem 1.5rem;">
                     {% for serie in serie_list %}
 
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2rem;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2rem;">
 
                             <div style="display: flex; justify-content: space-between;" id="like_button">
                                 <p style=" margin: 5px 0px 0 15px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
@@ -76,9 +76,7 @@
                     <p>please visit this page later</p>
                 </div>
                 {% endif %}
-            
-            
-                <br><br><br>
+                <br>
             
                 <!----- Pagination system ------->
                 {% if serie_list and serie_list.paginator.num_pages > 1 %}
@@ -147,7 +145,7 @@
             </main>
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-md-block" style="padding: 0;">
                 <div>
                 </div>
             </aside>

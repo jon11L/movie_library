@@ -34,11 +34,11 @@
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Movies recently released:</h2>
                 
                 <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
 
                     {% for movie in recent_movies %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
                                 <small style="margin: 10px 0px 0px 5px; color: aquamarine;">{{ movie.render_vote_average }}/10</small>
@@ -87,12 +87,12 @@
                 <!------ Displaying the new series coming up here -------->
                 {% if returning_series %}
                 <h2 style="text-align: center; background-color: black; padding: 5px;">Ongoing TV Shows:</h2>
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
 
                     {% for serie in returning_series %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xxl-2" style="height: 100%;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
 
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
@@ -149,12 +149,12 @@
                     </h2>
                 </div>
                 
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
                     {% for item in watchlist_content %}
 
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
 
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
                             
                             <div style="display: flex; justify-content: space-between;">
                                 <small style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
@@ -233,10 +233,10 @@
                 <h2 style="text-align: center; padding-top: 10px; padding-bottom: 10px; background-color: black;">Upcoming:</h2>
                 <h5 style="margin-top: 15px;">Movies</h5>
 
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
                     {% for movie in movies_coming_soon %}
-                    <div  class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                    <div  class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ movie.render_vote_average }}/10</small></p>
@@ -286,10 +286,10 @@
                 {% if new_series %}
                 <h5 style="margin-top: 15px;"> Series</h5>
 
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
                     {% for serie in new_series %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
@@ -344,10 +344,10 @@
                 {% if random_movies %}
                 <h5 style="margin-top: 15px;">Movies</h5>
 
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
                     {% for movie in random_movies %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ movie.render_vote_average }}/10</p>
@@ -396,10 +396,10 @@
                 {% if random_series %}
                 <h5 style="margin-top: 0px;">Series</h5>
 
-                <div class="row">
+                <div class="row" style="padding: 0rem 1rem;">
                     {% for serie in random_series %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;">
-                        <div class="media-card h-100 w-100" style="margin-right: 35px; margin-bottom: 2em;">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0 5px; color: aquamarine;"><small>{{ serie.render_vote_average }}/10</small></p>
@@ -479,7 +479,7 @@
                     </strong>
                     <strong style="color: rgb(146, 19, 19); font-size: 18px;">
                         <p style="margin: 0;">
-                            available in the library
+                            available in library
                         </p>
                     </strong>
 
