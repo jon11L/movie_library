@@ -34,7 +34,9 @@ def api_root(request, format=None):
         "token-auth": reverse("token_auth", request=request, format=format),
         # "api-auth": reverse("api_auth", request=request, format=format),
         "movie-list": reverse("api_movie:list", request=request, format=format),
-        "movies-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
+        "movie-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
+        "serie-list": reverse("api_serie:list", request=request, format=format),
+        "serie-detail": reverse("api_serie:detail", kwargs={"pk": 50}, request=request, format=format),
     })
 
 
@@ -53,5 +55,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls'), name="api_auth"), #/login or  for the browsable API /logout
     path('api-token-auth/', obtain_auth_token, name='token_auth'), #create a token for users when posting their cred. to this url. POST {username, password}
     path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
+    path('api/v1/serie/', include('serie.api_urls', namespace='api_serie')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
