@@ -16,144 +16,161 @@
             <main class="custom-col-9">
                 
                 {% if serie %}
-                <div class="card" style="width: 90%; justify-content: center; margin: auto;">
-                    <div class="serie-card">
-                        <div id="image-background">
-                            {% if serie.render_banner %}
-                            <img src="{{ serie.render_banner }}" class="img-fluid rounded"  style="width: 100%;" alt="banner photo">
-                            {% else %}
-                            <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="banner photo">
-                            {% endif %}
-                        </div>
-                    </div>
+                <br>
+                <div class="card" style="width: 90%; justify-content: center; margin: auto; margin-top: 0;">
+                    <div class="serie-card" id="banner-background" style="background-image: url('{{ serie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: 1280px;">
 
-                    <div style="background-color: rgb(131, 125, 125);">
+                        <div>
+                            <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                            
+                                <div style="padding-top: 0.5em; padding-left: 0.7em;">
+                                    <p style="color: antiquewhite;">
+                                        <small>{{ serie.render_vote_average }}/10 ({{serie.vote_count}} votes)</small>
+                                    </p>
+                                </div>                                <!-- Display the like and watchlist buttons -->
 
-                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-top: 12px; margin-right: 10px;">
-                        
-                            <p style="margin-right: 8px;"><small>{{ serie.render_vote_average }}/10</small></p>
-                            <!-- Display the like and watchlist buttons -->
-                            <div class="user-feature-btn">
-                            
-                                <!-- Watchlist button feature -->
-                                <button class="watchlist-button"
-                                    data-type="serie"
-                                    data-id="{{ serie.id }}"
-                                    data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                    <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                </button>
-                                <!-- like button feature -->
-                                <button class="like-button"
-                                        data-type="serie"
-                                        data-id="{{ serie.id }}"
-                                        data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
-                                        <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                </button>
-                            
-                            </div>
-                        
-                        </div>
-                        <!-- Display Serie poster and title  -->
-                        <div class="d-flex flex-wrap">
-                        
-                            <div class="card-img-top" style="text-align: center; margin: 0px 0px 0px 0px; padding: 0px;">
-    
-                                {% if serie.render_poster %}
-                                <img src="{{ serie.render_poster }}" class="img-fluid rounded" style="margin: 0px" alt="banner photo">
-                                {% else %}
-                                <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px;" alt="Banner photo">
-                                {% endif %}
-    
-                                <div style="text-align: center;">
-                                    {% if serie.title != serie.original_title %}
-                                    <h4 class="card-title">{{ serie.title }}   ({{ serie.original_title }})</h4>
-                                    {% else %}
-                                    <h4 class="card-title">{{ serie.title }}</h4>
-                                    {% endif %}
-    
-                                    {% if serie.tagline %}
-                                    <p> ({{ serie.tagline }})</p>
-                                    {% endif %}
-    
-    
-                                    <!-- For dev purpose -->
-                                    {% if request.user.is_superuser %}
-                                    <div>
-                                        <small>id: {{ serie.pk }} </small>
-                                        
-                                        {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
-                                        <small> -- (Not updated)</small>
-                                        {% elif serie.created_at != serie.updated_at %}
-                                        <small> -- last updated ({{ serie.updated_at }})</small>
-                                        {% endif %}
+                                <div style="align-self: flex-end; padding-right: 0.7em;">
+
+                                    <div class="user-feature-btn" >
+                                        <!-- Watchlist button feature -->
+                                        <button class="watchlist-button"
+                                            data-type="serie"
+                                            data-id="{{ serie.id }}"
+                                            data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                            <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                        </button>
+                                        <!-- like button feature -->
+                                        <button class="like-button"
+                                                data-type="serie"
+                                                data-id="{{ serie.id }}"
+                                                data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                                                <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                        </button>
                                     </div>
-                                    {% endif %}
-                                    <!-- End of dev purpose -->
-    
                                 </div>
                             </div>
-    
-                        </div>
-                    </div>
+                            
+                            <!-- To give space between the backcgrounf image and the next parts -->
+                            <div style="padding-bottom: 25.6em;"></div>
 
-                    <br>
-                    <!-- display serie content data -->
-                    <div class="card-body">
+                            <div class="row">
 
-                        <div class="d-flex">
-                        
-                            <div style="width: 33%; margin-left: 1em;">
-                                <p class="card-text" style="text-align: center; padding: 0px;"> <strong>Overview:</strong></p>
-                                <p class="card-text">{{ serie.description }}</p>
-                            </div>
-
-                            <div style="width: 33%; margin-left: 1em;">
-                                <ul class="list-group list-group-flush">
-                                    <div style="display: flex;">
-                                        <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px"><strong>Release:</strong> {{ serie.first_air_date }}</li>
-                                        <li class="list-group-item" style="border: none; padding: 0px 8px 8px 8px;"><strong>Length:</strong> {{ serie.length }}min</li>
-                                    </div>
-                                </ul>
-
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                    </li>
-                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                        <strong>Genre:</strong>
-                                        <p>{{ serie.render_genre }}</p>
-                                    </li>
-                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                        <strong>Created by:</strong>
-                                        <p>{{ serie.render_created_by }}</p>
-                                    </li>
-                                    <li class="list-group-item" style="padding: 8px 8px 0px 8px;">
-                                        <strong>Production:</strong>
-                                        <p>{{ serie.render_production }}</p>
-                                    </li>
-                                    <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
-                                        <div class="d-flex" style="justify-content: space-between;">
-                                            <div>
-                                                <strong>Origin country:</strong>
-                                                <p>{{ serie.render_origin_country }}</p>
-                                            </div>
-                                            <div>
-                                                <strong>Language:</strong>
-                                                <p>{{ serie.render_spoken_languages }}</p>
-                                            </div>
+                                <div class="col-4" style="padding-top: 14em;">
+                                    <div>
+                                        <div style="margin-top: 2em;">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div class="d-flex" style="justify-content:space-around;">
+                                                        <div>
+                                                            <strong>Released:</strong> {{ serie.first_air_date }}
+                                                        </div>
+                                                        <div>
+                                                            <strong>Length:</strong> {{ serie.length }}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
+                                                    <p style="padding: 0; margin: 0; text-align: center;">
+                                                        {{ serie.render_genre }}
+                                                    </p>
+                                                </li>
+                                                <li class="list-group-item"><p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                                    {% if main_cast %}
+                                                        {% for cast in main_cast %}
+                                                            {% if not cast.role %}
+                                                            <p style="margin: 0 0 0 2em;  padding: 0;">{{ cast.name }}</p>
+                                                            {% else  %}
+                                                            <p style="margin: 0 0 0 0em;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </li>
+                                            </ul>
                                         </div>
-                                        </li>
+                                    </div>
 
-                                        <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
-                                        </li>
-                                </ul>
+                                </div>
+
+                                <div class="col-4">
+
+                                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                                        {% if serie.render_poster %}
+                                        <img src=" {{ serie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                        {% else %}
+                                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div class="card-body" style="background-color: none;">
+                                        <div style="text-align: center;">
+                                            {% if serie.title != serie.original_title %}
+                                            <h4 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h4>
+                                            {% else %}
+                                            <h4 class="card-title">{{ serie.title }}</h4>
+                                            {% endif %}
+                                        
+                                            {% if serie.tagline %}
+                                            <p>({{ serie.tagline }})</p>
+                                            {% endif %}
+                                            <!-- For dev purpose -->
+                                            {% if request.user.is_superuser %}
+                                            <div>
+                                                <strong>id: {{ serie.pk }} </strong>
+                                                {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
+                                                <strong> -- (Not updated)</strong>
+                                                {% elif serie.created_at != serie.updated_at %}
+                                                <strong> -- (last updated on {{ serie.updated_at }})</strong>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            <!-- End of dev purpose -->
+                                        </div>
+
+                                        <br>
+                                        <div style="margin: auto;">
+                                            {% if serie.description %}
+                                            <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
+                                            <p>{{ serie.description }}</p>
+                                            {% else %}
+                                            <p class="card-text"><strong>Description:</strong></p>
+                                            <p>No description available.</p>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col" style="padding-top: 16em;">
+                                    <div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="text-align: center; margin: 0;"><strong>Production:</strong></p>
+                                                <p>{{ serie.render_production }}</p>
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="text-align: center; margin: 0;"><strong>Created by:</strong></p>
+                                                <p>{{ serie.render_created_by }}</p>
+                                            </li>
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <div class="d-flex">
+                                                    <div>
+                                                        <strong>Origin country:</strong>
+                                                        <p>{{ serie.render_origin_country }}</p>
+                                                    </div>
+                                                    <div style="margin-left: 4em;">
+                                                        <strong>Language:</strong>
+                                                        <p>{{ serie.render_spoken_languages }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
                             </div>
-                        
-                            <div style="width: 33%; text-align: center;">
-                                <p>Test placeholder</p>
-                                <!-- <p>production: {{serie.render_production}}</p>
-                                <p>created_by: {{serie.render_created_by}}</p>
-                                <p>production: {{serie.render_production}}</p> -->
-                            </div>
+                            
                         </div>
 
                     </div>

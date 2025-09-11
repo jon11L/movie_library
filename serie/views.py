@@ -77,22 +77,15 @@ def serie_detail(request, slug):
             # Get the seasons and episodes related to the serie
             serie = get_object_or_404(Serie, slug=slug)
             seasons = serie.seasons.all().prefetch_related("episodes")
+
+            main_cast = None
+            for season in seasons:
+                if season.season_number == 1:
+                    main_cast = season.casting
+                    break
+
+            print(f"main_casting: {main_cast}")
             print(f"serie {serie.title} contains: {len(seasons)} seasons")
-
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id,
-                                                serie__isnull=False
-                                                ).values_list('serie_id', flat=True)
-
-            # Check if user liked the serie
-            user_liked_serie = Like.objects.filter(
-                                            user=request.user.id,
-                                            content_type='serie',
-                                            object_id=serie.pk
-                                            ).values_list('object_id', flat=True)
-
-            print(f"user like {serie.title} :{user_liked_serie}") # debug print
 
             # get the comments related to the movie
             comments = Comment.objects.filter(
@@ -100,42 +93,60 @@ def serie_detail(request, slug):
                 content_type = "serie",
                 object_id=serie.pk
                 ).order_by('-created_at')
-            
+
             print(f"number of comments: {len(comments)}")
 
-            # display the Comment form if user is connected
+            form = CommentForm()
+            context = {
+                'serie': serie,
+                'seasons': seasons,
+                'form': form,
+                'main_cast': main_cast,
+                # 'user_liked_serie': user_liked_serie,
+                # 'user_watchlist_series': user_watchlist_series,
+                'comments': comments
+                }
+
             if request.user.is_authenticated:
+                # Get the user's watchlist content (movies, series)
+                user_watchlist_series = WatchList.objects.filter(
+                                                    user=request.user.id,
+                                                    serie__isnull=False
+                                                    ).values_list('serie_id', flat=True)
+
+                # Check if user liked the serie
+                user_liked_serie = Like.objects.filter(
+                                                user=request.user.id,
+                                                content_type='serie',
+                                                object_id=serie.pk
+                                                ).values_list('object_id', flat=True)
+
+                print(f"user like {serie.title} :{user_liked_serie}") # debug print
+
+                # display the Comment form if user is connected
                 form = CommentForm(request.POST or None)
-
-                context = {
-                    'serie': serie,
-                    'seasons': seasons,
-                    'user_liked_serie': user_liked_serie,
-                    'user_watchlist_series': user_watchlist_series,
-                    'form': form,
-                    'comments': comments,
+                context.update(
+                    {
+                        "serie": serie,
+                        "seasons": seasons,
+                        "main_cast": main_cast,
+                        "user_liked_serie": user_liked_serie,
+                        "user_watchlist_series": user_watchlist_series,
+                        "form": form,
+                        "comments": comments,
                     }
+                )
 
-                return render(request,'serie/detail_serie.html', context=context)
+            return render(request,'serie/detail_serie.html', context=context)
 
-            else:
-                form = CommentForm()
-                context = {
-                    'serie': serie,
-                    'seasons': seasons,
-                    'form': form,
-                    'user_liked_serie': user_liked_serie,
-                    'user_watchlist_series': user_watchlist_series,
-                    'comments': comments
-                    }
-                return render(request,'serie/detail_serie.html', context=context)
-            
+            # return render(request,'serie/detail_serie.html', context=context)
+
         # if the serie does not exist in the database
         else:
             messages.error(request, "No Tv Show found in the database with this title")
             print(f" error : Serie model not found in the database")
             return redirect('serie:list_serie')
-        
+
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
         print(f" error :{e}")

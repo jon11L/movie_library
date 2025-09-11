@@ -77,12 +77,12 @@ img {
 
 
 .like-button i {
-    color: #e53636;
+    color: #6d1b1b;
     transition: all 1.3s ease;
 }
 
 .like-button i.liked {
-    color: #e53636;
+    color: #6d1b1b;
 }
 
 
@@ -93,7 +93,7 @@ img {
 }
 
 .fa-heart.liked {
-    color: #e53636;
+    color: #6d1b1b;
 }
 
 /* Option 2: Scale with rotation */
