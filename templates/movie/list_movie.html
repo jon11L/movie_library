@@ -18,10 +18,10 @@
                 {% if movie_list %}
                 <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1>
                 
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2%; padding: 2rem 1.5rem;">
+                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2%; padding: 2rem 1.5rem 0.5rem 1.5rem;">
                     {% for movie in movie_list %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%;  padding-left: 0.4rem; padding-right: 0.4rem;">
-                        <div class="media-card h-100 w-100" style="margin-bottom: 2rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <p style=" margin: 10px 0px 0px 5px; color: aquamarine;"><small>{{ movie.render_vote_average }}/10</small></p>
@@ -96,9 +96,15 @@
                             {% for num in movie_list.paginator.page_range %}
                                 <!-- enumerate pages around current page -->
                                 {% if num == movie_list.number %}
-                                <li class="page-item" style="margin: 0px 1px;"><a  href="#" class="btn btn-info disabled" style="border: none;">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;">
+                                    <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
+                                </li>
                                 {% elif num > movie_list.number|add:'-5' and num < movie_list.number|add:'5' %}
-                                <li class="page-item" style="margin: 0px 1px;"><a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a></li>
+                                <li class="page-item" style="margin: 0px 1px;">
+                                    <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">
+                                        {{ num }}
+                                    </a>
+                                </li>
                                 {% endif %}
                             {% endfor %}
 

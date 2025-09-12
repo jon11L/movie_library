@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<div class="container-fluid my-4">
+<div class="container-fluid">
     <div class="custom-wide">
         <div class="row">
 
@@ -14,7 +14,7 @@
             </aside>
             
             <!-- Main/middle section of the screen -->
-            <main class="custom-col-9">
+            <main class="custom-col-9" style="padding: 0;">
 
                 <div class="card">
                     <div class="card-header" style="text-align: center; margin-top: 8px;">
@@ -130,12 +130,12 @@
                 <br>
                 <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
                 {% if list_content %}
-                <div class="row" style="padding: 0rem 1rem;">
+                <div class="row" style="border: solid 2px; border-radius: 2%; padding: 2rem 1.5rem 1rem 1.5rem;">
 
                     {% for item in list_content %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
 
-                        <div class="media-card h-100 w-100" style="margin-bottom: 2em;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
 
                             <div style="display: flex; justify-content: space-between;">
                                 <small style=" margin: 0px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
@@ -187,7 +187,7 @@
                             </div>
 
 
-                            <div class="poster-wrapper">
+                            <div class="poster-wrapper" title="({{ item.type|title }})">
                                 {% if item.object.render_poster %}
                                 <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
                                 {% else %}
@@ -215,7 +215,7 @@
                 </div>
                 {% endif %}
 
-                <br><br><br>
+                <br>
 
                 <!----- Pagination system ------->
                 {% if filters_applied and list_content.paginator.num_pages > 1  %}
@@ -241,7 +241,7 @@
 
                                 {% if num == list_content.number %}
                                 <li class="page-item" style="margin: 0px 1px;">
-                                    <a  href="#" class="btn btn-info disabled" style="border: none;">{{ num }}</a>
+                                    <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
                                 </li>
                                 {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
                                 <li class="page-item" style="margin: 0px 1px;">
@@ -279,7 +279,6 @@
                 </div>
                 {% endif %}
                 <!-- --- End of Pagination system ----- -->
-
 
             </main>
             

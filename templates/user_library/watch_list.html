@@ -26,12 +26,12 @@
                     <h6 style="text-align:right; margin-right: 2rem; padding: 0;">{{ total_content }} items saved in your watch list</h6>
                 </div>
                 {% if watchlist_page %}
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 2rem 1.5rem;">
+                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 2rem 1.5rem 0.5rem 1.5rem;">
                     
                     {% for item in watchlist_page %}
                     
                     <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
-                        <div class="media-card h-100 w-100" style="margin-bottom: 2rem;">
+                        <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
                             
                             <div style="display: flex; justify-content: space-between;">
                                 <small style=" margin: 10px 0px 0px 5px; color: aquamarine;">{{ item.object.render_vote_average }}/10</small>
@@ -91,12 +91,12 @@
                     </div>
                     {% endfor %}
 
-                    {% else %}
-                    <h3 style="text-align: center; color: bisque; margin: auto;">No content in Watchlist yet...</h3>
-                    <br><br><br>
-                    {% endif %}
-
                 </div>
+                {% else %}
+                <h3 style="text-align: center; color: bisque; margin: auto;">No content in Watchlist yet...</h3>
+                <br><br><br>
+                {% endif %}
+
                 <br>
 
                 <!----- Pagination system ------->
@@ -106,13 +106,13 @@
                         <ul class="pagination">
                             {% if watchlist_page.has_previous %}
                             <li class="page-item" style="margin: 0px 0px;">
-                                <a  href="?page=1" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a  href="?page=1" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     &laquo first
                                 </a>
                             </li>
                             <!-- previous page -->
                             <li class="page-item">
-                                <a href="?page={{ watchlist_page.previous_page_number }}" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ watchlist_page.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     &laquo Prev
                                 </a>
                             </li>
@@ -121,12 +121,12 @@
                             {% for num in watchlist_page.paginator.page_range %}
                             <!-- enumerate pages around current page -->
                             {% if num == watchlist_page.number %}
-                            <li class="page-item disabled" style="margin: 0px 1px;">
-                                <a  href="#" class="btn btn-info mb-4" style="border: none;">{{ num }}</a>
+                            <li class="page-item" style="margin: 0px 1px;">
+                                <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
                             </li>
                             {% elif num > watchlist_page.number|add:'-5' and num < watchlist_page.number|add:'5' %}
                             <li class="page-item" style="margin: 0px 1px;">
-                                <a  href="?page={{ num }}" class="btn btn-outline-info mb-4" style="border: none;">
+                                <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">
                                 {{ num }}</a>
                             </li>
                             {% endif %}
@@ -135,14 +135,14 @@
                             {% if watchlist_page.has_next %}
                             <!-- Next page -->
                             <li class="page-item">
-                                <a href="?page={{ watchlist_page.next_page_number }}" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ watchlist_page.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     Next &raquo
                                 </a>
                             </li>
                         
                             <!-- Last page -->
                             <li class="page-item">
-                                <a href="?page={{ watchlist_page.paginator.num_pages}}" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ watchlist_page.paginator.num_pages}}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     Last &raquo
                                 </a>
                             </li>
@@ -161,8 +161,8 @@
                 <div style="text-align: center;">
                     <h6 style="color: darkgray;">( Page {{ watchlist_page.number }} of {{ watchlist_page.paginator.num_pages }} )</h6>
                 </div>
-                {% else %}
-                <h4>NO Watchlist found...</h4>
+                <!-- {% else %}
+                <h4>NO Watchlist found...</h4> -->
                 {% endif %}
 
             </main>
