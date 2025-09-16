@@ -12,7 +12,7 @@ from rest_framework import generics, filters
 
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
-from .serializer import MovieListSerializer, MovieDetailSerializer
+from .serializers import MovieListSerializer, MovieDetailSerializer
 from .models import Movie
 from user_library.models import Like, WatchList
 from comment.models import Comment

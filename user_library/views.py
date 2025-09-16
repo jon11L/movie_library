@@ -1,18 +1,80 @@
+
+import time
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-import time
+# api imports
+from rest_framework import generics, filters
+from rest_framework.throttling import AnonRateThrottle
+from core.permissions import IsAdminOrIsAuthenticatedReadOnly
+from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+
+from .serializers import WatchListSerializer
 
 from .models import WatchList, Like
 from user.models import User
 from movie.models import Movie
 from serie.models import Serie
 
+from rest_framework import renderers
+
+class WatchListListView(generics.ListCreateAPIView):
+    
+    serializer_class = WatchListSerializer
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title']
+    ordering_fields = ['created_at', "status"]
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
+
+    def get_queryset(self):
+        '''
+        Return only Watchlist instances created by the user
+        '''
+        user = self.request.user
+        return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+
+
+
+
+
+class WatchListDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = WatchList.objects.select_related('movie', 'serie').prefetch_related().order_by('id')
+    serializer_class = WatchListSerializer
+    # renderer_classes = [renderers.StaticHTMLRenderer]
+
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    throttle_classes = [
+        AnonRateThrottle,
+        AdminRateThrottle,
+        UserBurstThrottle,
+        UserSustainThrottle,
+        UserDayThrottle,
+    ]
+
+
+    def get_queryset(self):
+        '''
+        Return only Watchlist instances created by the user
+        '''
+        user = self.request.user
+        return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+
+
+
+
 
 def liked_content_view(request, pk):
-    '''retrieve the user's content liked from the database 
+    '''
+    retrieve the user's content liked from the database 
     and display them in a template page.
     '''
     # Need to add a check that only current user can visit their own Like page.

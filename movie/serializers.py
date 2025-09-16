@@ -15,7 +15,7 @@ from .models import Movie
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = (
+        fields = [
             'id',
             'title',
             'release_date',
@@ -23,13 +23,13 @@ class MovieListSerializer(serializers.ModelSerializer):
             'origin_country',
             'original_language',
             'vote_average',
-        )        
+        ]      
 
 
 class MovieDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = (
+        fields = [
             'id',
             'title',
             'description',
@@ -43,4 +43,4 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'vote_average',
             'poster_images',
             'trailers',
-        )        
+        ]       
