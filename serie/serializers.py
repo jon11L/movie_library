@@ -6,7 +6,7 @@ from .models import Serie
 class SerieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Serie
-        fields = (
+        fields = [
             'id',
             'title',
             'first_air_date',
@@ -15,13 +15,13 @@ class SerieListSerializer(serializers.ModelSerializer):
             'origin_country',
             'original_language',
             'vote_average',
-        )        
+        ]     
 
 
 class SerieDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Serie
-        fields = (
+        fields = [
             'id',
             'title',
             'description',
@@ -36,4 +36,4 @@ class SerieDetailSerializer(serializers.ModelSerializer):
             'created_by',
             'vote_average',
             'poster_images',
-        )        
+        ]        

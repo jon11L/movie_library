@@ -37,6 +37,8 @@ def api_root(request, format=None):
         "movie-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
         "serie-list": reverse("api_serie:list", request=request, format=format),
         "serie-detail": reverse("api_serie:detail", kwargs={"pk": 50}, request=request, format=format),
+        "watchlist": reverse("api_watchlist:list", request=request, format=format),
+        "watchlist-detail": reverse("api_watchlist:detail", kwargs={"pk": 50}, request=request, format=format),
     })
 
 
@@ -56,5 +58,6 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='token_auth'), #create a token for users when posting their cred. to this url. POST {username, password}
     path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
     path('api/v1/serie/', include('serie.api_urls', namespace='api_serie')),
+    path('api/v1/user_library/', include('user_library.api_urls', namespace='api_watchlist')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

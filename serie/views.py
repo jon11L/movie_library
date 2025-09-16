@@ -9,7 +9,7 @@ import time
 from rest_framework import generics, filters
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
-from .serializer import SerieListSerializer, SerieDetailSerializer
+from .serializers import SerieListSerializer, SerieDetailSerializer
 from rest_framework.throttling import AnonRateThrottle
 
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
@@ -22,7 +22,7 @@ from comment.forms import CommentForm
 
 class SerieListView(generics.ListCreateAPIView):
     # queryset = Movie.objects.all().order_by('-id')
-    queryset = Serie.objects.select_related().prefetch_related() 
+    queryset = Serie.objects.select_related().prefetch_related().order_by('id')
 
     serializer_class = SerieListSerializer
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
