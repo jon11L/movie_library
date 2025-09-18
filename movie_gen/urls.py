@@ -37,8 +37,8 @@ def api_root(request, format=None):
         "movie-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
         "serie-list": reverse("api_serie:list", request=request, format=format),
         "serie-detail": reverse("api_serie:detail", kwargs={"pk": 50}, request=request, format=format),
-        "watchlist": reverse("api_watchlist:list", request=request, format=format),
-        "watchlist-detail": reverse("api_watchlist:detail", kwargs={"pk": 50}, request=request, format=format),
+        "watchlist-list": reverse("api_watchlist:list", request=request, format=format),
+        "watchlist-detail": reverse("api_watchlist:detail", kwargs={"pk": 80}, request=request, format=format),
     })
 
 

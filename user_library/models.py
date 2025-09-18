@@ -98,6 +98,8 @@ class WatchList(BaseModel):
                 name='unique_serie_watchlist'
             ),
         ]
+        unique_together = ('user', 'movie', 'serie')
+
 
 
     def __str__(self):

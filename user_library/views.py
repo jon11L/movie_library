@@ -1,32 +1,34 @@
 
 import time
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-# api imports
+# Rest api imports
 from rest_framework import generics, filters
 from rest_framework.throttling import AnonRateThrottle
-from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+from core.permissions import IsAdminOrOwner
 
 from .serializers import WatchListSerializer
 
+# Models import
 from .models import WatchList, Like
 from user.models import User
 from movie.models import Movie
 from serie.models import Serie
 
-from rest_framework import renderers
+# from rest_framework import renderers
 
 class WatchListListView(generics.ListCreateAPIView):
+    '''This serializer '''
     
     serializer_class = WatchListSerializer
-    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    permission_classes = [IsAdminOrOwner]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title']
-    ordering_fields = ['created_at', "status"]
+    search_fields = ['status'] 
+    ordering_fields = ['created_at', "updated_at"]
     throttle_classes = [
         AnonRateThrottle,
         AdminRateThrottle,
@@ -37,21 +39,29 @@ class WatchListListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         '''
-        Return only Watchlist instances created by the user
+        Overriding the queryset.\n
+        Return only Watchlist instances created by their own user.\n
+        Unless Admin or staff then full access.\n
         '''
         user = self.request.user
-        return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+        if not user.is_staff:
+            # Ensure if the user is not Staff or Admin, they only get what is on their watchlist
+            return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+        else:
+            # return WatchList.objects.select_related('movie', 'serie')
+            return WatchList.objects.select_related('movie', 'serie')
 
-
-
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class WatchListDetailView(generics.RetrieveUpdateDestroyAPIView):
+
     queryset = WatchList.objects.select_related('movie', 'serie').prefetch_related().order_by('id')
     serializer_class = WatchListSerializer
     # renderer_classes = [renderers.StaticHTMLRenderer]
 
-    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    permission_classes = [IsAdminOrOwner]
     throttle_classes = [
         AnonRateThrottle,
         AdminRateThrottle,
@@ -60,19 +70,23 @@ class WatchListDetailView(generics.RetrieveUpdateDestroyAPIView):
         UserDayThrottle,
     ]
 
-
     def get_queryset(self):
         '''
-        Return only Watchlist instances created by the user
+        Overriding the queryset.\n
+        Return only Watchlist object instance created by the user\n
         '''
         user = self.request.user
-        return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+        if not user.is_staff:
+            return WatchList.objects.filter(user=user).select_related('movie', 'serie')
+        else:
+            return WatchList.objects.select_related('movie', 'serie')
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-
-
-
-def liked_content_view(request, pk):
+# ------------- Regular template views (List) ---------
+def liked_content_view(request, pk: int):
     '''
     retrieve the user's content liked from the database 
     and display them in a template page.
@@ -188,7 +202,7 @@ def toggle_like(request, content_type: str, object_id: int):
                 return JsonResponse({'liked': True, 'message': message}) # responding to Ajax on front-end.
 
 
-def watch_list_view(request, pk):
+def watch_list_view(request, pk: int):
     '''retrieve the user's watchlist from the database and display them in the template'''
     start_time = time.time()
 
