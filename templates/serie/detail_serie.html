@@ -56,6 +56,7 @@
                             <div class="row">
 
                                 <div class="col-4" style="padding-top: 14em;">
+
                                     <div>
                                         <div style="margin-top: 2em;">
                                             <ul class="list-group list-group-flush">
@@ -75,13 +76,15 @@
                                                         {{ serie.render_genre }}
                                                     </p>
                                                 </li>
-                                                <li class="list-group-item"><p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+
                                                     {% if main_cast %}
                                                         {% for cast in main_cast %}
                                                             {% if not cast.role %}
-                                                            <p style="margin: 0 0 0 2em;  padding: 0;">{{ cast.name }}</p>
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
                                                             {% else  %}
-                                                            <p style="margin: 0 0 0 0em;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
@@ -141,7 +144,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col" style="padding-top: 16em;">
+                                <div class="col-4" style="padding-top: 16em;">
                                     <div>
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
@@ -178,7 +181,7 @@
                     <!------- Display the seasons here and episodes ---------->
                     <section class="season-episode-content">
                     
-                        <div style="padding-left: 5em;">
+                        <div style="padding-left: 5rem; padding-top: 1rem;">
                             <h5 style="color: inherit;">Seasons:</h5>
                         </div>
                     

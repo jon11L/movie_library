@@ -2,10 +2,6 @@ from django.contrib import admin
 from .models import Serie, Season, Episode
 
 # Register your models here.
-# admin.site.register(Serie)
-# admin.site.register(Season)
-# admin.site.register(Episode)
-
 class SeasonInline(admin.StackedInline):
     model = Season
 
@@ -17,7 +13,7 @@ class EpisodeInline(admin.StackedInline):
 class SerieAdmin(admin.ModelAdmin):
     list_display = ("pk", "title", "slug", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("title",)}
-    search_fields = ("title", "original_title", "slug", "tmdb_id")
+    search_fields = ("pk", "title", "original_title", "slug", "tmdb_id")
     list_filter = ("created_at", "updated_at", "first_air_date")
 
     inlines = [SeasonInline]

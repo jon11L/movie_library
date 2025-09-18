@@ -15,8 +15,8 @@ from user_library.models import Like , WatchList
 from user.models import User
 
 
-def admin_check(user):
-    return user.is_superuser  # or user.is_staff for staff users
+# def admin_check(user):
+#     return user.is_superuser  # or user.is_staff for staff users
 
 
 def about_page(request):
@@ -35,9 +35,7 @@ def home(request):
     '''
     start_time = time.time()
 
-    # Check if they are Movie datas and display them if so
     try: 
-
         # to display movies & series that are coming soon or recently released
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)  # yesterday
@@ -105,11 +103,9 @@ def home(request):
                 .order_by("?")[:6]
             )
 
-            random_series = (
-                Serie.objects.all()
-                .only("id", "title", "vote_average", "poster_images", "slug")
-                .order_by("?")[:6]
-            )  # retrieve 6 random movies from the last 30 days
+            random_series = Serie.objects.only(
+                "id", "title", "vote_average", "poster_images", "slug"
+            ).order_by("?")[:6]  # retrieve 6 random movies from the last 30 days
             # print(f"- Random pick series: {random_series}\n")
 
             # display the amount of Movies & Series available from the database
