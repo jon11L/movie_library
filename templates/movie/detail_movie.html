@@ -86,23 +86,20 @@
                                                     {{ movie.render_genre }}
                                                 </p>
                                             </li>
-                                            <!-- <li class="list-group-item"><strong>Length:</strong> {{ movie.render_length }}</li> -->
-                                            <!-- <li class="list-group-item"><strong>Casting:</strong> {{ movie.render_casting }}</li> -->
-                                            <li class="list-group-item"><p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+
+                                            <li class="list-group-item">
+                                                <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
                                                 
-                                                <!-- <p> -->
-                                                    {% if movie.casting %}
+                                                {% if movie.casting %}
                                                     {% for cast in movie.casting %}
-                                                    {% if not cast.role %}
-                                                    <p style="margin: 0 0 0 2em;  padding: 0;">{{ cast.name }}</p>
-                                                    {% else  %}
-                                                    <p style="margin: 0 0 0 0em;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
-                                                    {% endif %}
-                                                    
+                                                        {% if not cast.role %}
+                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                        {% else  %}
+                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                        {% endif %}
                                                     {% endfor %}
-                                                    {% endif %}
-                                                    
-                                                <!-- </p> -->
+                                                {% endif %}
+
                                             </li>
                                             
                                         </ul>
@@ -167,7 +164,7 @@
 
 
 
-                            <div class="col" style="padding-top: 16em;">
+                            <div class="col-4" style="padding-top: 16em;">
 
                                 <div>
                                     <ul class="list-group list-group-flush">

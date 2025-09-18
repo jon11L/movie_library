@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 
-# import urlencode
-# from django.utils.http import urlencode
+import time
 
 from .filters import SharedMediaFilter
 from movie.models import Movie
@@ -24,12 +23,13 @@ def search(request):
     series = []
     search_query = ""
     total_found = 0
-    user_liked_movies = []
-    user_liked_series = []
-    user_watchlist_movies = []
-    user_watchlist_series = []
+    user_liked_movies = set()
+    user_liked_series = set()
+    user_watchlist_movies = set()
+    user_watchlist_series = set()
 
     results = []
+    start_time = time.time()
 
     # Determine which content type to display
     content_type = request.GET.get('content_type', 'all')
@@ -107,31 +107,6 @@ def search(request):
             total_found = len(results)
             print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print
 
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = set(
-                WatchList.objects.filter(
-                    user=request.user.id, movie__isnull=False
-                    ).values_list('movie_id', flat=True)
-            )
-
-            user_watchlist_series = set(
-                WatchList.objects.filter(
-                    user=request.user.id, serie__isnull=False
-                ).values_list('serie_id', flat=True)
-            )
-
-            # Get the user's liked content (movies, series)
-            user_liked_movies = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type='movie'
-                ).values_list('object_id', flat=True)
-            )
-
-            user_liked_series = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type='serie'
-                    ).values_list('object_id', flat=True)
-            )
 
             # -- paginate over the results --
             paginator = Paginator(results, 24)
@@ -155,11 +130,47 @@ def search(request):
                 'query_url': query_string_url,
                 'list_content': page_object,
                 'total_found': total_found if total_found > 0 else None,
-                'user_liked_movies': user_liked_movies,
-                'user_liked_series': user_liked_series,
-                'user_watchlist_movies': user_watchlist_movies, 
-                'user_watchlist_series': user_watchlist_series, 
                 'filters_applied': True
             }
 
+            if request.user.is_authenticated:
+            # Get the user's watchlist and like content (movies, series)
+
+                user_watchlist_movies = set(
+                    WatchList.objects.filter(
+                        user=request.user.id, movie__isnull=False
+                        ).values_list('movie_id', flat=True)
+                )
+
+                user_watchlist_series = set(
+                    WatchList.objects.filter(
+                        user=request.user.id, serie__isnull=False
+                    ).values_list('serie_id', flat=True)
+                )
+
+                # Get the user's liked content (movies, series)
+                user_liked_movies = set(
+                    Like.objects.filter(
+                        user=request.user.id, content_type='movie'
+                    ).values_list('object_id', flat=True)
+                )
+
+                user_liked_series = set(
+                    Like.objects.filter(
+                        user=request.user.id, content_type='serie'
+                        ).values_list('object_id', flat=True)
+                )
+
+                context.update(
+                    {
+                    'user_liked_movies': user_liked_movies,
+                    'user_liked_series': user_liked_series,
+                    'user_watchlist_movies': user_watchlist_movies, 
+                    'user_watchlist_series': user_watchlist_series, 
+                    }
+                )
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"\ntime: {elapsed_time:.2f} seconds.\n")
         return render(request, 'search/search.html', context=context)

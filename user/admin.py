@@ -11,7 +11,7 @@ class ProfileInline(admin.StackedInline):
     model = Profile
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("pk", "username", "email", "first_name", "last_name")
+    list_display = ("pk", "username", "email", "first_name", "last_name", "is_staff")
     search_fields = ("pk", "username", "first_name")
     list_filter = ("date_joined",)
 
