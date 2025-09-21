@@ -9,7 +9,7 @@ class Movie(BaseModel):
 
     # External unique identifier / sources for api references
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)  # allow to find the content id in TMDB
-    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above
+    imdb_id = models.CharField(max_length=20, blank=True, null=True) # same as above with IMDB
 
     # Core Movie Details
     original_title = models.CharField(max_length=255, blank=True, null=True)

@@ -51,7 +51,7 @@ class Command(BaseCommand):
         5. Log result and differentiate between imported and skipped.
         """
         MAX_RETRIES = 3
-        FETCH_PAGE = 5 # the amount of pages we will check to get movies imported
+        FETCH_PAGE = 2 # the amount of pages we will check to get movies imported
 
         # to keep track of the import,
         # passed & returned in process_batch_movies(). Then logged at the end.
@@ -84,7 +84,7 @@ class Command(BaseCommand):
         # ------TRIAL/ once every 5 days add page 1&2 to get latest content ------
         today = datetime.date.today()
         if today.day in [1, 5, 10, 20, 25]:
-            new_pages = (1, 2)
+            new_pages = random.sample(range(1, 4), 2)
 
             endpoint = select_endpoint(endpoints)
             for page in new_pages:
@@ -93,7 +93,7 @@ class Command(BaseCommand):
                         f"Special date new pages"
                         f"Fetching movies from '{endpoint}' list, With Newer pages n: {page}\n"
                         ) # debug print
-                    
+
                     list_movies = get_api_data(
                         page=page,
                         endpoint=endpoint,
@@ -102,14 +102,15 @@ class Command(BaseCommand):
                         )
 
                     if not list_movies or len(list_movies['results']) <= 5:
-                            raise ValueError("No movies list found or too few results to loop over.")
+                        raise ValueError("No movies list found or too few results to loop over.")
 
                     batch = self.process_movies_batch(list_movies, imported)
                     imported = batch
 
                 except ValueError as value_e:
                     self.stdout.write(
-                        f"(Exception value) No movies list found or too few results. page={page}, endpoint={endpoint}."
+                        f"(Exception value) No movies list found or too few results."
+                        f" page={page}, endpoint={endpoint}."
                         f"Error message: '{value_e}'"
                         )
                     time.sleep(4)  # wait before retrying
@@ -117,7 +118,8 @@ class Command(BaseCommand):
 
                 except Exception as e:
                     self.stdout.write(
-                        f"(Exception) No movies list found or too few results. page={page}, endpoint={endpoint}."
+                        f"(Exception) No movies list found or too few results."
+                        f"page={page}, endpoint={endpoint}."
                         f"(Exception) Error message: '{e}'"
                         )
                     time.sleep(4)
@@ -134,7 +136,7 @@ class Command(BaseCommand):
                     max_pages = get_max_page(endpoint)
                     page = random.randint(1, max_pages) # change the page to send in get_movie_list():
                     self.stdout.write(
-                        f"----------------------------\n"
+                        f"\n" + "=" * 50 + "\n\n"
                         f"Fetching movies from '{endpoint}' list, With page n: {page}\n"
                         ) # debug print
 
@@ -174,29 +176,37 @@ class Command(BaseCommand):
 
             # --- Fetch and process each movie from the selected endpoint ----
             self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
+            print(f"\n" + "=" * 50 + "\n\n")
 
             # pass the movie list process batch into it's own function
             batch = self.process_movies_batch(list_movies, imported)
             imported = batch
-            time.sleep(5) # give some time between fetching a new page list of movies.
+            time.sleep(4) # give some time between fetching a new page list of movies.
 
-        
         end_time = time.time()
         elapsed_time = end_time - start_time
 
         # final summary, logs result into file:
-        self.stdout.write(self.style.SUCCESS(f"\nImport batch of movies completed: '{imported['count']}' movies processed\n"))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\nImport batch of movies completed: '{imported['count']}' movies processed\n"
+            )
+        )
+        # saved log.
         logger.info(
             f"SUMMARY: Movies (import)"
             f" -- {imported['created']} Created -- 0 Updated"
             f" -- {imported['skipped']}  Skipped/Failed"
             f" -- runtime: {elapsed_time:.2f} seconds"
-            )
-        
-        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
-        self.stdout.write(f"SUMMARY: Movies (import) -- {imported['created']} Created. -- 0 Updated. -- {imported['skipped']}  Skipped/Failed.")
-        self.stdout.write(f"\n--------------\n\n") # debug print
+        )
 
+        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"SUMMARY: Movies (import) -- {imported['created']} Created. -- 0 Updated. -- {imported['skipped']}  Skipped/Failed."
+            )
+        )
+        self.stdout.write(f"\n" + "=" * 50 + "\n\n")  # debug print
 
     def process_movies_batch(self, list_movies, imported: dict):
         '''
@@ -205,13 +215,14 @@ class Command(BaseCommand):
 
         - count, created, skipped
         '''
-        
+
         for movie in list_movies['results']:
             time.sleep(1)  
             imported['count'] += 1
             movie_id = movie['id']
             movie_title = movie['title']
             self.stdout.write(
+                f"\n" + "=" * 50 + "\n\n"
                 f"passing movie {imported['count']}\n"
                 f"Importing Movie title: {movie_title} (ID: {movie_id})\n"
                 )
@@ -222,15 +233,19 @@ class Command(BaseCommand):
                 continue
 
             # Check if movie exists
-            time.sleep(0.5)  # Wait for 1 second before checking the database
             if not Movie.objects.filter(tmdb_id=movie_id).exists():
                 time.sleep(1)  
                 try:
                     # uncomment below when Feature is correct
-                    save_or_update_movie(movie_id) # grab and save Datas from api into a new single movie's instance 
-                    imported['created'] += 1
-                    # self.stdout.write(self.style.SUCCESS(f"Imported movie: **{new_movie['title']}** \n"))  # not sure it is imported if already exist
+                    new_movie, created = save_or_update_movie(movie_id) # grab and save Datas from api into a new single movie's instance 
+                    if new_movie:
+                        imported['created'] += 1
+                        self.stdout.write(self.style.SUCCESS(f"Imported movie: **{new_movie}** \n"))  # not sure it is imported if already exist
+                    else:
+                        self.stdout.write(self.style.ERROR(f"Failed to import movie ID: {movie_id}. No data returned."))
+                        imported['skipped'] += 1
                     # logger.info(f"Imported: {movie_title} (ID: {movie_id})")
+
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"Error importing {movie['title']}: {e}"))
                     imported['skipped'] += 1
@@ -238,7 +253,7 @@ class Command(BaseCommand):
                     continue
             else:
                 self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
-                print("-----------")
+                # print("\n" + "=" * 50 + "\n\n")
                 imported['skipped'] += 1
 
         return imported
