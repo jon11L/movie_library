@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import traceback
 import random
 
@@ -73,13 +73,11 @@ def save_or_update_movie(tmdb_id: int):
         release_date = None
         if movie_data.get('release_date'):
             try:
-                release_date = datetime.strptime(movie_data.get('release_date'), '%Y-%m-%d').date()
+                release_date = datetime.datetime.strptime(movie_data.get('release_date'), '%Y-%m-%d').date()
             except ValueError:
                 # If the release date is not available, it stays set to None
                 print(f"Invalid date format: {movie_data.get('release_date')}")
 
-        # can also use 'stills' width:1920 height:1080  for episode, maybe not serie
-        
         select_posters = [] # will append the images to it an keep the urls only
         select_banners = [] # will append the images to it an keep the urls only
         # Fetch and store images
@@ -101,7 +99,6 @@ def save_or_update_movie(tmdb_id: int):
                 print(f"Value error: {e}\n")
                 print(f"Could not remove the poster path to append to first index.")
             select_posters.insert(0, movie_data.get('poster_path'))
-        
 
         poster_images = select_posters # set to save in the object
 
@@ -123,6 +120,29 @@ def save_or_update_movie(tmdb_id: int):
             select_banners.insert(0, movie_data.get('backdrop_path'))
 
         banner_images = select_banners # set to save in the object
+
+        # ------ Will check if the movie fetched has enough data to be saved --------
+        # store in a Dict to pass in the check_movie_validity function
+        processed_data = {
+            "production": production,
+            "director": director,
+            "writers": writers,
+            "cast": cast,
+            "release_date" : release_date,
+            "spoken_languages" : spoken_languages,
+            "poster_images": poster_images,
+            "banner_images": banner_images,
+            "youtube_trailer": youtube_trailer
+        }
+
+        is_valid = check_movie_validity(movie_data, processed_data)
+
+        if is_valid:
+            print(f"movie: {movie_data.get("title")} passes validity data-check. Saving the movie")
+        else:
+            # did not pass the validity check, does not save, stop here. 
+            print(f"movie: '{movie_data.get("title")}' did not pass the validity data-check. NOT saving the movie")
+            return None, False
 
         # Store the new movie in DB
         movie, created = Movie.objects.update_or_create(
@@ -160,10 +180,160 @@ def save_or_update_movie(tmdb_id: int):
                 )
 
         print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
-        print("---------")
         return (movie, created)
 
     except Exception as e:
         # print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
         print(f"an error occurred while saving/updating movie: '{tmdb_id}' ", str(e))
         return None, False
+
+
+def check_movie_validity(movie_data, processed_data: dict):
+    '''
+    ### Check the amount of data concerning the new imported movie.
+    The movie will not be imported/saved in DB if:
+    - grade gets below MIN_REQUIRED_SCORE (32) then Movie considered broken / will not be imported in Database
+    - too many fields are missing datas **8**
+    - Or 2/3 of critical fields are missing (title / poster_image / release_date / director / casting) 
+    - priorities (pts): low (1) - medium (2) -- hard (5)
+    - assume a total start score of 50 When all datas are present.
+    - remove points depending on their priorities.
+    - 
+    Total fields to check: **24**
+    '''
+    is_valid = True
+    BASE_SCORE = 50 # if missing data, point are subtracted according to the priority set
+    MAX_MISSING_DATA = 8
+
+    today = datetime.date.today()
+    release_date = processed_data.get("release_date")
+    # if isinstance(release_date, str):
+    #     try:
+    #         release_date = datetime.datetime.strptime(release_date, '%Y-%m-%d').date()
+    #     except (ValueError, TypeError):
+    #         release_date = None
+
+    if release_date and release_date > today:
+        print(f"Movie has a future release date: {release_date}. ")
+        MIN_REQUIRED_SCORE = 31
+    else:
+        print(f"Movie already released or no release date found: {release_date}. ")
+        MIN_REQUIRED_SCORE = 35
+
+    # CRITICAL_FIELDS =  ("title", "poster_images", "casting", "description")
+    # priorities:
+    low = 1 # (11 fields), 
+    medium = 2 # (7 fields), 
+    high = 5 # (5)
+
+    processed_data = processed_data
+
+    all_datas = {
+        # high priority
+        "title": {
+            "value": bool(movie_data.get("title") or bool(movie_data.get("original_title"))),
+            "priority": high,
+        },
+        "director": {
+            "value": len(processed_data.get("director", [])) > 0,
+            "priority": high,
+        },
+        "casting": {"value": len(processed_data.get("cast", [])) > 0, "priority": high},
+        "poster_images": {
+            "value": len(processed_data.get("poster_images", [])) > 0,
+            "priority": high,
+        },
+        "release_date": {
+            "value": bool(processed_data.get("release_date")),
+            "priority": high,
+        },
+        # medium priority
+        "genre": {"value": len(movie_data.get("genres", [])) > 0, "priority": medium},
+        "production": {
+            "value": len(processed_data.get("production", [])) > 0,
+            "priority": medium,
+        },
+        "banner_images": {
+            "value": len(processed_data.get("banner_images", [])) > 0,
+            "priority": medium,
+        },
+        "trailers": {
+            "value": len(processed_data.get("youtube_trailer", [])) > 0,
+            "priority": medium,
+        },
+        "writers": {
+            "value": len(processed_data.get("writers", [])) > 0,
+            "priority": medium,
+        },
+        "length": {
+            "value": movie_data.get("runtime") is not None
+            and movie_data.get("runtime") > 0,
+            "priority": medium,
+        },
+        "description": {"value": bool(movie_data.get("overview")), "priority": medium},
+        # low priority
+        "imdb_id": {"value": bool(movie_data.get("imdb_id")), "priority": low},
+        "original_title": {
+            "value": bool(movie_data.get("original_title")),
+            "priority": low,
+        },
+        "origin_country": {
+            "value": len(movie_data.get("origin_country", [])) > 0,
+            "priority": low,
+        },
+        "original_language": {
+            "value": bool(movie_data.get("original_language")),
+            "priority": low,
+        },
+        "vote_average": {
+            "value": movie_data.get("vote_average") is not None,
+            "priority": low,
+        },
+        "budget": {
+            "value": movie_data.get("budget") is not None
+            and movie_data.get("budget") > 0,
+            "priority": low,
+        },
+        "revenue": {
+            "value": movie_data.get("revenue") is not None
+            and movie_data.get("revenue") > 0,
+            "priority": low,
+        },
+        "tagline": {"value": bool(movie_data.get("tagline")), "priority": low},
+        "spoken_languages": {
+            "value": len(processed_data.get("spoken_languages", [])) > 0,
+            "priority": low,
+        },
+        # "released": {"value": movie_data.get("status") == "Released", "priority": low},
+        "vote_count": {
+            "value": movie_data.get("vote_count") is not None
+            and movie_data.get("vote_count") > 0,
+            "priority": low,
+        },
+        "popularity": {
+            "value": movie_data.get("popularity") is not None,
+            "priority": low,
+        },
+    }
+
+    # loop through processed fields, check how many fields are missing
+    # and how much point taken out per priority
+    missing_fields = [field for field, data in all_datas.items() if not data['value']]
+
+    result = 0
+    score = [data['priority'] for field, data in all_datas.items() if not data['value']]
+    for s in score:
+        result += s
+
+    print(
+        f"-- missing fields: {len(missing_fields)}, {missing_fields}.\n"
+        f"-- missing score: {result} -- {score}"
+    )
+
+    if BASE_SCORE - result <= MIN_REQUIRED_SCORE:
+        print(f" Too many missing fields! BREAK! No import. -- score: {BASE_SCORE - result}/{BASE_SCORE}")
+        is_valid = False
+    else:
+        print(f"Considerable amount of data, Can be imported! score: {BASE_SCORE - result}/{BASE_SCORE}")
+
+    return is_valid

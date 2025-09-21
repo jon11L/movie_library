@@ -122,7 +122,7 @@ class Command(BaseCommand):
                         self.style.WARNING(
                             f"--- Movie-id: '{tmdb_id}' is marked as adult content {tmdb_movie['adult']}. ---\n"
                             f"Skipping....\n"
-                            "-------------------\n"
+                            f"\n" + "=" * 50 + "\n\n"
                         )
                     )
                     continue
@@ -137,16 +137,24 @@ class Command(BaseCommand):
                         self.stdout.write(
                             self.style.SUCCESS(
                                 f"Imported! Added new movie: **{new_movie}**"
+                                f"\n" + "=" * 50 + "\n\n"
                             )
                         )
-                        self.stdout.write("---------")
 
                     elif new_movie and not is_created:
                         updated += 1
                         self.stdout.write(
                             self.style.SUCCESS(
                                 f"Imported! Updated movie: **{new_movie}** \n"
-                                "-----------------"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
+                    elif not new_movie:
+                        skipped_count += 1
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"**failed to register in DB. Mo movie or no sufficient data**"
+                                f"\n" + "=" * 50 + "\n\n"
                             )
                         )
 
@@ -155,7 +163,7 @@ class Command(BaseCommand):
                         self.stdout.write(
                             self.style.WARNING(
                                 f"**failed to register in DB.**"
-                                "-------------------"
+                                f"\n" + "=" * 50 + "\n\n"
                             )
                         )
 
@@ -164,12 +172,9 @@ class Command(BaseCommand):
                     logger.error(f"Error importing {tmdb_id}: {e}")
                     continue
 
-
         end_time = time.time()
         elapsed_time = end_time - start_time
         self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
-
-
 
         time.sleep(3) # give some time between fetching a new page list of movies. // to correct
         logger.info(
@@ -185,5 +190,5 @@ class Command(BaseCommand):
         self.stdout.write(
             f"{imported_count-1} movie imported.\n"
             f"SUMMARY: Movies (update) -- {created} Created. -- {updated} Updated. -- {skipped_count} Skipped/Failed.\n"
-            f"---------------------\n"
+            f"\n" + "=" * 50 + "\n\n"
             )

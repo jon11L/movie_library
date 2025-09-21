@@ -38,10 +38,7 @@ def get_api_data(*args, **kwargs):
             print(f"API call made: {url}")  # debug print
             if response.status_code == 200:
                 # Successful response. Returns the json data and stops here.
-                print(
-                    f"Response received. success: {response.status_code}\n"
-                    "---------"
-                    )
+                print(f"Response received. success: {response.status_code}\n")
                 return response.json()
             elif response.status_code == 34:
                 retry += 1
