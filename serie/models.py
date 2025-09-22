@@ -41,7 +41,7 @@ class Serie(BaseModel):
         models.CharField(max_length=255), default=list, blank=True
     ) # ['images].get("backdrops")
 
-    status = models.CharField(blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
+    status = models.CharField(max_length=255, blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
 
     class Meta:
         db_table = 'serie'

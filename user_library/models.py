@@ -101,7 +101,6 @@ class WatchList(BaseModel):
         unique_together = ('user', 'movie', 'serie')
 
 
-
     def __str__(self):
         object = self.movie or self.serie
         return f"{self.user.username} added {object}' to their watchlist"
@@ -128,6 +127,7 @@ class WatchList(BaseModel):
         # return super().save(*args, **kwargs)
 
 # --------------------------------------------------------------
+
 
 class Like(BaseModel):
 

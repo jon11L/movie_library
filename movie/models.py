@@ -29,13 +29,15 @@ class Movie(BaseModel):
     writer = models.JSONField(blank=True, null=True)
     casting = models.JSONField(blank=True, null=True)
 
+    status = models.CharField(max_length=255, blank=True, null=True)  # e.g., Released, Post Production
+
     # Metrics
     budget = models.IntegerField(blank=True, null=True)
     revenue = models.BigIntegerField(blank=True, null=True)  # Movie's box office revenue
     vote_average = models.FloatField(blank=True, null=True)  # for TMDB rating
     vote_count = models.IntegerField(blank=True, null=True)  
     imdb_rating = models.FloatField(blank=True, null=True)  # to fetch externally their rating
-    popularity = models.FloatField(blank=True, null=True)  
+    popularity = models.FloatField(blank=True, null=True)
     
     # images
     poster_images = ArrayField(
