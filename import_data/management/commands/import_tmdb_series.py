@@ -52,9 +52,9 @@ class Command(BaseCommand):
         # instantiate variable to keep track of import and retry policy
         MAX_RETRIES = 3
         retry = 0
-        imported_count = 0  # Tracks how many series were imported
+        count = 0  # Tracks how many series were imported
         skipped_count = 0  # Tracks how many series already existed
-        created = 0
+        imported = 0
         start_time = time.time()
 
         endpoints = (
@@ -67,7 +67,6 @@ class Command(BaseCommand):
             '''Takes a list of endpoints and return a random one'''
             return random.choice(endpoint)
 
-        # Define the range of pages to fetch
         # set on max available pages with the corresponding endpoint of the TMDB Api.
         def get_max_page(endpoint):
             ''' Return the max amount of pages available in the TMDB api 
@@ -90,7 +89,7 @@ class Command(BaseCommand):
                 today = datetime.date.today()
                 # To get newest content  as extra in specs days------
                 if today.day in [1, 5, 10, 15, 20, 25]:
-                    page = random.randint(1, 3)
+                    page = random.randint(1, 4)
                 else:
                     page = random.randint(1, get_max_page(endpoint)) # Randomly select a page
 
@@ -143,38 +142,51 @@ class Command(BaseCommand):
             print(f"Random index for series list: {r_index}")
 
             self.stdout.write(f"Processing the list of series to get the individual serie's data.")
-            for new_serie in list_series['results'][r_index:r_index+5]:
-                imported_count += 1
+            for serie in list_series['results'][r_index:r_index+5]:
+                count += 1
 
                 # ------- temporary break here after 5 series to check feature is going well with adding episode--------
-                if imported_count > 5:
+                if count > 5:
                     self.stdout.write(f"Breaking after 5 series for testing purpose.\n")
                     break
 
                 self.stdout.write(f"-------")  # debug print
                 self.stdout.write(
-                    f"Importing *Serie {imported_count} (id: {new_serie['id']})"
+                    f"Importing *Serie {count} (id: {serie['id']})"
                 )  # debug print
 
                 # Check if serie exists
-                if not Serie.objects.filter(tmdb_id=new_serie['id']).exists():
+                if not Serie.objects.filter(tmdb_id=serie['id']).exists():
                     try:
-                        save_or_update_series(new_serie['id'])
-                        created += 1
-                        self.stdout.write(
-                            f"Imported serie: {new_serie['name']}\n"
-                            "-----------"
-                        )  # not sure it is imported if already exist
+                        new_serie, is_created = save_or_update_series(serie['id'])
+                        if new_serie:
+                            imported += 1
+                            self.stdout.write(
+                                self.style.SUCCESS(
+                                    f"Imported serie: {serie['name']}\n"
+                                    f"\n" + "=" * 50 + "\n\n"
+                                )
+                            )
+                        else:
+                            skipped_count += 1
+                            self.stdout.write(
+                                self.style.WARNING(
+                                    f"Cancel to import serie: {serie['name']}. No data returned\n"
+                                    "Skipping....\n"
+                                    f"\n" + "=" * 50 + "\n\n"
+                                )
+                            )
+
                     except Exception as e:
-                        self.stdout.write(f"Error importing {new_serie['id']}- {new_serie['name']}: {e}")
+                        self.stdout.write(f"Error importing {serie['id']}- {serie['name']}: {e}")
                         skipped_count += 1
                         continue
                 else:
                     skipped_count += 1
                     self.stdout.write(self.style.WARNING(
-                        f"{new_serie['name']} already exists in DB.\n"
+                        f"{serie['name']} already exists in DB.\n"
                         "Skipping....\n"
-                        "------------------\n"
+                        f"\n" + "=" * 50 + "\n\n"
                         ))
 
                 # give some time between fetching new series.
@@ -184,19 +196,19 @@ class Command(BaseCommand):
         elapsed_time = end_time - start_time
         self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
 
-
         # Log and stream end of import summary
         logger.info(
             f"SUMMARY: Series (import)"
-            f" -- {created} Created -- 0 Updated -- {skipped_count} Skipped/Failed"
+            f" -- {imported} Created -- 0 Updated -- {skipped_count} Skipped/Failed"
             f" -- time: {elapsed_time:.2f} seconds"
             )
-        
+
         self.stdout.write(self.style.SUCCESS(
             f"Imported list of **{endpoint}** series done!\n"
-            f"SUMMARY: Series (import) -- {created} Created. "
+            f"SUMMARY: Series (import) -- {imported} Created. "
             f"-- 0 Updated. -- {skipped_count} Skipped/Failed."
-            f"-------------------"
+            f"\n" + "=" * 50 + "\n\n"
+
             ))
 
 

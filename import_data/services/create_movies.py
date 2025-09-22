@@ -12,9 +12,7 @@ def save_or_update_movie(tmdb_id: int):
     - Then create or update the movie and records it in the database.
     """
     try:
-        # search for the movie
-        # movie_data = get_movie_data(tmdb_id)
-
+        # Fetch movie details from TMDB API
         movie_data = get_api_data(
             t_type = 'movie_detail',
             tmdb_id=tmdb_id
@@ -161,6 +159,8 @@ def save_or_update_movie(tmdb_id: int):
                     "writer" : writers,
                     "casting" : cast[:12],
                     "length" : movie_data.get("runtime"),
+                    "status": movie_data.get('status'),
+
                     "vote_average" : movie_data.get("vote_average"),
                     "description" : movie_data.get("overview"),
                     "genre" : [genre["name"] for genre in movie_data.get("genres", [])],
@@ -192,13 +192,11 @@ def check_movie_validity(movie_data, processed_data: dict):
     '''
     ### Check the amount of data concerning the new imported movie.
     The movie will not be imported/saved in DB if:
-    - grade gets below MIN_REQUIRED_SCORE (32) then Movie considered broken / will not be imported in Database
-    - too many fields are missing datas **8**
-    - Or 2/3 of critical fields are missing (title / poster_image / release_date / director / casting) 
+    - grade gets below **MIN_REQUIRED_SCORE** then Movie considered broken / will not be imported in Database
     - priorities (pts): low (1) - medium (2) -- hard (5)
     - assume a total start score of 50 When all datas are present.
     - remove points depending on their priorities.
-    - 
+    
     Total fields to check: **24**
     '''
     is_valid = True
@@ -207,11 +205,6 @@ def check_movie_validity(movie_data, processed_data: dict):
 
     today = datetime.date.today()
     release_date = processed_data.get("release_date")
-    # if isinstance(release_date, str):
-    #     try:
-    #         release_date = datetime.datetime.strptime(release_date, '%Y-%m-%d').date()
-    #     except (ValueError, TypeError):
-    #         release_date = None
 
     if release_date and release_date > today:
         print(f"Movie has a future release date: {release_date}. ")
@@ -299,6 +292,7 @@ def check_movie_validity(movie_data, processed_data: dict):
             and movie_data.get("revenue") > 0,
             "priority": low,
         },
+        "status": {"value": bool(movie_data.get("status")), "priority": low},
         "tagline": {"value": bool(movie_data.get("tagline")), "priority": low},
         "spoken_languages": {
             "value": len(processed_data.get("spoken_languages", [])) > 0,
@@ -333,6 +327,20 @@ def check_movie_validity(movie_data, processed_data: dict):
     if BASE_SCORE - result <= MIN_REQUIRED_SCORE:
         print(f" Too many missing fields! BREAK! No import. -- score: {BASE_SCORE - result}/{BASE_SCORE}")
         is_valid = False
+
+        #-------------------------------------------------------------------
+        # Temporary may help remove movies with insufficient data already in DB
+        if result >= 20 and Movie.objects.filter(tmdb_id=movie_data.get('id')).exists():
+            print(f" -- More than half of the fields are missing! ({len(missing_fields)}/24) --")
+            print(f"Deleting the movie from DB if existing...")
+            try:
+                Movie.objects.filter(tmdb_id=movie_data.get('id')).delete()
+                print(f"Movie with TMDB ID: {movie_data.get('id')} deleted from DB.")
+            except Exception as e:
+                print(f"An error occurred while deleting movie with TMDB ID: {movie_data.get('id')}. Error: {str(e)}")
+                traceback.print_exc()
+
+
     else:
         print(f"Considerable amount of data, Can be imported! score: {BASE_SCORE - result}/{BASE_SCORE}")
 

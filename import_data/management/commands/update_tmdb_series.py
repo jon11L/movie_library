@@ -135,7 +135,6 @@ class Command(BaseCommand):
                             f"Imported! Created new serie: **{new_serie}**\n"
                             "--------------------\n"
                             ))
-
                     elif new_serie and not is_created:
                         updated += 1
                         self.stdout.write(
@@ -143,6 +142,14 @@ class Command(BaseCommand):
                                 f"Imported! Updated serie: **{new_serie}**\n"
                                 "--------------------\n"
                                 )
+                        )
+                    elif not new_serie:
+                        skipped_count += 1
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"**Cancel to save in DB. Mo movie or no sufficient data**"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
                         )
                     else:
                         self.stdout.write(self.style.WARNING(
