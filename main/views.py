@@ -111,6 +111,53 @@ def home(request):
             # display the amount of Movies & Series available from the database
             series_count = Serie.objects.count() 
 
+
+        # ------ add side content , from other user's Watchlist or like movies/series ------
+        discover_media = [] # list to hold the content (movies, series)
+        discover_list = None # list to hold the user ids already processed
+        if request.user.is_authenticated:
+            discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[:3] # list to hold the user ids already processed
+        else:
+            discover_list = WatchList.objects.all().order_by("?")[:3] # list to hold the user ids already processed
+
+        for item in discover_list:
+            if item.movie:
+                discover_media.append({
+                    'object': item.movie,
+                    'type': item.kind
+                    })
+                # print(f"movie: {movie}\n") #debug print
+            elif item.serie:
+                discover_media.append({
+                    'object': item.serie,
+                    'type': item.kind
+                    })
+
+        print(f"discover_media: {discover_media}\n") # debug print
+
+
+        # others_like = [] # list to hold the content (movies, series)
+        # discover_like = None # list to hold the user ids already processed
+        # if request.user.is_authenticated:
+        #     discover_like = Like.objects.exclude(user=request.user).order_by("?")[:3] # list to hold the user ids already processed
+        # else:
+        #     discover_like = Like.objects.all().order_by("?")[:3] # list to hold the user ids already processed
+
+        # for item in discover_like:
+        #     if item.movie:
+        #         others_like.append({
+        #             'object': item.movie,
+        #             'type': item.kind
+        #             })
+        #         # print(f"movie: {movie}\n") #debug print
+        #     elif item.serie:
+        #         others_like.append({
+        #             'object': item.serie,
+        #             'type': item.kind
+        #             })
+
+        # print(f"others_like: {others_like}\n") # debug print
+
         context = {
             'recent_movies': recent_movies ,
             'movies_coming_soon': upcoming_movies,
@@ -118,9 +165,12 @@ def home(request):
             'returning_series': ongoing_series,
             'new_series': new_series,
             'random_series': random_series,
+            'discover_media': discover_media,
             'movies_count': movies_count,
             'series_count': series_count,
+            # 'others_like': others_like,
         }
+
 
         if request.user.is_authenticated:
             # --------- Get the user's watchlist content (movies, series)  -----------
@@ -129,6 +179,22 @@ def home(request):
 
             watchlist = WatchList.objects.filter(user=user)
             print(f"user's Watchlist:\n{watchlist[:3]}...\n") # debug print
+
+            watchlist_content = [] 
+            # initialize the list watchlist sample
+            for item in watchlist.order_by("?")[:6]:
+                # try:
+                if item.movie:
+                    watchlist_content.append({
+                        'object': item.movie,
+                        'type': item.kind
+                        })
+                    # print(f"movie: {movie}\n") #debug print
+                elif item.serie:
+                    watchlist_content.append({
+                        'object': item.serie,
+                        'type': item.kind
+                        })
 
             user_watchlist_movies = set(
                 watchlist.filter(movie__isnull=False).values_list("movie_id", flat=True)
@@ -150,24 +216,6 @@ def home(request):
                     user=user, content_type='serie'
                     ).values_list('object_id', flat=True)
             )
-
-            watchlist_content = [] 
-            # initialize the list watchlist sample
-            for item in watchlist.order_by("?")[:6]:
-                # try:
-                if item.movie:
-                    watchlist_content.append({
-                        'object': item.movie,
-                        # 'type': type(item.movie).__name__.lower()
-                        'type': item.kind
-                        })
-                    # print(f"movie: {movie}\n") #debug print
-                elif item.serie:
-                    watchlist_content.append({
-                        'object': item.serie,
-                        # 'type': type(item.serie).__name__.lower()
-                        'type': item.kind
-                        })
 
             context.update(
                 {
