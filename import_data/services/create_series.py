@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+import datetime
 import traceback
 import random
 
@@ -31,7 +31,6 @@ def save_or_update_series(tmdb_id):
         print(traceback.format_exc())
         print(f"\n\nAn error occurred: {str(e)}")
         return (None, False)
-    
 
         # check if te API was called correctly and returned the datas
     if not serie_data:
@@ -48,8 +47,9 @@ def save_or_update_series(tmdb_id):
     # fetch and prepare the Serie's data fields.
     created_by = [creator["name"] for creator in serie_data.get("created_by", [])]
     genre = [genre["name"] for genre in serie_data.get("genres", [])]
-    languages = serie_data.get("spoken_languages", [])
-    spoken_languages = [language["english_name"] for language in languages]
+    spoken_languages = [
+        language["english_name"] for language in serie_data.get("spoken_languages", [])
+    ]
 
     production = [
         prod["name"] for prod in serie_data.get("production_companies", [])
@@ -62,7 +62,7 @@ def save_or_update_series(tmdb_id):
     first_air_date = None
     if serie_data.get('first_air_date'):
         try:
-            first_air_date = datetime.strptime(serie_data.get('first_air_date'), '%Y-%m-%d').date()
+            first_air_date = datetime.datetime.strptime(serie_data.get('first_air_date'), '%Y-%m-%d').date()
         except ValueError:
             # If the first_air_date is not available, it stays set to None
             print(f"Invalid date format: {serie_data.get('first_air_date')}")
@@ -89,8 +89,7 @@ def save_or_update_series(tmdb_id):
             print(f"Value error: {e}\n")
             print(f"Could not remove the poster path to append to first index.")
         select_posters.insert(0, serie_data.get('poster_path'))
-        
-    
+
     poster_images = select_posters # set to save in the object
 
     # Fetch and store Banner images
@@ -111,6 +110,27 @@ def save_or_update_series(tmdb_id):
         select_banners.insert(0, serie_data.get('backdrop_path'))
     banner_images = select_banners # set to save in the object
 
+    # ------ Will check if the serie fetched has enough data to be saved --------
+    # store in a Dict to pass in the check_serie_validity function
+    processed_data = {
+        "production": production,
+        "genre": genre,
+        "created_by": created_by,
+        "first_air_date" : first_air_date,
+        "spoken_languages" : spoken_languages,
+        "poster_images": poster_images,
+        "banner_images": banner_images,
+        "imdb_id": imdb_id,
+    }
+
+    is_valid = check_serie_validity(serie_data, processed_data)
+
+    if is_valid:
+        print(f"serie: {serie_data.get("title")} passes validity data-check. Saving the serie")
+    else:
+        # did not pass the validity check, does not save, stop here.
+        print(f"serie: '{serie_data.get("title")}' did not pass the validity data-check. NOT saving the serie")
+        return None, False
 
     try:
         # Store the new serie in DB
@@ -142,7 +162,7 @@ def save_or_update_series(tmdb_id):
     except Exception as e:
         print(f"An error occurred while saving/updating serie: {str(e)}")
         print(f"Serie: '{serie_data.get('name')}' failed to save to DB.")# log print
-        print("--------------", "\n")
+        print(f"\n" + "=" * 50 + "\n\n")
         time.sleep(2) # so I can see the error message before the next one
         return (None, False)
 
@@ -151,7 +171,7 @@ def save_or_update_series(tmdb_id):
     elif serie and not is_created:
         print(f"*Existing serie Updated: {serie}")
     # --------- Passing on the seasons ------------------------------
-    
+
     number_of_seasons = []
     # extract the seasons number to loop and fetch in api.
     # expecting a list of dicts in 'seasons'
@@ -183,7 +203,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
     # loop through the list of season and calling the databas
     for season_number in number_of_seasons:
         time.sleep(4) # to avoid hitting the TMDB API too quickly
-        print("--------------")
+        print("\n" + "=" * 50 + "\n\n")
         print(f"Fetching season {season_number} out of {len(number_of_seasons)} -- ({serie})") # debug print
 
         # Get the Seasons and Episode details data to save.
@@ -482,11 +502,6 @@ def generate_episode_slug(season):
     updated_episodes = []
     total = episodes.count()
 
-    # if the
-    # if Serie.objects.filter(title=season.serie.slug).count() > 1:
-    #     print(f"Other Series have the title or slug {season.serie.slug}")
-    #     print(f"Other series with same slug: {Serie.objects.filter(title=season.serie.slug)}") 
-
     if total == 0: # no episodes recorded in the season, stops here.
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -526,3 +541,151 @@ def generate_episode_slug(season):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"time: {elapsed_time:.2f} seconds.\n")
+
+
+
+
+def check_serie_validity(serie_data, processed_data: dict):
+    '''
+    ### Check the amount of data concerning the new imported serie.
+    The serie will not be imported/saved in DB if:
+    - grade gets below MIN_REQUIRED_SCORE (32) then serie considered broken / will not be imported in Database
+    - too many fields are missing datas **8**
+    - Or 2/3 of critical fields are missing (title / poster_image / first_air_date / production / seasons) 
+    - priorities (pts): low (1) - medium (2) -- hard (5)
+    - assume a total start score of 50 When all datas are present.
+    - remove points depending on their priorities.
+    - 
+    Total fields to check: **24**
+    '''
+    is_valid = True
+    BASE_SCORE = 50 # if missing data, point are subtracted according to the priority set
+    MAX_MISSING_DATA = 8
+
+    today = datetime.date.today()
+    first_air_date = processed_data.get("first_air_date")
+
+    if first_air_date and first_air_date > today:
+        print(f"Serie has a future release date: {first_air_date}.")
+        MIN_REQUIRED_SCORE = 31
+    else:
+        print(f"Serie already released or no release date found: {first_air_date}.")
+        MIN_REQUIRED_SCORE = 35
+
+    # CRITICAL_FIELDS =  ("title", "poster_images", "casting", "description")
+    # priorities:
+    low = 1.5 # (11 fields), 
+    medium = 3 # (5 fields), 
+    high = 5 # (4)
+
+    processed_data = processed_data
+    # total fields to check: 19 for serie +1 for seasons = 20
+    # check if there already some tale tell of seasons data.
+
+    all_datas = {
+        # high priority
+        "title": {
+            "value": bool(serie_data.get("name") or bool(serie_data.get("original_name"))),
+            "priority": high,
+        },
+        "poster_images": {
+            "value": len(processed_data.get("poster_images", [])) > 0,
+            "priority": high,
+        },
+        "first_air_date": {
+            "value": bool(processed_data.get("first_air_date")),
+            "priority": high,
+        },
+        "production": {
+            "value": len(processed_data.get("production", [])) > 0,
+            "priority": high,
+        },
+        # medium priority
+        "genre": {"value": len(processed_data.get("genre", [])) > 0, "priority": medium},
+        "banner_images": {
+            "value": len(processed_data.get("banner_images", [])) > 0,
+            "priority": medium,
+        },
+        "created_by": {
+            "value": len(processed_data.get("created_by", [])) > 0,
+            "priority": medium,
+        },
+        # check seasons field, if no season, no point taken out
+        "seasons": {
+            "value": len(serie_data.get("seasons", [])) > 0,
+            "priority": medium,
+        },
+        "description": {"value": bool(serie_data.get("overview")), "priority": medium},
+        # low priority
+        "imdb_id": {"value": bool(processed_data.get("imdb_id")), "priority": low},
+        "original_title": {
+            "value": bool(serie_data.get("original_name")),
+            "priority": low,
+        },
+        "last_air_date": {
+            "value": bool(serie_data.get("last_air_date")),
+            "priority": low,
+        },
+        "origin_country": {
+            "value": len(serie_data.get("origin_country", [])) > 0,
+            "priority": low,
+        },
+        "original_language": {
+            "value": bool(serie_data.get("original_language")),
+            "priority": low,
+        },
+        "vote_average": {
+            "value": serie_data.get("vote_average") is not None,
+            "priority": low,
+        },
+        "tagline": {"value": bool(serie_data.get("tagline")), "priority": low},
+        "spoken_languages": {
+            "value": len(processed_data.get("spoken_languages", [])) > 0,
+            "priority": low,
+        },
+        "status": {"value": bool(serie_data.get("status")), "priority": low},
+        "vote_count": {
+            "value": serie_data.get("vote_count") is not None
+            and serie_data.get("vote_count") > 0,
+            "priority": low,
+        },
+        "popularity": {
+            "value": serie_data.get("popularity") is not None,
+            "priority": low,
+        },
+    }
+
+    # loop through processed fields, check how many fields are missing
+    # and how much point taken out per priority
+    missing_fields = [field for field, data in all_datas.items() if not data['value']]
+
+    result = 0
+    score = [data['priority'] for field, data in all_datas.items() if not data['value']]
+    for s in score:
+        result += s
+
+    print(
+        f"-- missing fields: {len(missing_fields)}, {missing_fields}.\n"
+        f"-- missing score: {result} -- {score}"
+    )
+
+    if BASE_SCORE - result <= MIN_REQUIRED_SCORE:
+        print(f" Too many missing fields! BREAK! No import. -- score: {BASE_SCORE - result}/{BASE_SCORE}")
+        is_valid = False
+
+        #-------------------------------------------------------------------
+        # Temporary may help remove movies with insufficient data already in DB
+        if result >= 20 and Serie.objects.filter(tmdb_id=serie_data.get('id')).exists():
+            print(f" -- More than half of the fields are missing! ({len(missing_fields)}/24) --")
+            print(f"Deleting the serie from DB if existing...")
+            try:
+                Serie.objects.filter(tmdb_id=serie_data.get('id')).delete()
+                print(f"serie with TMDB ID: {serie_data.get('id')} deleted from DB.")
+            except Exception as e:
+                print(f"An error occurred while deleting serie with TMDB ID: {serie_data.get('id')}. Error: {str(e)}")
+                traceback.print_exc()
+
+    else:
+        print(f"Considerable amount of data, Can be imported! score: {BASE_SCORE - result}/{BASE_SCORE}")
+
+    return is_valid

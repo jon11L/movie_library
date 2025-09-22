@@ -51,7 +51,7 @@ class Command(BaseCommand):
         5. Log result and differentiate between imported and skipped.
         """
         MAX_RETRIES = 3
-        FETCH_PAGE = 2 # the amount of pages we will check to get movies imported
+        FETCH_PAGE = 5 # the amount of pages we will check to get movies imported
 
         # to keep track of the import,
         # passed & returned in process_batch_movies(). Then logged at the end.
@@ -242,7 +242,7 @@ class Command(BaseCommand):
                         imported['created'] += 1
                         self.stdout.write(self.style.SUCCESS(f"Imported movie: **{new_movie}** \n"))  # not sure it is imported if already exist
                     else:
-                        self.stdout.write(self.style.ERROR(f"Failed to import movie ID: {movie_id}. No data returned."))
+                        self.stdout.write(self.style.ERROR(f"Cancel import of movie ID: {movie_id}. No sufficient data returned."))
                         imported['skipped'] += 1
                     # logger.info(f"Imported: {movie_title} (ID: {movie_id})")
 

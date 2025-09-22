@@ -153,7 +153,7 @@ class Command(BaseCommand):
                         skipped_count += 1
                         self.stdout.write(
                             self.style.WARNING(
-                                f"**failed to register in DB. Mo movie or no sufficient data**"
+                                f"**Cancel to save in DB. Mo movie or no sufficient data**"
                                 f"\n" + "=" * 50 + "\n\n"
                             )
                         )
