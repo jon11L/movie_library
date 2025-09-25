@@ -1,4 +1,3 @@
-
 import time
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -206,31 +205,38 @@ def watch_list_view(request, pk: int):
     '''retrieve the user's watchlist from the database and display them in the template'''
     start_time = time.time()
 
+    # retrieve the profile being requested
+    try:
+        t_user = User.objects.get(pk=pk)
+        target_profile = t_user.profile
+    except (User.DoesNotExist, Profile.DoesNotExist):
+        messages.error(request, "The user or profile's Watchlist you are trying to access does not exist.")
+        return redirect('main:home')
+
     # Need to add a check that only current user can visit their own Like page.
-    if request.user.is_authenticated and request.user.id != pk:
-        print("\n** Unauthorised acces: user tried to access another User_watchlist **\n")
-        messages.error(request, ("You are not authorized to acces this page."))
+    if request.user.is_authenticated and request.user.id != pk and target_profile.watchlist_private and not request.user.is_staff:
+        print("\n** Unauthorised acces: user tried to access a private user's watchlist **\n")
+        messages.error(request, ("Page not accessible, private."))
         return redirect(to='user:profile_page', pk=request.user.id)
 
-    elif request.user.is_authenticated and request.user.id == pk:
+    elif request.user.is_staff or (
+        request.user.is_authenticated and
+        (request.user.id == pk or not target_profile.watchlist_private)
+    ):  # or request.user == t_user
+        
         if request.method == "GET":
 
             # fetch the profile being requested
-            user = User.objects.get(id=pk)
-            watchlist = WatchList.objects.filter(user=pk)
+            # user = User.objects.get(id=pk)
+            watchlist = WatchList.objects.filter(user=pk).select_related('movie', 'serie')
 
             watchlist_content = [] # intialize the list of watchlist instances 
             for item in watchlist:
                 try:
-                    if item.movie:
+                    media_obj = item.movie if item.movie else item.serie
+                    if media_obj:
                         watchlist_content.append({
-                            'object': item.movie,
-                            'type': item.kind
-                            })
-
-                    elif item.serie:
-                        watchlist_content.append({
-                            'object': item.serie,
+                            'object': media_obj,
                             'type': item.kind
                             })
 
@@ -239,13 +245,13 @@ def watch_list_view(request, pk: int):
                     continue
 
             # ----- Get the user's like content (movies, series)  ------
-            user_liked_movies = Like.objects.filter(
+            user_liked_movies = set(Like.objects.filter(
                                                 user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True)
+                                                ).values_list('object_id', flat=True))
 
-            user_liked_series = Like.objects.filter(
+            user_liked_series = set(Like.objects.filter(
                                                 user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True)
+                                                ).values_list('object_id', flat=True))
 
             # -- paginate over the results --
             paginator = Paginator(watchlist_content, 24)
@@ -256,7 +262,7 @@ def watch_list_view(request, pk: int):
             total_content = watchlist.count()
 
             context = {
-                'user': user,
+                'user': t_user,
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
                 'watchlist' : watchlist,
@@ -269,14 +275,9 @@ def watch_list_view(request, pk: int):
             print(f"time: {elapsed_time:.2f} seconds.")
             return render(request, 'user_library/watch_list.html', context=context)
 
-        # elif request.method == "POST":
-        #     # user clicked the button
-        #     if request.POST.get('watchlist_button_clicked') == 'true':
-        #         print(f"watchlist button clicked\n") # debugging
-        #     pass
-
     else:
-        messages.error(request, "You must be logged in to view your watchlist .")
+        # user is not authenticated. No access to Watchlist, private or public. Must be registered
+        messages.error(request, "You must be logged in to view watchlist .")
         return redirect('user:login')
 
 

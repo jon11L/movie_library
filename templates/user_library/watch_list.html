@@ -20,7 +20,12 @@
             <main class="main-wrapper custom-col-9" style="padding: 0;">
 
                 <div style="text-align: center; margin-top: 2rem; margin-bottom: 0.25rem;">
+                    {% if request.user == user %}
                     <h1 style="margin-bottom: 0;">Your watch list:</h1>
+                    {% else %}
+                    <h1 style="margin-bottom: 0;">{{ user }}'s watch list:</h1>
+                    {% endif %}
+
                 </div>
                 <div style="padding: 0;">
                     <h6 style="text-align:right; margin-right: 2rem; padding: 0;">{{ total_content }} items saved in your watch list</h6>

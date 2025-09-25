@@ -79,12 +79,12 @@
                     <div class="col">
                         <div class="row">
                         
-                            <div style="border: solid darkgrey; border-bottom: none; margin-top: 2em; padding-bottom: 3em;">
+                            <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2em; padding-bottom: 3em;">
                             
                                 <h3 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">Last activity:</h3>
 
                                 {% if comment_content %}
-                                {% for item in comment_content %}
+                                {% for item in comment_content|slice:"0:5" %}
                                 <div class="mb-4">
                                 
                                     <div class="card text-center" style="border: solid 2px darkslategray;">
@@ -134,11 +134,11 @@
                     </div>
 
 
-                    <!--  Last comments -->
+                    <!-- Other activities -->
                     <div class="col-sm-6" style="margin-left: 5rem;">
                         <!-- <div class="row"> -->
 
-                            <div style="border: solid darkgrey; border-bottom: none; margin-top: 2em; padding-bottom: 3em;">
+                            <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2em; padding-bottom: 3em;">
                                 <h5 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">TEST placeholder (movie liked, added to watchlist will appear here):</h5>
                                 <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
                             </div>
