@@ -14,9 +14,16 @@
 
 
             <main class="custom-col-9" style="padding: 0;">
-                
+
+                <div style="text-align: center; margin-top: 2rem; margin-bottom: 0.25rem;">
+                    <h1 style="margin-bottom: 0;">Movies:</h1>
+                </div>
+                <div style="padding: 0;">
+                    <h6 style="text-align:right; margin-right: 2rem; padding: 0;">order by</h6>
+                </div>
+
                 {% if movie_list %}
-                <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1>
+                <!-- <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1> -->
                 
                 <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2%; padding: 2rem 1.5rem 0.5rem 1.5rem;">
                     {% for movie in movie_list %}

@@ -17,7 +17,6 @@ def search(request):
     - if request.method == 'GET' and request.GET -> user search with Filtering system
     or from search bar (title filter only)
     """
-
     # Initialize with empty values
     movies = []
     series = []
@@ -73,7 +72,7 @@ def search(request):
                 'filter': Media_filter,
                 'filters_applied': False  # Flag to show a message in the template
             }
-        
+
         else: # Filter values are applied.
             print("filter values applied")# debug print
             filtered_movies = []
@@ -81,12 +80,12 @@ def search(request):
 
             # Apply the filters to the Movie and Serie models if 'all' selected or specific content type
             if content_type in ['movie', 'all']:
-                movie_filter = SharedMediaFilter(request.GET, queryset=Movie.objects.all())
+                movie_filter = SharedMediaFilter(request.GET, queryset=Movie.objects.only("id", "slug", "poster_images", "title" , "vote_average"))
                 filtered_movies = movie_filter.qs
                 # print(f"Filtered movies: {filtered_movies}")
 
             if content_type in ['serie', 'all']:
-                serie_filter = SharedMediaFilter(request.GET, queryset=Serie.objects.all())
+                serie_filter = SharedMediaFilter(request.GET, queryset=Serie.objects.only("id", "slug", "poster_images", "title", "vote_average"))
                 filtered_series = serie_filter.qs
                 # print(f"Filtered series: {filtered_series}")
 
@@ -106,7 +105,6 @@ def search(request):
 
             total_found = len(results)
             print(f"Total found: {total_found}. {len(filtered_movies)} movies and {len(filtered_series)} series")  # Debug print
-
 
             # -- paginate over the results --
             paginator = Paginator(results, 24)
