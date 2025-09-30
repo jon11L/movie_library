@@ -9,16 +9,31 @@
             
             
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
-                <div></div>
+            <aside class="custom-col-1-5 d-none d-lg-block">
+                <div>
+                    <!-- For dev purpose -->
+                    {% if request.user.is_superuser %}
+                    <div style="color: aliceblue;">
+                        <strong>id: {{ movie.pk }} </strong>
+
+                        {% if movie.created_at|date:"Y-m-d H" == movie.updated_at|date:"Y-m-d H" %}
+                        <strong> -- (Not updated)</strong>
+                        {% elif movie.created_at != movie.updated_at %}
+                        <strong> -- (last updated on {{ movie.updated_at }})</strong>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <!-- End of dev purpose -->
+
+                </div>
             </aside>
             
+
             <main class="custom-col-9">
-                
-                {% if movie %}
                 <br>
-                <div class="card" style="justify-content: center; width: 90%; margin: auto;">
-                    <div style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: 1280px;">
+                {% if movie %}
+                <div class="card" style="justify-content: center; width: 90%; margin: auto; border-radius: 0.5em;">
+                    <div class="rounded" style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; width: fit-content;">
 
                         <!-- <div class="banner" style="width: fit-content; ">
                             {% if movie.banner_images %}
@@ -31,8 +46,8 @@
                         <div style="display: flex; flex-wrap: wrap; justify-content:space-between;">
                             
                             <div style="margin-top: 0.5em; margin-left: 0.7em;">
-                                <p style="color: antiquewhite;">
-                                    <small>{{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)</small>
+                                <p class="vote-average" style="font-weight: 500; background-color: rgba(53, 49, 49, 0.65); border-radius: 2em; padding: 0 0.6em;">
+                                    {{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)
                                 </p>
                             </div>
     
@@ -65,10 +80,51 @@
 
                         <div class="row">
 
-                            <div class="col-4" style="padding-top: 14em;">
+
+
+                            <div class="col-4">
+
+                                <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                                    {% if movie.render_poster %}
+                                    <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                    {% else %}
+                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                    {% endif %}
+                                </div>
+            
+    
+                                <div class="card-body" style="background-color: none;">
+                                    <div style="text-align: center;">
+                                        {% if movie.title != movie.original_title %}
+                                        <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
+                                        {% else %}
+                                        <h4 class="card-title">{{ movie.title }}</h4>
+                                        {% endif %}
+            
+                                        {% if movie.tagline %}
+                                        <p>({{ movie.tagline }})</p>
+                                        {% endif %}
+                                    </div>   
+                                    <br>
+            
+                                    <div style="margin: auto;">
+                                        {% if movie.description %}
+                                        <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
+                                        <p>{{ movie.description }}</p>
+                                        {% else %}
+                                        <p class="card-text"><strong>Description:</strong></p>
+                                        <p>No description available.</p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+
+                            <div class="col-4" style="padding-top: 16.25em;">
 
                                 <div>
-                                    <div style="margin-top: 2em;">
+                                    <div style="">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
                                                 <div class="d-flex" style="justify-content:space-around;">
@@ -109,62 +165,9 @@
                             </div>
 
 
-                            <div class="col-4">
-
-                                <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                                    {% if movie.render_poster %}
-                                    <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                    {% else %}
-                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                    {% endif %}
-                                </div>
-            
-    
-                                <div class="card-body" style="background-color: none;">
-                                    <div style="text-align: center;">
-                                        {% if movie.title != movie.original_title %}
-                                        <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
-                                        {% else %}
-                                        <h4 class="card-title">{{ movie.title }}</h4>
-                                        {% endif %}
-            
-                                        {% if movie.tagline %}
-                                        <p>({{ movie.tagline }})</p>
-                                        {% endif %}
-            
-                                        <!-- For dev purpose -->
-                                        {% if request.user.is_superuser %}
-                                        <div>
-                                            <strong>id: {{ movie.pk }} </strong>
-                                            
-                                            {% if movie.created_at|date:"Y-m-d H" == movie.updated_at|date:"Y-m-d H" %}
-                                            <strong> -- (Not updated)</strong>
-                                            {% elif movie.created_at != movie.updated_at %}
-                                            <strong> -- (last updated on {{ movie.updated_at }})</strong>
-                                            {% endif %}
-                                        </div>
-                                        {% endif %}
-                                        <!-- End of dev purpose -->
-            
-                                    </div>   
-                                    <br>
-            
-                                    <div style="margin: auto;">
-                                        {% if movie.description %}
-                                        <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
-                                        <p>{{ movie.description }}</p>
-                                        {% else %}
-                                        <p class="card-text"><strong>Description:</strong></p>
-                                        <p>No description available.</p>
-                                        {% endif %}
-                                    </div>
-                                    
-                                </div>
-                            </div>
 
 
-
-                            <div class="col-4" style="padding-top: 16em;">
+                            <div class="col-4" style="padding-top: 16.25em;">
 
                                 <div>
                                     <ul class="list-group list-group-flush">
@@ -253,7 +256,7 @@
 
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-lg-block">
                 <div>
                 </div>
             </aside>

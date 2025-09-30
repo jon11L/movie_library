@@ -9,27 +9,42 @@
             
             
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
-                <div></div>
+            <aside class="custom-col-1-5 d-none d-lg-block">
+                <div>
+
+                    <!-- For dev purpose -->
+                    {% if request.user.is_superuser %}
+                    <div style="color: aliceblue;">
+                        <strong>id: {{ serie.pk }} </strong>
+                        {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
+                        <strong> -- (Not updated)</strong>
+                        {% elif serie.created_at != serie.updated_at %}
+                        <strong> -- (last updated on {{ serie.updated_at }})</strong>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <!-- End of dev purpose -->
+
+                </div>
             </aside>
             
             <main class="custom-col-9">
+                <br>
                 
                 {% if serie %}
-                <br>
-                <div class="card" style="width: 90%; justify-content: center; margin: auto; margin-top: 0;">
-                    <div class="serie-card" id="banner-background" style="background-image: url('{{ serie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: 1280px;">
+                <div class="card" style="width: 90%; justify-content: center; margin: auto;">
+                    <div id="banner-background" style="background-image: url('{{ serie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: fit-content; width: fit-content;">
 
                         <div>
                             <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
                             
                                 <div style="padding-top: 0.5em; padding-left: 0.7em;">
-                                    <p style="color: antiquewhite;">
+                                    <p class="vote-average" style="font-weight: 500; background-color: rgba(53, 49, 49, 0.65); border-radius: 2em; padding: 0 0.6em;">
                                         <small>{{ serie.render_vote_average }}/10 ({{serie.vote_count}} votes)</small>
                                     </p>
                                 </div>                                <!-- Display the like and watchlist buttons -->
 
-                                <div style="align-self: flex-end; padding-right: 0.7em;">
+                                <div style="align-self: flex-end; margin-top: 0.5em; margin-right: 0.7em;">
 
                                     <div class="user-feature-btn" >
                                         <!-- Watchlist button feature -->
@@ -55,10 +70,44 @@
 
                             <div class="row">
 
-                                <div class="col-4" style="padding-top: 14em;">
+                                <div class="col-4">
+                                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                                        {% if serie.render_poster %}
+                                        <img src=" {{ serie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                        {% else %}
+                                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div class="card-body" style="background-color: none;">
+                                        <div style="text-align: center;">
+                                            {% if serie.title != serie.original_title %}
+                                            <h4 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h4>
+                                            {% else %}
+                                            <h4 class="card-title">{{ serie.title }}</h4>
+                                            {% endif %}
+                                        
+                                            {% if serie.tagline %}
+                                            <p>({{ serie.tagline }})</p>
+                                            {% endif %}
+                                        </div>
 
+                                        <br>
+                                        <div style="margin: auto;">
+                                            {% if serie.description %}
+                                            <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
+                                            <p>{{ serie.description }}</p>
+                                            {% else %}
+                                            <p class="card-text"><strong>Description:</strong></p>
+                                            <p>No description available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-4" style="padding-top: 16.25em;">
                                     <div>
-                                        <div style="margin-top: 2em;">
+                                        <div style="">
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item">
                                                     <div class="d-flex" style="justify-content:space-around;">
@@ -92,59 +141,9 @@
                                             </ul>
                                         </div>
                                     </div>
-
                                 </div>
 
-                                <div class="col-4">
-
-                                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                                        {% if serie.render_poster %}
-                                        <img src=" {{ serie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                        {% else %}
-                                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                        {% endif %}
-                                    </div>
-                                
-                                    <div class="card-body" style="background-color: none;">
-                                        <div style="text-align: center;">
-                                            {% if serie.title != serie.original_title %}
-                                            <h4 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h4>
-                                            {% else %}
-                                            <h4 class="card-title">{{ serie.title }}</h4>
-                                            {% endif %}
-                                        
-                                            {% if serie.tagline %}
-                                            <p>({{ serie.tagline }})</p>
-                                            {% endif %}
-                                            <!-- For dev purpose -->
-                                            {% if request.user.is_superuser %}
-                                            <div>
-                                                <strong>id: {{ serie.pk }} </strong>
-                                                {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
-                                                <strong> -- (Not updated)</strong>
-                                                {% elif serie.created_at != serie.updated_at %}
-                                                <strong> -- (last updated on {{ serie.updated_at }})</strong>
-                                                {% endif %}
-                                            </div>
-                                            {% endif %}
-                                            <!-- End of dev purpose -->
-                                        </div>
-
-                                        <br>
-                                        <div style="margin: auto;">
-                                            {% if serie.description %}
-                                            <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
-                                            <p>{{ serie.description }}</p>
-                                            {% else %}
-                                            <p class="card-text"><strong>Description:</strong></p>
-                                            <p>No description available.</p>
-                                            {% endif %}
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="col-4" style="padding-top: 16em;">
+                                <div class="col-4" style="padding-top: 16.25em;">
                                     <div>
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
@@ -297,7 +296,7 @@
 
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+            <aside class="custom-col-1-5 d-none d-lg-block">
                 <div>
                 </div>
             </aside>
@@ -347,7 +346,7 @@
                 if (!isCurrentSeasonOpen) {
                     selectedSeason.style.display = 'block';
                     console.log(`displaying content from season ${seasonId}.`);
-                    // Add 'active' class to clicked button
+                    // Add 'active' class to clicked-none d-md-blockd button
                     selectedButton.classList.add('active');
                     console.log(`change btn color on current clicked season`);
                 }
