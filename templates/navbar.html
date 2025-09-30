@@ -4,7 +4,7 @@
   <div class="container-fluid">
 
     <!-- Home page button -->
-    <a class="navbar-brand" href="{% url 'main:home' %}">Home</a>
+    <a class="navbar-brand mt-2" href="{% url 'main:home' %}"><h5>Home</h5></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -18,27 +18,28 @@
     <!-- Links of different pages -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <div>
-        <ul class="navbar-nav ms-5 mb-2 mb-lg-0">
+        <ul class="navbar-nav ms-5 mt-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">Movies</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}"><h5>Movies</h5></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">TV shows</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}"><h5>TV shows</h5></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">Documentaries</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}"><h5>Documentaries</h5></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">Short films</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}"><h5>Short films</h5></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">Anime</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}"><h5>Anime</h5></a>
           </li>
         </ul>
       </div>
-
+	</div>
+	
       <!-- Right-aligned dropdown menu -->
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav ms-auto mt-2 mb-lg-2" id="navbarSupportedContent">
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -62,7 +63,6 @@
           </li>
         {% endif %}
       </ul>
-    </div>
   </div>
 </nav>
 <div class="navbar-spacer"></div>
