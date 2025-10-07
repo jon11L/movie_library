@@ -17,7 +17,7 @@ class Profile(models.Model):
     # Time stamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
-    watchlist_private = models.BooleanField(default=True, help_text="Make watchlist private (only you can see it)")  # User can decide if their watchlist is private or can be publicly viewed
+    watchlist_private = models.BooleanField(default=True, help_text="Toggle watchlist between private and public")  # User can decide if their watchlist is private or can be publicly viewed
 
     # Meta
     class Meta:

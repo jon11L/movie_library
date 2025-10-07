@@ -17,10 +17,10 @@
 	{% include 'navbar.html' %}
 
 	<!-- To display the pop-up notification from Django /backend-->
-	<div style="position: fixed; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
+	<div id="global-popup-message" style="position: fixed; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
 		{% if messages %}
 		{% for message in messages %}
-		<div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %} alert-dismissible fade show"
+		<div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %} alert-dismissible fade show mb-2"
 			style="width: fit-content;" 
 			role="alert">
 			{{ message }}
@@ -48,16 +48,8 @@
 	<!-- jQuery / allow AJAX to function -->
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-	<!-- for HTMX operation -->
+	<!-- for HTMX operation  // surely need to correct to only work on POST/PUT operation-->
 	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
-	<script>
-	    // Configure HTMX to include CSRF token in all requests
-		document.addEventListener('DOMContentLoaded', function() {
-			document.body.addEventListener('htmx:configRequest', function(event) {
-				event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-			});
-		});
-	</script>
 
 
 	<!-- custom js script -->
@@ -75,7 +67,17 @@
 					// Close it
 					bsAlert.close();
 				});
-			}, 3500); // 3500 milliseconds (3.5s)
+			}, 3500); // in milliseconds (3.5s)
+		});
+
+
+
+
+	    // Configure HTMX to include CSRF token in all requests
+		document.addEventListener('DOMContentLoaded', function() {
+			document.body.addEventListener('htmx:configRequest', function(event) {
+				event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+			});
 		});
 	</script>
 		

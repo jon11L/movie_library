@@ -358,12 +358,12 @@ def toggle_watchlist_status(request):
         profile.save()
 
         status = "Private" if profile.watchlist_private else "Public"
-        message = f"Your watchlist is now {status}."
+        # message = f"Your watchlist is now {status}."
         print(f"Watchlist status changed to: {status}\n")
 
         # return JsonResponse({'new_status': status, 'message': message})
         context = {
             'profile': profile,
         }
-        messages.success(request, f"Your watchlist is now {status}.")
+        # messages.success(request, f"Your watchlist is now {status}.") # need to pass the message directly on HTMX to avoid reloading & duplication
         return render(request, 'user_library/partials/toggle_privacy_watchlist.html', context=context)
