@@ -14,7 +14,7 @@ from .serializers import WatchListSerializer
 
 # Models import
 from .models import WatchList, Like
-from user.models import User
+from user.models import User, Profile
 from movie.models import Movie
 from serie.models import Serie
 
@@ -137,7 +137,7 @@ def liked_content_view(request, pk: int):
             total_like = likes.count() #count how many items has been liked
 
             context = {
-                'liked_content': liked_content,
+                'liked_content': liked_content[0:40],
                 'total_like': total_like,
             }
 
@@ -332,3 +332,38 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 # messages.success(request, f"{content_type} added to your likes.")
                 message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
+
+
+def toggle_watchlist_status(request):
+    '''
+    This function is called when the user clicks on the button to toggle the watchlist status
+    between private and public.
+    It is called via HTMX and updates the database without reloading the page.
+    '''
+
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'error': 'Login required',
+            'message': "You must be logged-in to change your watchlist status."
+            }, status=401)
+    
+    if request.method == "POST":
+
+        # check if the privacy status of the user is set to True or False and change accordingly
+        profile = Profile.objects.get(user=request.user)
+        if profile.watchlist_private == True:
+            profile.watchlist_private = False
+        else:
+            profile.watchlist_private = True
+        profile.save()
+
+        status = "Private" if profile.watchlist_private else "Public"
+        message = f"Your watchlist is now {status}."
+        print(f"Watchlist status changed to: {status}\n")
+
+        # return JsonResponse({'new_status': status, 'message': message})
+        context = {
+            'profile': profile,
+        }
+        messages.success(request, f"Your watchlist is now {status}.")
+        return render(request, 'user_library/partials/toggle_privacy_watchlist.html', context=context)
