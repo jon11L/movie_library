@@ -1,0 +1,23 @@
+{% load static %}
+
+<div id="privacy-toggle-watchlist">
+    <div class="form-check form-switch d-flex" style="padding: 0.5em;">
+        <input type="checkbox"
+            class="form-check-input"
+            role="switch"
+            id="watchlist-private"
+            name="watchlist-private"
+            {% if profile.watchlist_private %}checked{% endif %}
+            hx-post="{% url 'user_library:toggle_watchlist_status' %}"
+            hx-swap="outerHTML"
+            hx-target="#privacy-toggle-watchlist">
+        </input>
+        <div style="margin-left: 0.3rem; margin-top: 0.1rem;">
+            {% if profile.watchlist_private == True %}
+            <label for="watchlist-private">Private<i class="fas fa-lock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i></label>
+            {% elif profile.watchlist_private == False %}
+            <label for="watchlist-private">Public <i class="fas fa-unlock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i></label>
+            {% endif %}
+        </div>
+    </div>
+</div>
