@@ -50,12 +50,21 @@
                     </div>
 
                     <!--  User's data, content such like watch list, liked movies -->
-                    <div class="card-footer text-body-secondary d-flex">
+                    <div class="card-footer text-body-secondary d-flex space-evenly">
 
-                        <div style="margin-left: 150px; margin-right: 100px;">
-                        </div>
-                        <div style="margin-left: 100px; margin-right: 70px;">
-                            <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13);">Watchlist</a>
+                        <!-- <div style="margin-left: 250px; margin-right: 0px;"></div> -->
+                        <div class="d-flex" style="margin-left: 100px; margin-right: 70px;">
+                            <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13); padding-top: 0.5rem;">
+                                Watchlist
+                            </a>
+                            
+                            <!-- clickable button to trigger if user's watchlist is private or public -->
+                            <div style="margin-left: 2.5rem;">
+                                {% if request.user.profile == profile %}
+                                {% include "user_library/partials/toggle_privacy_watchlist.html" %}
+                                {% endif %}
+                            </div>
+
                         </div>
                     
                         <div style="margin-left: 100px; margin-right: 20px; margin-top: -50px;">
