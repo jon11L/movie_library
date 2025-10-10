@@ -40,10 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_filters',
-    'rest_framework',
-    'rest_framework.authtoken',
+    'django.contrib.staticfiles', # for serving static files
+    'django_filters', # for filtering in DRF
+    'django_celery_beat', # for periodic tasks with Celery
+    'rest_framework', # for building APIs
+    'rest_framework.authtoken', # for token-based authentication
     'core',
     'main',
     'movie',
@@ -53,7 +54,6 @@ INSTALLED_APPS = [
     'comment',
     'search',
     'import_data',
-    'django_celery_beat',
     'devtools',  # Custom app for development tools// to remove in Production
 ]
 
@@ -112,7 +112,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '0/day',
         'user_burst': '15/min',
-        'user_sustain': '100/hour',
+        'user_sustain': '120/hour',
         'user_day': '500/day',
         # 'user': '25/hour',
         'admin': '2000/day',

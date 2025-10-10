@@ -179,10 +179,6 @@ def save_or_update_series(tmdb_id):
     number_of_seasons = [season["season_number"] for season in seasons]
     print(f"Serie contains: {len(number_of_seasons)} seasons.")
 
-    # if not is_created and len(number_of_seasons) == 0:
-    #     print(f"Serie: {serie} has no seasons to update.")
-    #     return (serie, is_created)
-
     # call api and record seasons data
     result = get_seasons(serie, number_of_seasons, tmdb_id)
     if not result:
@@ -196,8 +192,7 @@ def save_or_update_series(tmdb_id):
 
 
 def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
-    # return serie, created
-    
+
     datas_season = [] # to display some result in the json return.
 
     # loop through the list of season and calling the databas
@@ -264,7 +259,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                         }
                     )
             yt_trailer = random.sample(
-                yt_trailer, min(len(yt_trailer), 4)
+                yt_trailer, min(len(yt_trailer), 6)
                 ) # Select up to 4 random trailers
 
             # Fetch and store images
@@ -543,8 +538,6 @@ def generate_episode_slug(season):
     print(f"time: {elapsed_time:.2f} seconds.\n")
 
 
-
-
 def check_serie_validity(serie_data, processed_data: dict):
     '''
     ### Check the amount of data concerning the new imported serie.
@@ -675,7 +668,7 @@ def check_serie_validity(serie_data, processed_data: dict):
 
         #-------------------------------------------------------------------
         # Temporary may help remove movies with insufficient data already in DB
-        if result >= 20 and Serie.objects.filter(tmdb_id=serie_data.get('id')).exists():
+        if Serie.objects.filter(tmdb_id=serie_data.get('id')).exists():
             print(f" -- More than half of the fields are missing! ({len(missing_fields)}/24) --")
             print(f"Deleting the serie from DB if existing...")
             try:

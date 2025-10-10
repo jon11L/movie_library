@@ -29,7 +29,7 @@ def save_or_update_movie(tmdb_id: int):
         director = []
         writers = []
         cast = []
-        youtube_trailer = []
+        yt_trailer = []
         spoken_languages = []
 
         # Extract credits from the combined response
@@ -54,12 +54,12 @@ def save_or_update_movie(tmdb_id: int):
         trailer_data = movie_data.get("videos", {}).get("results", [])
 
         for trailer in trailer_data:
-            if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
-                youtube_trailer.append(
+            if trailer["type"] in ["Trailer", "Teaser", "Featurette"] and trailer['site'] == "YouTube":
+                yt_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
                 )
-        youtube_trailer = random.sample(
-            youtube_trailer, min(len(youtube_trailer), 4)
+        yt_trailer = random.sample(
+            yt_trailer, min(len(yt_trailer), 6)
             )  # Select up to 4 random trailers
 
         languages = movie_data.get("spoken_languages", [])
@@ -130,7 +130,7 @@ def save_or_update_movie(tmdb_id: int):
             "spoken_languages" : spoken_languages,
             "poster_images": poster_images,
             "banner_images": banner_images,
-            "youtube_trailer": youtube_trailer
+            "youtube_trailer": yt_trailer
         }
 
         is_valid = check_movie_validity(movie_data, processed_data)
@@ -175,7 +175,7 @@ def save_or_update_movie(tmdb_id: int):
                     # images & trailer
                     "poster_images" : poster_images,
                     "banner_images" : banner_images,
-                    "trailers" : youtube_trailer
+                    "trailers" : yt_trailer
                     }
                 )
 
@@ -208,7 +208,7 @@ def check_movie_validity(movie_data, processed_data: dict):
 
     if release_date and release_date > today:
         print(f"Movie has a future release date: {release_date}. ")
-        MIN_REQUIRED_SCORE = 31
+        MIN_REQUIRED_SCORE = 32
     else:
         print(f"Movie already released or no release date found: {release_date}. ")
         MIN_REQUIRED_SCORE = 35
@@ -330,7 +330,7 @@ def check_movie_validity(movie_data, processed_data: dict):
 
         #-------------------------------------------------------------------
         # Temporary may help remove movies with insufficient data already in DB
-        if result >= 20 and Movie.objects.filter(tmdb_id=movie_data.get('id')).exists():
+        if Movie.objects.filter(tmdb_id=movie_data.get('id')).exists():
             print(f" -- More than half of the fields are missing! ({len(missing_fields)}/24) --")
             print(f"Deleting the movie from DB if existing...")
             try:
@@ -339,7 +339,6 @@ def check_movie_validity(movie_data, processed_data: dict):
             except Exception as e:
                 print(f"An error occurred while deleting movie with TMDB ID: {movie_data.get('id')}. Error: {str(e)}")
                 traceback.print_exc()
-
 
     else:
         print(f"Considerable amount of data, Can be imported! score: {BASE_SCORE - result}/{BASE_SCORE}")

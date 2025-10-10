@@ -14,9 +14,13 @@
         </input>
         <div style="margin-left: 0.3rem; margin-top: 0.1rem;">
             {% if profile.watchlist_private == True %}
-            <label for="watchlist-private">Private<i class="fas fa-lock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i></label>
+            <label for="watchlist-private">
+                Private<i class="fas fa-lock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i>
+            </label>
             {% elif profile.watchlist_private == False %}
-            <label for="watchlist-private">Public <i class="fas fa-unlock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i></label>
+            <label for="watchlist-private">
+                Public <i class="fas fa-unlock" style="margin-left: 0.3rem; margin-top: 0.1rem;"></i>
+            </label>
             {% endif %}
         </div>
     </div>

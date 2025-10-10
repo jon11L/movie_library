@@ -19,70 +19,102 @@
             <main class="custom-col-9">
 
                 <div class="card text-center">
-                    <div class="card-header">
-                        <h5 class="card-title">{{ profile.user.username.capitalize }}</h5>
+
+                    <div class="card-header" style="display: flex; justify-content: space-between; margin: 0.2rem; padding: 0.4rem;">
+                        <p></p>
+                        <h4 style="margin: 0;">{{ profile.user.username.capitalize }}</h4>
+                        <p style="margin: 0;"><strong>Member since: </strong>{{ profile.created_at|date:"d M Y" }}</p>
                     </div>
                 
+                    <!-- Main profile part: image, bio, Fav movies. -->
                     <div class="card-body">
-                        <div style="display: flex;">
+                        <div class="row">
                         
-                            <div class="col-md-1" style="margin-left: 15px; margin-right: 40px;">
-                                <p class="card-text"><strong>age:</strong> {{ profile.render_age }}</p>
-                                <p class="card-text"><small class="text-body-secondary"><strong>Last updated:</strong> {{ profile.last_update }}</small></p>
+                            <div class="col-2 card-text" style="text-align: left;">
+                                <p style="margin-bottom: 0.4rem;"><strong>age: </strong><small>{{ profile.render_age }}</small></p>
+                                <p style="margin-bottom: 0.1rem;"><strong>Member since: </strong><small>{{ profile.created_at|date:"d M Y" }}</small></p>
+                                <p style="margin-bottom: 0rem;"><strong>Last updated: </strong><small class="text-body-secondary">{{ profile.last_update }}</small></p>
                             </div>
 
                             <!--  profile picture -->
-                            <div class="" style="margin-top: 2px; margin-right: 50px;">
+                            <div class="col-2" style="margin-top: 2px; margin-right: 1rem;">
                                 {% if profile.profile_picture %}
                                 <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 200px; height: 200px;" alt="Profile photo">
                                 {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 200px;" alt="Profile photo">
+                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 200px; height: 200px;" alt="Profile photo">
                                 {% endif %}
                             </div>
                         
-                            <div>
+                            <div class="col-4">
                                 <div style="text-align: left; margin-top: 25px; margin-bottom: 10px;">
-                                    <h5 class="card-title" style="margin-bottom: 25px;">Special title treatment</h5>
-                                    <p class="card-text" style="margin-bottom: 25px;">{{ profile.bio }}</p>
+                                    <h6 class="card-title" style="margin-bottom: 25px;">{{ profile.bio }}</h6>
+                                    <!-- <p class="card-text" style="margin-bottom: 25px;">{{ profile.bio }}</p> -->
                                 </div>
                             </div>
+
+                            <div class="col">
+                                <p>My Favorit movies:</p>
+
+                                <div class="row">
+                                    <!-- Create and insert top3-10 /favorit Movies of user. -->
+                                    <!-- {% for movie in favorite_movies %} -->
+                                    <!-- {% endfor %} -->
+                                    <div class="col" style="margin-bottom: 1rem;">
+                                        {% if movie.poster %}
+                                        <!-- <img src="{{ movie.render_poster}}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster"> -->
+                                        {% else %}
+                                        <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster">
+                                        {% endif %}
+                                    </div>
+                                    <!-- Temporary until real Top movies exist -->
+                                    <div class="col" style="margin-bottom: 1rem;">
+                                        {% if movie.render_poster %}
+                                        <img src="{{ movie.render_poster}}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster">
+                                        {% else %}
+                                        <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col" style="margin-bottom: 1rem;">
+                                        {% if movie.render_poster %}
+                                        <img src="{{ movie.render_poster}}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster">
+                                        {% else %}
+                                        <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="width: 120px; height: 180px;" alt="Movie poster">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
                     <!--  User's data, content such like watch list, liked movies -->
                     <div class="card-footer text-body-secondary d-flex space-evenly">
 
-                        <!-- <div style="margin-left: 250px; margin-right: 0px;"></div> -->
                         <div class="d-flex" style="margin-left: 100px; margin-right: 70px;">
-                            <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13); padding-top: 0.5rem;">
+                            <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13); padding-top: 0.5rem; padding-bottom: 0rem; border-color: black;">
                                 Watchlist
                             </a>
-                            
                             <!-- clickable button to trigger if user's watchlist is private or public -->
                             <div style="margin-left: 2.5rem;">
                                 {% if request.user.profile == profile %}
                                 {% include "user_library/partials/toggle_privacy_watchlist.html" %}
                                 {% endif %}
                             </div>
-
                         </div>
                     
-                        <div style="margin-left: 100px; margin-right: 20px; margin-top: -50px;">
-                            <br><br>
+                        <div class="d-flex" style="margin-left: 100px; margin-bottom: 0 ;padding-bottom: 0;">
                             {% if like %}
-                            <a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-secondary" style="background-color: rgb(127, 143, 231);">Liked content</a>
+                            <a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-secondary" style="background-color: rgb(127, 143, 231); padding-top: 0.5rem; padding-bottom: 0rem">Media Liked</a>
                             {% else %}
-                            <p></p>
+                            <a href="#" class="btn btn-secondary" style="background-color: rgb(127, 143, 231);">Media Liked </a>
                             {% endif %}
+                            <p style="margin: 0.5rem 0rem 0 0.5rem;">{{ total_like }} likes</p>
                         </div>
-                        <p >{{ total_like }} likes</p>
                     
                     </div>
                 </div>
-            
-
                 <!--  Last User's activity -->
-                <div class="d-flex" style="width: 85%; justify-content: space-evenly; margin: auto;">
+                <div class="d-flex" style="width: 90%; justify-content: space-evenly; margin: auto;">
 
                     <!--  Last comments posted-->
                     <div class="col">
@@ -142,20 +174,15 @@
                         </div>
                     </div>
 
-
                     <!-- Other activities -->
                     <div class="col-sm-6" style="margin-left: 5rem;">
                         <!-- <div class="row"> -->
-
                             <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2em; padding-bottom: 3em;">
                                 <h5 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">TEST placeholder (movie liked, added to watchlist will appear here):</h5>
                                 <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
                             </div>
-                            
                         <!-- </div> -->
                     </div>
-                
-                
                 </div>
 
             </main>
