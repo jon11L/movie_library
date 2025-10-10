@@ -33,196 +33,199 @@
                 <br>
                 {% if movie %}
                 <div class="card" style="justify-content: center; width: 90%; margin: auto; border-radius: 0.5em;">
-                    <div class="rounded" style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; width: fit-content;">
 
-                        <!-- <div class="banner" style="width: fit-content; ">
-                            {% if movie.banner_images %}
-                            <img src="{{ movie.render_banner }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
-                            {% else %}
-                            <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
-                            {% endif %}
-                        </div> -->
-    
-                        <div style="display: flex; flex-wrap: wrap; justify-content:space-between;">
-                            
-                            <div style="margin-top: 0.5em; margin-left: 0.7em;">
-                                <p class="vote-average" style="font-weight: 500; background-color: rgba(53, 49, 49, 0.65); border-radius: 2em; padding: 0 0.6em;">
-                                    {{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)
-                                </p>
-                            </div>
-    
-                            <div style="align-self: flex-end; margin-top: 0.5em; margin-right: 0.7em;">
-    
-                                <div class="user-feature-btn">
-                                    <!-- watchlist button feature -->
-                                    <button class="watchlist-button"
-                                            data-type="movie"
-                                            data-id="{{ movie.id }}"
-                                            data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                        <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                    </button>
-    
-                                    <!-- like button feature -->
-                                    <button class="like-button"
-                                            data-type="movie"
-                                            data-id="{{ movie.id }}"
-                                            data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
-                                        <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                    </button>
-                                
-                                </div>
-                            </div>
-                        </div>
+                    <section id="movie-detail-section">
+
+                        <div class="rounded" style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; width: 100%; max-width: 100%;">
+
+                            <!-- <div class="banner" style="width: fit-content; ">
+                                {% if movie.banner_images %}
+                                <img src="{{ movie.render_banner }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
+                                {% else %}
+                                <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+                                {% endif %}
+                            </div> -->
                         
-                        <!-- To give space between the backcgrounf image and the next parts -->
-                        <div style="padding-bottom: 25.6em;"></div>
+                            <div style="display: flex; flex-wrap: wrap; justify-content:space-between;">
 
-
-                        <div class="row">
-
-
-
-                            <div class="col-4">
-
-                                <div class="card-img-top" style="text-align: center; margin-top: 20px;">
-                                    {% if movie.render_poster %}
-                                    <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                    {% else %}
-                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                    {% endif %}
+                                <div style="margin-top: 0.5em; margin-left: 0.7em;">
+                                    <p class="vote-average" style="font-weight: 500; background-color: rgba(53, 49, 49, 0.65); border-radius: 2em; padding: 0 0.6em;">
+                                        {{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)
+                                    </p>
                                 </div>
-            
-    
-                                <div class="card-body" style="background-color: none;">
-                                    <div style="text-align: center;">
-                                        {% if movie.title != movie.original_title %}
-                                        <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
+                            
+                                <div style="align-self: flex-end; margin-top: 0.5em; margin-right: 0.7em;">
+                                
+                                    <div class="user-feature-btn">
+                                        <!-- watchlist button feature -->
+                                        <button class="watchlist-button"
+                                                data-type="movie"
+                                                data-id="{{ movie.id }}"
+                                                data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                                            <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                        </button>
+                                    
+                                        <!-- like button feature -->
+                                        <button class="like-button"
+                                                data-type="movie"
+                                                data-id="{{ movie.id }}"
+                                                data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
+                                            <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                        </button>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- To give space between the backcgrounf image and the next parts -->
+                            <div style="padding-bottom: 25.6em;"></div>
+
+                            <div class="row">
+
+                                <div class="col-4">
+
+                                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                                        {% if movie.render_poster %}
+                                        <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                         {% else %}
-                                        <h4 class="card-title">{{ movie.title }}</h4>
-                                        {% endif %}
-            
-                                        {% if movie.tagline %}
-                                        <p>({{ movie.tagline }})</p>
-                                        {% endif %}
-                                    </div>   
-                                    <br>
-            
-                                    <div style="margin: auto;">
-                                        {% if movie.description %}
-                                        <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
-                                        <p>{{ movie.description }}</p>
-                                        {% else %}
-                                        <p class="card-text"><strong>Description:</strong></p>
-                                        <p>No description available.</p>
+                                        <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                         {% endif %}
                                     </div>
+                                
+                                
+                                    <div class="card-body" style="background-color: none;">
+                                        <div style="text-align: center;">
+                                            {% if movie.title != movie.original_title %}
+                                            <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
+                                            {% else %}
+                                            <h4 class="card-title">{{ movie.title }}</h4>
+                                            {% endif %}
+                                        
+                                            {% if movie.tagline %}
+                                            <p>({{ movie.tagline }})</p>
+                                            {% endif %}
+                                        </div>   
+                                        <br>
                                     
+                                        <div style="margin: auto;">
+                                            {% if movie.description %}
+                                            <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
+                                            <p>{{ movie.description }}</p>
+                                            {% else %}
+                                            <p class="card-text"><strong>Description:</strong></p>
+                                            <p>No description available.</p>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="col-4" style="padding-top: 16.25em;">
+                                <div class="col-4" style="padding-top: 16.25em;">
 
-                                <div>
-                                    <div style="">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
-                                                <div class="d-flex" style="justify-content:space-around;">
-                                                    <div>
-                                                        <strong>Released:</strong> {{ movie.render_release_date }}
+                                    <div>
+                                        <div style="">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div class="d-flex" style="justify-content:space-around;">
+                                                        <div>
+                                                            <strong>Released:</strong> {{ movie.render_release_date }}
+                                                        </div>
+                                                        <div>
+                                                            <strong>Length:</strong> {{ movie.render_length }}
+                                                        </div>
                                                     </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
+                                                    <p style="padding: 0; margin: 0; text-align: center;">
+                                                        {{ movie.render_genre }}
+                                                    </p>
+                                                </li>
+
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+
+                                                    {% if movie.casting %}
+                                                        {% for cast in movie.casting %}
+                                                            {% if not cast.role %}
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                            {% else  %}
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                </li>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <div class="col-4" style="padding-top: 16.25em;">
+
+                                    <div>
+                                        <ul class="list-group list-group-flush">
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="text-align: center; margin: 0;"><strong>Production:</strong></p>
+                                                <p>{{ movie.render_production }}</p>
+                                            </li>
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="text-align: center; margin: 0;"><strong>director:</strong></p>
+                                                <p>{{ movie.render_director }}</p>
+                                            </li>
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="text-align: center; margin: 0;"><strong>Writer:</strong></p>
+                                                <p>{{ movie.render_writer }}</p>
+                                            </li>
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <div class="d-flex">
                                                     <div>
-                                                        <strong>Length:</strong> {{ movie.render_length }}
+                                                        <strong>Origin country:</strong>
+                                                        <p>{{ movie.render_origin_country }}</p>
+                                                    </div>
+                                                    <div style="margin-left: 4em;">
+                                                        <strong>Language:</strong>
+                                                        <p>{{ movie.render_spoken_languages }}</p>
                                                     </div>
                                                 </div>
                                             </li>
-                                            <li class="list-group-item">
-                                                <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
-                                                <p style="padding: 0; margin: 0; text-align: center;">
-                                                    {{ movie.render_genre }}
-                                                </p>
-                                            </li>
 
-                                            <li class="list-group-item">
-                                                <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
-                                                
-                                                {% if movie.casting %}
-                                                    {% for cast in movie.casting %}
-                                                        {% if not cast.role %}
-                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
-                                                        {% else  %}
-                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
-
+                                            <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
                                             </li>
-                                            
                                         </ul>
                                     </div>
                                 </div>
 
                             </div>
-
-
-
-
-                            <div class="col-4" style="padding-top: 16.25em;">
-
-                                <div>
-                                    <ul class="list-group list-group-flush">
-
-                                        <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                            <p style="text-align: center; margin: 0;"><strong>Production:</strong></p>
-                                            <p>{{ movie.render_production }}</p>
-                                        </li>
-                                        <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                            <p style="text-align: center; margin: 0;"><strong>director:</strong></p>
-                                            <p>{{ movie.render_director }}</p>
-                                        </li>
-                                        <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                            <p style="text-align: center; margin: 0;"><strong>Writer:</strong></p>
-                                            <p>{{ movie.render_writer }}</p>
-                                        </li>
-                                        <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                            <div class="d-flex">
-                                                <div>
-                                                    <strong>Origin country:</strong>
-                                                    <p>{{ movie.render_origin_country }}</p>
-                                                </div>
-                                                <div style="margin-left: 4em;">
-                                                    <strong>Language:</strong>
-                                                    <p>{{ movie.render_spoken_languages }}</p>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-
-                        </div>
+                            
+                        </section>
                     </div>
                     <br>
-                        
-                    <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
-                        {% if movie.trailers %}
-                        {% for trailer in movie.trailers %}
-                        <div class="ms-2 mb-2">
-                            <iframe width="300" height="200"
-                                src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                title="YouTube video player"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                            </iframe>
+
+                    <section id="trailers">
+                        <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
+                            {% if movie.trailers %}
+                            {% for trailer in movie.trailers|slice:"0:4" %}
+                            <div class="ms-2 mb-2">
+                                <iframe width="300" height="200"
+                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
                         </div>
-                        {% endfor %}
-                        {% endif %}
-                    </div>
+                    </section>
 
                 </div>
                 <br>
@@ -249,6 +252,7 @@
                 </section>
 
                 {% else %}
+                <!-- If movie not present in Database / or error not loaded -->
                     <h4>Movie not found...</h4>
                 {% endif %}
 

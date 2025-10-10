@@ -1,13 +1,19 @@
+{% load static %}
+
 <footer class="footer">
-    <div style="display: flex; justify-content: space-around; padding: 10px 50px 10px 20px ;">
-        <div style="display: inline;">
-            <p style=""> @2025 Vault7 - (Powered by Django) - MIT licence</p>
-            <p style="margin-bottom: 10px;"></p>
-            <p style="margin-bottom: 0px;">
+
+    <div class="row" style="justify-content: space-evenly; padding: 1rem;">
+
+        <div class="col-3">
+            <p style=""> @2025 Cinelib7 - (Powered by Django) - MIT licence</p>
         </div>
+
+        <div class="col-3" style="text-align: center; width: 30%; margin-left: auto;">
             <small>
                 This [website, program, service, application, product] uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+                <img src="{% static 'images/TMDB_logo.svg' %}" class="img-fluid rounded" style="width: 5rem; height: 1rem; margin-bottom: 0.2rem;" alt="Movie poster">
             </small>
-        </p>
+        </div>
+
     </div>
 </footer>

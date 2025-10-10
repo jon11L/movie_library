@@ -14,7 +14,10 @@
 </head>
 <body>
 	{% csrf_token %}
-	{% include 'navbar.html' %}
+	
+	<header>
+		{% include 'navbar.html' %}
+	</header>
 
 	<!-- To display the pop-up notification from Django /backend-->
 	<div id="global-popup-message" style="position: fixed; z-index: 101; top: 12%; left: 50%; transform: translate(-50%, -15%);">
