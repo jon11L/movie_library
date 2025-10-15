@@ -122,49 +122,42 @@
 
 
                                 <div class="col-4" style="padding-top: 16.25em;">
+                                    <div style="">
 
-                                    <div>
-                                        <div style="">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">
-                                                    <div class="d-flex" style="justify-content:space-around;">
-                                                        <div>
-                                                            <strong>Released:</strong> {{ movie.render_release_date }}
-                                                        </div>
-                                                        <div>
-                                                            <strong>Length:</strong> {{ movie.render_length }}
-                                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <div class="d-flex" style="justify-content:space-around;">
+                                                    <div>
+                                                        <strong>Released:</strong> {{ movie.render_release_date }}
                                                     </div>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
-                                                    <p style="padding: 0; margin: 0; text-align: center;">
-                                                        {{ movie.render_genre }}
-                                                    </p>
-                                                </li>
+                                                    <div>
+                                                        <strong>Length:</strong> {{ movie.render_length }}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
+                                                <p style="padding: 0; margin: 0; text-align: center;">
+                                                    {{ movie.render_genre }}
+                                                </p>
+                                            </li>
 
-                                                <li class="list-group-item">
-                                                    <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                            <li class="list-group-item">
+                                                <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                                {% if movie.casting %}
+                                                    {% for cast in movie.casting %}
+                                                        {% if not cast.role %}
+                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                        {% else  %}
+                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </li>
 
-                                                    {% if movie.casting %}
-                                                        {% for cast in movie.casting %}
-                                                            {% if not cast.role %}
-                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
-                                                            {% else  %}
-                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endif %}
-
-                                                </li>
-
-                                            </ul>
-                                        </div>
+                                        </ul>
                                     </div>
-
                                 </div>
-
-
 
 
                                 <div class="col-4" style="padding-top: 16.25em;">
@@ -186,11 +179,12 @@
                                             </li>
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <div class="d-flex">
-                                                    <div>
+
+                                                    <div style="margin-right: 5em; width: 40%;">
                                                         <strong>Origin country:</strong>
                                                         <p>{{ movie.render_origin_country }}</p>
                                                     </div>
-                                                    <div style="margin-left: 4em;">
+                                                    <div style=" width: 60%;">
                                                         <strong>Language:</strong>
                                                         <p>{{ movie.render_spoken_languages }}</p>
                                                     </div>
@@ -205,8 +199,8 @@
 
                             </div>
                             
-                        </section>
-                    </div>
+                        </div>
+                    </section>
                     <br>
 
                     <section id="trailers">

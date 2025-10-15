@@ -120,7 +120,7 @@
                     <!-- click on search button in Navbar without search given // same with search filter button-->
                     {% if not query and not filters_applied %}
                     <h3 style="color: green;">Start your search</h3>
-                    <div style="padding-bottom: 17rem;"></div>
+                    <div style="padding-bottom: 15.5rem;"></div>
                 
                     <!-- filter form button clicked with filters and results -->
                     {% elif filter and query_params and total_found %}
@@ -131,6 +131,7 @@
                     {% elif filter and not total_fount %}
                     <h3 style="color: red;">No result could be found base on your query</h3>        
                     <p style="color: darkred;"> please refine the filtering options</p>
+                    <div style="padding-bottom: 13rem;"></div>
                     {% endif %}
                 </div>
         
@@ -288,7 +289,7 @@
                     </div>
                     {% elif list_content and list_content.paginator.num_pages == 1 %}
                     <!-- Show only page info when there's just one page -->
-                    <div style="display: flex; justify-content: center; margin: 10px 0;">
+                    <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">
                         <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
                     </div>
                     {% endif %}
