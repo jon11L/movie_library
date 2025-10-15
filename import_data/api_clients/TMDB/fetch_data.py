@@ -12,20 +12,15 @@ def get_api_data(*args, **kwargs):
 
     Fetch paginated list of popular movies
     With the following variable arguments:
-    - endpoint -> for filter selection (eg. popular, upcoming)
-    - page -> the page to hit the api
-    - t_type -> the model type that is targeted (eg. Movie, Serie, Season)
+    - endpoint = kwargs.get("endpoint") -> for filter selection (eg. popular, upcoming)
+    - page = kwargs.get("page") -> the page to hit the api
+    - t_type = kwargs.get("t_type") -> the model type that is targeted (eg. Movie, Serie, Season)
 
     """
+    # update = kwargs.get("update")
     MAX_RETRIES = 3
     retry = 0
-    
     tmdb_client = TMDBClient()
-
-    # page = kwargs.get("page")
-    # endpoint = kwargs.get("endpoint")
-    # t_type = kwargs.get("t_type")
-    # update = kwargs.get("update")
 
     # Retry logic
     while retry < MAX_RETRIES:
@@ -63,7 +58,7 @@ def get_api_data(*args, **kwargs):
             print(
                 f"Request exception Error getting '{kwargs.get('t_type')}' with url: {url}\n"
                 f"Error Reason: {e}\n"
-                f"trying again sane endpoint: in {retry*3}\n"
+                f"trying again same endpoint: in {retry*3}\n"
                 "--------------\n"
                 )
             time.sleep(retry*3)
@@ -74,7 +69,7 @@ def get_api_data(*args, **kwargs):
                 f"Failed, An error occurred while fetching the '{kwargs.get('t_type')}' of movies with url: {url}\n"
                 f"Error Reason: {e}\n"
                 f"Retrying... Attempt {retry}/{MAX_RETRIES}\n"
-                f"trying again endpoint:{kwargs.get("endpoint")}-page{kwargs.get("page")} in {retry*3}seconds\n"
+                f"trying again same endpoint:{kwargs.get("endpoint")}-page{kwargs.get("page")} in {retry*3}seconds\n"
                 "---------------\n"
                 )
             time.sleep(retry*3)
@@ -87,3 +82,10 @@ def get_api_data(*args, **kwargs):
         return None # exit this query call if max retries reached
 
     print("--------Max retries reached. Exiting.----(Check for possible error with URL)")
+
+
+# got the following error when importing update movies, also with import new movies:
+
+# Request exception Error getting 'movie_detail' with url: https://api.themoviedb.org/3/movie/1549262?append_to_response=videos,credits,images
+# Error Reason: HTTPSConnectionPool(host='api.themoviedb.org', port=443): Max retries exceeded with url: /3/movie/1549262?append_to_response=videos,credits,images (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7cc70a4d9400>: Failed to resolve 'api.themoviedb.org' ([Errno -3] Temporary failure in name resolution)"))
+# trying again sane endpoint: in 3

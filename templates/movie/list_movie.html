@@ -84,7 +84,7 @@
 
                 <!----- Pagination system ------->
                 {% if movie_list.paginator.num_pages > 1 %}
-                <div style="display: flex; justify-content: center;">
+                <div style="display: flex; justify-content: center; padding-bottom: 2rem;">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
                             {% if movie_list.has_previous %}
@@ -141,7 +141,7 @@
                 </div>
                 {% elif movie_list and movie_list.paginator.num_pages == 1 %}
                 <!-- Show only page info when there's just one page -->
-                <div style="text-align: center;">
+                <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">
                     <h6 style="color: darkgray;">( Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }} )</h6>
                 </div>
                 {% endif %}
