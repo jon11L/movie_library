@@ -16,18 +16,18 @@ class Movie(BaseModel):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
-    genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings
+    genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings 
     release_date = models.DateField(blank=True, null=True)
-    origin_country = models.JSONField(blank=True, null=True)
-    original_language = models.CharField(max_length=50, blank=True, null=True)  # Movie's original language
-    spoken_languages = models.JSONField(blank=True, null=True) # take from the list of dict: ['spokent_languages'] "english_name"
+    origin_country = models.JSONField(blank=True, null=True) # This field will be a list of strings 
+    original_language = models.CharField(max_length=50, blank=True, null=True)
+    spoken_languages = models.JSONField(blank=True, null=True) # This field will be a list of strings
     length = models.IntegerField(blank=True, null=True) # will display the Movie time in minutes
     released = models.BooleanField(blank=True, null=True)
     # Cast and Prod
-    production = models.JSONField(blank=True, null=True)
-    director = models.JSONField(blank=True, null=True)
-    writer = models.JSONField(blank=True, null=True)
-    casting = models.JSONField(blank=True, null=True)
+    production = models.JSONField(blank=True, null=True) # list of strings
+    director = models.JSONField(blank=True, null=True) # list of strings
+    writer = models.JSONField(blank=True, null=True) # list of strings
+    casting = models.JSONField(blank=True, null=True) # list of dicts: [{"name": actor_name, "role": character_name}, ..]
 
     status = models.CharField(max_length=255, blank=True, null=True)  # e.g., Released, Post Production
 
@@ -39,16 +39,13 @@ class Movie(BaseModel):
     imdb_rating = models.FloatField(blank=True, null=True)  # to fetch externally their rating
     popularity = models.FloatField(blank=True, null=True)
     
-    # images
+    # images & trailers
     poster_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     ) # ['images].get("posters")
-
     banner_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     ) # ['images].get("backdrops")
-
-    # trailers
     trailers = models.JSONField(max_length=11, blank=True, null=True)
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
@@ -104,7 +101,8 @@ class Movie(BaseModel):
         return 'N/a'   
 
     def render_director(self):
-        '''return the Movie.director attribute in without quotes and [],
+        '''
+        return the Movie.director attribute in without quotes and [],
         only comma-separated string.
         '''
         if self.director:
@@ -120,14 +118,17 @@ class Movie(BaseModel):
             return 0
 
     def render_origin_country(self):
-        '''return the Movie.origin_country with a comma-separated string'''
+        '''
+        return the Movie.origin_country with a comma-separated string
+        '''
         if self.origin_country:
             origin_country = ', '.join(self.origin_country)
             return origin_country  
         return 'N/a' 
 
     def render_length(self):
-        '''return the Movie.length with a formatted string
+        '''
+        return the Movie.length with a formatted string
         (e.g., 1h 30m)
         '''
         if self.length:
@@ -163,7 +164,6 @@ class Movie(BaseModel):
         append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.banner_images url\n
         in order to be a valid url to display it.\n
         Fallback to a default image if no banners are available
-
         '''
         if self.banner_images:
             if len(self.banner_images) >= 2:
