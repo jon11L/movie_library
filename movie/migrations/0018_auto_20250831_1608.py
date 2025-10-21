@@ -21,7 +21,7 @@ def forward(apps, schema_editor):
             movie.save(update_fields=["poster_images", "banner_images"])
             updated += 1
 
-    print(f"Movies updated: {updated}")
+    # print(f"Movies updated: {updated}")
 
 
 class Migration(migrations.Migration):
