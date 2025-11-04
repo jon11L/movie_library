@@ -144,7 +144,9 @@ class Movie(BaseModel):
         return 'N/a'
 
     def render_trailer(self):
-        ''' concatenates the field "trailers" to a base url'''
+        '''
+        concatenates the field "trailers" to a base url
+        '''
         if self.trailers:
             trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
             return trailer_link
