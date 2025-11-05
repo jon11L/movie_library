@@ -37,7 +37,7 @@ def forward(apps, schema_editor):
 
     if series_to_update:
         Serie.objects.bulk_update(series_to_update, ["poster_images", "banner_images"])
-    print(f"Series updated: {updated}\n")
+    # print(f"Series updated: {updated}\n")
 
 
     season_to_update = []
@@ -60,7 +60,7 @@ def forward(apps, schema_editor):
     if season_to_update:
         Season.objects.bulk_update(season_to_update, ["poster_images"])
 
-    print(f"Seasons updated: {updated}\n")
+    # print(f"Seasons updated: {updated}\n")
 
     episode_to_update = []
     updated = 0
@@ -82,7 +82,7 @@ def forward(apps, schema_editor):
     if season_to_update:
         Episode.objects.bulk_update(episode_to_update, ["banner_images"])
 
-    print(f"Episodes updated: {updated}\n")
+    # print(f"Episodes updated: {updated}\n")
 
 
 class Migration(migrations.Migration):

@@ -142,7 +142,7 @@ class Season(BaseModel):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') 
     name = models.CharField(max_length=255, blank=True, null=True)
-    season_number = models.IntegerField(blank=True, null=True)
+    season_number = models.IntegerField()
     producer = models.JSONField(max_length=255, blank=True, null=True)
     casting = models.JSONField(blank=True, null=True) 
     description = models.TextField(blank=True, null=True) 
@@ -151,7 +151,7 @@ class Season(BaseModel):
         models.CharField(max_length=255), default=list, blank=True
     )  # ['images].get("posters")
 
-    trailers = models.JSONField(max_length=11, blank=True, null=True) 
+    trailers = models.JSONField(blank=True, null=True) 
     # external sources ID
     tmdb_id = models.IntegerField(unique=True, null=True, blank=True)
 
@@ -197,7 +197,7 @@ class Season(BaseModel):
 class Episode(BaseModel):
 
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
-    episode_number = models.PositiveSmallIntegerField(blank=True, null=True)# loop through ["episodes"] first then: ["episode_number"]
+    episode_number = models.PositiveSmallIntegerField()# loop through ["episodes"] first then: ["episode_number"]
     title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
     description = models.TextField(blank=True, null=True) # ["overview"]
     length = models.IntegerField(
