@@ -142,7 +142,7 @@ class Season(BaseModel):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') 
     name = models.CharField(max_length=255, blank=True, null=True)
-    season_number = models.IntegerField()
+    season_number = models.IntegerField(null=False, default=0)
     producer = models.JSONField(max_length=255, blank=True, null=True)
     casting = models.JSONField(blank=True, null=True) 
     description = models.TextField(blank=True, null=True) 
@@ -197,7 +197,7 @@ class Season(BaseModel):
 class Episode(BaseModel):
 
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
-    episode_number = models.PositiveSmallIntegerField()# loop through ["episodes"] first then: ["episode_number"]
+    episode_number = models.IntegerField(null=False, default=0)# loop through ["episodes"] first then: ["episode_number"]
     title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
     description = models.TextField(blank=True, null=True) # ["overview"]
     length = models.IntegerField(
