@@ -265,3 +265,93 @@ class SerieModelMethodTest(TestCase):
             self.assertNotEqual(serie.render_poster(), "poster1.jpg")
             self.assertEqual(serie.render_poster(), "https://image.tmdb.org/t/p/w500poster1.jpg")
             self.assertNotEqual(serie.render_poster(), "poster2.jpg")
+
+
+
+class SeasonModelSaveTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        cls.serie = Serie.objects.create(
+            title="Breaking Bad",
+            tmdb_id=1396
+        )
+        cls.season = Season.objects.create(
+            serie=cls.serie,
+            name="Season 1",
+            season_number=1,
+            description="The beginning of the end."
+        )
+
+        print("\n-- **SetupTestData for SeasonModelTest started.**\n")
+
+    def test_season_str_method(self):
+        """Test the __str__ method of the Season object."""
+        self.assertEqual(str(self.season), "Season 1")
+
+    def test_season_fields_saved_correctly(self):
+        """Test that all fields are saved and retrieved correctly."""
+        season = self.season
+        self.assertEqual(season.season_number, 1)
+        self.assertEqual(type(season.season_number), int)
+        self.assertEqual(type(season.description), str)
+        self.assertEqual(season.description, "The beginning of the end.")
+
+    def test_season_has_serie_relationship(self):
+        """Test that the season is linked to the correct serie."""
+        season = self.season
+        self.assertIsNotNone(season.serie)
+        self.assertEqual(season.serie.title, "Breaking Bad")
+
+    def test_season_name_field(self):
+        """Test that the name field is saved correctly."""
+        season = self.season
+        self.assertIsNotNone(season.name)
+        self.assertEqual(type(season.name), str)
+        if season.name:
+            self.assertIn("Season", season.name)
+            self.assertEqual(season.name, "Season 1")
+
+    def test_season_description_field(self):
+        """Test that the description field is saved correctly."""
+        season = self.season
+        self.assertIsNotNone(season.description)
+        self.assertEqual(type(season.description), str)
+        if season.description:
+            self.assertIn("the end", season.description)
+            self.assertEqual(season.description, "The beginning of the end.")
+
+    def test_season_number_field(self):
+        """Test that the season_number field is saved correctly."""
+        season = self.season
+        self.assertIsNotNone(season.season_number)
+        self.assertEqual(type(season.season_number), int)
+        self.assertEqual(season.season_number, 1)
+
+    # --- Test that are suppose to fails: ---
+    def test_season_without_number_field(self):
+        """Test that the serie fails to save if no season_number field."""
+        with self.assertRaises(Exception): 
+            season = Serie.objects.create(
+                name="Season test",
+                serie=self.serie
+                )
+
+    def test_season_unique_together_constraint(self):
+        """Test that the combination of serie and season_number is unique."""
+        with self.assertRaises(Exception):  # Should raise IntegrityError
+            Season.objects.create(
+                serie=self.serie,
+                season_number=1,
+                name="Duplicate Season 1"
+            )
+
+    def test_season_without_serie_field(self):
+        """Test that the serie fails to save if no serie field."""
+        with self.assertRaises(Exception): 
+            season = Season.objects.create(
+                name="Season without serie",
+                season_number=2
+                )
+    
