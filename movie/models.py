@@ -14,7 +14,7 @@ class Movie(BaseModel):
     # Core Movie Details
     original_title = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    overview = models.TextField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
     genre = models.JSONField(blank=True, null=True)  # This field will be a list of strings 
     release_date = models.DateField(blank=True, null=True)
@@ -40,13 +40,14 @@ class Movie(BaseModel):
     popularity = models.FloatField(blank=True, null=True)
     
     # images & trailers
-    poster_images = ArrayField(
-        models.CharField(max_length=255), default=list, blank=True
-    ) # ['images].get("posters")
     banner_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     ) # ['images].get("backdrops")
-    trailers = models.JSONField(max_length=11, blank=True, null=True)
+    poster_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    ) # ['images].get("posters")
+    
+    trailers = models.JSONField(blank=True, null=True)
     # would serve to implement a check if a movie has a follow up, or part of a trilogy?
     # has_siblings = models.BooleanField(default=False)
 
@@ -70,15 +71,15 @@ class Movie(BaseModel):
             return genre
         return 'N/a'
 
-    def render_casting(self):
-        '''
-        return the Movie.casting attribute in without quotes and [],
-        only comma-separated string.
-        '''
-        if self.casting:
-            casting = ' || '.join([f"{cast['name']} as {cast['role']}" for cast in self.casting])
-            return casting
-        return 'N/a'
+    # def render_casting(self):
+    #     '''
+    #     return the Movie.casting attribute in without quotes and [],
+    #     only comma-separated string.
+    #     '''
+    #     if self.casting:
+    #         casting = ' || '.join([f"{cast['name']} as {cast['role']}" for cast in self.casting])
+    #         return casting
+    #     return 'N/a'
 
     def render_writer(self):
         '''
@@ -143,14 +144,14 @@ class Movie(BaseModel):
                 return f'{hours}h{minutes}'
         return 'N/a'
 
-    def render_trailer(self):
-        '''
-        concatenates the field "trailers" to a base url
-        '''
-        if self.trailers:
-            trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
-            return trailer_link
-        return 'Trailers Not found'
+    # def render_trailer(self):
+    #     '''
+    #     concatenates the field "trailers" to a base url
+    #     '''
+    #     if self.trailers:
+    #         trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
+    #         return trailer_link
+    #     return 'Trailers Not found'
 
     def render_spoken_languages(self):
         '''
@@ -165,7 +166,7 @@ class Movie(BaseModel):
         '''
         append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.banner_images url\n
         in order to be a valid url to display it.\n
-        Fallback to a default image if no banners are available
+        Fallback to a default static image if no banners are available
         '''
         if self.banner_images:
             if len(self.banner_images) >= 2:
@@ -180,9 +181,9 @@ class Movie(BaseModel):
 
     def render_poster(self):
         '''
-        append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.poster_images url\n
+        append prefix 'https://image.tmdb.org/t/p/w500' to the Movie.poster_images url\n
         in order to be a valid url to display it.\n
-        Fallback to a default image if no posters are available
+        Fallback to a default static image if no posters are available
         '''
         if self.poster_images:
             poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500

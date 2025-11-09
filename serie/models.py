@@ -15,7 +15,7 @@ class Serie(BaseModel):
     # core details
     original_title = models.CharField(max_length=255, blank=True, null=True) # if title not english get from: ["original_name"]
     title = models.CharField(max_length=255) # ["name"]
-    description = models.TextField(blank=True, null=True)
+    overview = models.TextField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True) # ["tagline"]
     genre = models.JSONField(blank=True, null=True)
     first_air_date = models.DateField(blank=True, null=True) # ["first_air_date"]
@@ -33,13 +33,14 @@ class Serie(BaseModel):
     vote_count = models.IntegerField(blank=True, null=True)
     popularity = models.FloatField(blank=True, null=True)  # for TMDB popularity
     # images
+    banner_images = ArrayField(
+        models.CharField(max_length=255), default=list, blank=True
+    ) # ['images].get("backdrops")
+
     poster_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
     ) # ['images].get("posters")
 
-    banner_images = ArrayField(
-        models.CharField(max_length=255), default=list, blank=True
-    ) # ['images].get("backdrops")
 
     status = models.CharField(max_length=255, blank=True, null=True) # use ["in_production"]: to check if true or false, // or with ["status"]
 
@@ -103,9 +104,9 @@ class Serie(BaseModel):
 
     def render_banner(self):
         '''
-        return the Movie.banner_poster with a formatted string
-        Fallback to a default image if no banners are available
-
+        append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.banner_images url\n
+        in order to be a valid url to display it.\n
+        Fallback to a default static image if no banners are available
         '''
         if self.banner_images:
             if len(self.banner_images) >= 2:
@@ -118,8 +119,9 @@ class Serie(BaseModel):
 
     def render_poster(self):
         '''
-        return the Movie.banner_poster with a formatted string
-        Fallback to a default image if no posters are available
+        append prefix 'https://image.tmdb.org/t/p/w500' to the Movie.poster_images url\n
+        in order to be a valid url to display it.\n
+        Fallback to a default static image if no posters are available
         '''
         if self.poster_images:
             poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
@@ -143,9 +145,9 @@ class Season(BaseModel):
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name='seasons') 
     name = models.CharField(max_length=255, blank=True, null=True)
     season_number = models.IntegerField(null=False, default=0)
+    overview = models.TextField(blank=True, null=True) 
     producer = models.JSONField(max_length=255, blank=True, null=True)
     casting = models.JSONField(blank=True, null=True) 
-    description = models.TextField(blank=True, null=True) 
 
     poster_images = ArrayField(
         models.CharField(max_length=255), default=list, blank=True
@@ -169,29 +171,22 @@ class Season(BaseModel):
         else:
             return f"Season: {self.season_number} - {self.name}"
 
-    def render_casting(self):
-        '''return the Movie.casting attribute in without quotes and [],
-        only comma-separated string.
-        '''
-        if self.casting:
-            casting = ', '.join(self.casting)
-            return casting
-        return 'N/a'
-
-    def render_trailer(self):
-        ''' concatenates the field "trailers" to a base url'''
-        if self.trailers:
-            trailer_link = f'https://www.youtube.com/watch?v={self.trailers}'
-            return trailer_link
-        return 'Trailer Not found'
-
     def render_poster(self):
-        ''' return the Movie.banner_poster with a formatted string'''
+        '''
+        append prefix 'https://image.tmdb.org/t/p/w500' to the season.poster_images url\n
+        in order to be a valid url to display it.\n
+        Fallback to a default static image if no posters are available
+        '''
         if self.poster_images:
-            poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
+            if len(self.poster_images) >= 2:
+                num = random.randint(0, len(self.poster_images) -1)
+                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[num]}" # for a width1280
+
+            else:
+                poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width1280
+            # poster = f"https://image.tmdb.org/t/p/w500{self.poster_images[0]}" # for a width500
             return poster
-        return None
-    
+        return static("images/default_poster_photo.jpg") # default banner image if None set.
 
 
 class Episode(BaseModel):
@@ -199,7 +194,7 @@ class Episode(BaseModel):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='episodes')
     episode_number = models.IntegerField(null=False, default=0)# loop through ["episodes"] first then: ["episode_number"]
     title = models.CharField(max_length=255, blank=True, null=True) # ["name"]
-    description = models.TextField(blank=True, null=True) # ["overview"]
+    overview = models.TextField(blank=True, null=True) # ["overview"]
     length = models.IntegerField(
         help_text="Average episode length in minutes",
         validators=[MinValueValidator(1)],
@@ -229,8 +224,10 @@ class Episode(BaseModel):
 
 
     def __str__(self):
-        return f"{self.episode_number} - {self.title}"
-    
+        if f"Episode {str(self.episode_number)}" == self.title:
+            return f"{self.title}"
+        else:
+            return f"Episode {self.episode_number} - {self.title}"
 
     def render_length(self):
         '''return the episode length with a formatted string
@@ -247,7 +244,6 @@ class Episode(BaseModel):
             else:
                 return f'{hours}h{minutes}'
         return 'N/a'
-    
 
     def render_director(self):
         '''return the Movie.director attribute in without quotes and [],
@@ -257,7 +253,6 @@ class Episode(BaseModel):
             director = ', '.join(self.director)
             return director
         return 'N/a'
-
 
     def render_writer(self):
         '''return the Movie.wrtier attribute in without quotes and [],
@@ -274,3 +269,14 @@ class Episode(BaseModel):
             release_date = self.release_date.strftime("%b. %d, %Y")
             return release_date
         return 'N/a'
+
+    def render_banner(self):
+        '''
+        append prefix 'https://image.tmdb.org/t/p/w1280' to the episode.poster_images url\n
+        return the Movie.banner_poster with a formatted string
+        Fallback to a default static image if no banners are available.
+        '''
+        if self.banner_images and self.banner_images[0] != None:
+                banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}"
+                return banner
+        return static("images/default_banner_photo.jpg") # default banner image if None set.

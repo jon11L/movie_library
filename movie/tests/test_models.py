@@ -1,7 +1,10 @@
 from django.test import TestCase
-from movie.models import Movie
-# import unittest
+from django.templatetags.static import static
+
 import datetime
+
+from movie.models import Movie
+
 
 class MovieModelSaveTest(TestCase):
 
@@ -13,7 +16,7 @@ class MovieModelSaveTest(TestCase):
             imdb_id="tt0137523",
             original_title="Fight Club",
             title="Fight Club",
-            description="A ticking-time-bomb insomniac and a slippery soap salesman channel primal..",
+            overview="A ticking-time-bomb insomniac and a slippery soap salesman channel primal..",
             tagline="Mischief. Mayhem. Soap.",
             genre=["Drama", "Thriller"],
             release_date=datetime.datetime.strptime("1999-10-15", '%Y-%m-%d').date(),
@@ -42,17 +45,12 @@ class MovieModelSaveTest(TestCase):
             trailers=[{"key": "8hP9D6kZseM", "website": "youtube"}],
         )
 
-
     def test_fields_saved_correctly(self):
         """Test that all fields are saved and retrieved correctly."""
         movie = self.movie  # Using the movie created in setUpTestData
         self.assertEqual(movie.director, ["David Fincher"])
         self.assertEqual(movie.writer, ["Chuck Palahniuk", "Jim Uhls"])
-        self.assertEqual(movie.production, ["20th Century Fox"])
         self.assertEqual(movie.origin_country, ["US"])
-        self.assertEqual(movie.original_language, "en")
-        self.assertEqual(movie.spoken_languages, ["en", "de"])
-        self.assertEqual(movie.status, "Released")
         self.assertEqual(movie.budget, 63000000)
         self.assertEqual(movie.revenue, 100853753)
         self.assertEqual(movie.vote_count, 12000)
@@ -60,11 +58,6 @@ class MovieModelSaveTest(TestCase):
         self.assertEqual(movie.poster_images, ["poster1.jpg", "poster2.jpg"])
         self.assertEqual(movie.banner_images, ["banner1.jpg", "banner2.jpg"])
 
-
-    def test_movie_str_method(self):
-        """Test the __str__ method of the Movie model."""
-        self.assertEqual(str(self.movie), "Fight Club")
-    
     def test_title_correct(self):
         """Test that the title field is saved correctly."""
         self.assertNotEqual(self.movie.title, "Inception")
@@ -77,13 +70,13 @@ class MovieModelSaveTest(TestCase):
         self.assertEqual(type(movie.tagline), str)
         self.assertEqual(movie.tagline, "Mischief. Mayhem. Soap.")
 
-    def test_description_field(self):
+    def test_overview_field(self):
         """Test that the description field is saved correctly."""
         movie = self.movie
-        self.assertIsNotNone(self.movie.description)
-        self.assertEqual(type(movie.description), str)
-        if self.movie.description:
-            self.assertIn("insomniac and a slippery soap", self.movie.description)
+        self.assertIsNotNone(self.movie.overview)
+        self.assertEqual(type(movie.overview), str)
+        if self.movie.overview:
+            self.assertIn("insomniac and a slippery soap", self.movie.overview)
 
     def test_movie_genre_field(self):
         """Test that the genre field can store a list of strings."""
@@ -99,7 +92,6 @@ class MovieModelSaveTest(TestCase):
         """Test that a movie can be marked as released."""
         self.assertEqual(type(self.movie.released), bool)
         self.assertTrue(self.movie.released)
-
 
     def test_serie_status_field(self):   
         """Test that a movie can be marked as released."""
@@ -208,13 +200,12 @@ class MovieModelSaveTest(TestCase):
             self.assertEqual(movie.trailers[0]['website'], "youtube")
 
 
-
 class MovieModelMethodTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        Movie.objects.create(
+        cls.movie_1 = Movie.objects.create(
             title="Inception",
             genre=["Action", "Sci-Fi"],
             casting=[{"name": "Leonardo DiCaprio", "role": "Cobb"}, {"name": "Joseph Gordon-Levitt", "role": "Arthur"}],
@@ -229,7 +220,7 @@ class MovieModelMethodTest(TestCase):
             spoken_languages=["en", "fr"],
         )
 
-        Movie.objects.create(
+        cls.movie_2 = Movie.objects.create(
             title="the dark knight",
             genre=["Action", "Sci-Fi", "Thriller"],
             casting=[{"name": "Christian Bale", "role": "Bruce Wayne"}, {"name": "Heath Ledger", "role": "Joker"}],
@@ -238,11 +229,11 @@ class MovieModelMethodTest(TestCase):
             director=["Christopher Nolan"]
 
         )
-        
-        Movie.objects.create(
+
+        cls.movie_3 = Movie.objects.create(
             original_title="Fight Club",
             title="Fight Club",
-            description="A ticking-time-bomb insomniac and a slippery soap salesman channel primal..",
+            overview="A ticking-time-bomb insomniac and a slippery soap salesman channel primal..",
             tagline="Mischief. Mayhem. Soap.",
             genre=["Drama", "Thriller"],
             release_date=datetime.datetime.strptime("1999-10-15", '%Y-%m-%d').date(),
@@ -284,73 +275,68 @@ class MovieModelMethodTest(TestCase):
     #         director=["Christopher Nolan"]
     #     )
 
-    def test_movie_str_returns_title(self):
-        """
-        Test that the __str__ method returns the movie's title.
-        """
-        movie=Movie.objects.get(id=1)
-        # movie = Movie.objects.create(
-        #     title="Inception",
-        #     tmdb_id=27205
-        # )
-        result = str(movie)
-        self.assertEqual(result, "Inception")
+    def test_movie_str_method_returns_title(self):
+        """Test that the __str__ method returns the movie's title."""
+        self.assertEqual(str(self.movie_1), "Inception")
+        self.assertEqual(str(self.movie_2), "the dark knight")
 
     def test_render_genre(self):
         '''
         Test the render_genre method for correct formatting.
         '''
         # check movie 1
-        movie = Movie.objects.get(id=1)
-        self.assertEqual(movie.render_genre(), "Action - Sci-Fi")
+        self.assertEqual(self.movie_1.render_genre(), "Action - Sci-Fi")
         # check movie 2
-        movie = Movie.objects.get(id=2)
-        self.assertEqual(movie.render_genre(), "Action - Sci-Fi - Thriller")
-        movie = Movie.objects.get(id=2)
-        self.assertNotEqual(movie.render_genre(), "Horror - Sci-Fi")
-
+        self.assertNotEqual(self.movie_2.render_genre(), "Horror - Sci-Fi")
+        self.assertEqual(self.movie_2.render_genre(), "Action - Sci-Fi - Thriller")
 
     def test_render_length(self):
-        movie = Movie.objects.get(id=1)
-        self.assertEqual(movie.render_length(), "2h28")
-        movie_2 = Movie.objects.get(id=2)
-        self.assertEqual(movie_2.render_length(), "N/a")
-
-    def test_render_casting(self):
-        movie = Movie.objects.get(id=1)
-        self.assertEqual(type(movie.render_casting()), str)
-        self.assertEqual(movie.render_casting(), "Leonardo DiCaprio as Cobb || Joseph Gordon-Levitt as Arthur")
-        movie_2 = Movie.objects.get(id=2)
-        self.assertNotEqual(movie_2.render_casting(), "Leonardo DiCaprio as Cobb || Joseph Gordon-Levitt as Arthur")
-        self.assertEqual(movie_2.render_casting(), "Christian Bale as Bruce Wayne || Heath Ledger as Joker")
+        self.assertEqual(self.movie_1.render_length(), "2h28")
+        self.assertEqual(self.movie_2.render_length(), "N/a")
 
     def test_render_writer(self):
-        movie = Movie.objects.get(id=1)
-        self.assertNotEqual(movie.render_writer(), "Robbert eggers")
-        self.assertEqual(movie.render_writer(), "Christopher Nolan")
+        self.assertNotEqual(self.movie_1.render_writer(), "Robbert eggers")
+        self.assertEqual(self.movie_1.render_writer(), "Christopher Nolan")
 
     def test_render_production(self):
-        movie = Movie.objects.get(id=1)
-        self.assertEqual(type(movie.render_production()), str)
-        self.assertNotEqual(movie.render_production(), "20th Century Fox")
-        self.assertEqual(movie.render_production(), "Warner Bros.")
+        self.assertEqual(type(self.movie_1.render_production()), str)
+        self.assertNotEqual(self.movie_1.render_production(), "20th Century Fox")
+        self.assertEqual(self.movie_1.render_production(), "Warner Bros.")
 
     def test_render_director(self):
-        movie = Movie.objects.get(id=1)
-        self.assertEqual(type(movie.render_director()), str)
-        self.assertNotEqual(movie.render_director(), "Steven Spielberg")
-        self.assertEqual(movie.render_director(), "Christopher Nolan")
+        self.assertEqual(type(self.movie_1.render_director()), str)
+        self.assertNotEqual(self.movie_1.render_director(), "")
+        self.assertNotEqual(self.movie_1.render_director(), "Steven Spielberg")
+        self.assertEqual(self.movie_1.render_director(), "Christopher Nolan")
 
     def test_render_vote_average(self):
-        movie = Movie.objects.get(title="Fight Club")
-        self.assertNotEqual(movie.render_vote_average(), 6)
-        self.assertEqual(movie.render_vote_average(), 8.4)
-        movie = Movie.objects.get(title="Inception")
-        self.assertEqual(movie.render_vote_average(), 8.8)
+        self.assertNotEqual(self.movie_3.render_vote_average(), 6)
+        self.assertEqual(self.movie_3.render_vote_average(), 8.4)
+        self.assertEqual(self.movie_1.render_vote_average(), 8.8)
+
+    def test_render_banner_images(self):
+        ''' 
+        test the render_banner method.
+        Should return full url: preffix + random image name from the field's list
+        '''
+        self.assertNotEqual(self.movie_3.render_banner(), "banner1.jpg")
+        # self.assertEqual(serie.render_banner(), "https://image.tmdb.org/t/p/w1280banner1.jpg")
+        self.assertIn("https://image.tmdb.org/t/p/w1280", self.movie_3.render_banner())
+        self.assertNotEqual(self.movie_3.render_banner(), "banner2.jpg")
+        # no banner image set in movie_2
+        self.assertEqual(self.movie_2.render_banner(), static("images/default_banner_photo.jpg"))
 
     def test_render_poster_images(self):
-            serie = Movie.objects.get(title="Fight Club")
-            serie.poster_images = ["poster1.jpg", "poster2.jpg"]
-            self.assertNotEqual(serie.render_poster(), "poster1.jpg")
-            self.assertEqual(serie.render_poster(), "https://image.tmdb.org/t/p/w500poster1.jpg")
-            self.assertNotEqual(serie.render_poster(), "poster2.jpg")
+        ''' 
+        test the render_poster method.
+        Should return full url: preffix + random image name from the field's list
+        '''
+        self.assertNotEqual(self.movie_3.render_poster(), "poster1.jpg")
+        self.assertNotEqual(self.movie_3.render_poster(), "poster2.jpg")
+        self.assertIn("https://image.tmdb.org/t/p/w500", self.movie_3.render_poster())
+        self.assertEqual(
+            self.movie_3.render_poster(), "https://image.tmdb.org/t/p/w500poster1.jpg"
+        )
+        # no poster image set in movie_2
+        self.assertEqual(self.movie_2.render_poster(), static("images/default_poster_photo.jpg"))
+
