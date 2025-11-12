@@ -77,8 +77,6 @@
                                         <div class="card-img-top" style="text-align: center; margin-top: 20px;">
                                             {% if serie.render_poster %}
                                             <img src=" {{ serie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
-                                            {% else %}
-                                            <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="poster photo">
                                             {% endif %}
                                         </div>
                                     
@@ -97,11 +95,11 @@
 
                                             <br>
                                             <div style="margin: auto;">
-                                                {% if serie.description %}
-                                                <p class="card-text" style="text-align: center;"><strong>Description:</strong></p>
-                                                <p>{{ serie.description }}</p>
+                                                {% if serie.overview %}
+                                                <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                                <p>{{ serie.overview }}</p>
                                                 {% else %}
-                                                <p class="card-text"><strong>Description:</strong></p>
+                                                <p class="card-text"><strong>Overview:</strong></p>
                                                 <p>No description available.</p>
                                                 {% endif %}
                                             </div>
@@ -168,8 +166,7 @@
                                                         </div>
                                                     </div>
                                                 </li>
-                                                <li class="list-group-item" style="padding: 4px 8px 4px 8px;">
-                                                </li>
+                                                <li class="list-group-item" style="padding: 4px 8px 4px 8px;"></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -193,7 +190,7 @@
                             {% if season.episodes %}
                             <div style="margin-left: 10px; margin-bottom: 20px;  width: fit-content;">
                                 <button class="season-toggle" data-season="{{ season.id }}" style="padding:8px 15px 8px 15px;">
-                                    {{ season.season_number }} - {{ season.name }}
+                                    {{ season }}
                                 </button>
                             </div>
                             {% endif %}
@@ -217,11 +214,12 @@
                                     <div></div>
                                     <div class="display-trailer" style="display: flex; flex-wrap: wrap;  padding-top: 0.6em; padding-bottom: 0em; padding-left: 0.7em;">
                                         {% for trailer in season.trailers|slice:"0:4" %}
-                                        <div class="me-1 mb-2" style="padding: 0;">
+                                        <div class="me-1 mb-1" style="padding: 0;">
                                             <iframe width="300" height="200"
                                                 src="https://www.youtube.com/embed/{{ trailer.key }}"
                                                 title="YouTube video player"
                                                 frameborder="0"
+                                                referrerpolicy="strict-origin-when-cross-origin"
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowfullscreen>
                                             </iframe>
@@ -231,25 +229,33 @@
 
                                 </div>
                                 {% else %}
-                                <div style="padding-top: 230px; background-color:rgb(131, 125, 125);"></div>
+                                <div style="padding-top: 13.8rem; background-color:rgb(131, 125, 125);"></div>
                                 
                                 {% endif %}
 
                                 <div class="d-flex" style="min-height: 400px; padding-top: 2em;">
-                                    <div style="width: 80%; padding-top: 1em;">
-                                        {% for episode in season.episodes.all %}
-                                        <li>
-                                            <strong>{{ episode.episode_number }} - {{ episode.title }} </strong>
-                                            <small> {{ episode.render_length }}  --  (released on {{episode.render_release_date}})</small>
-                                            {% if episode.description %}
-                                            <p style="margin-left: 1em; padding-bottom: 0; margin-bottom: 0.5em;">{{ episode.description|slice:":120"}}...</p>
-                                            {% endif %}
+                                    <div style="width: 80%; padding: 1em 1.5em;">
+                                        {% for episode in season.episodes.all|slice:"0:40" %}
+                                        <li style="padding-bottom: 0.1em; list-style: none;">
+                                            <strong>{{ episode }} </strong>
+                                            <small style="margin-left: 0.5rem;"> {{ episode.render_length }} -- (released on {{episode.render_release_date}})</small>
+                                            <div class="d-flex" style="width: 75%; padding-top: 0.3em; padding-bottom: 0.5em; margin-left: 0.5rem;">
+                                                <!-- Banner image -->
+                                                {% if episode.render_banner %}
+                                                <img src="{{ episode.render_banner }}" class="img-fluid rounded"  style="min-width: auto; width: 25%; max-width: fit-content; height: fit-content;" alt="Banner">
+                                                {% endif %}
+                                                <!-- episode overview -->
+                                                {% if episode.overview %}
+                                                <p style="margin-left: 1em; padding-bottom: 0; padding-top: 0.3rem; margin-bottom: 0.5em;">{{ episode.overview|slice:":140"}}...</p>
+                                                {% endif %}
+
+                                            </div>
                                         </li>
                                         {% endfor %}
                                     </div>
                                     <div id="season-poster" style="width: 25%; padding-right: 2em;">
-                                        {% if season.poster_images %}
-                                        <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="min-width: auto; width: 100%; max-width: fit-content; height: 95%;  max-height: min-content;" alt="Profile photo">
+                                        {% if season.render_poster %}
+                                        <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="min-width: auto; width: 100%; max-width: fit-content; height: 95%; height: min-content;  max-height: fit-content;" alt="{{ season }}">
                                         {% endif %}
                                     </div>
                     
