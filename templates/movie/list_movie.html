@@ -32,7 +32,7 @@
                         <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <small class="vote-average">{{ movie.render_vote_average }}/10</small>
+                                <small class="vote-average" title="{{ movie.vote_count }} votes">{{ movie.render_vote_average }}/10</small>
                             
                                 <div>
                                     <!-- Watchlist button feature -->
@@ -55,11 +55,9 @@
                             
                             </div>
 
-                            <div class="poster-wrapper">
+                            <div class="poster-wrapper" title="{{ movie.render_genre }}">
                                 {% if movie.render_poster %}
                                 <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
-                                {% else %}
-                                <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
                                 {% endif %}
                             </div>
                             

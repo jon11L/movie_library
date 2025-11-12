@@ -88,11 +88,11 @@ def movie_list(request):
             # paginator implementation
             if request.user.is_superuser:
                 movies = Movie.objects.only(
-                    "id", "title", "vote_average", "poster_images", "slug"
+                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
                 ).order_by("-id")
             else:
                 movies = Movie.objects.only(
-                    "id", "title", "vote_average", "poster_images", "slug"
+                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
                 ).order_by("-popularity")
                 # paginator = Paginator(Movie.objects.all().order_by('-popularity'), 24)
 

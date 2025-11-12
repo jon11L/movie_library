@@ -26,7 +26,7 @@
                         <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
 
                             <div style="display: flex; justify-content: space-between;">
-                                <small class="vote-average">{{ item.object.render_vote_average }}/10</small>
+                                <small class="vote-average" title="{{ item.object.vote_count }} votes">{{ item.object.render_vote_average }}/10</small>
                                 {% if item.type == 'movie' %}
                             
                                 <div>
@@ -71,7 +71,7 @@
                                 {% endif %}
                             </div>
                         
-                            <div class="poster-wrapper" title="({{ item.type|title }})">
+                            <div class="poster-wrapper" title="({{ item.type|title }}) {{ item.object.render_genre }}">
                                 {% if item.object.render_poster %}
                                 <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster"  class="img-fluid rounded">
                                 {% else %}
