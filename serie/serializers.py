@@ -24,7 +24,7 @@ class SerieDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'description',
+            'overview',
             'tagline',
             'first_air_date',
             'last_air_date',
