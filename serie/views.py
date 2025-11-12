@@ -62,11 +62,11 @@ def serie_list(request):
             # paginator implementation
             if request.user.is_superuser:
                 series = Serie.objects.only(
-                    "id", "title", "vote_average", "poster_images", "slug"
+                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
                 ).order_by("-id")
             else:
                 series = Serie.objects.raw(
-                    'SELECT id, title, vote_average, poster_images, slug FROM serie ORDER BY popularity DESC NULLS LAST'
+                    'SELECT id, title, genre, vote_average, vote_count, poster_images, slug FROM serie ORDER BY popularity DESC NULLS LAST'
                 )
 
             # paginates over the model
@@ -117,6 +117,7 @@ def serie_detail(request, slug):
             serie = get_object_or_404(Serie, slug=slug)
             seasons = serie.seasons.all().prefetch_related("episodes")
 
+            # Show the cast of season 1 as main casting of the serie to display
             main_cast = None
             for season in seasons:
                 if season.season_number == 1:

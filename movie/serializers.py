@@ -32,7 +32,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'description',
+            'overview',
             'tagline',
             'release_date',
             'genre',
