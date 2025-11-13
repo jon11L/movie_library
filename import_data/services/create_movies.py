@@ -24,8 +24,8 @@ def save_or_update_movie(tmdb_id: int):
             return  None, False
         else:
             print(f"Movie found with TMDB ID: {tmdb_id}")
-        
-        # initialize empty list, for future jsonfield reference ... 
+
+        # initialize empty list, for future jsonfield reference ...
         director = []
         writers = []
         cast = []
@@ -53,14 +53,28 @@ def save_or_update_movie(tmdb_id: int):
         # Extract trailer from the combined response
         trailer_data = movie_data.get("videos", {}).get("results", [])
 
+        second_trailer = [] # append optional "Featurette"
         for trailer in trailer_data:
-            if trailer["type"] in ["Trailer", "Teaser", "Featurette"] and trailer['site'] == "YouTube":
+
+            if trailer['site'] != "YouTube":
+                continue
+
+            if trailer["type"] in ["Trailer", "Teaser"]:
                 yt_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
                 )
-        yt_trailer = random.sample(
-            yt_trailer, min(len(yt_trailer), 6)
-            )  # Select up to 4 random trailers
+
+            if trailer["type"] in ["Featurette"]:
+                second_trailer.append(
+                    {"website": trailer["site"], "key": trailer["key"]}
+                )
+
+        print(f"trailer count: {len(yt_trailer)}")
+        if len(yt_trailer) <= 3:
+            need = 6 - len(yt_trailer) # Set to keep 6 trailers max
+            for i in second_trailer[:need]:
+                yt_trailer.append(i)
+
 
         languages = movie_data.get("spoken_languages", [])
         spoken_languages = [language["english_name"] for language in languages]
@@ -76,8 +90,8 @@ def save_or_update_movie(tmdb_id: int):
                 # If the release date is not available, it stays set to None
                 print(f"Invalid date format: {movie_data.get('release_date')}")
 
-        select_posters = [] # will append the images to it an keep the urls only
-        select_banners = [] # will append the images to it an keep the urls only
+        select_posters = [] # will append the images to it and keep the urls only
+        select_banners = [] 
         # Fetch and store images
         images = movie_data["images"]
 
@@ -119,6 +133,8 @@ def save_or_update_movie(tmdb_id: int):
 
         banner_images = select_banners # set to save in the object
 
+        genre = [genre["name"] for genre in movie_data.get("genres", [])]
+
         # ------ Will check if the movie fetched has enough data to be saved --------
         # store in a Dict to pass in the check_movie_validity function
         processed_data = {
@@ -126,6 +142,7 @@ def save_or_update_movie(tmdb_id: int):
             "director": director,
             "writers": writers,
             "cast": cast,
+            "genre": genre,
             "release_date" : release_date,
             "spoken_languages" : spoken_languages,
             "poster_images": poster_images,
@@ -138,7 +155,7 @@ def save_or_update_movie(tmdb_id: int):
         if is_valid:
             print(f"movie: {movie_data.get("title")} passes validity data-check. Saving the movie")
         else:
-            # did not pass the validity check, does not save, stop here. 
+            # did not pass the validity check, does not save, stop here.
             print(f"movie: '{movie_data.get("title")}' did not pass the validity data-check. NOT saving the movie")
             return None, False
 
@@ -147,7 +164,7 @@ def save_or_update_movie(tmdb_id: int):
             tmdb_id=movie_data.get('id'), # check if the movie is already existing in the database
                 defaults={
                     # External unique identifier
-                    'imdb_id' : movie_data.get("imdb_id"),
+                    'imdb_id' : movie_data.get("imdb_id") if movie_data.get("imdb_id") != "" else None,
                     # Core Movie Details
                     "original_title" : movie_data.get("original_title"),
                     "title" : movie_data.get("title") or movie_data.get("original_title"),  # Use original_title if title is missing
@@ -162,14 +179,13 @@ def save_or_update_movie(tmdb_id: int):
                     "status": movie_data.get('status'),
 
                     "vote_average" : movie_data.get("vote_average"),
-                    "description" : movie_data.get("overview"),
-                    "genre" : [genre["name"] for genre in movie_data.get("genres", [])],
+                    "overview" : movie_data.get("overview"),
+                    "genre" : genre,
                     "budget" : movie_data.get("budget"),
                     "revenue" : movie_data.get("revenue"),
                     "tagline" : movie_data.get("tagline"),
                     "spoken_languages" : spoken_languages,
                     # Metrics
-                    "released" : True if movie_data.get("status") == "Released" else False,
                     "vote_count" : movie_data.get("vote_count"),
                     "popularity" : movie_data.get("popularity"),
                     # images & trailer
@@ -213,10 +229,10 @@ def check_movie_validity(movie_data, processed_data: dict):
         print(f"Movie already released or no release date found: {release_date}. ")
         MIN_REQUIRED_SCORE = 35
 
-    # CRITICAL_FIELDS =  ("title", "poster_images", "casting", "description")
+    # CRITICAL_FIELDS =  ("title", "poster_images", "casting", "overview", )
     # priorities:
     low = 1 # (11 fields), 
-    medium = 2 # (7 fields), 
+    medium = 2 # (8 fields), 
     high = 5 # (5)
 
     processed_data = processed_data
@@ -224,7 +240,9 @@ def check_movie_validity(movie_data, processed_data: dict):
     all_datas = {
         # high priority
         "title": {
-            "value": bool(movie_data.get("title") or bool(movie_data.get("original_title"))),
+            "value": bool(
+                movie_data.get("title") or bool(movie_data.get("original_title"))
+            ),
             "priority": high,
         },
         "director": {
@@ -241,7 +259,10 @@ def check_movie_validity(movie_data, processed_data: dict):
             "priority": high,
         },
         # medium priority
-        "genre": {"value": len(movie_data.get("genres", [])) > 0, "priority": medium},
+        "genre": {
+            "value": len(processed_data.get("genre", [])) > 0,
+            "priority": medium,
+        },
         "production": {
             "value": len(processed_data.get("production", [])) > 0,
             "priority": medium,
@@ -263,9 +284,9 @@ def check_movie_validity(movie_data, processed_data: dict):
             and movie_data.get("runtime") > 0,
             "priority": medium,
         },
-        "description": {"value": bool(movie_data.get("overview")), "priority": medium},
+        "overview": {"value": bool(movie_data.get("overview")), "priority": medium},
+        "imdb_id": {"value": bool(movie_data.get("imdb_id")), "priority": medium},
         # low priority
-        "imdb_id": {"value": bool(movie_data.get("imdb_id")), "priority": low},
         "original_title": {
             "value": bool(movie_data.get("original_title")),
             "priority": low,
@@ -279,17 +300,30 @@ def check_movie_validity(movie_data, processed_data: dict):
             "priority": low,
         },
         "vote_average": {
-            "value": movie_data.get("vote_average") is not None,
+            "value": movie_data.get("vote_average") is not None
+            and (
+                type(movie_data.get("vote_average")) == int
+                if release_date and release_date > today
+                else movie_data.get("vote_average") > 0
+            ),
             "priority": low,
         },
         "budget": {
             "value": movie_data.get("budget") is not None
-            and movie_data.get("budget") > 0,
+            and (
+                type(movie_data.get("budget")) == int
+                if release_date and release_date > today
+                else movie_data.get("budget") > 0
+            ),
             "priority": low,
         },
         "revenue": {
             "value": movie_data.get("revenue") is not None
-            and movie_data.get("revenue") > 0,
+            and (
+                type(movie_data.get("revenue")) == int
+                if release_date and release_date > today
+                else movie_data.get("revenue") > 0
+            ),
             "priority": low,
         },
         "status": {"value": bool(movie_data.get("status")), "priority": low},
@@ -301,11 +335,20 @@ def check_movie_validity(movie_data, processed_data: dict):
         # "released": {"value": movie_data.get("status") == "Released", "priority": low},
         "vote_count": {
             "value": movie_data.get("vote_count") is not None
-            and movie_data.get("vote_count") > 0,
+            and (
+                type(movie_data.get("vote_count")) == int
+                if release_date and release_date > today
+                else movie_data.get("vote_count") > 0
+            ),
             "priority": low,
         },
         "popularity": {
-            "value": movie_data.get("popularity") is not None,
+            "value": movie_data.get("popularity") is not None
+            and (
+                type(movie_data.get("popularity")) == float
+                if release_date and release_date > today
+                else movie_data.get("popularity") > 0
+            ),
             "priority": low,
         },
     }
@@ -328,7 +371,7 @@ def check_movie_validity(movie_data, processed_data: dict):
         print(f" Too many missing fields! BREAK! No import. -- score: {BASE_SCORE - result}/{BASE_SCORE}")
         is_valid = False
 
-        #-------------------------------------------------------------------
+        # -------------------------------------------------------------------
         # Temporary may help remove movies with insufficient data already in DB
         if Movie.objects.filter(tmdb_id=movie_data.get('id')).exists():
             print(f" -- More than half of the fields are missing! ({len(missing_fields)}/24) --")
