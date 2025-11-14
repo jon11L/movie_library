@@ -7,6 +7,8 @@ import os
 
 from django.core.management.base import BaseCommand
 
+from movie.models import Movie
+
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_movies import save_or_update_movie
 
@@ -114,8 +116,10 @@ class Command(BaseCommand):
                     break # stop the iteration to fetch for updated movies.
 
                 tmdb_id = tmdb_movie['id']
+                title = tmdb_movie['title']
                 # print(f"movie adult: '{adult}'.") # debug print
                 self.stdout.write(f"Processing movie Nr.{imported_count}")
+                
                 if tmdb_movie['adult'] == True or tmdb_movie['adult'] == None:
                     skipped_count += 1
                     self.stdout.write(
@@ -127,9 +131,95 @@ class Command(BaseCommand):
                     )
                     continue
 
+
                 try:
-                    time.sleep(1)
-                    new_movie, is_created = save_or_update_movie(tmdb_id)
+                    # time.sleep(1)
+                    # new_movie, is_created = save_or_update_movie(tmdb_id)
+
+
+                    # New version with time check. in progress...
+                    # ---------------- TRY -------------------------------------------------
+                    # If Movie already existing.
+                    # skipped it if updated less than 2 week ago
+                    # Reduces unnecessary api calls if serie was recently updated in DB
+
+                    # check if movie is already released
+                    # check if movies was already updated after the release date
+                    # skip much longer if movie already released and updated is after release date
+
+                    if Movie.objects.filter(tmdb_id=tmdb_id).exists():
+                        existing_movie = Movie.objects.get(tmdb_id=tmdb_id)
+                        updated_at = existing_movie.updated_at.date()
+                        updated_since = datetime.datetime.now(datetime.timezone.utc).date() - updated_at 
+
+                        print(f"- Movie {tmdb_id} - {title} exists.")
+                        print(f"- Last updated {updated_since.days} days ago. {updated_at}")
+                        print(f"- release on: {existing_movie.release_date}")
+                        
+                        is_released = False
+                        is_update_after_release = False
+                        is_recently_released = False
+                        # check if release date is in the past
+                        if existing_movie.release_date:
+                            when_release =  datetime.date.today() - existing_movie.release_date
+
+                            if when_release.days < 0:
+                                # Movies is not released yet.
+                                print(f"- movie is not supposed to be released yet... In: '{when_release.days} days'")
+                                
+                            else:
+                                # Movie is already released.
+                                print(f"- Movie already released. -- Since '{when_release.days} days'")
+                                is_released = True
+                                # print(f"Movie already released {existing_movie.release_date}")
+                                is_recently_released = True if when_release.days <= 40 else False
+
+                                # check if updated_at is after release date
+                                if updated_at >= existing_movie.release_date and updated_at.day != existing_movie.created_at.date():
+                                    is_update_after_release = True
+                                    print(f"- Movie was updated after the release date {updated_at}")  
+                                    # skipped_count += 1
+                                    # continue
+                                else:
+                                    print(f"- Movie was updated before the release date {updated_at}") 
+
+                        desired_updt_days = 15 # gives a minimum of 14 days before updating again
+                        print(f"is_released, is_recently_released, is_update_after_release")
+                        print(f"{is_released}, {is_recently_released}, {is_update_after_release}")
+
+                        # set how long before a movie get updated again depending on certain conditons 
+                        # eg. when was it released? was it updated after release?
+                        if is_released and is_update_after_release and is_recently_released:
+                            desired_updt_days = 7  # Movie rencently released and updated already
+                            print(f"3 conditions reunited, 7days before update.")
+
+                        elif is_released and is_update_after_release and not is_recently_released:
+                            desired_updt_days = 10 # movie released since a while and updated already
+                            # to modify or comment this condition if Db structure and import has changed,
+
+                        elif is_released and not is_update_after_release and is_recently_released:
+                            desired_updt_days = 3 # movie recently released but not updated since release
+
+                        elif not is_released  and when_release.days <= -30:
+                            desired_updt_days = 5 # movie not release but should release soon, so more info may be added
+                        else:
+                            pass # probably does not have a release.date /  will remain to the standard update delay
+
+
+                        if updated_since.days <= desired_updt_days:
+                            self.stdout.write(self.style.WARNING(
+                                f"{tmdb_id} was already updated less {desired_updt_days} days ago.\n"
+                                "Skipping this movie....\n"
+                                f"\n" + "=" * 50 + "\n\n"
+                                ))
+                            skipped_count += 1
+                            continue
+
+                        new_movie, is_created = save_or_update_movie(tmdb_id)
+                    else:
+                        new_movie, is_created = save_or_update_movie(tmdb_id)
+
+
 
                     # check if the movie wwas created
                     if new_movie and is_created:

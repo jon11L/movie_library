@@ -80,7 +80,7 @@ class TMDBClient:
                 else:
                     url = f"{self.BASE_URL}/tv/{endpoint}?page={page}" 
 
-            elif t_type == 'serie': # serie detail
+            elif t_type == 'serie': # Url for serie detail
                 url = f"{self.BASE_URL}/tv/{kwargs.get('tmdb_id')}?append_to_response=videos,credits,external_ids,images"
             elif t_type == 'season': # season and episode details
                 url = f"{self.BASE_URL}/tv/{kwargs.get('tmdb_id')}/season/{kwargs.get('season_number')}?append_to_response=videos,credits,images"

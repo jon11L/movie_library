@@ -59,6 +59,7 @@ class Command(BaseCommand):
             'count' : 0,
             'created' : 0,
             'skipped' : 0,
+            'updated' : 0,
             'runtime': 0
         }
         start_time = time.time()
@@ -195,7 +196,8 @@ class Command(BaseCommand):
         # saved log.
         logger.info(
             f"SUMMARY: Movies (import)"
-            f" -- {imported['created']} Created -- 0 Updated"
+            f" -- {imported['created']} Created"
+            f" -- {imported['updated']} updated"
             f" -- {imported['skipped']}  Skipped/Failed"
             f" -- runtime: {elapsed_time:.2f} seconds"
         )
@@ -203,10 +205,11 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
         self.stdout.write(
             self.style.SUCCESS(
-                f"SUMMARY: Movies (import) -- {imported['created']} Created. -- 0 Updated. -- {imported['skipped']}  Skipped/Failed."
+                f"SUMMARY: Movies (import) -- {imported['created']} Created. -- {imported['updated']} Updated. -- {imported['skipped']} Skipped/Failed."
             )
         )
         self.stdout.write(f"\n" + "=" * 50 + "\n\n")  # debug print
+
 
     def process_movies_batch(self, list_movies, imported: dict):
         '''
@@ -219,30 +222,30 @@ class Command(BaseCommand):
         for movie in list_movies['results']:
             time.sleep(1)  
             imported['count'] += 1
-            movie_id = movie['id']
-            movie_title = movie['title']
+            tmdb_id = movie['id']
+            title = movie['title']
             self.stdout.write(
                 f"\n" + "=" * 50 + "\n\n"
                 f"passing movie {imported['count']}\n"
-                f"Importing Movie title: {movie_title} (ID: {movie_id})\n"
+                f"Importing Movie title: {title} (ID: {tmdb_id})\n"
                 )
 
             if movie['adult']:
-                self.stdout.write(self.style.WARNING(f"Movie {movie_id} is marked as adult content. Skipping..."))
+                self.stdout.write(self.style.WARNING(f"Movie {tmdb_id} is marked as adult content. Skipping..."))
                 imported['skipped'] += 1
                 continue
 
             # Check if movie exists
-            if not Movie.objects.filter(tmdb_id=movie_id).exists():
-                time.sleep(1)  
+            if not Movie.objects.filter(tmdb_id=tmdb_id).exists():
+                time.sleep(1)
                 try:
                     # uncomment below when Feature is correct
-                    new_movie, created = save_or_update_movie(movie_id) # grab and save Datas from api into a new single movie's instance 
+                    new_movie, created = save_or_update_movie(tmdb_id) # grab and save Datas from api into a new single movie's instance 
                     if new_movie:
                         imported['created'] += 1
                         self.stdout.write(self.style.SUCCESS(f"Imported movie: **{new_movie}** \n"))  # not sure it is imported if already exist
                     else:
-                        self.stdout.write(self.style.ERROR(f"Cancel import of movie ID: {movie_id}. No sufficient data returned."))
+                        self.stdout.write(self.style.ERROR(f"Cancel import of movie ID: {tmdb_id}. No sufficient data returned."))
                         imported['skipped'] += 1
                     # logger.info(f"Imported: {movie_title} (ID: {movie_id})")
 
@@ -251,10 +254,90 @@ class Command(BaseCommand):
                     imported['skipped'] += 1
                     # logger.error(f"Error importing {movie_id}: {e}")
                     continue
+
+            # else:
+            #     self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
+            #     # print("\n" + "=" * 50 + "\n\n")
+            #     imported['skipped'] += 1
+
+            # -- New version with time check. in progress...
             else:
-                self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
-                # print("\n" + "=" * 50 + "\n\n")
-                imported['skipped'] += 1
+                existing_movie = Movie.objects.get(tmdb_id=tmdb_id)
+                updated_at = existing_movie.updated_at.date()
+                updated_since = datetime.datetime.now(datetime.timezone.utc).date() - updated_at 
+                
+                print(f"- Movie {tmdb_id} - {title} exists.")
+                print(f"- Last updated {updated_since.days} days ago. {updated_at}")
+                print(f"- release on: {existing_movie.release_date}")
+                
+                is_released = False
+                is_update_after_release = False
+                is_recently_released = False
+                # check if release date is in the past
+                if existing_movie.release_date:
+                    when_release =  datetime.date.today() - existing_movie.release_date
+                    if when_release.days < 0:
+                        # Movies is not released yet.
+                        print(f"- Movie is not released yet... -- In '{when_release.days} days'")
+
+                    else:
+                        # Movie is already released.
+                        print(f"- Movie already released. -- Since '{when_release.days} days'")
+                        is_released = True
+                        is_recently_released = True if when_release.days <= 40 else False
+
+                        # check if updated_at is after release date
+                        if updated_at >= existing_movie.release_date and updated_at.strftime("%d/%m/%Y") != existing_movie.created_at.date().strftime("%d/%m/%Y"):
+                            is_update_after_release = True
+                            print(f"- Movie was updated after the release date updt:{updated_at}")  
+                        else:
+                            print(f"- Movie was updated before the release date or never updated. updt:{updated_at}") 
+                            
+                desired_updt_days = 15 # gives a minimum of 14 days before updating again
+                print(f"is_released, is_recently_released, is_update_after_release")
+                print(f"{is_released}, {is_recently_released}, {is_update_after_release}")
+                
+                # set how long before a movie get updated again depending on certain conditons 
+                # eg. when was it released? was it updated after release?
+                if is_recently_released and is_update_after_release:
+                    # Movie rencently released and updated already
+                    desired_updt_days = 7 
+                    # print(f"3 conditions reunited, 7 days before update.")
+
+                elif is_recently_released and not is_update_after_release:
+                    # movie recently released but not updated since release, need updates
+                    desired_updt_days = 1
+
+                # to modify (give low num) or comment this condition if Db structure and import has changed,
+                elif is_released and not is_recently_released and is_update_after_release:
+                    # movie released since a while and updated already, no need to reupdate often
+                    desired_updt_days = 10 
+                    
+                elif not is_released  and when_release.days <= -100:
+                    # movie not releasing soon so more info may be added or wait to get close the release
+                    desired_updt_days = 30
+                else:
+                    pass # probably does not have a release.date /  will remain to the standard update delay
+
+
+                if updated_since.days <= desired_updt_days:
+                # if time_difference.days < 14:
+                    self.stdout.write(self.style.WARNING(
+                        f"{movie['title']} already exists in DB and was updated less than {desired_updt_days} days ago.\n"
+                        "Skipping....\n"
+                        f"\n" + "=" * 50 + "\n\n"
+                        ))
+                    imported['skipped'] += 1
+                    continue
+
+                else:
+                    # proceed to update the serie data
+                    save_or_update_movie(tmdb_id)
+                    self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB, delay update is {desired_updt_days} days."))
+                    self.stdout.write(self.style.WARNING(f"Updated!"))
+                    # print("\n" + "=" * 50 + "\n\n")
+                    imported['updated'] += 1
+
 
         return imported
 
