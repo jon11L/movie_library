@@ -14,13 +14,12 @@ class SerieAdmin(admin.ModelAdmin):
     list_display = ("pk", "title", "slug", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ("pk", "title", "original_title", "slug", "tmdb_id")
-    list_filter = ("created_at", "updated_at", "first_air_date")
+    list_filter = ("created_at", "updated_at", "first_air_date", "last_air_date")
 
     inlines = [SeasonInline]
 
 
 admin.site.unregister(Serie)
-# # re register the USer edited for admin display
 admin.site.register(Serie, SerieAdmin)
 
 @admin.register(Season)
@@ -35,5 +34,3 @@ class SeasonAdmin(admin.ModelAdmin):
 class EpisodeAdmin(admin.ModelAdmin):
     list_display = ("pk", "title", "tmdb_id","slug", "episode_number", "season", "created_at", "updated_at")
     search_fields = ("title", "slug", "tmdb_id")
-
-    # Note: no prepopulated_fields for episodes by title because we handle slugs manually

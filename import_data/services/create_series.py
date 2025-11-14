@@ -19,6 +19,7 @@ def save_or_update_series(tmdb_id):
     - One new Api call is made per season fetched 
     (No call for episodes, datas are retrieved within that same call)
     """
+    
     try:
         # search for the serie
         serie_data = get_api_data(
@@ -126,10 +127,10 @@ def save_or_update_series(tmdb_id):
     is_valid = check_serie_validity(serie_data, processed_data)
 
     if is_valid:
-        print(f"serie: {serie_data.get("title")} passes validity data-check. Saving the serie")
+        print(f"serie: {serie_data.get('original_name')} passes validity data-check. Saving the serie")
     else:
         # did not pass the validity check, does not save, stop here.
-        print(f"serie: '{serie_data.get("title")}' did not pass the validity data-check. NOT saving the serie")
+        print(f"serie: '{serie_data.get('original_name')}' did not pass the validity data-check. NOT saving the serie")
         return None, False
 
     try:
@@ -140,7 +141,7 @@ def save_or_update_series(tmdb_id):
                 "imdb_id": imdb_id,
                 "original_title": serie_data.get('original_name'), 
                 "title": serie_data.get('name'),
-                "description": serie_data.get('overview'),
+                "overview": serie_data.get('overview'),
                 "genre": genre,
                 "origin_country": serie_data.get('origin_country'),
                 "original_language": serie_data.get('original_language'),
@@ -208,7 +209,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
             t_type = 'season'
             )
 
-        # Need to look over this part below, if logic is correct. 
+        # Need to look over this part below, if logic is correct.
         # continue may just go over the next iteration
         if not season_data:
             print(f"Failed fetching season {season_number} for {serie} due to api misscall.")
@@ -218,7 +219,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                 season_number=season_number,
                 t_type = 'season'
                 )
-            # pass 
+            # pass
         if season_data:
 
             # initialize json fields
@@ -249,18 +250,33 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
 
             # Extract trailer from the combined response
             trailer_data = season_data.get("videos", {}).get("results", [])
+            # main_trailer = []
 
+            second_trailer = []
             for trailer in trailer_data:
-                if trailer["type"] in ["Trailer", "Featurette", "Teaser"] and trailer['site'] == "YouTube":
+
+                if trailer['site'] != "YouTube":
+                    continue
+
+                if trailer["type"] in ["Trailer", "Teaser"]:
                     yt_trailer.append(
                         {
                             "website": trailer["site"],
                             "key": trailer["key"]
                         }
                     )
-            yt_trailer = random.sample(
-                yt_trailer, min(len(yt_trailer), 6)
-                ) # Select up to 4 random trailers
+
+                if trailer["type"] in ["Featurette"]:
+                    second_trailer.append(
+                        {"website": trailer["site"], "key": trailer["key"]}
+                    )
+
+            print(f"trailer count: {len(yt_trailer)}")
+            # if not enough trailer we append the featurette
+            if len(yt_trailer) <= 3:
+                need = 6 - len(yt_trailer)
+                for i in second_trailer[:need]:
+                    yt_trailer.append(i)
 
             # Fetch and store images
             posters = [] # will append the images to it an keep the urls only to
@@ -286,7 +302,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                     "name" : season_data.get("name"),
                     "producer" : producers[:8],
                     "casting" :  cast[:10],
-                    "description" : season_data.get('overview'),
+                    "overview" : season_data.get('overview'),
                     "poster_images": posters,
                     "trailers" : yt_trailer,
                     }
@@ -298,11 +314,11 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                     f"Season: '{season_data.get('name')}' failed to save into DB.\n"
                     "----------"
                     )# log print
-                    
+
                 continue  # Skip to the next season if an error occurs
 
             list_episodes = season_data.get('episodes', [])# all episodes here
-            print(f"--- Season contains *{season}* {len(list_episodes)} episodes. ---")
+            print(f"-- *{season}* contains {len(list_episodes)} episodes. ---")
 
             datas_season.append(
                 f"{season_data.get("name")} -- total episodes: {len(list_episodes)}"
@@ -348,7 +364,7 @@ def get_episodes(list_episodes, season: object):
         guest_names = []
         directors = []
         writers = []
-
+        ep_banner_img = []
         # Extract credits from the combined response / actors, wrtiters, directors
         # check if credit available before trying to insert
         guest_names = [
@@ -373,7 +389,9 @@ def get_episodes(list_episodes, season: object):
                 elif member.get("department") == "Writing":
                     writers.append(member["name"])
 
-        ep_banner_img = [episode.get('still_path')]
+        # do not take if value is Null for banner_image,  better empty file than Null
+        if episode.get('still_path') != None:
+            ep_banner_img = [episode.get('still_path')]
 
         try:
             # Check if the episode already exists in the database
@@ -388,7 +406,7 @@ def get_episodes(list_episodes, season: object):
                 existing_episode.season = season
                 existing_episode.episode_number = episode_number
                 existing_episode.title = episode_title
-                existing_episode.description = episode.get('overview', "No description available")
+                existing_episode.overview = episode.get('overview', "")
                 existing_episode.length = episode.get("runtime") or None
                 existing_episode.release_date = episode.get('air_date') or None
                 existing_episode.guest_star = guest_names[:10]
@@ -407,7 +425,7 @@ def get_episodes(list_episodes, season: object):
                     season = season,
                     episode_number = episode_number,
                     title = episode.get("name", "Unknown Title"),
-                    description = episode.get('overview', ""),
+                    overview = episode.get('overview', ""),
                     length = episode.get("runtime") or None,
                     release_date = episode.get('air_date') or None,
                     guest_star = guest_names[:10],
@@ -433,7 +451,7 @@ def get_episodes(list_episodes, season: object):
     if update_episodes_obj:
         try:
             Episode.objects.bulk_update(update_episodes_obj, [
-                'episode_number', 'title', 'description', 'length',
+                'episode_number', 'title', 'overview', 'length',
                 'release_date', 'guest_star', 'director', 'writer',
                 'banner_images', "tmdb_id", 'updated_at'
             ])
@@ -608,7 +626,7 @@ def check_serie_validity(serie_data, processed_data: dict):
             "value": len(serie_data.get("seasons", [])) > 0,
             "priority": medium,
         },
-        "description": {"value": bool(serie_data.get("overview")), "priority": medium},
+        "overview": {"value": bool(serie_data.get("overview")), "priority": medium},
         # low priority
         "imdb_id": {"value": bool(processed_data.get("imdb_id")), "priority": low},
         "original_title": {
@@ -628,7 +646,12 @@ def check_serie_validity(serie_data, processed_data: dict):
             "priority": low,
         },
         "vote_average": {
-            "value": serie_data.get("vote_average") is not None,
+            "value": serie_data.get("vote_average") is not None
+            and (
+                type(serie_data.get("vote_average")) == int
+                if first_air_date and first_air_date > today
+                else serie_data.get("vote_average") > 0
+            ),
             "priority": low,
         },
         "tagline": {"value": bool(serie_data.get("tagline")), "priority": low},
@@ -639,11 +662,20 @@ def check_serie_validity(serie_data, processed_data: dict):
         "status": {"value": bool(serie_data.get("status")), "priority": low},
         "vote_count": {
             "value": serie_data.get("vote_count") is not None
-            and serie_data.get("vote_count") > 0,
+            and (
+                type(serie_data.get("vote_count")) == int
+                if first_air_date and first_air_date > today
+                else serie_data.get("vote_count") > 0
+            ),
             "priority": low,
         },
         "popularity": {
-            "value": serie_data.get("popularity") is not None,
+            "value": serie_data.get("popularity") is not None
+            and (
+                type(serie_data.get("popularity")) == float
+                if first_air_date and first_air_date > today
+                else serie_data.get("popularity") > 0
+            ),
             "priority": low,
         },
     }

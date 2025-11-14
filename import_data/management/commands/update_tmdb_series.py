@@ -6,6 +6,8 @@ import random
 import os
 
 from django.core.management.base import BaseCommand
+from serie.models import Serie
+
 
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series
@@ -31,7 +33,6 @@ logger.addHandler(file_handler)
 
 # Prevent duplicate logs (avoid propagation to the root logger)
 logger.propagate = False
-# logger.info("Logging initialized successfully!")  # Test log entry
 
 
 class Command(BaseCommand):
@@ -124,10 +125,39 @@ class Command(BaseCommand):
                     f" -- Serie id: {tmdb_id} ---------"
                     )
 
-                time.sleep(3) # give some time between fetching a new page list of movies.
+                time.sleep(3) # give some time between fetching a new page list of series.
 
                 try:
-                    new_serie, is_created = save_or_update_series(tmdb_id)
+                    # new_serie, is_created = save_or_update_series(tmdb_id)
+
+
+
+                    # ---------------- TRY -------------------------------------------------
+                    # If Serie already existing.
+                    # skipped it if updated less than 2 week ago
+                    # Reduces unnecessary api calls if serie was recently updated in DB
+                    
+                    if Serie.objects.filter(tmdb_id=tmdb_id).exists():
+                        existing_serie = Serie.objects.get(tmdb_id=tmdb_id)
+                        time_difference = datetime.datetime.now(datetime.timezone.utc) - existing_serie.updated_at
+
+                        print("time now:", datetime.datetime.now(datetime.timezone.utc))  # debug print
+                        print("existing_serie.updated_at:", existing_serie.updated_at)  # debug print
+                        print(f"Serie {tmdb_id} exists. Last updated {time_difference.days} days ago.")  # debug print
+
+                        if time_difference.days < 14:
+                            self.stdout.write(self.style.WARNING(
+                                f"{tmdb_id} already exists in DB and was updated less than a week ago.\n"
+                                "Skipping....\n"
+                                f"\n" + "=" * 50 + "\n\n"
+                                ))
+                            skipped_count += 1
+                            continue
+
+                    else:
+                        new_serie, is_created = save_or_update_series(tmdb_id)
+
+
 
                     if new_serie and is_created:
                         created += 1
