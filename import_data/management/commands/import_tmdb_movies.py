@@ -51,7 +51,7 @@ class Command(BaseCommand):
         5. Log result and differentiate between imported and skipped.
         """
         MAX_RETRIES = 3
-        FETCH_PAGE = 2 # the amount of pages we will check to get movies imported
+        # FETCH_PAGE = 1 # the amount of pages we will check to get movies imported
 
         # to keep track of the import,
         # passed & returned in process_batch_movies(). Then logged at the end.
@@ -82,107 +82,63 @@ class Command(BaseCommand):
             else:
                 return 500
 
-        # ------TRIAL/ once every 5 days add page 1&2 to get latest content ------
-        today = datetime.date.today()
-        if today.day in [1, 5, 10, 20, 25]:
-            new_pages = random.sample(range(1, 4), 2)
 
-            endpoint = select_endpoint(endpoints)
-            for page in new_pages:
-                try:
-                    self.stdout.write(
-                        f"Special date new pages"
-                        f"Fetching movies from '{endpoint}' list, With Newer pages n: {page}\n"
-                        ) # debug print
 
-                    list_movies = get_api_data(
-                        page=page,
-                        endpoint=endpoint,
-                        t_type = 'movie_list'
-                        # update=False
-                        )
-
-                    if not list_movies or len(list_movies['results']) <= 5:
-                        raise ValueError("No movies list found or too few results to loop over.")
-
-                    batch = self.process_movies_batch(list_movies, imported)
-                    imported = batch
-
-                except ValueError as value_e:
-                    self.stdout.write(
-                        f"(Exception value) No movies list found or too few results."
-                        f" page={page}, endpoint={endpoint}."
-                        f"Error message: '{value_e}'"
-                        )
-                    time.sleep(3)  # wait before retrying
-                    continue
-
-                except Exception as e:
-                    self.stdout.write(
-                        f"(Exception) No movies list found or too few results."
-                        f"page={page}, endpoint={endpoint}."
-                        f"(Exception) Error message: '{e}'"
-                        )
-                    time.sleep(3)
-                    continue
-
-            # Loop over pages
-        for i in range(FETCH_PAGE):
-
-            retry = 0  # Track the number of retries in case of failure
-            while retry < MAX_RETRIES:
-                try:
-                    # select a new endpoint+page for each loop page fetch / also if one fails.
-                    endpoint = select_endpoint(endpoints)
-                    max_pages = get_max_page(endpoint)
-                    page = random.randint(1, max_pages) # change the page to send in get_movie_list():
-                    self.stdout.write(
-                        f"\n" + "=" * 50 + "\n\n"
-                        f"Fetching movies from '{endpoint}' list, With page n: {page}\n"
-                        ) # debug print
-
-                    list_movies = get_api_data(
-                        page=page,
-                        endpoint=endpoint,
-                        t_type='movie_list'
-                        # update=False
-                        )
-
-                    if not list_movies or (list_movies['results'] and len(list_movies['results']) <= 5):
-                        raise ValueError(f"No movies list found or too few results to loop over.")
-
-                    break # break the while Loop if page is reached
-
-                except ValueError as value_e:
-                    retry += 1
-                    self.stdout.write(
-                        f"(Exception) No movies list found or too few results. page={page}, endpoint={endpoint}."
-                        f"Error: {value_e}"
-                        f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
-                        )
-                    time.sleep(retry*4)  # wait before retrying
-
-                except Exception as e:
-                    retry += 1
-                    self.stdout.write(
-                        f"(Exception) Error getting list of imported movies: {e}"
-                        f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
-                        )
-                    time.sleep(retry*4)
-
-            # If all retries failed, exit early
+        # for page in new_page:
+        retry = 0  # Track the number of retries in case of failure
+        while retry < MAX_RETRIES:
             if retry == MAX_RETRIES:
                 self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated movies. -- Task ending.\n"))
-                continue # Skip this page and go to the next.
 
-            # --- Fetch and process each movie from the selected endpoint ----
-            self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
-            print(f"\n" + "=" * 50 + "\n\n")
+            endpoint = select_endpoint(endpoints)
+            today = datetime.date.today()
+            if today.day in [1, 5, 10, 20, 25]:
+                page = random.sample(range(1, 5), 1)
+            
+            max_pages = get_max_page(endpoint)
+            page = random.randint(1, max_pages) # change the page to send in get_movie_list():
 
-            # pass the movie list process batch into it's own function
-            batch = self.process_movies_batch(list_movies, imported)
-            imported = batch
-            time.sleep(2.5) # give some time between fetching a new page list of movies.
+            try:
+                self.stdout.write(
+                    f"Special date new pages"
+                    f"Fetching movies from '{endpoint}' list, With Newer pages n: {page}\n"
+                    ) # debug print
+    
+                list_movies = get_api_data(
+                    page=page,
+                    endpoint=endpoint,
+                    t_type = 'movie_list'
+                    # update=False
+                    )
+    
+                if not list_movies or len(list_movies['results']) <= 5:
+                    raise ValueError("No movies list found or too few results to loop over.")
+                
+                self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
+                print(f"\n" + "=" * 50 + "\n\n")
+
+                batch = self.process_movies_batch(list_movies, imported)
+                imported = batch
+
+                break # break the while Loop if page is reached
+    
+            except ValueError as value_e:
+                retry += 1
+                self.stdout.write(
+                    f"(Exception value) No movies list found or too few results."
+                    f" page={page}, endpoint={endpoint}."
+                    f"Error message: '{value_e}'"
+                    )
+                time.sleep(3)  # wait before retrying
+    
+            except Exception as e:
+                retry += 1
+                self.stdout.write(
+                    f"(Exception) No movies list found or too few results."
+                    f"page={page}, endpoint={endpoint}."
+                    f"(Exception) Error message: '{e}'"
+                    )
+                time.sleep(3)
 
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -206,16 +162,15 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"SUMMARY: Movies (import) -- {imported['created']} Created. -- {imported['updated']} Updated. -- {imported['skipped']} Skipped/Failed."
+                f"\n" + "=" * 50 + "\n\n"
             )
         )
-        self.stdout.write(f"\n" + "=" * 50 + "\n\n")  # debug print
-
+        
 
     def process_movies_batch(self, list_movies, imported: dict):
         '''
         Process a batch of movies from TMDB api response.\n
         return the count of imported/saved movies and skipped
-
         - count, created, updated, skipped
         '''
 
@@ -237,7 +192,7 @@ class Command(BaseCommand):
 
             # Check if movie exists
             if not Movie.objects.filter(tmdb_id=tmdb_id).exists():
-                time.sleep(1)
+                time.sleep(0.5)
                 try:
                     # uncomment below when Feature is correct
                     new_movie, created = save_or_update_movie(tmdb_id) # grab and save Datas from api into a new single movie's instance 
@@ -273,7 +228,7 @@ class Command(BaseCommand):
                     continue
 
                 else:
-                    time.sleep(1)
+                    time.sleep(0.5)
 
                     # proceed to update the serie data
                     self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB, delay update is {desired_updt_days} days."))
