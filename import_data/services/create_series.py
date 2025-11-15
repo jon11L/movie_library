@@ -198,7 +198,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
 
     # loop through the list of season and calling the databas
     for season_number in number_of_seasons:
-        time.sleep(4) # to avoid hitting the TMDB API too quickly
+        time.sleep(1) # to avoid hitting the TMDB API too quickly
         print("\n" + "=" * 50 + "\n\n")
         print(f"Fetching season {season_number} out of {len(number_of_seasons)} -- ({serie})") # debug print
 

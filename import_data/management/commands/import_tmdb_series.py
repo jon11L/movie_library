@@ -11,6 +11,7 @@ from serie.models import Serie, Episode
 # from import_data.api_clients.TMDB.fetch_series import get_serie_data
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series
+from import_data.tools.media_update_check import check_update_since
 
 
 # Configure Logging
@@ -182,111 +183,17 @@ class Command(BaseCommand):
                         self.stdout.write(f"Error importing {serie['id']}- {serie['name']}: {e}")
                         skipped_count += 1
                         continue
-                # else:
-                #     save_or_update_series(serie['id'])
-                #     skipped_count += 1
-                #     self.stdout.write(self.style.WARNING(
-                #         f"{serie['name']} already exists in DB.\n"
-                #         "Skipping....\n"
-                #         f"\n" + "=" * 50 + "\n\n"
-                #         ))
 
-                # ------ Temporary when using Update on this.. to remove when pushing and uncomment above block -----
-                # else:
-                #  already exists, skip to next serie if updated_at is less than a week old
-                # existing_serie = Serie.objects.get(tmdb_id=serie['id'])
-                # time_difference = datetime.datetime.now(datetime.timezone.utc) - existing_serie.updated_at
-
-                # print("time now:", datetime.datetime.now(datetime.timezone.utc))  # debug print
-                # print("existing_serie.updated_at:", existing_serie.updated_at)  # debug print
-                # print(f"Serie {serie['name']} exists. Last updated {time_difference.days} days ago.")  # debug print
-
-                # if time_difference.days < 4:
-                #     self.stdout.write(self.style.WARNING(
-                #         f"{serie['name']} already exists in DB and was updated less than a week ago.\n"
-                #         "Skipping....\n"
-                #         f"\n" + "=" * 50 + "\n\n"
-                #         ))
-                #     skipped_count += 1
-                #     continue
-                # ------------------------------------------------
-
-                # New version with time check. in progress...
                 else:
-                    existing_serie = Serie.objects.get(tmdb_id=serie['id'])
-                    updated_at = existing_serie.updated_at.date()
-                    updated_since = datetime.datetime.now(datetime.timezone.utc).date() - updated_at 
-                    
-                    last_ep_out = Episode.objects.filter(
-                        season__serie=existing_serie,  # ← Follow relationship backwards
-                        release_date__isnull=False      # ← Only episodes with release_date
-                    ).order_by('-release_date').first()  # ← Get the most recent
+                    # if the serie already exist, check when it was released and updated
+                    # and if it necessit a new update 
+                    # Reduces unnecessary api calls if serie was recently updated in DB
 
-                    if last_ep_out:
-                        print(f"last_ep_out: {last_ep_out} -- {last_ep_out.release_date}")
+                    exist_serie = Serie.objects.get(tmdb_id=serie['id'])
 
-                    # last_release = (
-                    #     existing_serie.last_air_date
-                    #     if existing_serie.last_air_date
-                    #     else last_ep_out.release_date
-                    # )
-                    
-                    print("- existing_serie was updated_at:", updated_at)  # debug print
-                    print(f"- Serie {serie['id']} - {serie['name']} exists. Last updated {updated_since.days} days ago.")
-                    print(f"- release on: {existing_serie.last_air_date}")
+                    need_update, desired_updt_days = check_update_since(exist_serie, "Serie")
 
-                    # last_ep_out = existing_serie.seasons.last().episodes.
-                    # print(f"last_ep_out: {last_ep_out} -- {last_ep_out.season_number}")
-
-
-                    is_released = False
-                    is_update_after_release = False
-                    is_recently_released = None
-
-
-                    # check if release date is in the past
-                    if existing_serie.last_air_date:
-                        when_release =  datetime.date.today() - existing_serie.last_air_date
-                        # print(f"\nhow long was the Serie released? -- {when_release.days} days ago\n")
-                        if when_release.days < 0:
-                            # Series is not released yet.
-                            print(f"- Serie is not supposed to be released yet... In: '{when_release.days} days'")
-
-                        else:
-                            # Serie is already released.
-                            print(f"- Serie supposed to be already released...  '{when_release.days} days'")
-                            is_released = True
-                            is_recently_released = True if when_release.days <= 40 else False
-                            # check if updated_at is after release date
-                            if updated_at >= existing_serie.last_air_date and updated_at.day != existing_serie.created_at.date():
-                                is_update_after_release = True
-                                print(f"- Serie was updated after the release date {updated_at}")  
-                            else:
-                                print(f"- Serie was updated before the release date {updated_at}") 
-
-                    # set how long before a serie get updated again depending on certain conditons
-                    # eg. when was it released? was it updated after release?
-                    desired_updt_days = 14 # gives a minimum of 14 days before updating again
-                    print(f"is_released, is_update_after_release, is_recently_released")
-                    print(f"{is_released}, {is_update_after_release}, {is_recently_released}")
-
-                    if is_released and is_update_after_release and is_recently_released:
-                        desired_updt_days = 7  # Serie rencently released and updated already
-                        print(f"3 conditions reunited, 7days before update.")
-
-                    elif is_released and is_update_after_release and not is_recently_released:
-                        desired_updt_days = 10 # Serie released since a while and updated already
-                        # to modify or comment this condition if Db structure and import has changed,
-
-                    elif is_released and not is_update_after_release and is_recently_released:
-                        desired_updt_days = 3 # Serie recently released but not updated since release
-
-                    # elif not is_released and when_release.days <= -30:
-                    #     desired_updt_days = 5 # Serie not release but should release soon, so more info may be added
-                    # else:
-                    #     pass # probably does not have a last_air_date /  will remain to the standard update delay
-
-                    if updated_since.days <= desired_updt_days:
+                    if need_update == False:
                         # if time_difference.days < 14:
                         self.stdout.write(self.style.WARNING(
                             f"{serie['name']} already exists in DB and was updated less than {desired_updt_days} days ago.\n"
@@ -305,10 +212,9 @@ class Command(BaseCommand):
                             "Updated!....\n"
                             f"\n" + "=" * 50 + "\n\n"
                             ))
-                # ---------------- END --------------------------
-
+                        
                 # give some time between fetching new series.
-                time.sleep(3) 
+                time.sleep(2) 
 
         end_time = time.time()
         elapsed_time = end_time - start_time

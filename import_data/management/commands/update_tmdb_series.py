@@ -11,6 +11,8 @@ from serie.models import Serie
 
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series
+from import_data.tools.media_update_check import check_update_since
+
 
 # Configure Logging
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,27 +127,18 @@ class Command(BaseCommand):
                     f" -- Serie id: {tmdb_id} ---------"
                     )
 
-                time.sleep(3) # give some time between fetching a new page list of series.
+                time.sleep(2.5) # give some time between fetching a new page list of series.
 
                 try:
-                    # new_serie, is_created = save_or_update_series(tmdb_id)
-
-
-
-                    # ---------------- TRY -------------------------------------------------
-                    # If Serie already existing.
-                    # skipped it if updated less than 2 week ago
+                    # if the serie already exist, check when it was released and updated
+                    # and if it necessit a new update 
                     # Reduces unnecessary api calls if serie was recently updated in DB
-                    
                     if Serie.objects.filter(tmdb_id=tmdb_id).exists():
-                        existing_serie = Serie.objects.get(tmdb_id=tmdb_id)
-                        time_difference = datetime.datetime.now(datetime.timezone.utc) - existing_serie.updated_at
-
-                        print("time now:", datetime.datetime.now(datetime.timezone.utc))  # debug print
-                        print("existing_serie.updated_at:", existing_serie.updated_at)  # debug print
-                        print(f"Serie {tmdb_id} exists. Last updated {time_difference.days} days ago.")  # debug print
-
-                        if time_difference.days < 14:
+                        exist_serie = Serie.objects.get(tmdb_id=tmdb_id)
+                        
+                        need_update, desired_updt_days = check_update_since(exist_serie, "Serie")
+            
+                        if need_update == False:
                             self.stdout.write(self.style.WARNING(
                                 f"{tmdb_id} already exists in DB and was updated less than a week ago.\n"
                                 "Skipping....\n"
@@ -154,10 +147,9 @@ class Command(BaseCommand):
                             skipped_count += 1
                             continue
 
+                        new_serie, is_created = save_or_update_series(tmdb_id)
                     else:
                         new_serie, is_created = save_or_update_series(tmdb_id)
-
-
 
                     if new_serie and is_created:
                         created += 1

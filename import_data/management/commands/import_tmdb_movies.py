@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from movie.models import Movie
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_movies import save_or_update_movie
-
+from import_data.tools.media_update_check import check_update_since
 
 # Configure Logging
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,7 +51,7 @@ class Command(BaseCommand):
         5. Log result and differentiate between imported and skipped.
         """
         MAX_RETRIES = 3
-        FETCH_PAGE = 5 # the amount of pages we will check to get movies imported
+        FETCH_PAGE = 2 # the amount of pages we will check to get movies imported
 
         # to keep track of the import,
         # passed & returned in process_batch_movies(). Then logged at the end.
@@ -114,7 +114,7 @@ class Command(BaseCommand):
                         f" page={page}, endpoint={endpoint}."
                         f"Error message: '{value_e}'"
                         )
-                    time.sleep(4)  # wait before retrying
+                    time.sleep(3)  # wait before retrying
                     continue
 
                 except Exception as e:
@@ -123,7 +123,7 @@ class Command(BaseCommand):
                         f"page={page}, endpoint={endpoint}."
                         f"(Exception) Error message: '{e}'"
                         )
-                    time.sleep(4)
+                    time.sleep(3)
                     continue
 
             # Loop over pages
@@ -182,7 +182,7 @@ class Command(BaseCommand):
             # pass the movie list process batch into it's own function
             batch = self.process_movies_batch(list_movies, imported)
             imported = batch
-            time.sleep(4) # give some time between fetching a new page list of movies.
+            time.sleep(2.5) # give some time between fetching a new page list of movies.
 
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -213,14 +213,14 @@ class Command(BaseCommand):
 
     def process_movies_batch(self, list_movies, imported: dict):
         '''
-        Process a batch of movies from TMDB api response
+        Process a batch of movies from TMDB api response.\n
         return the count of imported/saved movies and skipped
 
-        - count, created, skipped
+        - count, created, updated, skipped
         '''
 
         for movie in list_movies['results']:
-            time.sleep(1)  
+            # time.sleep(1)  
             imported['count'] += 1
             tmdb_id = movie['id']
             title = movie['title']
@@ -255,73 +255,15 @@ class Command(BaseCommand):
                     # logger.error(f"Error importing {movie_id}: {e}")
                     continue
 
-            # else:
-            #     self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB."))
-            #     # print("\n" + "=" * 50 + "\n\n")
-            #     imported['skipped'] += 1
-
-            # -- New version with time check. in progress...
             else:
-                existing_movie = Movie.objects.get(tmdb_id=tmdb_id)
-                updated_at = existing_movie.updated_at.date()
-                updated_since = datetime.datetime.now(datetime.timezone.utc).date() - updated_at 
-                
-                print(f"- Movie {tmdb_id} - {title} exists.")
-                print(f"- Last updated {updated_since.days} days ago. {updated_at}")
-                print(f"- release on: {existing_movie.release_date}")
-                
-                is_released = False
-                is_update_after_release = False
-                is_recently_released = False
-                # check if release date is in the past
-                if existing_movie.release_date:
-                    when_release =  datetime.date.today() - existing_movie.release_date
-                    if when_release.days < 0:
-                        # Movies is not released yet.
-                        print(f"- Movie is not released yet... -- In '{when_release.days} days'")
+                # if the movie already exist, check when it was released and updated
+                # and if it necessit a new update 
+                # Reduces unnecessary api calls if movie was recently updated in DB
+                exist_movie = Movie.objects.get(tmdb_id=tmdb_id)
 
-                    else:
-                        # Movie is already released.
-                        print(f"- Movie already released. -- Since '{when_release.days} days'")
-                        is_released = True
-                        is_recently_released = True if when_release.days <= 40 else False
+                need_update, desired_updt_days = check_update_since(exist_movie, "Movie")
 
-                        # check if updated_at is after release date
-                        if updated_at >= existing_movie.release_date and updated_at.strftime("%d/%m/%Y") != existing_movie.created_at.date().strftime("%d/%m/%Y"):
-                            is_update_after_release = True
-                            print(f"- Movie was updated after the release date updt:{updated_at}")  
-                        else:
-                            print(f"- Movie was updated before the release date or never updated. updt:{updated_at}") 
-                            
-                desired_updt_days = 15 # gives a minimum of 14 days before updating again
-                print(f"is_released, is_recently_released, is_update_after_release")
-                print(f"{is_released}, {is_recently_released}, {is_update_after_release}")
-                
-                # set how long before a movie get updated again depending on certain conditons 
-                # eg. when was it released? was it updated after release?
-                if is_recently_released and is_update_after_release:
-                    # Movie rencently released and updated already
-                    desired_updt_days = 7 
-                    # print(f"3 conditions reunited, 7 days before update.")
-
-                elif is_recently_released and not is_update_after_release:
-                    # movie recently released but not updated since release, need updates
-                    desired_updt_days = 1
-
-                # to modify (give low num) or comment this condition if Db structure and import has changed,
-                elif is_released and not is_recently_released and is_update_after_release:
-                    # movie released since a while and updated already, no need to reupdate often
-                    desired_updt_days = 10 
-                    
-                elif not is_released  and when_release.days <= -100:
-                    # movie not releasing soon so more info may be added or wait to get close the release
-                    desired_updt_days = 30
-                else:
-                    pass # probably does not have a release.date /  will remain to the standard update delay
-
-
-                if updated_since.days <= desired_updt_days:
-                # if time_difference.days < 14:
+                if need_update == False:
                     self.stdout.write(self.style.WARNING(
                         f"{movie['title']} already exists in DB and was updated less than {desired_updt_days} days ago.\n"
                         "Skipping....\n"
@@ -331,13 +273,31 @@ class Command(BaseCommand):
                     continue
 
                 else:
-                    # proceed to update the serie data
-                    save_or_update_movie(tmdb_id)
-                    self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB, delay update is {desired_updt_days} days."))
-                    self.stdout.write(self.style.WARNING(f"Updated!"))
-                    # print("\n" + "=" * 50 + "\n\n")
-                    imported['updated'] += 1
+                    time.sleep(1)
 
+                    # proceed to update the serie data
+                    self.stdout.write(self.style.WARNING(f"'{movie['title']}' already exists in DB, delay update is {desired_updt_days} days."))
+                    self.stdout.write(self.style.WARNING(f"Updating!\n"))
+                    # save_or_update_movie(tmdb_id)
+                    new_movie, is_created = save_or_update_movie(tmdb_id)
+
+                    if new_movie and not is_created:
+                        imported['updated'] += 1
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"Updated  movie: **{new_movie}**"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
+
+                    elif not new_movie:
+                        imported['skipped'] += 1
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"**Cancel to save in DB. Mo movie or no sufficient data. Probably deleted. **"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
 
         return imported
 
