@@ -12,6 +12,10 @@ def check_update_since(media: object, media_type: str):
     check if media is already released\n
     check if media was already updated after the release date\n
 
+    Takes the release_date info from the Saved object in DB not the new qery.\n
+    Which help Serie object, as when new episode comes out they will be stored in
+    and allow for regular updates around the time of episodes being released.
+
     Reduces unnecessary api calls if media was recently updated in DB\n
     """
 
@@ -37,9 +41,10 @@ def check_update_since(media: object, media_type: str):
         ).order_by('-release_date').first()  # ← Get the most recent
 
     if last_ep_out:
+        # only works when a serie was being sent and last season had episoeds with rels_date
         print(f"last_ep_out: {last_ep_out} -- {last_ep_out.release_date}")
-        # print(f"- release on: {media.first_air_date or last_ep_out.release_date}")
-        release_date = media.last_air_date or last_ep_out.release_date
+        
+        release_date = last_ep_out.release_date or media.last_air_date
     else:
         # Movie type being passed on
         release_date = media.release_date
@@ -83,7 +88,7 @@ def check_update_since(media: object, media_type: str):
     # to modify (give low num) or comment this condition if Db structure and import has changed,
     elif is_released and not is_recently_released and is_update_after_release:
         # Media released since a while and updated already, no need to reupdate often
-        desired_updt_days = 10
+        desired_updt_days = 50
         
     elif release_date and not is_released and when_release.days <= -100:
         # Media not releasing soon so more info may be added or wait to get close the release

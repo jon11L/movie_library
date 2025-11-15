@@ -140,64 +140,6 @@ class Command(BaseCommand):
                     )
                 time.sleep(3)
 
-        # Loop over pages
-        # for i in range(FETCH_PAGE):
-
-        #     retry = 0  # Track the number of retries in case of failure
-        #     while retry < MAX_RETRIES:
-        #         try:
-        #             # select a new endpoint+page for each loop page fetch / also if one fails.
-        #             endpoint = select_endpoint(endpoints)
-        #             max_pages = get_max_page(endpoint)
-        #             page = random.randint(1, max_pages) # change the page to send in get_movie_list():
-        #             self.stdout.write(
-        #                 f"\n" + "=" * 50 + "\n\n"
-        #                 f"Fetching movies from '{endpoint}' list, With page n: {page}\n"
-        #                 ) # debug print
-
-        #             list_movies = get_api_data(
-        #                 page=page,
-        #                 endpoint=endpoint,
-        #                 t_type='movie_list'
-        #                 # update=False
-        #                 )
-
-        #             if not list_movies or (list_movies['results'] and len(list_movies['results']) <= 5):
-        #                 raise ValueError(f"No movies list found or too few results to loop over.")
-
-        #             break # break the while Loop if page is reached
-
-        #         except ValueError as value_e:
-        #             retry += 1
-        #             self.stdout.write(
-        #                 f"(Exception) No movies list found or too few results. page={page}, endpoint={endpoint}."
-        #                 f"Error: {value_e}"
-        #                 f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
-        #                 )
-        #             time.sleep(retry*4)  # wait before retrying
-
-        #         except Exception as e:
-        #             retry += 1
-        #             self.stdout.write(
-        #                 f"(Exception) Error getting list of imported movies: {e}"
-        #                 f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
-        #                 )
-        #             time.sleep(retry*4)
-
-        # If all retries failed, exit early
-        # if retry == MAX_RETRIES:
-        #     self.stdout.write(self.style.ERROR("Max retries reached. Could not fetch updated movies. -- Task ending.\n"))
-            # continue # Skip this page and go to the next.
-
-            # --- Fetch and process each movie from the selected endpoint ----
-            # self.stdout.write("Processing the list of movies and pass the Ids to get the datas.\n")
-            # print(f"\n" + "=" * 50 + "\n\n")
-
-            # pass the movie list process batch into it's own function
-            # batch = self.process_movies_batch(list_movies, imported)
-        # imported = batch
-            # time.sleep(2.5) # give some time between fetching a new page list of movies.
-
         end_time = time.time()
         elapsed_time = end_time - start_time
 
@@ -220,10 +162,10 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"SUMMARY: Movies (import) -- {imported['created']} Created. -- {imported['updated']} Updated. -- {imported['skipped']} Skipped/Failed."
+                f"\n" + "=" * 50 + "\n\n"
             )
         )
-        self.stdout.write(f"\n" + "=" * 50 + "\n\n")  # debug print
-
+        
 
     def process_movies_batch(self, list_movies, imported: dict):
         '''
