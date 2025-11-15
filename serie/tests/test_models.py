@@ -1,10 +1,12 @@
 from django.test import TestCase
 from django.db import IntegrityError
 from django.templatetags.static import static
+from django.core.exceptions import ValidationError
+
+import datetime
 
 from serie.models import Serie, Season, Episode
-# import unittest
-import datetime
+
 
 class SerieModelSaveTest(TestCase):
 
@@ -15,16 +17,16 @@ class SerieModelSaveTest(TestCase):
 
         cls.serie = Serie.objects.create(
             imdb_id="tt0903747",
-            tmdb_id= 1396,
+            tmdb_id=1396,
             original_title="Breaking Bad",
             title="Breaking Bad",
             overview="A high school chemistry teacher turned methamphetamine producer navigates the dangers of the drug trade while battling personal demons.",
             tagline="All bad things must come to an end.",
-            genre=["Drama", "Crime", "Thriller" ],
+            genre=["Drama", "Crime", "Thriller"],
             # first_air_date=datetime.datetime.strptime("2008-07-05 ", '%Y-%m-%d').date(),
             first_air_date=datetime.date(2008, 7, 5),
-            last_air_date=datetime.datetime.strptime("2013-08-05", '%Y-%m-%d').date(),
-            origin_country=[ "US" ],
+            last_air_date=datetime.datetime.strptime("2013-08-05", "%Y-%m-%d").date(),
+            origin_country=["US"],
             original_language="en",
             spoken_languages=["en", "de"],
             production=["HBO"],
@@ -42,7 +44,7 @@ class SerieModelSaveTest(TestCase):
             title="Westworld",
             genre=["Action", "Sci-Fi", "Thriller"],
             production=["HBO"],
-            created_by=["Jonathan Nolan", "Lisa Joy"]
+            created_by=["Jonathan Nolan", "Lisa Joy"],
         )
 
     def test_serie_created(self):
@@ -52,16 +54,24 @@ class SerieModelSaveTest(TestCase):
         self.assertEqual(self.serie.title, "Breaking Bad")
         self.assertEqual(self.serie_2.title, "Westworld")
 
+    # to move in their proper tests
     def test_fields_saved_correctly(self):
         """Test that all fields are saved and retrieved correctly."""
-        self.assertEqual(type(self.serie.original_title), str)
-        self.assertEqual(self.serie.original_title, "Breaking Bad")
         self.assertEqual(self.serie.vote_count, 12000)
         self.assertEqual(self.serie.popularity, 45.0)
-        self.assertEqual(self.serie.poster_images, ["poster1.jpg", "poster2.jpg"])
-        self.assertEqual(self.serie.banner_images, ["banner1.jpg", "banner2.jpg"])
 
-    def test_decription_field(self):
+    def test_original_title_field(self):
+        """Test that original_title is saved correctly."""
+        self.assertEqual(type(self.serie.original_title), str)
+        self.assertEqual(self.serie.original_title, "Breaking Bad")
+
+    def test_title_correct(self):
+        """Test that the title field is saved correctly."""
+        self.assertEqual(type(self.serie.title), str)
+        self.assertNotEqual(self.serie.title, "The Wire")
+        self.assertEqual(self.serie.title, "Breaking Bad")
+
+    def test_overview_field(self):
         """Test that the description field is saved correctly."""
         self.assertIsNotNone(self.serie.overview)
         self.assertEqual(type(self.serie.overview), str)
@@ -73,19 +83,13 @@ class SerieModelSaveTest(TestCase):
         self.assertEqual(type(self.serie.tagline), str)
         self.assertEqual(self.serie.tagline, "All bad things must come to an end.")
 
-    def test_vote_average_field(self):
+    def test_vote_average_float_field(self):
         """Test that the vote_average field is saved correctly."""
         self.assertIsNotNone(self.serie.vote_average)
         self.assertEqual(type(self.serie.vote_average), float)
         self.assertEqual(self.serie.vote_average, 8.4)
 
-    def test_title_correct(self):
-        """Test that the title field is saved correctly."""
-        self.assertNotEqual(self.serie.title, "The Wire")
-        self.assertEqual(self.serie.title, "Breaking Bad")
-        self.assertEqual(type(self.serie.title), str)
-
-    def test_serie_status_field(self):   
+    def test_serie_status_field(self):
         """Test that a serie can be marked as released."""
         self.assertEqual(type(self.serie.status), str)
         self.assertIsNotNone(self.serie.status)
@@ -153,6 +157,16 @@ class SerieModelSaveTest(TestCase):
         self.assertEqual(type(self.serie.last_air_date), datetime.date)
         self.assertEqual(self.serie.last_air_date, datetime.date(2013, 8, 5))
 
+    def test_banner_images_field(self):
+        """Test that poster_images array is saved correctly."""
+        self.assertIn("banner1.jpg", self.serie.banner_images)
+        self.assertEqual(self.serie.banner_images, ["banner1.jpg", "banner2.jpg"])
+
+    def test_poster_images_field(self):
+        """Test that poster_images array is saved correctly."""
+        self.assertIn("poster1.jpg", self.serie.poster_images)
+        self.assertEqual(self.serie.poster_images, ["poster1.jpg", "poster2.jpg"])
+
     # may go with Core app (but here tied to Movie model)
     def test_slug_generated_on_save(self):
         """Test that a slug is generated upon saving the serie."""
@@ -160,30 +174,81 @@ class SerieModelSaveTest(TestCase):
         self.assertEqual(type(self.serie.slug), str)
         if self.serie.slug:
             self.assertIn("breaking-bad", self.serie.slug)
-            self.assertRegex(self.serie.slug, r'breaking-bad-[0-9]*-\w*\d')
+            self.assertRegex(self.serie.slug, r"breaking-bad-[0-9]*-\w*\d")
 
     def test_serie_slug_creation_without_first_air_date(self):
         """Test creating a serie and slug without first_air_date."""
         serie_2 = Serie.objects.create(
             title="serie 2 test",
             tmdb_id=5678,
-            )
+        )
         self.assertIsNotNone(serie_2.slug)
         self.assertEqual(type(serie_2.slug), str)
         if not serie_2.first_air_date and serie_2.slug:
             self.assertIn("serie-2-test", serie_2.slug)
-            self.assertRegex(serie_2.slug, r'serie-2-test-[0-9]*-?\w*\d')
+            self.assertRegex(serie_2.slug, r"serie-2-test-[0-9]*-?\w*\d")
             # self.assertRegex(serie_2.slug, r'serie-2-test-\w*\d')
 
+    # -------- Testing empty fields -----------------------------
+    def test_vote_average_accepts_none(self):
+        """-- Test that vote_average can be None (blank=True, null=True)."""
+        serie = Serie(title="untitled", vote_average=None)
+        serie.full_clean()
+        serie.save()
+        self.assertIsNone(serie.vote_average)
+
+    def test_genre_accepts_none(self):
+        """-- Test that vote_average can be None (blank=True, null=True)."""
+        serie = Serie(title="untitled", genre=None)
+        serie.full_clean()
+        serie.save()
+        self.assertIsNone(serie.genre)
+
+    # -------- Testing validation -----------------------------
+    def test_vote_average_below_value_limits(self):
+        """Test that vote_average validation works."""
+        new_serie = Serie.objects.create(title="Invalid", tmdb_id=57, vote_average=-3.2)
+        with self.assertRaises(ValidationError):
+            new_serie.full_clean()
+            new_serie.save()
+
+    def test_vote_average_min_edge_value_limit(self):
+        new_serie_2 = Serie(title="test film", tmdb_id=56, vote_average=0)
+        new_serie_2.full_clean()
+        new_serie_2.save()
+        
+    def test_vote_average_over_value_limits(self):
+        """Test that vote_average validation works."""
+        new_serie = Serie.objects.create(title="Invalid", tmdb_id=55, vote_average=15.0)
+        with self.assertRaises(ValidationError):
+            new_serie.full_clean()
+            new_serie.save()
+
+    def test_vote_average__max_edge_value_limit(self):
+        new_serie_2 = Serie(title="test film 2", tmdb_id=58, vote_average=10)
+        new_serie_2.full_clean()
+        new_serie_2.save()
+
+    # -------- Testing constraints -----------------------------
     def test_serie_creation_with_required_fields_only(self):
         """Test creating a movie with only the title (required field)."""
-        serie = Serie.objects.create(
-            title="Serie test 1",
-            tmdb_id=12405
-            )
+        serie = Serie.objects.create(title="Serie test 1", tmdb_id=12405)
 
         self.assertEqual(serie.title, "Serie test 1")
         self.assertIsNotNone(serie.pk)  # Has a database ID
+
+
+    def test_movie_create_without_title(self):
+        """
+        Test creating a movie with only the title (required field).\n
+        Should fail as title is required
+        """
+        serie = Serie.objects.create(
+            tmdb_id=27211
+            )
+        with self.assertRaises(ValidationError):
+            serie.full_clean()
+            serie.save()
 
     # Create new series in the setUpTestData to then test it here, avoid missmatch Id
     def test_serie_tmdb_id_unique_constraint(self):
@@ -210,7 +275,7 @@ class SerieModelMethodTest(TestCase):
             title="Westworld",
             genre=["Action", "Sci-Fi", "Thriller"],
             production=["HBO"],
-            created_by=["Jonathan Nolan", "Lisa Joy"]
+            created_by=["Jonathan Nolan", "Lisa Joy"],
         )
 
         print("\n-- **SetupTestData for SerieModelMethodTest started.**\n")
@@ -229,29 +294,29 @@ class SerieModelMethodTest(TestCase):
         self.assertEqual(str(self.serie_2), "Westworld")
 
     def test_render_genre(self):
-        '''Test the render_genre method of the Serie object.'''
+        """Test the render_genre method of the Serie object."""
         self.assertEqual(type(self.serie.render_genre()), str)
         self.assertEqual(self.serie.render_genre(), "Action - Sci-Fi")
         self.assertNotEqual(self.serie_2.render_genre(), "Horror - Sci-Fi")
         self.assertEqual(self.serie_2.render_genre(), "Action - Sci-Fi - Thriller")
 
     def test_render_production(self):
-        '''Test the render_production method of the Serie object.'''
+        """Test the render_production method of the Serie object."""
         self.assertEqual(type(self.serie.render_production()), str)
         self.assertEqual(self.serie.render_production(), "HBO")
         self.assertNotEqual(self.serie.render_production(), "Warner Bros.")
 
     def test_render_created_by(self):
-        '''Test the render_created_by method of the Serie object.'''
+        """Test the render_created_by method of the Serie object."""
         self.assertEqual(type(self.serie.render_created_by()), str)
         self.assertNotEqual(self.serie.render_created_by(), "John Doe")
         self.assertEqual(self.serie.render_created_by(), "Vince Gilligan")
 
     def test_render_vote_average(self):
-        '''
+        """
         Test the render_vote_average method of the Serie object.
         Should render the vote_average rounded to one decimal place.
-        '''
+        """
         self.serie.vote_average = 8.456
         self.assertNotEqual(self.serie.render_vote_average(), 6)
         self.assertEqual(self.serie.render_vote_average(), 8.5)
@@ -259,15 +324,17 @@ class SerieModelMethodTest(TestCase):
         self.assertEqual(self.serie_2.render_vote_average(), 7.1)
 
     def test_render_banner_images(self):
-        ''' 
+        """
         test the render_banner method.
         Should return full url: preffix + random image name from the field's list
-        '''
+        """
         self.assertNotEqual(self.serie.render_banner(), "/banner1.jpg")
         self.assertNotEqual(self.serie.render_banner(), "/banner2.jpg")
         self.assertIn("https://image.tmdb.org/t/p/w1280", self.serie.render_banner())
         # no banner image set in serie_2
-        self.assertEqual(self.serie_2.render_banner(), static("images/default_banner_photo.jpg"))
+        self.assertEqual(
+            self.serie_2.render_banner(), static("images/default_banner_photo.jpg")
+        )
 
     def test_render_poster_images(self):
         self.assertNotEqual(self.serie.render_poster(), "/poster1.jpg")
@@ -277,44 +344,38 @@ class SerieModelMethodTest(TestCase):
             self.serie.render_poster(), "https://image.tmdb.org/t/p/w500/poster1.jpg"
         )
         # no poster image set in serie_2
-        self.assertEqual(self.serie_2.render_poster(), static("images/default_poster_photo.jpg"))
-
+        self.assertEqual(
+            self.serie_2.render_poster(), static("images/default_poster_photo.jpg")
+        )
 
 
 class SeasonModelSaveTest(TestCase):
-    
+
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        cls.serie = Serie.objects.create(
-            title="Breaking Bad",
-            tmdb_id=1396
-        )
-        cls.serie_2 = Serie.objects.create(
-            title="From",
-            tmdb_id=2250
-        )
+        cls.serie = Serie.objects.create(title="Breaking Bad", tmdb_id=1396)
+        cls.serie_2 = Serie.objects.create(title="From", tmdb_id=2250)
         cls.season_1 = Season.objects.create(
             serie=cls.serie,
             name="Season 1",
             season_number=1,
             overview="The beginning of the end.",
-            producer=["Vince Ghiligan"],
-            casting=[""],
-            poster_images=["poster_1.jpg" "poster_2.jpg",],
-            tmdb_id = 21446
+            producer=[{"job": "Co-Producer", "name": "Vince Ghiligan"}],
+            casting=[
+                {"name": "Bryan Cranston", "role": "Walter White"},
+                {"name": "Aaron Paul", "role": "Jesse Pinkman"},
+            ],
+            poster_images=[
+                "poster_1.jpg" "poster_2.jpg",
+            ],
+            tmdb_id=21446,
         )
         cls.season_2 = Season.objects.create(
             serie=cls.serie,
             name="Season 2",
             season_number=2,
-            )
-
-        cls.season_0 = Season.objects.create(
-            serie=cls.serie,
-            name="Season without num2",
-            season_number=0,
-            )
+        )
 
         print("\n-- **SetupTestData for SeasonModelSaveTest started.**\n")
 
@@ -344,21 +405,32 @@ class SeasonModelSaveTest(TestCase):
         """Test that the overview field is saved correctly."""
         self.assertIsNotNone(self.season_1.overview)
         self.assertEqual(type(self.season_1.overview), str)
-        if self.season_1 .overview:
+        if self.season_1.overview:
             self.assertIn("the end", self.season_1.overview)
             self.assertEqual(self.season_1.overview, "The beginning of the end.")
 
     # test producer and casting
-    # def test_season_producer(self):
-    #     """Test that the producer field is saved correctly."""
-    #     pass
+    def test_season_producer(self):
+        """Test that the producer field is saved correctly."""
+        self.assertIsNotNone(self.season_1.producer)
+        self.assertEqual(type(self.season_1.producer), list)
 
+        if self.season_1.producer:
+            self.assertEqual(len(self.season_1.producer), 1)
+            self.assertEqual(type(self.season_1.producer[0]), dict)
+            self.assertEqual(self.season_1.producer[0]["job"], "Co-Producer")
+            self.assertEqual(self.season_1.producer[0]["name"], "Vince Ghiligan")
 
-    # def test_season_casting_field(self):
-    #     """Test that the casting field is saved correctly."""
-    #     pass
+    def test_season_casting_field(self):
+        """Test that the casting field is saved correctly."""
+        self.assertIsNotNone(self.season_1.casting)
+        self.assertEqual(type(self.season_1.casting), list)
 
-
+        if self.season_1.casting:
+            self.assertEqual(len(self.season_1.casting), 2)
+            self.assertEqual(type(self.season_1.casting[0]), dict)
+            self.assertEqual(self.season_1.casting[1]["name"], "Aaron Paul")
+            self.assertEqual(self.season_1.casting[1]["role"], "Jesse Pinkman")
 
     # --- test constraints on model, relationship, and unique constraints -----
     def test_season_has_serie_relationship(self):
@@ -370,12 +442,10 @@ class SeasonModelSaveTest(TestCase):
     def test_season_without_season_number_field(self):
         """Test that the serie fails to save if no season_number field."""
         # Default value '0' already used above in setupdata().
-        with self.assertRaises(Exception): 
-            season = Season.objects.create(
-                name="Season test",
-                serie=self.serie
-                )
+        with self.assertRaises(Exception):
+            season = Season.objects.create(name="Season test", serie=self.serie)
 
+    # --------------- Testing constraints -----------------------------
     def test_season_unique_together_constraint(self):
         """Test that the combination of serie and season_number is unique."""
         with self.assertRaises(IntegrityError):
@@ -388,12 +458,9 @@ class SeasonModelSaveTest(TestCase):
 
     def test_season_without_serie_field(self):
         """Test that the serie fails to save if no serie field."""
-        with self.assertRaises(Exception): 
-            season = Season.objects.create(
-                name="Season without serie",
-                season_number=2
-                )
-            
+        with self.assertRaises(Exception):
+            season = Season.objects.create(name="Season without serie", season_number=2)
+
     def test_season_tmdb_id_unique_constraint(self):
         """
         Test that season's tmdb_id is unique.\n
@@ -403,36 +470,24 @@ class SeasonModelSaveTest(TestCase):
             Season.objects.create(name="Season test unique id", tmdb_id=21446)
 
 
-
 class SeasonModelMethodTest(TestCase):
-    
+
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        cls.serie = Serie.objects.create(
-            title="Breaking Bad",
-            tmdb_id=1396
-        )
+        cls.serie = Serie.objects.create(title="Breaking Bad", tmdb_id=1396)
         cls.season_1 = Season.objects.create(
             serie=cls.serie,
             name="Season 1",
             season_number=1,
             overview="The beginning of the end.",
-            casting=[
-                {"name": "Bryan Cranston", "role": "Walter White"},
-                {"name": "Aaron Paul", "role": "Jesse Pinkman"}
-                ],
-            poster_images=["/poster_1.jpg", "/poster_2.jpg"]
-
+            poster_images=["/poster_1.jpg", "/poster_2.jpg"],
         )
         cls.season_2 = Season.objects.create(
-            serie=cls.serie,
-            name="Season 2",
-            season_number=2
-            )
-        
-        print("\n-- **SetupTestData for SeasonModelMethodTest started.**\n")
+            serie=cls.serie, name="Season 2", season_number=2
+        )
 
+        print("\n-- **SetupTestData for SeasonModelMethodTest started.**\n")
 
     def test_season_str_method(self):
         """Test the __str__ method of the Season object."""
@@ -446,7 +501,9 @@ class SeasonModelMethodTest(TestCase):
         # )
         self.assertNotEqual(self.season_1.render_poster(), "/poster_2.jpg")
         # no poster image set in season_2
-        self.assertEqual(self.season_2.render_poster(), static("images/default_poster_photo.jpg"))
+        self.assertEqual(
+            self.season_2.render_poster(), static("images/default_poster_photo.jpg")
+        )
 
 
 class EpisodeModelSaveTest(TestCase):
@@ -454,16 +511,13 @@ class EpisodeModelSaveTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        cls.serie = Serie.objects.create(
-            title="Breaking Bad",
-            tmdb_id=1396
-        )
+        cls.serie = Serie.objects.create(title="Breaking Bad", tmdb_id=1396)
 
         cls.season = Season.objects.create(
             serie=cls.serie,
             season_number=1,
             name="Season 1",
-            overview="The beginning of the end."
+            overview="The beginning of the end.",
         )
         cls.episode = Episode.objects.create(
             season=cls.season,
@@ -471,22 +525,18 @@ class EpisodeModelSaveTest(TestCase):
             title="Pilot",
             overview="High school chemistry teacher Walter White's life is suddenly transformed.",
             release_date=datetime.date(2008, 1, 20),
-            guest_star = [""],
-            director = [""],
-            writer = [""],
+            guest_star=[
+                {"name": "Steven Michael Quezada", "role": "Steven Gomez"},
+                {"name": "Judith Rane", "role": "Office Manager"},
+            ],
+            director=["Johan Renck", "Bryan Cranston"],
+            writer=["Peter Gould", "writer 2"],
             banner_images=["banner_1.jpg", "banner_2.jpg"],
-            tmdb_id = 12586
+            tmdb_id=412586,
         )
 
-        cls.episode_0 = Episode.objects.create(
-        season=cls.season,
-        title="Episode without num special",
-        episode_number=0
-        )
         cls.episode_2 = Episode.objects.create(
-        season=cls.season,
-        title="Episode without num2",
-        episode_number=2
+            season=cls.season, title="Episode without num2", episode_number=2
         )
 
         print("\n-- **SetupTestData for EpisodeModelSaveTest started.**\n")
@@ -501,64 +551,102 @@ class EpisodeModelSaveTest(TestCase):
     # # ----------------------------
 
     def test_episode_number_field(self):
-        """Test that the episode_number field is saved correctly."""
+        """-- Test that the episode_number field is saved correctly."""
         self.assertIsNotNone(self.episode.episode_number)
         self.assertEqual(type(self.episode.episode_number), int)
         self.assertEqual(self.episode.episode_number, 1)
 
     def test_episode_title_field(self):
-        """Test that the title field is saved correctly."""
+        """-- Test that the title field is saved correctly."""
         self.assertIsNotNone(self.episode.title)
         self.assertEqual(type(self.episode.title), str)
         self.assertEqual(self.episode.title, "Pilot")
 
     def test_episode_overview_field(self):
-        """Test that the overview field is saved correctly."""
+        """-- Test that the overview field is saved correctly."""
         self.assertIsNotNone(self.episode.overview)
         self.assertEqual(type(self.episode.overview), str)
         if self.episode.overview:
-            self.assertIn(
-                "Walter White's life", self.episode.overview
-            )
+            self.assertIn("Walter White's life", self.episode.overview)
 
     def test_release_date(self):
-        """Test the render_release_date method."""
+        """-- Test the render_release_date method."""
         self.assertIsNotNone(self.episode.release_date)
         self.assertEqual(type(self.episode.release_date), datetime.date)
         self.assertEqual(self.episode.release_date, datetime.date(2008, 1, 20))
 
-    def test_correct_season_association(self):
-        """Test that the episode is correctly associated with its season."""
+    def test_episode_guest_star_field(self):
+        """-- Test that guest_star field is saved correctly."""
+        self.assertIsNotNone(self.episode.guest_star)
+        self.assertEqual(type(self.episode.guest_star), list)
+        if self.episode.guest_star:
+            self.assertEqual(len(self.episode.guest_star), 2)
+            self.assertEqual(type(self.episode.guest_star[0]), dict)
+            self.assertEqual(self.episode.guest_star[1]["name"], "Judith Rane")
+            self.assertEqual(self.episode.guest_star[1]["role"], "Office Manager")
+
+    def test_episode_director_field(self):
+        """-- Test that guest_star field is saved correctly."""
+        self.assertIsNotNone(self.episode.director)
+        self.assertEqual(type(self.episode.director), list)
+        if self.episode.director:
+            self.assertEqual(len(self.episode.director), 2)
+            self.assertEqual(type(self.episode.director[0]), str)
+            self.assertEqual(self.episode.director[0], "Johan Renck")
+            self.assertEqual(self.episode.director[1], "Bryan Cranston")
+
+    def test_episode_writer_field(self):
+        """-- Test that guest_star field is saved correctly."""
+        self.assertIsNotNone(self.episode.writer)
+        self.assertEqual(type(self.episode.writer), list)
+        if self.episode.writer:
+            self.assertEqual(len(self.episode.writer), 2)
+            self.assertEqual(type(self.episode.writer[0]), str)
+            self.assertEqual(self.episode.writer[0], "Peter Gould")
+            self.assertEqual(self.episode.writer[1], "writer 2")
+
+    # -------- Testing constraints -----------------------------
+    def test_episode_season_relation(self):
+        """-- Test that the episode is correctly associated with its season."""
         self.assertEqual(self.episode.season, self.season)
         self.assertEqual(self.episode.season.season_number, 1)
         self.assertEqual(self.episode.season.name, "Season 1")
-        # self.assertEqual(self.episode.season.serie.title, "Breaking Bad")
+        # Reaching the serie , through foreign relationship
+        self.assertEqual(self.episode.season.serie.title, "Breaking Bad")
 
     def test_episode_unique_together_constraint(self):
-        """Test that the combination of season and episode_number is unique."""
+        """-- Test that the combination of season and episode_number is unique."""
         with self.assertRaises(Exception):  # Should raise IntegrityError
             Episode.objects.create(
-                season=self.season,
-                episode_number=1,
-                title="Test Duplicate Pilot"
+                season=self.season, episode_number=1, title="Test Duplicate Pilot"
             )
 
     def test_episode_without_season_field(self):
-        """Test that the episode fails to save if no season field."""
-        with self.assertRaises(Exception): 
+        """-- Test that the episode fails to save if no season field."""
+        with self.assertRaises(Exception):
             episode = Episode.objects.create(
-                episode_number=2,
-                title="Episode without season"
-                )
+                episode_number=2, title="Episode without season"
+            )
 
     def test_episode_without_episode_number_field(self):
         """Test that the episode fails to save if no episode_number field."""
-        # Default value '0' already used above in setupdata().
         with self.assertRaises(Exception):
             episode = Episode.objects.create(
+                season=self.season, title="Episode without number"
+            )
+
+    def test_episode_tmdb_id_unique_constraint(self):
+        """
+        Test that season's tmdb_id is unique.\n
+        Fail on attempting to create a new season with an already existing tmdb_id.
+        """
+        with self.assertRaises(IntegrityError) as e:
+            Episode.objects.create(
                 season=self.season,
-                title="Episode without number"
-                )
+                title="Episode test unique id",
+                episode_number=4,
+                tmdb_id=412586,
+            )
 
 
 class EpisodeModelMethodTest(TestCase):
@@ -566,17 +654,15 @@ class EpisodeModelMethodTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        cls.serie = Serie.objects.create(
-            title="Breaking Bad",
-            tmdb_id=1396
-        )
+        cls.serie = Serie.objects.create(title="Breaking Bad", tmdb_id=1396)
 
         cls.season = Season.objects.create(
             serie=cls.serie,
             season_number=1,
             name="Season 1",
-            overview="The beginning of the end."
+            overview="The beginning of the end.",
         )
+
         cls.episode = Episode.objects.create(
             season=cls.season,
             episode_number=1,
@@ -584,23 +670,17 @@ class EpisodeModelMethodTest(TestCase):
             release_date=datetime.date(2008, 1, 20),
             overview="High school chemistry teacher Walter White's life is suddenly transformed.",
             banner_images=["/banner_1.jpg", "/banner_2.jpg"],
-
+            director=["Vince Gilligan", "J. Roberts"],
+            writer=["Peter Medak", "writer 2"],
         )
-
         cls.episode_0 = Episode.objects.create(
-        season=cls.season,
-        title="Episode without num special",
-        episode_number=0
+            season=cls.season, title="Episode without num special", episode_number=0
         )
         cls.episode_2 = Episode.objects.create(
-        season=cls.season,
-        title="Episode without num2",
-        episode_number=2
+            season=cls.season, title="Episode without num2", episode_number=2
         )
         cls.episode_3 = Episode.objects.create(
-        season=cls.season,
-        title="Episode 3",
-        episode_number=3
+            season=cls.season, title="Episode 3", episode_number=3
         )
 
         print("\n-- **SetupTestData for EpisodeModelMethodTest started.**\n")
@@ -611,15 +691,28 @@ class EpisodeModelMethodTest(TestCase):
         self.assertNotEqual(str(self.episode_3), "Episode 3 - Pilot")
         self.assertEqual(str(self.episode_3), "Episode 3")
 
+    def test_render_episode_director_field(self):
+        """Test that guest_star field is saved correctly."""
+        self.assertNotEqual(self.episode.render_director(), "")
+        self.assertEqual(type(self.episode.render_director()), str)
+        self.assertEqual(self.episode.render_director(), "Vince Gilligan, J. Roberts")
+
+    def test_render_episode_writer_field(self):
+        """Test that guest_star field is saved correctly."""
+        self.assertNotEqual(self.episode.render_writer(), "")
+        self.assertEqual(type(self.episode.render_writer()), str)
+        self.assertEqual(self.episode.render_writer(), "Peter Medak, writer 2")
 
     def test_render_banner_images(self):
-        ''' 
+        """
         test the render_banner method.
         Should return full url: preffix + random image name from the field's list
-        '''
+        """
         self.assertNotEqual(self.episode.render_banner(), "/banner1.jpg")
         self.assertNotEqual(self.episode.render_banner(), None)
         # self.assertEqual(self.episode.render_banner(), "https://image.tmdb.org/t/p/w1280/banner_1.jpg")
         self.assertIn("https://image.tmdb.org/t/p/w1280", self.episode.render_banner())
         # no banner image set in episode_2
-        self.assertEqual(self.episode_2.render_banner(), static("images/default_banner_photo.jpg"))
+        self.assertEqual(
+            self.episode_2.render_banner(), static("images/default_banner_photo.jpg")
+        )
