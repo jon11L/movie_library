@@ -112,13 +112,13 @@ class Command(BaseCommand):
             self.stdout.write(f"-- len list:{len(results)}") # debug print
 
             # When Url return correct response and data, pass each serie in results to create new serie instance
-            r_index = random.randint(0, len(results) - 5) # give some random to index to look through for the series. 
+            r_index = random.randint(0, len(results) - 4) # give some random to index to look through for the series. 
 
-            for tmdb_serie_id in results[r_index:r_index+5]:
+            for tmdb_serie_id in results[r_index:r_index+4]:
                 imported_count += 1
 
-                if imported_count > 5:
-                    self.stdout.write(f"Breaking after 5 series for testing purpose.\n")
+                if imported_count > 4:
+                    self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
                     break
 
                 tmdb_id = tmdb_serie_id['id']
@@ -127,7 +127,6 @@ class Command(BaseCommand):
                     f" -- Serie id: {tmdb_id} ---------"
                     )
 
-                time.sleep(2.5) # give some time between fetching a new page list of series.
 
                 try:
                     # if the serie already exist, check when it was released and updated
@@ -135,9 +134,9 @@ class Command(BaseCommand):
                     # Reduces unnecessary api calls if serie was recently updated in DB
                     if Serie.objects.filter(tmdb_id=tmdb_id).exists():
                         exist_serie = Serie.objects.get(tmdb_id=tmdb_id)
-                        
+
                         need_update, desired_updt_days = check_update_since(exist_serie, "Serie")
-            
+    
                         if need_update == False:
                             self.stdout.write(self.style.WARNING(
                                 f"{tmdb_id} already exists in DB and was updated less than a week ago.\n"
@@ -179,6 +178,8 @@ class Command(BaseCommand):
                             "----------------------\n"
                             ))
                         skipped_count += 1
+
+                    time.sleep(2) # give some time between fetching a new page list of series.
 
                 except Exception as e:
                     skipped_count += 1

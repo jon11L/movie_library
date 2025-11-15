@@ -17,8 +17,12 @@ def check_update_since(media: object, media_type: str):
 
     media = media
     media_type = media_type
-    release_date = None
+
     last_ep_out = None
+    release_date = None
+    is_released = False
+    is_update_after_release = False
+    is_recently_released = False
 
     updated_at = media.updated_at.date()
     updated_since = datetime.datetime.now(datetime.timezone.utc).date() - updated_at 
@@ -42,10 +46,6 @@ def check_update_since(media: object, media_type: str):
 
     print(f"- release on: {release_date}")
 
-
-    is_released = False
-    is_update_after_release = False
-    is_recently_released = False
     # check if release date is in the past
     if release_date:
         when_release =  datetime.date.today() - release_date
@@ -70,27 +70,24 @@ def check_update_since(media: object, media_type: str):
     print(f"is_released, is_recently_released, is_update_after_release, when release")
     print(f"{is_released}, {is_recently_released}, {is_update_after_release} , {when_release if release_date else None}")
     
-    # set how long before a movie get updated again depending on certain conditons 
+    # set how long before a Media get updated again depending on certain conditons 
     # eg. when was it released? was it updated after release?
     if is_recently_released and is_update_after_release:
-        # Movie rencently released and updated already
+        # Media rencently released and updated already
         desired_updt_days = 7 
-        # print(f"3 conditions reunited, 7 days before update.")
 
     elif is_recently_released and not is_update_after_release:
-        # movie recently released but not updated since release, need updates
+        # Media recently released but not updated since release, need updates
         desired_updt_days = 1
 
     # to modify (give low num) or comment this condition if Db structure and import has changed,
     elif is_released and not is_recently_released and is_update_after_release:
-        # movie released since a while and updated already, no need to reupdate often
-        desired_updt_days = 10 
+        # Media released since a while and updated already, no need to reupdate often
+        desired_updt_days = 10
         
     elif release_date and not is_released and when_release.days <= -100:
-        # movie not releasing soon so more info may be added or wait to get close the release
+        # Media not releasing soon so more info may be added or wait to get close the release
         desired_updt_days = 30
-    else:
-        pass # probably does not have a release.date /  will remain to the standard update delay
 
     if updated_since.days <= desired_updt_days:
         return False, desired_updt_days

@@ -146,12 +146,12 @@ class Command(BaseCommand):
                             skipped_count += 1
                             continue
 
-                        time.sleep(1) 
+                        time.sleep(0.5) 
                         new_movie, is_created = save_or_update_movie(tmdb_id)
                     
                     else:
                         # Movie does not exist, creating it
-                        time.sleep(1) 
+                        time.sleep(0.5) 
                         new_movie, is_created = save_or_update_movie(tmdb_id)
 
                     # check if the movie wwas created
@@ -199,7 +199,7 @@ class Command(BaseCommand):
         elapsed_time = end_time - start_time
         self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
 
-        time.sleep(3) # give some time between fetching a new page list of movies. // to correct
+        # time.sleep(3) # give some time between fetching a new page list of movies. // to correct
         logger.info(
             f"SUMMARY: Movies (update) "
             f"-- {created} Created -- {updated} Updated"
