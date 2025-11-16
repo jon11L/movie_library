@@ -26,6 +26,6 @@ urlpatterns = [
     path('liked/<int:pk>/liked_content', views.liked_content_view, name='liked_view'),
     path('<int:pk>/watch_list', views.watch_list_view, name='watch_list'),
 
-    path('toggle_watchlist_status', views.toggle_watchlist_status, name='toggle_watchlist_status'),
+    path('toggle_watchlist_status', views.toggle_watchlist_privacy_status, name='toggle_watchlist_status'),
 
 ]

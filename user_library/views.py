@@ -327,6 +327,9 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                     movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
                     serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
                     )
+                #------
+                # Here help pass a form to the frontend for the personal_note and Status.
+                # -----
                 
                 print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist.\n")
                 # messages.success(request, f"{content_type} added to your likes.")
@@ -334,7 +337,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
 
 
-def toggle_watchlist_status(request):
+def toggle_watchlist_privacy_status(request):
     '''
     This function is called when the user clicks on the button to toggle the watchlist status
     between private and public.
