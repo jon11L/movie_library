@@ -60,7 +60,7 @@ class WatchList(BaseModel):
 
 
     class Status(models.TextChoices):
-        PLANNED = 'plan', 'Plan to Watch'
+        PLANNED = 'to watch', 'Plan to Watch'
         WATCHING = 'watching', 'Currently Watching'
         FINISHED = 'finished', 'Finished Watching'
         DROPPED = 'dropped', 'Dropped out'
@@ -70,7 +70,7 @@ class WatchList(BaseModel):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     personal_note = models.TextField(max_length=500, blank=True, null=True)
-    status = models.CharField(choices=Status.choices, blank=True, null=True)
+    status = models.CharField(choices=Status.choices, default=None, blank=True, null=True)
 
 
     class Meta:
@@ -103,7 +103,7 @@ class WatchList(BaseModel):
 
     def __str__(self):
         object = self.movie or self.serie
-        return f"{self.user.username} added {object}' to their watchlist"
+        return f"{self.user.username} added {object}' to their watchlist."
 
     @property
     def kind(self) -> str:
@@ -119,7 +119,7 @@ class WatchList(BaseModel):
         if self.movie and self.serie:
             raise ValidationError("WatchList can only reference either a Movie or a Serie, not both.")
         if not self.movie and not self.serie:
-            raise ValidationError("WatchList must reference either a Movie or a Serie.")
+            raise ValidationError("WatchList must reference 1 model, either Movie or Serie.")
 
 # --------------------------------------------------------------
     # def save(self, *args, **kwargs):

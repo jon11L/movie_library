@@ -20,6 +20,8 @@ class CreateUserTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username="testuser", password="testpass")
+        cls.user.full_clean()
+        cls.user.save()
 
     def test_create_user(self):
         self.assertIsNotNone(self.user)
@@ -51,6 +53,7 @@ class ProfileTest(TestCase):
             "1992-10-08", "%Y-%m-%d"
         ).date()
         profile.bio = "This is a test bio."
+        profile.full_clean()
         profile.save()
 
         self.assertIsNotNone(profile)
@@ -60,16 +63,17 @@ class ProfileTest(TestCase):
         self.assertEqual(profile.bio, "This is a test bio.")
 
     def test_update_profile_view(self):
+
         self.client.login(username="testuser", password="testpass")
         response = self.client.post(
             f"/user/profile/{self.user.pk}/update_profile",
             {
-                # 'username': 'updateduser',
                 "date_of_birth": datetime.datetime.strptime(
                     "1991-10-24", "%Y-%m-%d"
                 ).date(),
                 "bio": "Updated bio.",
             },
+            secure=True
         )
         self.assertEqual(response.status_code, 302)  # Redirect after update
 
