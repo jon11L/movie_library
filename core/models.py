@@ -24,28 +24,13 @@ class BaseModel(models.Model):
         ordering = ['-created_at']
 
 
-    def unique_slug(self, base_slug):
-        '''
-        Ensure the slug is unique by appending a counter if necessary\n
-        This will be for models that has a title field
-        
-        '''
-        qs = type(self).objects.filter(slug__isnull=False)
-        if self.pk: # object already saved/created
-            qs = qs.exclude(pk=self.pk)
-        exist_slugs = qs.values_list("slug", flat=True)
-
-        slug = base_slug
-        i = 1
-        # while type(self).objects.filter(slug=slug).exists():
-        while slug in exist_slugs:
-            slug = f"{base_slug}-{i}"
-            i += 1
-
-        return slug
-
-
     def save(self, *args, **kwargs):
+        
+        self.save_slug()
+
+        super().save(*args, **kwargs)
+
+    def save_slug(self):
         '''
         1. Create a generic structure for the slug based on their own models
         2. Check that the slugified version contains something (title-release_date)
@@ -53,7 +38,7 @@ class BaseModel(models.Model):
         4. add counter until slug is unique
         5. Save slug
         '''
-        now = timezone.now()
+        # now = timezone.now()
         #     now = timezone.now()
         #     if not self.id:
         #         self.created_at = now
@@ -108,9 +93,30 @@ class BaseModel(models.Model):
             # # Ensure the return slug is unique
             self.slug = self.unique_slug(base_slug) 
 
-        super().save(*args, **kwargs)
+
 
     # def soft_delete(self):
     #     """ Instead of deleting, just deactivate the object """
     #     self.is_active = False
     #     self.save()
+
+
+    def unique_slug(self, base_slug):
+        '''
+        Ensure the slug is unique by appending a counter if necessary\n
+        This will be for models that has a title field
+        
+        '''
+        qs = type(self).objects.filter(slug__isnull=False)
+        if self.pk: # object already saved/created
+            qs = qs.exclude(pk=self.pk)
+        exist_slugs = qs.values_list("slug", flat=True)
+
+        slug = base_slug
+        i = 1
+        # while type(self).objects.filter(slug=slug).exists():
+        while slug in exist_slugs:
+            slug = f"{base_slug}-{i}"
+            i += 1
+
+        return slug

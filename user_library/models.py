@@ -60,7 +60,7 @@ class WatchList(BaseModel):
 
 
     class Status(models.TextChoices):
-        PLANNED = 'plan', 'Plan to Watch'
+        PLANNED = 'to watch', 'Plan to Watch'
         WATCHING = 'watching', 'Currently Watching'
         FINISHED = 'finished', 'Finished Watching'
         DROPPED = 'dropped', 'Dropped out'
@@ -70,7 +70,7 @@ class WatchList(BaseModel):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     personal_note = models.TextField(max_length=500, blank=True, null=True)
-    status = models.CharField(choices=Status.choices, blank=True, null=True)
+    status = models.CharField(choices=Status.choices, blank=False, null=True)
 
 
     class Meta:
