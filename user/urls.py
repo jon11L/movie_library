@@ -29,6 +29,8 @@ urlpatterns = [
     path('profile/<int:pk>', views.profile_page, name='profile_page'),
     path('profile/<int:pk>/update_profile', views.update_profile, name='update_profile'),
     path('profile/<int:pk>/update_user_name', views.update_user, name='update_user_name'),
-    path('profile/<int:pk>/update_user_pw', views.update_password, name='update_user_pw')
+    path('profile/<int:pk>/update_user_pw', views.update_password, name='update_user_pw'),
+
+    path('toggle_watchlist_privacy', views.toggle_watchlist_privacy, name='toggle_watchlist_privacy'),
 
 ]

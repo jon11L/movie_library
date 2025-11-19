@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.http import HttpResponse
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
+
+import time
 
 from .models import Profile
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
@@ -84,6 +86,8 @@ def profile_page(request, pk):
     ''' Returns the profile page of the user_id/pk requested
         At the moment users can visit other user's profile, but this may be changed
     '''
+    start_time = time.time()
+
     if request.user.is_authenticated:
         # fetch the profile being requested
         profile = Profile.objects.get(user_id=pk)
@@ -94,6 +98,27 @@ def profile_page(request, pk):
 
         # Displaying the comment posted by the user
         comments = Comment.objects.filter(user=pk).order_by('-created_at')
+
+        # load the last 3 Watchlist added by the user
+        watchlist_items = profile.user.watchlist.all().order_by('-created_at')[:4] 
+        print(f"\nwatchlist_items: {watchlist_items}\n\n") # debug print
+
+        # get the content (movie/serie) related to each comment.
+        #  Only poster_image, title and genre needed
+        last_watchlist = []
+        for item in watchlist_items:
+            if item.content_object:
+                last_watchlist.append({
+                    'object': item.content_object,
+                    'kind': item.kind,
+                    'added_on': item.created_at.strftime("%d %B %Y"),
+                    'poster': item.content_object.render_poster,
+                    'title': item.content_object.title,
+                    'genre': item.content_object.render_genre,
+
+                })
+        print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
+
 
         # fetch the movies and series that are commented by the user
         comment_content = []
@@ -122,7 +147,12 @@ def profile_page(request, pk):
             'like': like,
             'total_like': total_like,
             'comment_content': comment_content,
+            'last_watchlist': last_watchlist,
         }
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"time: {elapsed_time:.2f} seconds.")
 
         return render(request, 'user/profile_page.html', context=context)
     
@@ -244,3 +274,40 @@ def update_password(request, pk):
     else:
         messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')
+
+
+
+
+def toggle_watchlist_privacy(request):
+    '''
+    This function is called when the user clicks on the button to toggle the watchlist status
+    between private and public.
+    It is called via HTMX and updates the database without reloading the page.
+    '''
+
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'error': 'Login required',
+            'message': "You must be logged-in to change your watchlist status."
+            }, status=401)
+    
+    if request.method == "POST":
+
+        # check if the privacy status of the user is set to True or False and change accordingly
+        profile = Profile.objects.get(user=request.user)
+        if profile.watchlist_private == True:
+            profile.watchlist_private = False
+        else:
+            profile.watchlist_private = True
+        profile.save()
+
+        status = "Private" if profile.watchlist_private else "Public"
+        # message = f"Your watchlist is now {status}."
+        print(f"Watchlist status changed to: {status}\n")
+
+        # return JsonResponse({'new_status': status, 'message': message})
+        context = {
+            'profile': profile,
+        }
+        # messages.success(request, f"Your watchlist is now {status}.") # need to pass the message directly on HTMX to avoid reloading & duplication
+        return render(request, 'user/partials/toggle_privacy_watchlist.html', context=context)

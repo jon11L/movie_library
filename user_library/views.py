@@ -310,9 +310,10 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
                 ).first()
             
-            print(f"Content exist in watchlist?: {watchlist}\n") # debugging 
+            print(f"Content in watchlist: '{watchlist}' \n") # debugging 
 
-            if watchlist: # If the like already exists, it will be removed.
+            # If the watchlist entry already exists, it will be deleted.
+            if watchlist: 
                 watchlist.delete()
                 print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
                 message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
@@ -335,38 +336,3 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 # messages.success(request, f"{content_type} added to your likes.")
                 message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
-
-
-def toggle_watchlist_privacy_status(request):
-    '''
-    This function is called when the user clicks on the button to toggle the watchlist status
-    between private and public.
-    It is called via HTMX and updates the database without reloading the page.
-    '''
-
-    if not request.user.is_authenticated:
-        return JsonResponse({
-            'error': 'Login required',
-            'message': "You must be logged-in to change your watchlist status."
-            }, status=401)
-    
-    if request.method == "POST":
-
-        # check if the privacy status of the user is set to True or False and change accordingly
-        profile = Profile.objects.get(user=request.user)
-        if profile.watchlist_private == True:
-            profile.watchlist_private = False
-        else:
-            profile.watchlist_private = True
-        profile.save()
-
-        status = "Private" if profile.watchlist_private else "Public"
-        # message = f"Your watchlist is now {status}."
-        print(f"Watchlist status changed to: {status}\n")
-
-        # return JsonResponse({'new_status': status, 'message': message})
-        context = {
-            'profile': profile,
-        }
-        # messages.success(request, f"Your watchlist is now {status}.") # need to pass the message directly on HTMX to avoid reloading & duplication
-        return render(request, 'user_library/partials/toggle_privacy_watchlist.html', context=context)
