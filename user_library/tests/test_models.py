@@ -24,7 +24,9 @@ from user_library.models import WatchList
 # using another user , not request.user (logged in user) - should fail
 # create a watchlist entry, with already existing user-media - should fail, already existing
 
+
 class WatchlistModelTest(TestCase):
+
 
     @classmethod
     def setUpTestData(cls):
@@ -38,9 +40,9 @@ class WatchlistModelTest(TestCase):
         cls.movie.save()
 
         cls.movie_test = Movie.objects.create(
-            title="Mad Max",
+            title="Test movie",
             overview="some desert story..",
-            release_date=datetime.datetime.strptime("1998-10-08", "%Y-%m-%d").date(),
+            release_date=datetime.datetime.strptime("2000-03-01", "%Y-%m-%d").date(),
         )
         cls.movie_test.full_clean()
         cls.movie_test.save()
@@ -60,11 +62,11 @@ class WatchlistModelTest(TestCase):
             personal_note="Note to remember to watch",
             status="watching",
         )
-
         cls.wlist.full_clean()
         cls.wlist.save()
 
-    def test_create_watchlist_instance(self):
+
+    def test_check_watchlist_instance_correctly_saved(self):
         ''''''
         self.assertEqual(self.wlist.user.username, "new_user")
         self.assertIsNone(self.wlist.serie)
@@ -72,9 +74,8 @@ class WatchlistModelTest(TestCase):
         self.assertEqual(str(self.wlist.movie), "Mad Max")
 
         self.assertEqual(type(self.wlist.personal_note), str)
-        self.assertIn("to watch", self.wlist.personal_note)
-
-
+        self.assertIn("Note to remember", self.wlist.personal_note)
+        self.assertEqual(self.wlist.status, "watching")
 
     def test_media_accessible_from_watchlist(self):
         """
@@ -94,29 +95,27 @@ class WatchlistModelTest(TestCase):
         serie.full_clean()
         serie.save()
 
-        w_serie = WatchList.objects.create(
+        w_list = WatchList.objects.create(
             user=self.user,
             movie=None,
             serie=serie,
             personal_note="serie note",
             status="to watch",
         )
-        w_serie.full_clean()
-        w_serie.save()
+        w_list.full_clean()
+        w_list.save()
 
-        self.assertIsNone(w_serie.movie)
-        self.assertIsNotNone(w_serie.serie)
-        self.assertEqual(str(w_serie.serie), "Some Serie")
-        self.assertEqual(w_serie.serie.first_air_date, datetime.date(2001, 2, 3))
-
+        self.assertIsNone(w_list.movie)
+        self.assertIsNotNone(w_list.serie)
+        self.assertEqual(str(w_list.serie), "Some Serie")
+        self.assertEqual(w_list.serie.first_air_date, datetime.date(2001, 2, 3))
 
     def test_remove_watchlist_entry(self):
         """
         Deleting a watchlist entry should remove it from the database.
         only authenticated user if equal to user related to the watchlist can delete it
         """
-        # to check with current user
-
+        # to check with current user 
         w = WatchList.objects.create(
             user=self.user,
             movie=self.movie_test,
@@ -126,47 +125,42 @@ class WatchlistModelTest(TestCase):
         )
         w.full_clean()
         w.save()
-        # w_id = w.pk
+        self.assertEqual(w.movie.title, "Test movie")
+        self.assertEqual(w.user.username, "new_user")
+
         w.delete()
+
         self.assertFalse(WatchList.objects.filter(id=w.pk).exists())
-
-
-
+        with self.assertRaises(Exception):
+            w.refresh_from_db()
 
     def test_status_in_choice_status_valid(self):
         '''
         Check that Status entered is valid, as per the Status.choice field.
         '''
         movie = Movie.objects.create(
-            title="Mad Max2",
+            title="Mad Max 2",
             overview="some new desert story..",
             release_date=datetime.datetime.strptime("1998-10-08", "%Y-%m-%d").date(),
         )
         movie.full_clean()
         movie.save()
 
-        user_1 = User.objects.create(
-            username = "user_1",
-            password = "somepword"
-            
-        )
-        user_1.full_clean()
-        user_1.save()
-
         wlist = WatchList.objects.create(
-            user=user_1,
-            movie=self.movie,
+            user=self.user,
+            movie=movie,
             serie=None,
-            personal_note="",
+            personal_note="test status choice field",
             status="to watch",
         )
         wlist.full_clean()
         wlist.save()
 
-        self.assertEqual(type(self.wlist.status), str)
-        self.assertEqual(self.wlist.status, "watching")
+        self.assertEqual(type(wlist.status), str)
+        self.assertNotEqual(wlist.status, "watching")
+        self.assertEqual(wlist.status, "to watch")
 
-    def test_null_value_status_valid(self):
+    def test_status_null_value_is_valid(self):
         '''
         Check that Status entered is valid, as per the choice field.
         '''
@@ -190,15 +184,14 @@ class WatchlistModelTest(TestCase):
             movie=movie,
             serie=None,
             personal_note="",
-            # status=None,
+            status=None,
         )
         wlist_null.full_clean()
         wlist_null.save()
+        self.assertNotEqual(wlist_null.status, "watching")
         self.assertIsNone(wlist_null.status)
-        # self.assertEqual(self.wlist.status, "watching")
 
-
-
+    # --- Test Constraints, validation that fails --------
     def test_status_not_in_choice_constraints_validation(self):
         '''
         Check that Status entered is not valid.\n 
@@ -225,9 +218,8 @@ class WatchlistModelTest(TestCase):
             wlist.full_clean()
             wlist.save()
 
-
     def test_status_empty_string_constraints_validation(self):
-
+        ''' '''
         # status empty string -- Should fail
         wlist_2 = WatchList.objects.create(
             user=self.user,
@@ -242,13 +234,19 @@ class WatchlistModelTest(TestCase):
         self.assertIsNotNone(wlist_2.status)
         self.assertEqual(wlist_2.status, "")
 
-
     def test_with_both_movie_and_serie_raises_validation_error(self):
         """
         A watchlist entry must not reference both a movie and a serie.\n
         Creating one with both should fail test validation.
         """
         # create a minimal serie for linking
+        movie = Movie.objects.create(
+            title="Test Movie",
+            overview="overview",
+        )
+        movie.full_clean()
+        movie.save()
+
         serie = Serie.objects.create(
             title="Test Serie",
             overview="overview",
@@ -258,15 +256,14 @@ class WatchlistModelTest(TestCase):
 
         w = WatchList(
             user=self.user,
-            movie=self.movie,
+            movie=movie,
             serie=serie,
             personal_note="both media",
             status="to watch",
         )
         with self.assertRaises(ValidationError):
             w.full_clean()
-
-
+            w.save()
 
     def test_movie_and_serie_null_raise_validation_error(self):
         '''
@@ -282,7 +279,7 @@ class WatchlistModelTest(TestCase):
         )
         with self.assertRaises(ValidationError):
             duplicate.full_clean()
-
+            duplicate.save()
 
     def test_create_without_user_raises_integrity_error(self):
         """
@@ -300,15 +297,13 @@ class WatchlistModelTest(TestCase):
         with self.assertRaises(IntegrityError):
             wlist.save()
 
-
-
     def test_prevent_duplicate_user_media_entry(self):
         """
         The model should prevent creating duplicate watchlist entries for the same user+media.\n
         Attempting to create the same user/movie pair again should fail 
         (DB validator constraint).\n
         - DB constraint: user-movie-serie must be unique combination 
-        - if movie == something then Serie must == None 
+        - Also if movie == something then Serie must == None 
         """
         duplicate = WatchList(
             user=self.user,
@@ -322,3 +317,68 @@ class WatchlistModelTest(TestCase):
         with self.assertRaises(ValidationError):
             duplicate.full_clean()
             duplicate.save()
+
+    def test_user_has_several_watchlist_entry(self):
+        ''''
+        Test that a user can have several watchlist entries.\n
+        '''
+        movie = Movie.objects.create(
+            title="Some movie",
+            overview="movie one",
+            release_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
+        )
+        movie.full_clean()
+        movie.save()
+
+        serie = Serie.objects.create(
+            title="Some Serie",
+            overview="serie one",
+            first_air_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
+        )
+        serie.full_clean()
+        serie.save()
+
+        new_user = User.objects.create(
+            username="new user",
+            password="passs_123"
+        )
+
+        wlist_1 = WatchList(
+            user=new_user,
+            movie=None,
+            serie=serie,
+            personal_note="",
+            status="to watch",
+        )
+        wlist_1.full_clean()
+        wlist_1.save()
+
+        wlist_2= WatchList(
+            user=new_user,
+            movie=movie,
+            serie=None,
+            personal_note="duplicate",
+            status="watching",
+        )
+        wlist_2.full_clean()
+        wlist_2.save()
+
+        wlist_3 = WatchList(
+            user=new_user,
+            movie=self.movie, # "Mad Max. in setUpData"
+            serie=None,
+            personal_note="duplicate...",
+            status="to watch",
+        )
+        wlist_3.full_clean()
+        wlist_3.save()
+
+        # ordered by is -id therefore last() for 1st entry
+        # 3 object created in wathclist with ths user
+        self.assertEqual(new_user.watchlist.count(), 3) 
+        self.assertEqual(new_user.watchlist.last().kind, "serie")
+        self.assertEqual(str(new_user.watchlist.last().serie), "Some Serie")
+        self.assertIsNone(new_user.watchlist.last().movie)
+
+        self.assertEqual(str(new_user.watchlist.first().movie), "Mad Max")
+        self.assertIsNone(new_user.watchlist.first().serie)
