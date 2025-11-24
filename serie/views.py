@@ -127,12 +127,8 @@ def serie_detail(request, slug):
             print(f"main_casting: {main_cast}")
             print(f"serie {serie.title} contains: {len(seasons)} seasons")
 
-            # get the comments related to the movie
-            comments = Comment.objects.filter(
-                # user=request.user.id,
-                content_type = "serie",
-                object_id=serie.pk
-                ).order_by('-created_at')
+            # get the comments related to the serie
+            comments = serie.comments.all().order_by('-created_at')
 
             print(f"number of comments: {len(comments)}")
 
@@ -142,8 +138,6 @@ def serie_detail(request, slug):
                 'seasons': seasons,
                 'form': form,
                 'main_cast': main_cast,
-                # 'user_liked_serie': user_liked_serie,
-                # 'user_watchlist_series': user_watchlist_series,
                 'comments': comments
                 }
 
@@ -173,13 +167,11 @@ def serie_detail(request, slug):
                         "user_liked_serie": user_liked_serie,
                         "user_watchlist_series": user_watchlist_series,
                         "form": form,
-                        "comments": comments,
+                        # "comments": comments,
                     }
                 )
 
             return render(request,'serie/detail_serie.html', context=context)
-
-            # return render(request,'serie/detail_serie.html', context=context)
 
         # if the serie does not exist in the database
         else:

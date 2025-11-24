@@ -147,56 +147,58 @@ def movie_detail(request, slug):
             # retrieve the specified movie requested by user
             movie = get_object_or_404(Movie, slug=slug)
 
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = set(
-                WatchList.objects.filter(
-                    user=request.user.id,
-                    movie__isnull=False
-                    ).values_list('movie_id', flat=True)
-            )
-
-            # Check if user liked the movie
-            user_liked_movie = set(
-                Like.objects.filter(
-                    user=request.user.id,
-                    content_type='movie',
-                    object_id=movie.pk
-                    ).values_list('object_id', flat=True)
-            )
-
-            print(f"user_liked :{user_liked_movie}") # debug print
 
             # get the comments related to the movie
-            comments = Comment.objects.filter(
-                content_type = "movie",
-                object_id=movie.pk
-                ).order_by('-created_at')
+            comments = movie.comments.all().order_by('-created_at')
 
             print(f"Number of comments:\n {len(comments)}")
 
+            form = CommentForm()
+
+            context = {
+                'movie': movie,
+                'form': form,
+                'comments': comments
+                }
+
             # display the Comment form if user is connected
             if request.user.is_authenticated:
+                # Get the user's watchlist content (movies, series)
+                user_watchlist_movies = set(
+                    WatchList.objects.filter(
+                        user=request.user.id,
+                        movie__isnull=False
+                        ).values_list('movie_id', flat=True)
+                )
+
+                # Check if user liked the movie
+                user_liked_movie = set(
+                    Like.objects.filter(
+                        user=request.user.id,
+                        content_type='movie',
+                        object_id=movie.pk
+                        ).values_list('object_id', flat=True)
+                )
+
+                print(f"user_liked :{user_liked_movie}") # debug print
+
+
+                
                 form = CommentForm(request.POST or None)
 
-                context = {
-                    'movie': movie,
-                    'user_liked_movie': user_liked_movie,
-                    'user_watchlist_movies': user_watchlist_movies,
-                    'form': form,
-                    'comments': comments
+                context.update(
+                    {
+                        'movie': movie,
+                        'user_liked_movie': user_liked_movie,
+                        'user_watchlist_movies': user_watchlist_movies,
+                        'form': form,
+                        'comments': comments
+                        
                     }
-                return render(request,'movie/detail_movie.html', context=context)
+                )
 
-            else:
-                form = CommentForm()
-                context = {
-                    'movie': movie,
-                    'form': form,
-                    'user_liked_movie': user_liked_movie,
-                    'user_watchlist_movies': user_watchlist_movies,
-                    'comments': comments
-                    }
-                return render(request,'movie/detail_movie.html', context=context)
+            return render(request,'movie/detail_movie.html', context=context)
+
 
         else:
             messages.error(request, "No Movie found in the database with this title")

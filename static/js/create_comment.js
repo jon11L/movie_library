@@ -13,23 +13,35 @@ function createComment() {
             const formData = new FormData(commentForm);
             // console.log(`FormData contains: ${formData}`);
             
-            const submitButton = commentForm.querySelector('button[type="submit"]');
             // fetch the info from the data attribute in the button
+            const submitButton = commentForm.querySelector('button[type="submit"]');
             const contentType = submitButton.dataset.contentType;  // 'movie' or 'serie' model
             const objectId = submitButton.dataset.objectId; // Id of the object.
 
             console.log(`Submit Button contains the following: ${formData}`);
             console.log(`content type: ${contentType}`);
             console.log(`object id: ${objectId}`);
-
+            
             // get the form.body that was passed from html
             const formBodyValue = formData.get('body');
             console.log(`form body: ${formBodyValue}`);
 
+            // If the content_type is movie assign the value objectID to a new 'movie' variable ,and serie as None
+            // create a new key/value pair in the formData object to send it to the backend
             // grab the data from the button and and pass it in the form
-            formData.append('content_type', contentType);
-            formData.append('object_id', objectId);
-        
+            if (contentType === 'movie') {
+                formData.append('movie', objectId);
+                // formData.append('serie', '');
+                console.log(`It's a movie comment, movie id: ${objectId}`);
+            }
+            // If the content_type is serie assign the value objectID to a new 'serie' variable ,and movie as None
+            else if (contentType === 'serie') {
+                formData.append('serie', objectId);
+                // formData.append('movie', '');
+                console.log(`It's a serie comment, serie id: ${objectId}`);
+            }
+            
+            console.log(`datas stored in 'formData' sending the request by POST`);
             // send Ajax request with Fetch api
             fetch('/comment/create', {
                 method: 'POST',
