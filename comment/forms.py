@@ -15,7 +15,8 @@ class CommentForm(forms.ModelForm):
                            ),
                            label="",
                            )
-    
+
+
     class Meta:
         model = Comment
-        fields = ('body',) 
+        fields = ('body', 'movie', 'serie',) 

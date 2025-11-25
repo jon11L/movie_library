@@ -27,6 +27,7 @@ def create_comment(request):
             'message': "You must be logged to use the Watchlist feature."
             }, status=401)
 
+
     print("Reaching the create_comment() function...")
     if request.method == 'POST':
         try:
@@ -35,17 +36,13 @@ def create_comment(request):
             if form.is_valid():
                 comment = form.save(commit=False)
 
-                comment.content_type = request.POST.get('content_type')
-                comment.object_id = int(request.POST.get('object_id'))
-
-                if not comment.content_type or not comment.object_id:
-                    return JsonResponse({'success': False, 'error': 'Missing data'})
-
                 comment.body = form.cleaned_data['body']
+                # comment.movie = form.cleaned_data['movie']
+                # comment.serie = form.cleaned_data['serie']
                 comment.user = request.user
                 print(f"form contains:")
-                print(f"{comment.body}\n-contentType: '{comment.content_type}' -- objectId: '{comment.object_id}''")
                 comment.save() # save the comment to the database
+                print(f"{comment.body}\n-contentType: '{comment.kind}' -- title: '{comment.content_object}''")
 
                 context = {
                     'comment': comment,
@@ -65,10 +62,13 @@ def create_comment(request):
                 })
 
             else:
+                print(f"An error occured trying to save the comment")
+                print(f"form.errors: {form.errors}")
+                
                 # When an error occured, dispaly the error message.
-                # message = f"Invalid form submitted!"
+                message = f'Form submitted Invalid!'
                 return JsonResponse({'success': False,
-                                    'error': 'Form submitted Invalid!'
+                                    'error': message
                                     })
             
         except Exception as e:
@@ -87,7 +87,6 @@ def delete_comment(request, pk):
     except Comment.DoesNotExist:
         print(f"Comment with id {pk} does not exist.")
         return JsonResponse({'success': False, 'message': f'Comment with id {pk} does not exist.'}, status=404)
-
 
     if request.user.is_authenticated and comment.user == request.user:
         try:
@@ -111,8 +110,8 @@ def delete_comment(request, pk):
 def edit_comment(request, pk):
     '''edit a comment from the database
     ### display the Comment form if user is authenticated and the comment belongs to them
-     -  The user can only edit their comment once, the edit button will not longer be displayed if the comment was already edited.
-     - Aswell as a (Edited) tag will be displayed next to the comment creation date.
+    -  The user can only edit their comment once, the edit button will not longer be displayed if the comment was already edited.
+    - Aswell as a (Edited) tag will be displayed next to the comment creation date.
     '''
     try:
         # comment = Comment.objects.get(pk=pk)
@@ -133,15 +132,13 @@ def edit_comment(request, pk):
     # if user somehow tries to edit a comment that was already edited, redirect to the detail page of the movie or serie that the comment belongs to
     elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") != comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
         print(f"\n* Unauthorised acces: User {request.user} tried to edit a  Comment more than once. Forbidden *\n")
-        messages.error(request, ("You are not authorized to acces this page. This comment was already edited."))
-        if comment.content_type == "movie":
-            movie = Movie.objects.get(pk=comment.object_id)
-            slug = movie.slug
-            return redirect('movie:detail', slug=slug)
-        elif comment.content_type == "serie":
-            serie = Serie.objects.get(pk=comment.object_id)
-            slug = serie.slug
-            return redirect('serie:detail', slug=slug)
+        messages.error(request, ("You are not authorized to access this page. This comment was already edited."))
+        if comment.movie:
+            movie = Movie.objects.get(pk=comment.movie.pk)
+            return redirect('movie:detail', slug=movie.slug)
+        elif comment.serie:
+            serie = Serie.objects.get(pk=comment.serie.pk)
+            return redirect('serie:detail', slug=serie.slug)
 
     elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") == comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
         try:
@@ -184,11 +181,11 @@ def edit_comment(request, pk):
             print(traceback.format_exc())
             print(f"Error in trying to edit a comment\n Error: {e}")
             messages.error(request, "The comment either does not exist, you are not the owner or an internal error occurred")
-            if comment.content_type == "movie":
-                movie = Movie.objects.get(pk=comment.object_id)
+            if comment.movie:
+                movie = Movie.objects.get(pk=comment.movie.pk)
                 slug = movie.slug
                 return redirect('movie:detail', slug=slug)
-            elif comment.content_type == "serie":
-                serie = Serie.objects.get(pk=comment.object_id)
+            elif comment.serie:
+                serie = Serie.objects.get(pk=comment.serie.pk)
                 slug = serie.slug
                 return redirect('serie:detail', slug=slug)

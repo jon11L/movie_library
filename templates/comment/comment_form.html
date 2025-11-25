@@ -15,7 +15,7 @@
             id="submit_new_comment"
             class="btn btn-secondary" 
             data-content-type = '{% if serie %}serie{% else %}movie{% endif %}'
-            data-object-id = '{% if serie %}{{ serie.id }}{% elif movie %}{{ movie.id }}{% endif %}'
+            data-object-id = '{% if serie %}{{ serie.pk }}{% elif movie %}{{ movie.pk }}{% endif %}'
             style="width: auto; margin: auto; margin-top: 10px;">
             Post
         </button>

@@ -107,9 +107,7 @@ def home(request):
 
             random_series = Serie.objects.only(
                 "id", "title", "genre", "vote_average", "poster_images", "slug"
-            ).order_by("?")[
-                :6
-            ]  # retrieve 6 random movies from the last 30 days
+            ).order_by("?")[:6] 
             # print(f"- Random pick series: {random_series}\n")
 
             # display the amount of Movies & Series available from the database
@@ -258,6 +256,7 @@ def show_content(request, content):
                 "vote_count",
                 "poster_images",
                 "slug",
+                "popularity",
             )
 
             series = Serie.objects.filter(genre__icontains="documentary").only(
@@ -268,6 +267,7 @@ def show_content(request, content):
                 "vote_count",
                 "poster_images",
                 "slug",
+                "popularity",
             )
 
         elif content == "short films":
@@ -280,6 +280,7 @@ def show_content(request, content):
                 "vote_count",
                 "poster_images",
                 "slug",
+                "popularity",
             )  # length between 0 and 45 minutes
 
             series = Serie.objects.none()  # No series for short content
@@ -293,6 +294,7 @@ def show_content(request, content):
                 "vote_count",
                 "poster_images",
                 "slug",
+                "popularity",
             )
             series = Serie.objects.filter(genre__icontains="Animation").only(
                 "id",
@@ -302,6 +304,7 @@ def show_content(request, content):
                 "vote_count",
                 "poster_images",
                 "slug",
+                "popularity",
             )
 
         print(f"\n{content} has:\n{len(movies)} Movies\n{len(series)} Series:\n")
@@ -325,7 +328,7 @@ def show_content(request, content):
                 )
 
         # Sort the content media by title (ascending order)
-        media = sorted(media, key=lambda x: x["object"].title, reverse=False)
+        media = sorted(media, key=lambda x: x["object"].vote_count, reverse=True)
 
         # -- paginate over the results --
         paginator = Paginator(media, 24)

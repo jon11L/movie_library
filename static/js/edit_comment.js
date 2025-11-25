@@ -39,7 +39,6 @@ function editComment() {
             console.log("Adding the bound on editbutton.");
         }
 
-
         editBtn.addEventListener('click', function (){
             //  display the new edit form with the current text comment(body) 
             // and hide plain text
@@ -51,7 +50,7 @@ function editComment() {
                 return $('[name=csrfmiddlewaretoken]').val();
             }
             
-            // fetch the comment.id
+            // fetch the comment.pk and original body from data attribute
             const commentId = this.dataset.commentId;
             const originalBody = this.dataset.commentBody;
 
@@ -61,7 +60,6 @@ function editComment() {
             console.log(`edit feature for comment ${commentId} opened.`)
             console.log(`original body-text: ${originalBody}`);
 
-            
             const createdAt = commentBlock.querySelector('.created-at')
 
             // Remove any other Edit and delete button while on editing mode.
@@ -93,8 +91,6 @@ function editComment() {
 
                     console.log('User canceled the comment editing.');
                 };
-            // });
-
 
             const submitButton = commentBlock.querySelector('button[type="submit"]');
             // Check if submitButton was already having and listener handler. 
@@ -104,15 +100,16 @@ function editComment() {
 
                 // Submit button once edit comments form is opened.
                 submitButton.addEventListener('click', function(e) {
-                    console.log('submit button clicked!!!!!');
+                    console.log('Submit button clicked!');
                     e.preventDefault(); // preventDefault allow the page to not reload on execution
 
                     // fetch the info from the data attribute in the button
                     const contentType = submitButton.dataset.contentType;  // 'movie' or 'serie'
                     const objectId = submitButton.dataset.objectId; // Id of the object.
-                    // console.log(`Submit Button contains the following: ${formData}`);
                     console.log(`content type: ${contentType}`);
                     console.log(`object id: ${objectId}`);
+                    // console.log(`Submit Button contains the following: ${formData}`);
+
                     console.log(`the comment id: ${commentId}`);
 
                     // get the new edited form.body that was passed from html
