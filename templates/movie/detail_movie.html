@@ -14,12 +14,12 @@
                     <!-- For dev purpose -->
                     {% if request.user.is_superuser %}
                     <div style="color: aliceblue;">
-                        <strong>id: {{ movie.pk }} </strong>
+                        <p style="padding: 0; margin: 0;"><strong>id: {{ movie.pk }}</strong></p>
 
                         {% if movie.created_at|date:"Y-m-d H" == movie.updated_at|date:"Y-m-d H" %}
-                        <strong> -- (Not updated)</strong>
+                        <p><strong>(Not updated)</strong></p>
                         {% elif movie.created_at != movie.updated_at %}
-                        <strong> -- (last updated on {{ movie.updated_at }})</strong>
+                        <p><strong>(last updated on {{ movie.updated_at|date:"d-M-y" }})</strong></p>
                         {% endif %}
                     </div>
                     {% endif %}

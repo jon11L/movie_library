@@ -15,11 +15,11 @@
                     <!-- For dev purpose -->
                     {% if request.user.is_superuser %}
                     <div style="color: aliceblue;">
-                        <strong>id: {{ serie.pk }} </strong>
+                        <p style="padding: 0; margin: 0;"><strong>id: {{ serie.pk }}</strong></p>
                         {% if serie.created_at|date:"Y-m-d H" == serie.updated_at|date:"Y-m-d H" %}
-                        <strong> -- (Not updated)</strong>
+                        <p><strong>(Not updated)</strong></p>
                         {% elif serie.created_at != serie.updated_at %}
-                        <strong> -- (last updated on {{ serie.updated_at }})</strong>
+                        <p><strong>(last updated on {{ serie.updated_at|date:"d-M-y" }})</strong></p>
                         {% endif %}
                     </div>
                     {% endif %}
