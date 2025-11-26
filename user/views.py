@@ -109,13 +109,12 @@ def profile_page(request, pk):
         for item in watchlist_items:
             if item.content_object:
                 last_watchlist.append({
-                    'object': item.content_object,
+                    'object': item.content_object, # retrieve the whole object through foreign key
                     'kind': item.kind,
                     'added_on': item.created_at.strftime("%d %B %Y"),
                     'poster': item.content_object.render_poster,
                     'title': item.content_object.title,
                     'genre': item.content_object.render_genre,
-
                 })
         print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
 
@@ -123,24 +122,17 @@ def profile_page(request, pk):
         # fetch the movies and series that are commented by the user
         comment_content = []
         for comment in comments:
-            if comment.content_type == "movie":
-                try:
-                    movie = Movie.objects.get(id=comment.object_id)
-                    # comment_content.append({'content_type': item.content_type, 'object': movie, 'added_on': item.created_at.strftime("%d %B %Y")})
-                    comment_content.append({'comment': comment, 'object': movie, 'added_on': comment.created_at.strftime("%d %B %Y")})
-                    # print(f"movie: {movie}\n") #debug print
-                except Movie.DoesNotExist:
-                    continue
-                    
-            elif comment.content_type == "serie":
-                try:
-                    serie = Serie.objects.get(id=comment.object_id)
-                    comment_content.append({'comment': comment, 'object': serie, 'added_on': comment.created_at.strftime("%d %B %Y")})
-                    # print(f"serie: {serie}\n") #debug print
-                except Serie.DoesNotExist:
-                    continue
 
-        print(f"comment_content: {comment_content}") #debug print
+            if comment.content_object:
+                comment_content.append({
+                    'object': comment.content_object,
+                    'kind': comment.kind,
+                    'created_at': comment.created_at.strftime("%d %B %Y"),
+                    'body': comment.body,
+                    'user': comment.user,
+                })
+
+        print(f"comment_content: {comment_content}\n") #debug print
 
         context = {
             'profile': profile,

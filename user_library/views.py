@@ -284,14 +284,12 @@ def watch_list_view(request, pk: int):
 def toggle_watchlist(request, content_type: str, object_id: int):
     '''
     When triggered or called in pair with AJAX on the front-end, 
-    this function will check in the model 'watchlist' 
-    if an instance exist between user/content_type (movie or serie)/object_id (id of that object) exist or not 
+    this function will trigger the model 'watchlist'\n 
+    if an instance exist between user/(movie or serie) exist or not.\n 
     if it does not, it will then create a new instance in the database,
     if the instance already exists, it will delete the instance.
     With AJAX implemented on the front-end, the updates on the data are made without reloading the page
-    \n---
     '''
-
     # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:
         message = "You must be logged to use the Watchlist"
@@ -317,7 +315,6 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 watchlist.delete()
                 print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
                 message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
-                # return JsonResponse({'liked': False, 'message': message}) # responding to Ajax on front-end.
                 return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
             
             else: 

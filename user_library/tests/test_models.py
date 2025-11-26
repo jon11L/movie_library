@@ -77,39 +77,6 @@ class WatchlistModelTest(TestCase):
         self.assertIn("Note to remember", self.wlist.personal_note)
         self.assertEqual(self.wlist.status, "watching")
 
-    def test_media_accessible_from_watchlist(self):
-        """
-        Ensure Media (movie or serie) references on watchlist entries behave as expected.
-        """
-        # movie entry (already present in setUpTestData as self.wlist)
-        self.assertIsNotNone(self.wlist.movie)
-        self.assertIsNone(self.wlist.serie)
-        self.assertEqual(str(self.wlist.movie), "Mad Max")
-
-        # serie entry
-        serie = Serie.objects.create(
-            title="Some Serie",
-            overview="serie overview",
-            first_air_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
-        )
-        serie.full_clean()
-        serie.save()
-
-        w_list = WatchList.objects.create(
-            user=self.user,
-            movie=None,
-            serie=serie,
-            personal_note="serie note",
-            status="to watch",
-        )
-        w_list.full_clean()
-        w_list.save()
-
-        self.assertIsNone(w_list.movie)
-        self.assertIsNotNone(w_list.serie)
-        self.assertEqual(str(w_list.serie), "Some Serie")
-        self.assertEqual(w_list.serie.first_air_date, datetime.date(2001, 2, 3))
-
     def test_remove_watchlist_entry(self):
         """
         Deleting a watchlist entry should remove it from the database.
@@ -190,6 +157,108 @@ class WatchlistModelTest(TestCase):
         wlist_null.save()
         self.assertNotEqual(wlist_null.status, "watching")
         self.assertIsNone(wlist_null.status)
+
+    def test_user_has_several_watchlist_entry(self):
+        ''''
+        Test that a user can have several watchlist entries.
+        '''
+        movie = Movie.objects.create(
+            title="Some movie",
+            overview="movie one",
+            release_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
+        )
+        movie.full_clean()
+        movie.save()
+
+        serie = Serie.objects.create(
+            title="Some Serie",
+            overview="serie one",
+            first_air_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
+        )
+        serie.full_clean()
+        serie.save()
+
+        new_user = User.objects.create(
+            username="new user",
+            password="passs_123"
+        )
+        new_user.full_clean()
+        new_user.save()
+
+        wlist_1 = WatchList(
+            user=new_user,
+            movie=None,
+            serie=serie,
+            personal_note="",
+            status="to watch",
+        )
+        wlist_1.full_clean()
+        wlist_1.save()
+
+        wlist_2= WatchList(
+            user=new_user,
+            movie=movie,
+            serie=None,
+            personal_note="duplicate",
+            status="watching",
+        )
+        wlist_2.full_clean()
+        wlist_2.save()
+
+        wlist_3 = WatchList(
+            user=new_user,
+            movie=self.movie, # "Mad Max. in setUpData"
+            serie=None,
+            personal_note="duplicate...",
+            status="to watch",
+        )
+        wlist_3.full_clean()
+        wlist_3.save()
+
+        # ordered by is -id therefore last() for 1st entry
+        # 3 object created in wathclist with ths user
+        self.assertEqual(new_user.watchlist.count(), 3) 
+        self.assertEqual(new_user.watchlist.last().kind, "serie")
+        self.assertEqual(str(new_user.watchlist.last().serie), "Some Serie")
+        self.assertIsNone(new_user.watchlist.last().movie)
+        self.assertEqual(str(new_user.watchlist.first().movie), "Mad Max")
+        self.assertIsNone(new_user.watchlist.first().serie)
+
+    def test_media_accessible_from_watchlist(self):
+        """
+        Ensure Media (movie or serie) references on watchlist entries behave as expected.
+        and are then accessible from Watchlist object with foreign relationship
+        """
+        # movie entry (already present in setUpTestData as self.wlist)
+        self.assertIsNotNone(self.wlist.movie)
+        self.assertIsNone(self.wlist.serie)
+        self.assertEqual(str(self.wlist.movie), "Mad Max")
+
+        # serie entry
+        serie = Serie.objects.create(
+            title="Some Serie",
+            overview="serie overview",
+            first_air_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
+        )
+        serie.full_clean()
+        serie.save()
+
+        w_list = WatchList.objects.create(
+            user=self.user,
+            movie=None,
+            serie=serie,
+            personal_note="serie note",
+            status="to watch",
+        )
+        w_list.full_clean()
+        w_list.save()
+
+        self.assertIsNone(w_list.movie)
+        self.assertIsNotNone(w_list.serie)
+        self.assertEqual(str(w_list.serie), "Some Serie")
+        self.assertEqual(w_list.serie.first_air_date, datetime.date(2001, 2, 3))
+
+
 
     # --- Test Constraints, validation that fails --------
     def test_status_not_in_choice_constraints_validation(self):
@@ -286,8 +355,8 @@ class WatchlistModelTest(TestCase):
         User is required on WatchList; attempting to save without a user.\n
         Test should fail.
         """
+        # prepare the object instance without a user
         wlist = WatchList(
-            user=None,
             movie=self.movie_test,
             serie=None,
             personal_note="no user",
@@ -305,6 +374,7 @@ class WatchlistModelTest(TestCase):
         - DB constraint: user-movie-serie must be unique combination 
         - Also if movie == something then Serie must == None 
         """
+        # prepare the object instance 
         duplicate = WatchList(
             user=self.user,
             movie=self.movie,
@@ -317,68 +387,3 @@ class WatchlistModelTest(TestCase):
         with self.assertRaises(ValidationError):
             duplicate.full_clean()
             duplicate.save()
-
-    def test_user_has_several_watchlist_entry(self):
-        ''''
-        Test that a user can have several watchlist entries.\n
-        '''
-        movie = Movie.objects.create(
-            title="Some movie",
-            overview="movie one",
-            release_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
-        )
-        movie.full_clean()
-        movie.save()
-
-        serie = Serie.objects.create(
-            title="Some Serie",
-            overview="serie one",
-            first_air_date=datetime.datetime.strptime("2001-02-03", "%Y-%m-%d").date(),
-        )
-        serie.full_clean()
-        serie.save()
-
-        new_user = User.objects.create(
-            username="new user",
-            password="passs_123"
-        )
-
-        wlist_1 = WatchList(
-            user=new_user,
-            movie=None,
-            serie=serie,
-            personal_note="",
-            status="to watch",
-        )
-        wlist_1.full_clean()
-        wlist_1.save()
-
-        wlist_2= WatchList(
-            user=new_user,
-            movie=movie,
-            serie=None,
-            personal_note="duplicate",
-            status="watching",
-        )
-        wlist_2.full_clean()
-        wlist_2.save()
-
-        wlist_3 = WatchList(
-            user=new_user,
-            movie=self.movie, # "Mad Max. in setUpData"
-            serie=None,
-            personal_note="duplicate...",
-            status="to watch",
-        )
-        wlist_3.full_clean()
-        wlist_3.save()
-
-        # ordered by is -id therefore last() for 1st entry
-        # 3 object created in wathclist with ths user
-        self.assertEqual(new_user.watchlist.count(), 3) 
-        self.assertEqual(new_user.watchlist.last().kind, "serie")
-        self.assertEqual(str(new_user.watchlist.last().serie), "Some Serie")
-        self.assertIsNone(new_user.watchlist.last().movie)
-
-        self.assertEqual(str(new_user.watchlist.first().movie), "Mad Max")
-        self.assertIsNone(new_user.watchlist.first().serie)
