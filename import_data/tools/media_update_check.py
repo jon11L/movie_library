@@ -6,8 +6,8 @@ from serie.models import Episode
 def check_update_since(media: object, media_type: str):
     """
     This function will allow to check when a media was last updated and if necessit an update\n
-    - media which should be either a movie or serie instance
-    - media_type is a str of the type being received "Movie" or "Serie"
+    - media: which should be either a movie or serie instance
+    - media_type: is a str of the type being received "Movie" or "Serie"
 
     check if media is already released\n
     check if media was already updated after the release date\n
@@ -71,7 +71,7 @@ def check_update_since(media: object, media_type: str):
             else:
                 print(f"- {media_type} was updated before the release date or never updated. updt:{updated_at}") 
                 
-    desired_updt_days = 15 # gives a minimum of 14 days before updating again
+    desired_updt_days = 15 # gives a minimum of 15 days before updating again
     print(f"is_released, is_recently_released, is_update_after_release, when release")
     print(f"{is_released}, {is_recently_released}, {is_update_after_release} , {when_release if release_date else None}")
     
@@ -88,7 +88,7 @@ def check_update_since(media: object, media_type: str):
     # to modify (give low num) or comment this condition if Db structure and import has changed,
     elif is_released and not is_recently_released and is_update_after_release:
         # Media released since a while and updated already, no need to reupdate often
-        desired_updt_days = 50
+        desired_updt_days = 20
         
     elif release_date and not is_released and when_release.days <= -100:
         # Media not releasing soon so more info may be added or wait to get close the release

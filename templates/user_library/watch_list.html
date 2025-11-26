@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             
-                            <div class="poster-wrapper" title="({{ item.type|title }})">
+                            <div class="poster-wrapper" title="({{ item.type|title }})  {{ item.object.render_genre }}">
                                 {% if item.object.render_poster %}
                                 <img src="{{ item.object.render_poster }}" alt="{{ item.object.title }} poster" class="img-fluid rounded">
                                 {% else %}

@@ -36,8 +36,12 @@ delete_movies.py
 # slug_serie_title.py
 update_serie_date.py
 watchlist_fk_fields.py
-
-
+check_dbl_imdb_id.py
+clean_serie_popularity.py
+correct_trailers.py
+add_status_watchlist.py
 # import_data/management/commands/
+
+api_test.py
 
 buttons.html

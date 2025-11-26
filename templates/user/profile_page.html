@@ -97,14 +97,18 @@
                             <!-- clickable button to trigger if user's watchlist is private or public -->
                             <div style="margin-left: 2.5rem;">
                                 {% if request.user.profile == profile %}
-                                {% include "user_library/partials/toggle_privacy_watchlist.html" %}
+                                {% include "user/partials/toggle_privacy_watchlist.html" %}
                                 {% endif %}
                             </div>
                         </div>
                     
                         <div class="d-flex" style="margin-left: 100px; margin-bottom: 0 ;padding-bottom: 0;">
                             {% if like %}
-                            <a href="{% url 'user_library:liked_view' request.user.id %}" class="btn btn-secondary" style="background-color: rgb(127, 143, 231); padding-top: 0.5rem; padding-bottom: 0rem">Media Liked</a>
+                            <a href="{% url 'user_library:liked_view' request.user.id %}"
+                                class="btn btn-secondary"
+                                style="background-color: rgb(127, 143, 231); padding-top: 0.5rem; padding-bottom: 0rem">
+                                Media Liked
+                            </a>
                             {% else %}
                             <a href="#" class="btn btn-secondary" style="background-color: rgb(127, 143, 231);">Media Liked </a>
                             {% endif %}
@@ -122,7 +126,7 @@
                         
                             <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2em; padding-bottom: 3em;">
                             
-                                <h3 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">Last activity:</h3>
+                                <h3 style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Last activity:</h3>
 
                                 {% if comment_content %}
                                 {% for item in comment_content|slice:"0:5" %}
@@ -131,20 +135,20 @@
                                     <div class="card text-center" style="border: solid 2px darkslategray;">
 
                                         <div class="card-body d-flex">
-                                            <p class="card-text" style="width: 95%;">{{ item.comment.body }}</p>
+                                            <p class="card-text" style="width: 95%;">{{ item.body }}</p>
                                         </div>
                                     
                                         <div class="card-footer text-body-secondary d-flex" style="justify-content: space-between;">
                                             <p></p>
                                             <div>
-                                                <small>Commented on: {{ item.comment.created_at }}</small>
+                                                <small>Commented on: {{ item.created_at }}</small>
                                             
-                                                {% if item.comment.content_type == 'movie' %}
+                                                {% if item.kind == 'movie' %}
                                                 <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
-                                                    <span style="font-weight: bold;">| {{ item.object.title|slice:":50"  }}</span>
+                                                    <span style="font-weight: bold;">| {{ item.object.title|slice:":50" }}</span>
                                                 </a>
                                             
-                                                {% elif item.comment.content_type == 'serie' %}
+                                                {% elif item.kind == 'serie' %}
                                                 <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
                                                     <span style="font-weight: bold;">| {{ item.object.title|slice:":50"  }}</span>
                                                 </a>
@@ -153,8 +157,8 @@
                                         
                                             <!-- delete option for Comments if user is owner of comment -->
                                             <div style="margin-top: auto;">
-                                                {% if item.comment.user.id == request.user.id %}
-                                                <a href="{% url 'comment:delete_comment' item.comment.id %}">
+                                                {% if item.user.pk == request.user.pk %}
+                                                <a href="{% url 'comment:delete_comment' item.user.pk %}">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
                                                 {% endif %}
@@ -176,11 +180,39 @@
 
                     <!-- Other activities -->
                     <div class="col-sm-6" style="margin-left: 5rem;">
-                        <!-- <div class="row"> -->
-                            <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2em; padding-bottom: 3em;">
-                                <h5 style="margin-top: 50px; margin-bottom: 20px; text-align: center;">TEST placeholder (movie liked, added to watchlist will appear here):</h5>
-                                <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
+                        <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 2rem; padding-bottom: 3rem;">
+                            {% if request.user.profile == profile %}
+                            <h3 style="margin-top: 2rem; margin-bottom: 2rem; text-align: center;">
+                                Last added to your watchlist:
+                            </h3>
+                            {% else %}
+                            <h3 style="margin-top: 2rem; margin-bottom: 2rem; text-align: center;"
+                            >Last added to their watchlist:
+                            </h3>
+                            {% endif %}
+                            
+                            <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
+                            {% if last_watchlist %}
+                            <div class="row" style="width: 92%; margin: auto;">
+                                {% for item in last_watchlist %}
+                                <div class="col-3" style="margin: auto; justify-items: center;">
+                                    {% if item.kind == 'movie' %}
+                                    <a href="{% url 'movie:detail' slug=item.object.slug %}">
+                                        <img src="{{ item.poster }}" title="{{ item.genre}}" alt="watchlist media" class="img-fluid rounded" style="width: 120px; height: 180px;">
+                                    </a>
+                                    {% elif item.kind == 'serie' %}
+                                    <a href="{% url 'serie:detail' slug=item.object.slug %}">
+                                        <img src="{{ item.poster }}" title="{{ item.genre}}" alt="watchlist media" class="img-fluid rounded" style="width: 120px; height: 180px;">
+                                    </a>
+                                    {% endif  %}
+                                
+                                </div>
+                                {% endfor %}
                             </div>
+                            
+                            {% endif %}
+                        </div>
+
                         <!-- </div> -->
                     </div>
                 </div>
