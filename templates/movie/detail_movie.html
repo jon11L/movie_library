@@ -61,8 +61,8 @@
                                         <button class="watchlist-button"
                                                 data-type="movie"
                                                 data-id="{{ movie.id }}"
-                                                data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                            <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                data-bookmarked="{% if movie.id in watchlist %}true{% else %}false{% endif %}">
+                                            <i class="{% if movie.id in watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                         </button>
                                     
                                         <!-- like button feature -->

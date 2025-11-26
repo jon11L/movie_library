@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 today = datetime.date.today()
                 # To get newest content  as extra in specs days------
                 if today.day in [1, 5, 10, 15, 20, 25]:
-                    page = random.randint(1, 4)
+                    page = random.randint(1, 5)
                 else:
                     page = random.randint(1, self.get_max_page(endpoint)) # Randomly select a page
 
