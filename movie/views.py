@@ -79,7 +79,6 @@ def movie_list(request):
     page's goal is to display up to 24 content pieces per page
     '''
     start_time = time.time()
-
     user_liked_movies = []
     user_watchlist_movies = []
 
@@ -142,18 +141,17 @@ def movie_detail(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.\n
         will also pass on with the necessary information such as 'Like' or 'WatchList' 
     '''
+    start_time = time.time()
     try:
         if Movie:
             # retrieve the specified movie requested by user
             movie = get_object_or_404(Movie, slug=slug)
 
-
             # get the comments related to the movie
             comments = movie.comments.all().order_by('-created_at')
-
             print(f"Number of comments:\n {len(comments)}")
 
-            form = CommentForm()
+            form = CommentForm() # present the Comment block form
 
             context = {
                 'movie': movie,
@@ -164,12 +162,13 @@ def movie_detail(request, slug):
             # display the Comment form if user is connected
             if request.user.is_authenticated:
                 # Get the user's watchlist content (movies, series)
-                user_watchlist_movies = set(
+                watchlist = set(
                     WatchList.objects.filter(
                         user=request.user.id,
-                        movie__isnull=False
+                        movie=movie
                         ).values_list('movie_id', flat=True)
                 )
+                print(f"\nuser's watchlist :{watchlist}") # debug print
 
                 # Check if user liked the movie
                 user_liked_movie = set(
@@ -179,24 +178,24 @@ def movie_detail(request, slug):
                         object_id=movie.pk
                         ).values_list('object_id', flat=True)
                 )
-
                 print(f"user_liked :{user_liked_movie}") # debug print
 
-
-                
-                form = CommentForm(request.POST or None)
+                form = CommentForm(request.POST or None) # here allow to post a comment.
 
                 context.update(
                     {
                         'movie': movie,
                         'user_liked_movie': user_liked_movie,
-                        'user_watchlist_movies': user_watchlist_movies,
+                        'watchlist': watchlist,
                         'form': form,
                         'comments': comments
                         
                     }
                 )
 
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"time: {elapsed_time:.2f} seconds.")
             return render(request,'movie/detail_movie.html', context=context)
 
 
