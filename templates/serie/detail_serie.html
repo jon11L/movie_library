@@ -69,7 +69,7 @@
                                 </div>
 
                                 <!-- To give space between the backcgrounf image and the next parts -->
-                                <div style="padding-bottom: 25.6em;"></div>
+                                <div style="padding-bottom: 33%;"></div>
 
                                 <div class="row">
 
@@ -106,45 +106,42 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-4" style="padding-top: 16.25em;">
+                                    <div class="col-4" style="padding-top: 20%;">
                                         <div>
-                                            <div style="">
-                                                <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item">
-                                                        <div class="d-flex" style="justify-content:space-around;">
-                                                            <div>
-                                                                <strong>Released:</strong> {{ serie.first_air_date }}
-                                                            </div>
-                                                            <div>
-                                                                <strong>Length:</strong> {{ serie.length }}
-                                                            </div>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div class="d-flex" style="justify-content:space-around;">
+                                                        <div>
+                                                            <strong>Released:</strong> {{ serie.first_air_date }}
                                                         </div>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
-                                                        <p style="padding: 0; margin: 0; text-align: center;">
-                                                            {{ serie.render_genre }}
-                                                        </p>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
-
-                                                        {% if main_cast %}
-                                                            {% for cast in main_cast %}
-                                                                {% if not cast.role %}
-                                                                <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
-                                                                {% else  %}
-                                                                <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                                        <div>
+                                                            <strong>Length:</strong> {{ serie.length }}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
+                                                    <p style="padding: 0; margin: 0; text-align: center;">
+                                                        {{ serie.render_genre }}
+                                                    </p>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                                    {% if main_cast %}
+                                                        {% for cast in main_cast %}
+                                                            {% if not cast.role %}
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                            {% else  %}
+                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
 
-                                    <div class="col-4" style="padding-top: 16.25em;">
+                                    <div class="col-4" style="padding-top: 20%;">
                                         <div>
                                             <ul class="list-group list-group-flush">
                                                 <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
@@ -166,7 +163,7 @@
                                                         </div>
                                                     </div>
                                                 </li>
-                                                <li class="list-group-item" style="padding: 4px 8px 4px 8px;"></li>
+                                                <!-- <li class="list-group-item" style="padding: 4px 8px 4px 8px;"></li> -->
                                             </ul>
                                         </div>
                                     </div>
@@ -273,7 +270,6 @@
                 </div>
                 <br>
 
-            
                 <!------- Comment Post form -------->
                 <section class="comment-post-section">
                     {% include "comment/comment_form.html" %}
@@ -298,6 +294,7 @@
             
                 {% else %}
                 <h4>Serie not found...</h4>
+                <div style="padding-bottom: 40%;"></div>
                 {% endif %}
 
             </main>

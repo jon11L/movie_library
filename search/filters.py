@@ -51,6 +51,18 @@ class SharedMediaFilter(django_filters.FilterSet):
 
     curr_year = datetime.date.today().year
 
+    # Filter between Movie and/or Serie
+    content_type = django_filters.ChoiceFilter(
+        choices=CONTENT_CHOICES,
+        empty_label=None,   
+        method='filter_content_type',
+        initial='all',
+        label='Content Type',
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'placeholder': 'Select content type...',
+            })
+    )
 
     language = django_filters.ChoiceFilter(
         choices=LANGUAGE_CHOICES,
@@ -59,18 +71,6 @@ class SharedMediaFilter(django_filters.FilterSet):
         empty_label="select a language",   
         initial='all',
         label='Language',
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'placeholder': 'Select content type...',
-            })
-    )
-
-    content_type = django_filters.ChoiceFilter(
-        choices=CONTENT_CHOICES,
-        empty_label=None,   
-        method='filter_content_type',
-        initial='all',
-        label='Content Type',
         widget=forms.Select(attrs={
             'class': 'form-control',
             'placeholder': 'Select content type...',
@@ -186,8 +186,12 @@ class SharedMediaFilter(django_filters.FilterSet):
     #         'placeholder': 'Search by casting name...',
     #     })
     # )
-
 # --------- End of ongoing work -------
+
+    def filter_content_type(self, queryset, name, value):
+        ''' This is a placeholder - actual filtering happens in the view '''
+        return queryset
+
 
     def check_release_date(self, queryset, name, value: int):
         """Custom filter method for release_date
@@ -220,7 +224,6 @@ class SharedMediaFilter(django_filters.FilterSet):
                 return queryset.filter(first_air_date__year=value)
 
 
-
     def filter_genres(self, queryset, name, value):
             """
             Custom filter method for JSONField 'genre'
@@ -246,10 +249,6 @@ class SharedMediaFilter(django_filters.FilterSet):
                 filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
             return filtered_queryset
 
-
-    def filter_content_type(self, queryset, name, value):
-        ''' This is a placeholder - actual filtering happens in the view '''
-        return queryset
 
     # create a function to allow the title filter query to also check and return "original_title" if it is not found in the title field.
     def filter_title(self, queryset, name, value):

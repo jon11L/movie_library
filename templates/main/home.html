@@ -253,7 +253,7 @@
                     <!--------- Displaying the Media coming soon ------------>
                     {% if movies_coming_soon %}
                     <h2 style="text-align: center; padding-top: 10px; padding-bottom: 10px; background-color: rgb(56, 9, 16); color: rgb(192, 190, 99); border-radius: 1em;">Upcoming:</h2>
-                    <h5 style="margin-top: 15px; text-align: center;">Movies</h5>
+                    <h4 style="margin-top: 15px; text-align: center;">Movies</h4>
 
                     <div class="row" style="padding: 0rem 1rem;">
                         {% for movie in movies_coming_soon %}
@@ -306,7 +306,7 @@
 
                     <!-- displaying Series being released soon -->
                     {% if new_series %}
-                    <h5 style="margin-top: 15px; text-align: center;"> Series</h5>
+                    <h4 style="margin-top: 0; text-align: center;"> Series</h4>
 
                     <div class="row" style="padding: 0rem 1rem;">
                         {% for serie in new_series %}
@@ -364,7 +364,7 @@
                     {% endif %}
 
                     {% if random_movies %}
-                    <h5 style="margin-top: 15px; text-align: center;">Movies</h5>
+                    <h4 style="margin-top: 15px; text-align: center;">Movies</h5>
 
                     <div class="row" style="padding: 0rem 1rem;">
                         {% for movie in random_movies %}
@@ -416,7 +416,7 @@
 
                     <!-- displaying Random pick series -->
                     {% if random_series %}
-                    <h5 style="margin-top: 0px; text-align: center;">Series</h5>
+                    <h4 style="margin-top: 0; text-align: center;">Series</h4>
 
                     <div class="row" style="padding: 0rem 1rem;">
                         {% for serie in random_series %}
