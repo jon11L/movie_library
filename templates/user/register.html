@@ -1,20 +1,49 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
 
-<div class="col-md-6 offset-md-3">
-    <h4 style="padding: 100px 0 25px 0; text-align: center;">Register</h4>
 
-    <form method="POST" action="{% url 'user:register' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        
-        <div style="text-align: center; padding-top: 25px;">
-            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
-                submit
-            </button>
-    </form>
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
+            
+            
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-lg-block">
+                <div></div>
+            </aside>
+
+
+            <main class="custom-col-9">
+                <div class="col-md-6" style="margin: auto;">
+                    <h3 style="padding: 5% 0; text-align: center;">Register</h3>
+                
+                    <form method="POST" action="{% url 'user:register' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        
+                        <!-- Correct the color of the help text -->
+
+                        <div style="text-align: center; padding-top: 4%;">
+                            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
+                                submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div style="padding-bottom: 5%;"></div>
+
+
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-lg-block">
+                <div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
 </div>
 
 

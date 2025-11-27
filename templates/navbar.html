@@ -43,6 +43,7 @@
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
               {{ request.user.username.capitalize }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -59,6 +60,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
+              <li><a class="dropdown-item" href="{% url 'user:register' %}">Register</a></li>
             </ul>
           </li>
         {% endif %}
