@@ -243,6 +243,11 @@ xxl	1320px */
 
 
 
+/* Helpt text in forms */
+.form-help-text small,
+.form-help-text li {
+    color: #b8860b;  /* Bootstrap's text-secondary color */
+}
 
 
 

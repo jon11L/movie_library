@@ -22,8 +22,8 @@
                 </div>
             
                 {% else %}
-                <div class="col-md-8 offset-md-2">
-                    <h3 style="padding-top:5em; text-align: center;">Login</h3>
+                <div class="col-md-8" style="margin: auto;">
+                    <h3 style="padding-top:5rem; text-align: center;">Login</h3>
                     <br>
                 
                     <form method="POST" action="{% url 'user:login' %}">
@@ -48,6 +48,8 @@
                     </form>
                 </div>
                 {% endif %}
+                
+                <div style="padding-bottom: 25%;"></div>
 
             </main>
 
