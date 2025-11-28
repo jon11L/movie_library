@@ -105,7 +105,7 @@
                                             {% endif %}
                                         </div>   
                                         <br>
-                                    
+            
                                         <div style="margin: auto;">
                                             {% if movie.overview %}
                                             <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
@@ -115,14 +115,14 @@
                                             <p>No description available.</p>
                                             {% endif %}
                                         </div>
-
                                     </div>
+
                                 </div>
 
-
-                                <div class="col-4" style="padding-top: 20%;">
+                                <div class="col-4" style="padding-top: 21%;">
                                     <div>
                                         <ul class="list-group list-group-flush">
+                                            <li class="list-group-item" style="padding: 0">
 
                                             <li class="list-group-item">
                                                 <div class="d-flex" style="justify-content:space-around;">
@@ -142,16 +142,18 @@
                                                 </p>
                                             </li>
 
-                                            <li class="list-group-item">
-                                                <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                            <li class="list-group-item" style=" width: 100%; margin: auto;">
+                                                <p style="text-align: center;"><strong>Casting:</strong></p>
                                                 {% if movie.casting %}
+                                                <div style="text-align: center;">
                                                     {% for cast in movie.casting %}
                                                         {% if not cast.role %}
-                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                        <p style="margin: auto;">{{ cast.name }}</p>
                                                         {% else  %}
-                                                        <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
                                                         {% endif %}
                                                     {% endfor %}
+                                                </div>
                                                 {% endif %}
                                             </li>
                                             
@@ -160,13 +162,13 @@
                                 </div>
 
 
-                                <div class="col-4" style="padding-top: 20%;">
+                                <div class="col-4" style="padding-top: 21%;">
 
                                     <div>
                                         <ul class="list-group list-group-flush">
-
+                                            <li class="list-group-item" style="padding: 0">
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <p style="text-align: center; margin: 0;"><strong>Production:</strong></p>
+                                                <p style="text-align: center; margin: 1% 0;"><strong>Production:</strong></p>
                                                 <p>{{ movie.render_production }}</p>
                                             </li>
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">

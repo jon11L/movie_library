@@ -106,9 +106,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-4" style="padding-top: 20%;">
+                                    <div class="col-4" style="padding-top: 21%;">
                                         <div>
                                             <ul class="list-group list-group-flush">
+                                            <li class="list-group-item" style="padding: 0">
                                                 <li class="list-group-item">
                                                     <div class="d-flex" style="justify-content:space-around;">
                                                         <div>
@@ -125,25 +126,29 @@
                                                         {{ serie.render_genre }}
                                                     </p>
                                                 </li>
-                                                <li class="list-group-item">
-                                                    <p style="text-align: center; width: 80%;"><strong>Casting:</strong></p>
+                                                <li class="list-group-item" style=" width: 100%; margin: auto;">
+                                                    <p style="text-align: center;"><strong>Casting:</strong></p>
                                                     {% if main_cast %}
+                                                    <div style="text-align: center;">
                                                         {% for cast in main_cast %}
                                                             {% if not cast.role %}
-                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }}</p>
+                                                            <p style="margin: auto;">{{ cast.name }}</p>
                                                             {% else  %}
-                                                            <p style="margin: 0 0 0 1rem;  padding: 0;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                            <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i></p>
                                                             {% endif %}
                                                         {% endfor %}
+                                                    </div>
                                                     {% endif %}
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
 
-                                    <div class="col-4" style="padding-top: 20%;">
+                                    <div class="col-4" style="padding-top: 21%;">
                                         <div>
                                             <ul class="list-group list-group-flush">
+                                                <li class="list-group-item" style="padding: 0">
+
                                                 <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                     <p style="text-align: center; margin: 0;"><strong>Production:</strong></p>
                                                     <p>{{ serie.render_production }}</p>
@@ -255,8 +260,6 @@
                                         <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="min-width: auto; width: 100%; max-width: fit-content; height: 95%; height: min-content;  max-height: fit-content;" alt="{{ season }}">
                                         {% endif %}
                                     </div>
-                    
-
                                 </div>
                             
                             <!-- end of div per season id -->
@@ -265,7 +268,6 @@
                         
                         </div>
                     
-
                     </section>
                 </div>
                 <br>
@@ -288,7 +290,6 @@
                     {% else %}
                     <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
                     {% endif %}
-
                 </section>
             
             
