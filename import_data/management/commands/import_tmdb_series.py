@@ -1,4 +1,3 @@
-# import requests
 import logging
 import datetime
 import time
@@ -7,11 +6,12 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from serie.models import Serie, Episode
+from serie.models import Serie
 # from import_data.api_clients.TMDB.fetch_series import get_serie_data
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series
 from import_data.tools.media_update_check import check_update_since
+from import_data.tools.build_endpoint_import import get_page
 
 
 # Configure Logging
@@ -43,35 +43,27 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.import_list_series()
 
-    # set on max available pages with the corresponding endpoint of the TMDB Api.
-    def get_max_page(self, endpoint):
-        ''' Return the max amount of pages available in the TMDB api 
-        according to the endpoint selected.
-        '''
-        if  endpoint == "on_the_air":
-            return  50
-        elif  endpoint == "top_rated":
-            return 100
-        elif endpoint == "airing_today":
-            return 12 # this endpoint pages number seem to change regularly
-        else:
-            return 500
-
     def import_list_series(self):
         """
         Bulk import strategy:
         1. Fetch a list of series varying upon on the selected endpoint
-        2.  loop through each serie to query their data 
-        3. Check if the series already exists otherwise saves it in the database.
+        2. loop through each serie to query their data 
+        3. call: loop through each movie from the TMDB Id provided to query their data
+        4. Check if the series already exists otherwise saves it in the database.
+        5. Log result for created, updated and skipped.
         """
         # instantiate variable to keep track of import and retry policy
         MAX_RETRIES = 3
         retry = 0
-        count = 0  # Tracks how many series were imported
-        skipped_count = 0  # Tracks how many series already existed
-        imported = 0
-        updated = 0
         start_time = time.time()
+
+        imported = {
+            'count' : 0,
+            'created' : 0,
+            'skipped' : 0,
+            'updated' : 0,
+            'runtime': 0.0
+        }
 
         endpoints = (
             "popular", "top_rated",
@@ -79,26 +71,17 @@ class Command(BaseCommand):
             "airing_today"
             )
 
-        def select_endpoint(endpoint):
-            '''Takes a list of endpoints and return a random one'''
-            return random.choice(endpoint)
-
         # retry feature if the url page brings error (eg. out of range).
         while retry < MAX_RETRIES:
+            endpoint = random.choice(endpoints)
+
+            page = get_page(endpoint)
+
+            self.stdout.write(
+                f"Fetching series from '{endpoint}' list, With page n: {page}"
+                ) # debug print
+            
             try:
-                endpoint = select_endpoint(endpoints)
-
-                today = datetime.date.today()
-                # To get newest content  as extra in specs days------
-                if today.day in [1, 5, 10, 15, 20, 25]:
-                    page = random.randint(1, 5)
-                else:
-                    page = random.randint(1, self.get_max_page(endpoint)) # Randomly select a page
-
-                self.stdout.write(
-                    f"Fetching series from '{endpoint}' list, With page n: {page}"
-                    ) # debug print
-
                 list_series = get_api_data(
                     page=page,
                     endpoint=endpoint,
@@ -109,27 +92,34 @@ class Command(BaseCommand):
                 if not list_series or len(list_series['results']) <= 5:
                     raise ValueError("No series list found or too few results.")
 
+                self.stdout.write(
+                    f"Processing the list of series."
+                    f"\n" + "=" * 50 + "\n\n"
+                )
+
+                batch = self.process_serie_list(list_series, imported, start_time)
+                imported = batch
                 break # if list_series exist then break out of the Loop
 
             except ValueError as value_e:
                 retry += 1
                 self.stdout.write(
-                    f"(Exception) No series list found or too few results. page={page}, endpoint={endpoint}."
-                    f"Error: {value_e}"
-                    f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
+                    f"(ValueError Exception) No series list found or too few results. "
+                    f"page={page}, endpoint={endpoint}."
+                    f"\nError: {value_e}"
                     )
-                time.sleep(retry*4)  # wait for 4 second *numbered attempts before retrying (2nd try 8 seconds, 3rd try 12 seconds)
+                time.sleep(retry*4)  # wait for 4 second*num attempts before retrying
 
             except Exception as e:
+                retry += 1
                 self.stdout.write(
-                    f"(Exception) Error getting updated series"
+                    f"(Exception) Error getting series"
                     f"page={page}, endpoint={endpoint}. \nError: {e}\n"
                     )
-                retry += 1
                 self.stdout.write(self.style.WARNING(
                     f"Retrying... Attempt {retry}/{MAX_RETRIES} in {retry*4}seconds"
                     ))
-                time.sleep(retry*4)  # wait for 4 second *numbered attempts before retrying (2nd try 8 seconds, 3rd try 12 seconds)
+                time.sleep(retry*4)
 
         # If all retries failed, exit early
         if retry == MAX_RETRIES:
@@ -138,101 +128,130 @@ class Command(BaseCommand):
                 ))
             return 
 
-        if list_series != None:
-            # give some random to index to look through for the series list.
-            r_index = random.randint(0, len(list_series['results']) - 4) 
-            print(f"Random index for series list: {r_index}")
-
-            self.stdout.write(f"Processing the list of series to get the individual serie's data.")
-            for serie in list_series['results'][r_index:r_index+4]:
-                count += 1
-
-                # ------- break here after 4 series so the Task does not run too long. --------
-                if count > 4:
-                    self.stdout.write(f"Breaking after 4 series for testing purpose.\n")
-                    break
-
-                self.stdout.write(f"-------")  # debug print
-                self.stdout.write(
-                    f"Importing *Serie {count} (id: {serie['id']})"
-                )  # debug print
-
-                # Check if serie exists
-                if not Serie.objects.filter(tmdb_id=serie['id']).exists():
-                    try:
-                        new_serie, is_created = save_or_update_series(serie['id'])
-                        if new_serie:
-                            imported += 1
-                            self.stdout.write(
-                                self.style.SUCCESS(
-                                    f"Imported serie: {serie['name']}\n"
-                                    f"\n" + "=" * 50 + "\n\n"
-                                )
-                            )
-                        else:
-                            skipped_count += 1
-                            self.stdout.write(
-                                self.style.WARNING(
-                                    f"Cancel to import serie: {serie['name']}. No data returned\n"
-                                    "Skipping....\n"
-                                    f"\n" + "=" * 50 + "\n\n"
-                                )
-                            )
-
-                    except Exception as e:
-                        self.stdout.write(f"Error importing {serie['id']}- {serie['name']}: {e}")
-                        skipped_count += 1
-                        continue
-
-                else:
-                    # if the serie already exist, check when it was released and updated
-                    # and if it necessit a new update 
-                    # Reduces unnecessary api calls if serie was recently updated in DB
-
-                    exist_serie = Serie.objects.get(tmdb_id=serie['id'])
-
-                    need_update, desired_updt_days = check_update_since(exist_serie, "Serie")
-
-                    if need_update == False:
-                        # if time_difference.days < 14:
-                        self.stdout.write(self.style.WARNING(
-                            f"{serie['name']} already exists in DB and was updated less than {desired_updt_days} days ago.\n"
-                            "Skipping....\n"
-                            f"\n" + "=" * 50 + "\n\n"
-                            ))
-                        skipped_count += 1
-                        continue
-
-                    else:
-                        # proceed to update the serie data
-                        save_or_update_series(serie['id'])
-                        updated += 1
-                        self.stdout.write(self.style.WARNING(
-                            f"{serie['name']} already exists in DB. but due for an update\n"
-                            "Updated!....\n"
-                            f"\n" + "=" * 50 + "\n\n"
-                            ))
-                        
-                # give some time between fetching new series.
-                time.sleep(2) 
-
         end_time = time.time()
         elapsed_time = end_time - start_time
-        self.stdout.write(self.style.SUCCESS(f"time: {elapsed_time:.2f} seconds."))
 
-        # Log and stream end of import summary
-        logger.info(
+        imported['runtime'] = round(elapsed_time, 2)
+
+        log_import = (            
             f"SUMMARY: Series (import)"
-            f" -- {imported} Created -- {updated} Updated -- {skipped_count} Skipped/Failed"
-            f" -- time: {elapsed_time:.2f} seconds"
+            f" -- {imported['created']} Created"
+            f" -- {imported['updated']} updated"
+            f" -- {imported['skipped']}  Skipped/Failed"
+            f" -- runtime: {imported['runtime']} seconds"
             )
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Imported list of **{endpoint}** series done!\n"
-            f"SUMMARY: Series (import) -- {imported} Created. "
-            f"-- {updated} Updated. -- {skipped_count} Skipped/Failed."
-            f"\n" + "=" * 50 + "\n\n"
-            ))
+        # saved log in file report import.
+        logger.info(log_import)
+        self.stdout.write(self.style.SUCCESS(log_import))
+
+
+    def process_serie_list(self, list_series, imported: dict, start_time):
+        '''
+        Process a batch of series from TMDB api response.\n
+        return the count of imported/saved and skipped items
+        - count, created, updated, skipped
+        '''
+        imported = imported
+
+        for serie in list_series['results']:
+            # ------- break here after 4 series so the Task does not run too long. --------
+            # test check with timing. If over 15sec
+            check_time = time.time()
+            elapsed_time =  check_time - start_time
+
+            if elapsed_time > 12.0:
+                self.stdout.write(f"Breaking after {imported['count']} series.\n")
+                break
+
+            imported["count"] += 1
+
+            self.stdout.write(f"-------")  # debug print
+            self.stdout.write(
+                f"Importing *Serie {imported["count"]} (id: {serie['id']})"
+            )  # debug print
+
+            # Check if serie exists
+            if not Serie.objects.filter(tmdb_id=serie['id']).exists():
+                time.sleep(0.5)
+
+                try:
+                    new_serie, is_created = save_or_update_series(serie['id'])
+                    if new_serie:
+                        imported['created'] += 1
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"Imported serie: {serie['name']}\n"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
+                    else:
+                        imported['skipped'] += 1
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"Cancel to import serie: {serie['name']}. No data returned\n"
+                                "Skipping....\n"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
+
+                except Exception as e:
+                    self.stdout.write(
+                        f"Error importing {serie['id']} "
+                        f"- {serie['name']}: {e}"
+                    )
+                    imported["skipped"] += 1
+                    continue
+
+            else:
+                # if the serie already exist, check when it was released and updated
+                # and if it necessit a new update
+                # Reduces unnecessary api calls if serie was recently updated in DB
+                exist_serie = Serie.objects.get(tmdb_id=serie['id'])
+                need_update, desired_updt_days = check_update_since(exist_serie, "Serie")
+
+                if need_update == False:
+                    # if time_difference.days < 14:
+                    self.stdout.write(self.style.WARNING(
+                        f"{serie['name']} already exists in DB "
+                        f"and was updated less than {desired_updt_days} days ago.\n"
+                        "-- Skipping....\n"
+                        f"\n" + "=" * 50 + "\n\n"
+                        ))
+                    imported['skipped'] += 1
+                    continue
+
+                else:
+                    # proceed to update the serie's object data
+                    time.sleep(0.5)
+                    self.stdout.write(
+                        self.style.WARNING(
+                            f"'{serie['name']}' already exists in DB. "
+                            f"-- Min-delay update of {desired_updt_days} days passed. "
+                            f"-- Updating!\n"
+                        )
+                    )
+                    new_serie, is_created = save_or_update_series(serie['id'])
+
+                    if new_serie and not is_created:
+                        imported['updated'] += 1
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"Updated  serie: **{new_serie}**"
+                                f"\n" + "=" * 50 + "\n\n"
+                            ))
+
+                    elif not new_serie:
+                        imported['skipped'] += 1
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"**Cancel to save in DB. "
+                                f"No serie or no sufficient data. Probably deleted. **"
+                                f"\n" + "=" * 50 + "\n\n"
+                            )
+                        )
+
+        return imported
 
 
 # ------ To import a single serie ---- // NOT IN USE. //
