@@ -79,7 +79,7 @@ def check_update_since(media: object, media_type: str):
     # eg. when was it released? was it updated after release?
     if is_recently_released and is_update_after_release:
         # Media rencently released and updated already
-        desired_updt_days = 7 
+        desired_updt_days = 17
 
     elif is_recently_released and not is_update_after_release:
         # Media recently released but not updated since release, need updates

@@ -380,16 +380,16 @@ def get_episodes(list_episodes, season: object):
         ]
 
         # Extract directors and writers
-        crew_members = episode.get("crew", [])
+        crew_members = episode.get("crew", [])# list of dict
         episode_tmdb_id = episode.get('id')
         episode_number = episode.get("episode_number")
         episode_title = episode.get("name", "Unknown Title")
 
         for member in crew_members:
             if isinstance(member, dict):
-                if member.get("department") == "Directing":
+                if member.get("department") == "Directing" and member["name"]:
                     directors.append(member["name"])
-                elif member.get("department") == "Writing":
+                elif member.get("department") == "Writing" and member["name"]:
                     writers.append(member["name"])
 
         # do not take if value is Null for banner_image,  better empty file than Null
