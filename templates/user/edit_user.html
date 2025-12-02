@@ -7,20 +7,22 @@
     <div class="custom-wide">
         <div class="row">
             
+
             <!-- Left section of the screen -->
             <aside class="custom-col-1-5 d-none d-md-block">
                 <div></div>
             </aside>
             
+
             <main class="custom-col-9">
 
-                <div class="col-md-3 offset-md-4">
-                    <h3 style="padding: 100px 0 25px 0; text-align: center;">Update</h3>
+                <div style="margin: auto; align-items: center; width: 40%;">
+                    <div style="padding-top: 15%;">
+                        <h3 style="text-align: center;">Update</h3>
                 
-                    <div>
                         <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
                             {% csrf_token %}
-                            <!-- {{ form.as_p }} -->
+
                             {% for field in form %}
                             <label for="{{ field.id_for_label }}" style="color:antiquewhite">
                                 {{ field.label }}
@@ -34,17 +36,23 @@
                             {% endif %}
                             {% endfor %}
                             
-                            <div style="text-align: center; padding-top: 25px;">
-                                <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
-                                    submit
-                                </button>
-                                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
+                            <div class="d-flex" style="padding-top: 8%; padding-bottom: 2%; justify-content: space-between; width: 75%; margin: auto;">
+
+                                <a href="{% url 'user:update_profile' request.user.id %}" class="btn btn-secondary">
                                     Go Back
                                 </a>
 
+                                <button type="submit" class="btn btn-secondary">
+                                    submit
+                                </button>
+                                
+                            </div>
                         </form>
+
                     </div>
                 </div>
+                <div style="padding-bottom: 16%;"></div>
+
 
             </main>
 
@@ -53,6 +61,7 @@
                 <div>
                 </div>
             </aside>
+
 
         </div>
     </div>

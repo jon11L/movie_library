@@ -9,7 +9,7 @@ from serie.models import Serie
 from user_library.models import Like, WatchList
 
 
-# ----- Need to fiy Bug if user only put space char in title, then all Movie&Serie pass through filter -------
+# ----- Need to fix Bug if user only put space char in title, then all Movie&Serie pass through filter -------
 def search(request):
     """
     View function for search page
@@ -30,7 +30,7 @@ def search(request):
     results = []
     start_time = time.time()
 
-    # Determine which content type to display
+    # Determine which content type to display, Default to 'all'
     content_type = request.GET.get('content_type', 'all')
 
     # Check if any filter parameters have values
@@ -40,6 +40,7 @@ def search(request):
     for key, value in request.GET.items():
         print(f"key'{key}' :  value '{value}'")
         if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type'] and value.strip() != "":
+            # Means some filtering value were passed other than default request value
             has_filter_values = True
             if value.strip() == "":
                 has_filter_values = False
@@ -55,9 +56,7 @@ def search(request):
     if request.method == 'GET' and not request.GET:
         print("going to search page") # debug print
 
-        context ={
-            'filter': Media_filter,
-        }
+        context ={'filter': Media_filter}
         return render(request, 'search/search.html', context=context)
 
     # Handle GET requests with parameters // action from the Filter Form Button (in the search page)
