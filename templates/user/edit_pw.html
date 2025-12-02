@@ -2,42 +2,78 @@
 
 {% block content %}
 
-<div style="margin: auto;">   
-    <div class="col-md-5 offset-md-4" style="align-items: center; margin-top: 100px;">
 
-        <h4 style="text-align: center; margin-right: 30px; margin-bottom: 10px; color:antiquewhite">Update Password</h4>
+<div class="container-fluid my-4">
+    <div class="custom-wide">
+        <div class="row">
+            
 
-        <form method="POST" action="{% url 'user:update_user_pw' request.user.id %}">
-            {% csrf_token %}
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div></div>
+            </aside>
+            
 
-            {% for field in form %}
-            <br>
-            <div class="mb-3" style="padding-top: 15px;">
+            <main class="custom-col-9">
 
-                <label for="{{ field.id_for_label }}" style="color:antiquewhite">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                    <div class="form-text" style="color:antiquewhite; padding-top: 15px;">
-                        <small>
-                            {% autoescape off %}{{ field.help_text }}{% endautoescape %}
-                        </small>
+                <div style="margin: auto; align-items: center; width: 40%;">
+                    <div style="padding-top: 15%;">
+                        <h3 style="text-align: center; padding-bottom: 2%;">Update Password</h3>
+                    
+                        <form method="POST" action="{% url 'user:update_user_pw' request.user.id %}">
+                            {% csrf_token %}
+                        
+                            {% for field in form %}
+                            <div style="padding-top: 2%; margin: auto; text-align: center; width: 75%;">
+                            
+                                <label for="{{ field.id_for_label }}" style="color:antiquewhite;">
+                                    {{ field.label }}
+                                </label>
+
+                                <div style="margin-left: 0%; ">
+                                    {{ field }}
+                                </div>
+                                
+                                {% if field.help_text %}
+                                    <div class="form-text" style="color:antiquewhite; padding-top: 15px; margin-left: auto; width: 80%;">
+                                        <small style="text-align: left;">
+                                            {% autoescape off %}{{ field.help_text }}{% endautoescape %}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                                
+                        
+                            <div class="d-flex" style="padding-top: 8%; padding-bottom: 2%; justify-content: space-between; width: 50%; margin: auto;">
+                                
+                                <a href="{% url 'user:update_profile' request.user.id %}" class="btn btn-secondary">
+                                    Go Back
+                                </a>
+
+                                <button type="submit" class="btn btn-secondary">
+                                    submit
+                                </button>
+
+                            </div>
+                        </form>
+                    
                     </div>
-                {% endif %}
-            {% endfor %}
+                </div>
+                <div style="padding-bottom: 13%;"></div>
 
-            </div>
+            </main>
 
-            <div style="padding-top: 25px; margin-right: 80px;">
-                <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
-                    submit
-                </button>
-                <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary" style="margin: 0px 80px;">
-                    Go Back
-                </a>
-        </form>
 
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 d-none d-md-block">
+                <div>
+                </div>
+            </aside>
+
+
+        </div>
     </div>
 </div>
-
 
 {% endblock %}
