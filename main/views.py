@@ -67,6 +67,7 @@ def home(request):
                     release_date__range=(fortnight_ago, yesterday), length__gte=45
                 )
                 .only("id", "title", "genre", "vote_average", "poster_images", "slug")
+                .exclude(is_active=False)
                 .order_by("?")[:6]
             )
 
@@ -76,18 +77,20 @@ def home(request):
                     release_date__range=(today, bi_week_later), length__gte=45
                 )
                 .only("id", "title", "genre", "vote_average", "poster_images", "slug")
+                .exclude(is_active=False)
                 .order_by("?")[:6]
             )
 
             random_movies = (
                 Movie.objects.filter(length__gte=45)
                 .only("id", "title", "genre", "vote_average", "poster_images", "slug")
+                .exclude(is_active=False)
                 .order_by("?")[:6]
             )
             print(f"- Random pick movies: {random_movies}")  # debug print
 
         # display the amount of Movies available from the database
-        movies_count = Movie.objects.count()
+        movies_count = Movie.objects.exclude(is_active=False).count()
 
         if Serie.objects.exists():
 
@@ -257,7 +260,7 @@ def show_content(request, content):
                 "poster_images",
                 "slug",
                 "popularity",
-            )
+            ).exclude(is_active=False)
 
             series = Serie.objects.filter(genre__icontains="documentary").only(
                 "id",
@@ -281,7 +284,7 @@ def show_content(request, content):
                 "poster_images",
                 "slug",
                 "popularity",
-            )  # length between 0 and 45 minutes
+            ).exclude(is_active=False)  # length between 0 and 45 minutes
 
             series = Serie.objects.none()  # No series for short content
         elif content == "anime":
@@ -295,7 +298,7 @@ def show_content(request, content):
                 "poster_images",
                 "slug",
                 "popularity",
-            )
+            ).exclude(is_active=False)
             series = Serie.objects.filter(genre__icontains="Animation").only(
                 "id",
                 "title",
@@ -334,7 +337,7 @@ def show_content(request, content):
         paginator = Paginator(media, 24)
         page_number = request.GET.get("page")
         page_object = paginator.get_page(page_number)
-        print(f"Number of pages: {page_object}")  # debug print
+        print(f"Number of pages: {page_object}")
 
         # Get the user's like content (movies, series)
         user_liked_movies = set(
