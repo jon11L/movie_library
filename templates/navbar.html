@@ -1,70 +1,100 @@
 {% load static %}
-<!--  -->
 <nav class="navbar navbar-expand-lg navbar-dark">
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <!-- Home page button -->
-    <a class="navbar-brand mt-2" href="{% url 'main:home' %}"><h5>Home</h5></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+		<!-- Home page button -->
+		<a class="navbar-brand mt-2" href="{% url 'main:home' %}">
+			<h5>Home</h5>
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 
-    <!-- Search content by title / redirect to search page  -->
-    <form class="d-flex ms-5" role="search" method="GET" action="{% url 'search:search' %}">
-      <input type="text" class="form-control ms-5 me-2"  placeholder="search..." name="title" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
+		<!-- Search content by title / redirect to search page  -->
+		<form class="d-flex ms-5" role="search" method="GET" action="{% url 'search:search' %}">
+			<input type="text" class="form-control ms-5 me-2" placeholder="search..." name="title" aria-label="Search">
+			<button class="btn btn-outline-info" type="submit"
+				style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
+				search
+			</button>
+		</form>
 
-    <!-- Links of different pages -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div>
-        <ul class="navbar-nav ms-5 mt-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}"><h5>Movies</h5></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}"><h5>TV shows</h5></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}"><h5>Documentaries</h5></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}"><h5>Short films</h5></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}"><h5>Anime</h5></a>
-          </li>
-        </ul>
-      </div>
+		<!-- Links of different pages -->
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<div>
+				<ul class="navbar-nav ms-5 mt-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
+							<h5>Movies</h5>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
+							<h5>TV shows</h5>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">
+							<h5>Documentaries</h5>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
+							<h5>Short films</h5>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">
+							<h5>Anime</h5>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- Right-aligned dropdown menu -->
+		<ul class="navbar-nav ms-auto mt-2 mb-lg-2" id="navbarSupportedContent">
+			{% if user.is_authenticated %}
+			<li class="nav-item dropdown">
+
+				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+					aria-expanded="false">
+					<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
+						style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+					{{ request.user.username.capitalize }}
+				</a>
+
+				<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
+					<li>
+						<a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a>
+					</li>
+					<li>
+						<hr class="dropdown-divider">
+					</li>
+					<li>
+						<a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a>
+					</li>
+				</ul>
+
+			</li>
+			
+			{% else %}
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+					aria-expanded="false">
+					Sign up / Login
+				</a>
+				<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
+					<li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
+					<li><a class="dropdown-item" href="{% url 'user:register' %}">Register</a></li>
+				</ul>
+			</li>
+			{% endif %}
+		</ul>
 	</div>
-	
-      <!-- Right-aligned dropdown menu -->
-      <ul class="navbar-nav ms-auto mt-2 mb-lg-2" id="navbarSupportedContent">
-        {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-              {{ request.user.username.capitalize }}
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a></li>
-              <li><a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a></li>
-            </ul>
-          </li>
-        {% else %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Sign up / Login
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
-              <li><a class="dropdown-item" href="{% url 'user:register' %}">Register</a></li>
-            </ul>
-          </li>
-        {% endif %}
-      </ul>
-  </div>
 </nav>
 <div class="navbar-spacer"></div>
