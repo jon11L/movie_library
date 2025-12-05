@@ -1,10 +1,12 @@
 {% load static %}
+
+
 <nav class="navbar navbar-expand-lg navbar-dark">
 	<div class="container-fluid">
 
 		<!-- Home page button -->
 		<a class="navbar-brand mt-2" href="{% url 'main:home' %}">
-			<h5>Home</h5>
+			<h5 class="home-btn">Home</h5>
 		</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
 			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,6 +20,10 @@
 				style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
 				search
 			</button>
+			<!-- <button class="btn btn-outline-info" type="submit"
+				style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
+				search
+			</button> -->
 		</form>
 
 		<!-- Links of different pages -->
@@ -26,27 +32,27 @@
 				<ul class="navbar-nav ms-5 mt-2 mb-lg-0">
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
-							<h5>Movies</h5>
+							<h5 class="main-link">Movies</h5>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
-							<h5>TV shows</h5>
+							<h5 class="main-link">TV shows</h5>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">
-							<h5>Documentaries</h5>
+							<h5 class="main-link">Documentaries</h5>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
-							<h5>Short films</h5>
+							<h5 class="main-link">Short films</h5>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">
-							<h5>Anime</h5>
+							<h5 class="main-link">Anime</h5>
 						</a>
 					</li>
 				</ul>
