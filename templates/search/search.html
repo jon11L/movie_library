@@ -101,13 +101,22 @@
                                 </div>
 
                                 <div style="display: flex; justify-content: center; margin-top: 20px;">
-                                    <button type="submit" class="btn btn-secondary" style="margin: 0 35px;">
-                                        <a class="nav-link active" aria-current="page" href="{% url 'search:search' %}">Reset filters</a>
+                                    <!-- <button type="submit" class="btn btn-secondary" style="margin: 0 35px;"> -->
+                                    <a class="btn btn-secondary" 
+                                        aria-current="page" 
+                                        href="{% url 'search:search' %}"
+                                        style="margin: 0 3%; border-radius: 2em;">
+                                        Reset filters
+                                    </a>
+                                    <!-- </button> -->
+                                
+                                    <button type="submit" 
+                                        class="btn btn-secondary"
+                                        style="margin: 0 3%; background-color: darkcyan; border-radius: 2em;">
+                                        Apply filters
                                     </button>
-
-                                    <button type="submit" class="btn btn-secondary" style="margin: 0 35px; background-color: darkcyan;">Apply filters</button>
                                 </div>
-                            
+
                             </form>
                         </div>
                     </div>
