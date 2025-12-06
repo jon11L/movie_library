@@ -34,7 +34,7 @@ $(document).ready(function() {
         const icon = button.find('i');
 
         // Construct the URL dynamically
-        const url = `/user_library/like/${contentType}/${objectId}/`;
+        const url = `/library/like/${contentType}/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
         // Disable button during request to prevent double-clicks
@@ -105,7 +105,7 @@ $(document).ready(function() {
     });
 
 
-    //-------------- Watchlist feature, in progress -------------------
+    //============================= Watchlist feature, in progress =======================================
 
     // Listen for clicks on any element with class 'watchlist-button'
     $('.watchlist-button').click(function(e) {
@@ -118,7 +118,7 @@ $(document).ready(function() {
         const icon = button.find('i');
 
         // Construct the URL dynamically
-        const url = `/user_library/watchlist/${contentType}/${objectId}/`;
+        const url = `/library/watchlist/${contentType}/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
         // Disable button during request to prevent double-clicks
