@@ -1,8 +1,10 @@
 # cache
 __pycache__/
 *.py[cod]
+*.pyc
+*$py.class
 
-# Environment variables
+# ====== Environment variables ==========
 .movievenv 
 movievenv
 
@@ -12,21 +14,33 @@ venv
 .movenv/
 .env
 
-# IDE files
+# ========== IDE files ==========
 .vscode/
+.idea/
+*.swp
+*.swo
 
-# medial files
+
+# ========== Testing ==========
+.pytest_cache/
+
+# ========== medial files ==========
 /media/
 
-# logs
-logs/
 
-# Celery files
+# ====== Static files from collectstatic ==========
+/staticfiles/
+
+# ========== logs ==========
+logs/
+*.log
+
+# ========== Celery files ==========
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
 
-#  ------ files to fix some issues/bugs or simply update some models fields. ----
+#  ========== files to fix some issues/bugs or simply update some models fields. ==========
 correct_movie_images.py
 correct_production_movies.py
 delete_movies.py
@@ -43,5 +57,3 @@ add_status_watchlist.py
 # import_data/management/commands/
 
 api_test.py
-
-buttons.html
