@@ -40,7 +40,7 @@ class WatchedContent(BaseModel):
     content_type = models.CharField(max_length=25, choices=CONTENT_TYPE_CHOICES)
     object_id = models.PositiveIntegerField()
     rating = models.IntegerField(choices=Rating.choices, blank=True, null=True)
-    rewatch = models.CharField(choices=RewatchChoice.choices, blank=True, null=True)
+    rewatch = models.CharField(choices=RewatchChoice.choices, max_length=128, blank=True, null=True)
     personal_note = models.TextField(max_length=2000, blank=True, null=True)
 
 
@@ -70,7 +70,7 @@ class WatchList(BaseModel):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
     personal_note = models.TextField(max_length=500, blank=True, null=True)
-    status = models.CharField(choices=Status.choices, default=None, blank=True, null=True)
+    status = models.CharField(choices=Status.choices, max_length=128, default=None, blank=True, null=True)
 
 
     class Meta:
