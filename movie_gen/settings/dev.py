@@ -19,6 +19,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1'] # place domain names or IP addresses 
 # Add devtools only in development
 INSTALLED_APPS += ['devtools']
 
+print("using dev setting")
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -43,14 +44,12 @@ DATABASES = {
 
 
 
-# Static files (CSS, JavaScript, Images)
+# =============== Static files (CSS, JavaScript, Images) ========================
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static'] # Only work on DEV server
-# ===============
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collectstatic puts files for Production.
-# ==========================
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
@@ -58,6 +57,8 @@ MEDIA_URL = '/media/'
 
 
 # ============================ LOGGING =================================
+# ============ Will implement the logging later ============================0
+
 # LOGGING = {
 #     "version": 1,
 #     "disable_existing_loggers": False,

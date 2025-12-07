@@ -65,6 +65,6 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     # Static files (CSS/JS) - Only needed if testing with Gunicorn locally
     # runserver serves these automatically, but Gunicorn doesn't
-    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
