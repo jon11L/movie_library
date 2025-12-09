@@ -66,11 +66,16 @@
 		<ul class="navbar-nav ms-auto mt-2 mb-lg-2" id="navbarSupportedContent">
 			{% if user.is_authenticated %}
 			<li class="nav-item dropdown">
-
+				
 				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-					aria-expanded="false">
-					<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
-						style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+				aria-expanded="false">
+				{% if user.is_authenticated and request.user.profile.profile_picture %}
+				<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
+					style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+				{% elif user.is_authenticated %}
+                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+				{% endif %}
+				
 					{{ request.user.username.capitalize }}
 				</a>
 

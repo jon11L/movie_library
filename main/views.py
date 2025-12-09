@@ -89,8 +89,8 @@ def home(request):
             )
             print(f"- Random pick movies: {random_movies}")  # debug print
 
-        # display the amount of Movies available from the database
-        movies_count = Movie.objects.exclude(is_active=False).count()
+            # display the amount of Movies available from the database
+            movies_count = Movie.objects.exclude(is_active=False).count()
 
         if Serie.objects.exists():
 
@@ -129,8 +129,9 @@ def home(request):
         else:
             discover_list = WatchList.objects.all().order_by("?")[
                 :3
-            ]  # list to hold the user ids already processed
+            ]  # list to hold any watchlist instances
 
+        # load some item saved in watchlist by different users.
         for item in discover_list:
             if item.movie:
                 discover_media.append({"object": item.movie, "type": item.kind})
