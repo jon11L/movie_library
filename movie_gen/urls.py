@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
+from django.conf import settings
+# from . import settings
 
 from rest_framework.authtoken.views import obtain_auth_token
-from . import settings
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
@@ -48,7 +48,7 @@ urlpatterns = [
     path('user/', include('user.urls', namespace='user')),
     path('movie/', include('movie.urls', namespace='movie')),
     path('serie/', include('serie.urls', namespace='serie')),
-    path('user_library/', include('user_library.urls', namespace='user_library')),
+    path('library/', include('user_library.urls', namespace='user_library')),
     path('search/', include('search.urls', namespace='search')),
     path('comment/', include('comment.urls', namespace='comment')),
 
@@ -60,4 +60,11 @@ urlpatterns = [
     path('api/v1/serie/', include('serie.api_urls', namespace='api_serie')),
     path('api/v1/user_library/', include('user_library.api_urls', namespace='api_watchlist')),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]#  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Static files (CSS/JS) - Only needed if testing with Gunicorn locally
+    # runserver serves these automatically, but Gunicorn doesn't
