@@ -32,21 +32,25 @@ class SharedMediaFilter(django_filters.FilterSet):
 # ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
 
     LANGUAGE_CHOICES = (
-        ("da", 'Danish'), ("ar", 'Arabic'),
-        ('bg', 'Bulgarian'), ('cs', 'Czech'),
-        ('da', 'Danish'), ('de', 'German'),
-        ('en', 'English'), ('fi', 'Finnish'),
-        ('fr', 'French'), ('el', 'Greek'),
-        ('nl', 'Dutch'), ('pl', 'Polish'),
+        ("ar", 'Arabic'), ('bg', 'Bulgarian'), 
+        ('cs', 'Czech'), ('hr', 'Croatian'),
+        ('zh', 'Chinese'), ('da', 'Danish'), 
+        ('nl', 'Dutch'), ('en', 'English'),
+        ('fi', 'Finnish'), ('fr', 'French'), 
+        ('de', 'German'), ('el', 'Greek'), 
         ('he', 'Hebrew'), ('hi', 'Hindi'),
         ('hu', 'Hungarian'), ('id', 'Indonesian'),
-        ('it', 'Italian'), ('ja', 'Japanese'),
-        ('no', 'Norwegian'), ('sv', 'Swedish'),
-        ('pt', 'Portuguese'), ('es', 'Spanish'),
-        ('ro', 'Romanian'), ('ru', 'Russian'),
-        ('ko', 'Korean'), ('th', 'Thai'),
+        ('is', 'Icelandic'), ('it', 'Italian'), 
+        ('ja', 'Japanese'), ('ko', 'Korean'), 
+        ('no', 'Norwegian'), ('fa', 'persian'),
+        ('pl', 'Polish'), ('pa', 'punjabi'),
+        ('pt', 'Portuguese'), 
+        ('ro', 'Romanian'), ('sr', 'serbian'),
+        ('es', 'Spanish'), ('sk', 'Slovakia '),
+        ('sv', 'Swedish'), ('ru', 'Russian'),
+        ('tl', 'Tagalog'), ('th', 'Thai'),
         ('tr', 'Turkish'), ('uk', 'Ukrainian'),
-        ('vi', 'Vietnamese'), ('zh', 'Chinese')
+        ('vi', 'Vietnamese'),
     )
 
     curr_year = datetime.date.today().year
