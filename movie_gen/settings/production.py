@@ -34,6 +34,7 @@ DATABASES = {
 # (We'll move to S3 in Phase 2)
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/www/movie_library/staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Media files
 MEDIA_URL = '/media/'
