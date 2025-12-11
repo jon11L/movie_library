@@ -6,12 +6,10 @@ NEVER run with DEBUG=True in production
 from .base import *
 import os
 
-
 # SECURITY - CRITICAL
 DEBUG = False  # NEVER True in production
 
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-
 
 ALLOWED_HOSTS = [
     os.environ.get('ALLOWED_HOST', ''),
@@ -21,19 +19,16 @@ ALLOWED_HOSTS = [
 ] # place domain names or IP addresses here, e.g. when deploying to production
 print("using prod setting")
 
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ['RDS_DB_NAME'],
-        "USER": os.environ['RDS_DB_USER'],
-        "PASSWORD": os.environ['RDS_DB_PASSWORD'],
-        "HOST": "localhost",
-        "PORT": 5432,
+        "USER": os.environ['RDS_USERNAME'],
+        "PASSWORD": os.environ['RDS_PASSWORD'],
+        "HOST": os.environ['RDS_HOSTNAME'],
+        "PORT": os.environ.get('RDS_PORT', '5432'),
     }
 }
-
-
 
 # Static files - For now, serve from EC2
 # (We'll move to S3 in Phase 2)
@@ -43,8 +38,6 @@ STATIC_ROOT = '/var/www/movie_library/staticfiles'
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/var/www/movie_library/media'
-
-
 
 # Security for Https
 SECURE_SSL_REDIRECT = False # Set True when  have HTTPS
@@ -60,7 +53,6 @@ SECURE_BROWSER_XSS_FILTER = True # against Attack: Cross-Site Scripting (XSS)
 # Protect against suspicious upload /eg. fake .jpg that are actual javascript
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY' # Prevents from being embedded in iframes
-
 
 
 # =========================== REDIS feature =============================
@@ -80,8 +72,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Berlin'
 
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1 # Set to 1 to ensure tasks are processed one at a time
-
-
 
 
 # ============ Will implement the logging later ============================0

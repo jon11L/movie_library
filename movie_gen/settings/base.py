@@ -17,10 +17,10 @@ Never import this file directly - use dev.py or prod.py
 
 import os
 import platform # allow to check if the project is being run on Windows or Linux
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv()
+# load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -160,3 +160,63 @@ REST_FRAMEWORK = {
 
 }
 
+
+
+
+# ============== Configuration  for Celery and RabbitMQ/Redis ====================
+# Detect operating system
+CURRENT_OS = platform.system()
+print(f"Detected OS: {CURRENT_OS}")
+
+if CURRENT_OS == 'Windows':
+    RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
+    RABBITMQ_PW = os.getenv('RABBITMQ_PASSWORD', 'guest')
+
+    CELERY_BROKER_URL = f'amqp://{RABBITMQ_USER}:{RABBITMQ_PW}@localhost:5672//'  # Use RabbitMQ as the message broker // for windows use.
+    CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
+    # print("Using **RabbitMQ** as the message broker and result backend for Windows.") # debug log
+
+    CELERY_BROKER_TRANSPORT_OPTIONS = {
+        'visibility_timeout': 3600,
+        # 'heartbeat': 0,  
+        # 'connection_timeout': 5000
+    }
+
+elif CURRENT_OS == 'Linux':
+    CELERY_BROKER_URL = f'redis://localhost:6379/1' # Use Redis as the message broker // for Linux use. 
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'  # Use Redis as the result backend // for Linux use.
+    # print("Using **Redis** as the message broker and result backend for Linux.") # debug log
+
+    # Redis-specific broker options
+    CELERY_BROKER_TRANSPORT_OPTIONS = {
+        'visibility_timeout': 3600,
+        'retry_on_timeout': True,
+        'connection_pool_kwargs': {
+            'max_connections': 20,
+            'retry_on_timeout': True,
+        },
+    }
+
+else: # Fallback for other systems (macOS, etc.) - use Redis
+    CELERY_BROKER_URL = 'redis://localhost:6379/1'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+    print(f"Using Redis broker for {CURRENT_OS} (fallback)") # debug log
+    
+    CELERY_BROKER_TRANSPORT_OPTIONS = {
+        'visibility_timeout': 3600,
+        'retry_on_timeout': True,
+    }
+
+# CELERY_RESULT_BACKEND = 'rpc://'  # Use RabbitMQ as the result backend
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_MAX_LOOP_INTERVAL = 60 # look for change in DB every 60 seconds
+
+# heartbeat 0 should fix the issue with ''  Couldn't ack 1, reason:ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None) ''
+CELERY_BROKER_HEARTBEAT = 0
+CELERY_TASK_ACKS_LATE = True  # Ensures tasks are acknowledged only when completed
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Berlin'
+
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1 # Set to 1 to ensure tasks are processed one at a time
