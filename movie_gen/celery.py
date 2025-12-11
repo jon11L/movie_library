@@ -5,7 +5,7 @@ import platform
 
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'movie_gen.settings.dev')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'movie_gen.settings.development')
 
 app = Celery('movie_gen') # create an instance of Celery
 

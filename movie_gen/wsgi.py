@@ -12,6 +12,6 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'movie_gen.settings')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'movie_gen.settings.prod')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'movie_gen.settings.production')
 
 application = get_wsgi_application()
