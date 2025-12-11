@@ -55,11 +55,11 @@ def check_update_since(media: object, media_type: str):
     if release_date:
         when_release =  datetime.date.today() - release_date
         if when_release.days < 0:
-            # Movies is not released yet.
+            # Movie/Serie is not released yet.
             print(f"- {media_type} is not released yet... -- In '{when_release.days} days'")
 
         else:
-            # media is already released.
+            # media is already released. meaning when_release.days > 0
             print(f"- {media_type} already released. -- Since '{when_release.days} days'")
             is_released = True
             is_recently_released = True if when_release.days <= 40 else False
@@ -88,8 +88,12 @@ def check_update_since(media: object, media_type: str):
     # to modify (give low num) or comment this condition if Db structure and import has changed,
     elif is_released and not is_recently_released and is_update_after_release:
         # Media released since a while and updated already, no need to reupdate often
-        desired_updt_days = 20
+        desired_updt_days = 40
         
+    elif release_date and not is_released and when_release.days >= -30:
+        # Media not released but releasing within 30days so more info may be added 
+        desired_updt_days = 2
+
     elif release_date and not is_released and when_release.days <= -100:
         # Media not releasing soon so more info may be added or wait to get close the release
         desired_updt_days = 30
