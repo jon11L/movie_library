@@ -17,7 +17,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
 ] # place domain names or IP addresses here, e.g. when deploying to production
-print("using prod setting")
+print("**using production setting**")
 
 DATABASES = {
     "default": {
@@ -31,14 +31,13 @@ DATABASES = {
 }
 
 # Static files - For now, serve from EC2
-# (We'll move to S3 in Phase 2)
-STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/movie_library/staticfiles'
+STATIC_URL = '/static/' # 
+STATIC_ROOT = '/var/www/html/staticfiles' # Where collectstatic will store static files.
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/www/movie_library/media'
+MEDIA_ROOT = '/var/www/html/media'
 
 # Security for Https
 SECURE_SSL_REDIRECT = False # Set True when  have HTTPS
