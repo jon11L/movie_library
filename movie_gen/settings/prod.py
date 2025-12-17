@@ -31,10 +31,6 @@ DATABASES = {
 }
 
 
-
-
-# Static files - For now, serve from EC2
-
 # AWS S3  -- in process
 # AWS setting 
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -43,47 +39,38 @@ AWS_STORAGE_BUCKET_NAME_STATIC = os.environ['AWS_STORAGE_BUCKET_NAME_STATIC']
 AWS_STORAGE_BUCKET_NAME_MEDIA = os.environ['AWS_STORAGE_BUCKET_NAME_MEDIA']
 AWS_S3_REGION_NAME = 'eu-central-1'  # Frankfurt
 
-# STATIC FILE STORAGE
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "storages.backends.s3.S3Storage",
-#         "OPTIONS": {
-#         },
-#     },
-# }
-
 AWS_S3_CUSTOM_DOMAIN_STATIC = f'{AWS_STORAGE_BUCKET_NAME_STATIC}.s3.amazonaws.com'
 AWS_S3_CUSTOM_DOMAIN_MEDIA = f'{AWS_STORAGE_BUCKET_NAME_MEDIA}.s3.amazonaws.com'
 
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'} # cache for 1 day
-# AWS_DEFAULT_ACL = 'public-read'
 AWS_DEFAULT_ACL = None
-
-# STATIC_LOCATION = 'static'
 
 # ============ Static file configuration to S3   =============
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN_STATIC}/static/'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage.StaticStorage'
+STATICFILES_DIRS = [BASE_DIR / 'static'] # Django looks here // Only work on DEV server
 
 # Media  on S3
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN_MEDIA}/media/'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage.MediaStorage'
 
-
-# ==============  Remove block when S3 works correctly  ===================
 # ==== Static files - Before served with EC2 (now S3) ==========
 # STATIC_URL = '/static/' # 
 
+
+# -- Media files --
+# MEDIA_URL = '/media/'
+
 # Where collectstatic will store static files. //Temp remove when S3 set  up
 STATIC_ROOT = '/var/www/html/staticfiles'
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
-# Media files
-# MEDIA_URL = '/media/'
 MEDIA_ROOT = '/var/www/html/media'
 
-#       ========================================
+STORAGES = {
+    "default": {  # For media files (user uploads)
+        "BACKEND": "movie_gen.storage_backends.MediaStorage",
+    },
+    "staticfiles": {  # For static files (CSS, JS, etc..)
+        "BACKEND": "movie_gen.storage_backends.StaticStorage",
+    },
+}
 
 
 # Security for Https
@@ -140,3 +127,14 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1 # Set to 1 to ensure tasks are processed o
 #         },
 #     },
 # }
+
+
+
+# debug At the END of settings/prod.py
+print("=" * 50)
+print("DEBUG: Django Storage Configuration")
+print(f"STORAGES = {STORAGES}")
+print(f"STATIC_ROOT = {STATIC_ROOT}")
+print(f"AWS_STORAGE_BUCKET_NAME_STATIC = {AWS_STORAGE_BUCKET_NAME_STATIC}")
+print("=" * 50)
+
