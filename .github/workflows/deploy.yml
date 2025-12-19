@@ -1,0 +1,32 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run tests
+      run: |
+        pip install -r requirements.txt
+        python manage.py test
+      continue-on-error: true
+
+    - name: Deploy via AWS SSM
+      uses: aws-actions/aws-cli@v2
+      with:
+        aws-region: eu-central-1
+
+    - run: |
+        aws ssm send-command \
+          --instance-ids "${{secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --comment "Deploy movie lib app" \
+          --parameters commands=["cd /var/www/movie_library && ./deploy.sh"]
