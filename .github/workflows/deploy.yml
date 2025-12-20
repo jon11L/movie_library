@@ -22,5 +22,5 @@ jobs:
         aws-region: eu-central-1
         instance-ids: ${{ secrets.EC2_INSTANCE_ID }}
         comment: "Deploy movie lib app"
-        working-directory: /home/ubuntu/var/www/movie_library
+        working-directory: /var/www/movie_library
         command: /bin/bash ./deploy.sh
