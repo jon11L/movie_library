@@ -231,11 +231,11 @@ img {
     width: 12.5%;
   }
   
-  .custom-wide {
+  /* .custom-wide {
       max-width: 1920px;
       width: 100%;
       margin: auto;
-    }
+    } */
 
     .custom-col-1-5 {
       flex: 0 0 12.5%;
@@ -245,7 +245,6 @@ img {
     .custom-col-9 {
       flex: 0 0 75%;
       max-width: 75%;
-      padding: 0% 1%;
     }
     
 }
