@@ -37,7 +37,7 @@ jobs:
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
           --comment "Deploy movie lib app" \
-          --parameters '{"commands":["/bin/bash /var/www/movie_library/deploy.sh"],"workingDirectory":["/var/www/movie_library"],"executionTimeout":["3600"],"runAsUser":["ubuntu"]}' \
+          --parameters '{"commands":["/bin/bash /var/www/movie_library/deploy.sh"],"workingDirectory":["/var/www/movie_library"],"executionTimeout":["3600"]}' \
           --output text \
           --query "Command.CommandId")
         
