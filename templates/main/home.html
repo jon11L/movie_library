@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="container-fluid my-4">
-    <div class="custom-wide">
+    <div>
         <div class="row">
 
             <!-- Left section of the screen -->
@@ -13,17 +13,17 @@
                     <div style="padding-top: 15rem; width: 100%;">
                         <!-- <h5 style="color: rgb(99, 192, 161); text-align: center;">Adds:</h5> -->
                         <div style="margin: auto; border: 2px solid black; border-radius: 2em; padding: 0rem 0rem; background-color: rgb(88, 87, 87);">
-                            <div style="padding: 2.5rem 1.5rem; width: fit-content; margin: auto;">
-                                <p style="">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste nisi nam atque reiciendis, aspernatur exercitationem fugiat quae porro a commodi inventore sed ratione rem.</p>
+                            <div style="padding: 10% 5%; width: fit-content; margin: auto;">
+                                <p style="max-width: 100%;">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste nisi nam atque reiciendis, aspernatur exercitationem ...</p>
                             </div>
                         </div>
                         <div style="margin: 10rem auto; border: 2px solid black; border-radius: 2em; padding: 0px; background-color: rgb(88, 87, 87);">
-                            <div style="padding: 2.5rem 1.5rem; width: fit-content; margin: auto; text-align: center;">
+                            <div style="padding: 10% 5%; width: fit-content; margin: auto; text-align: center;">
                                 <p>advertisment, advertisment, advertisment</p>
                             </div>
                         </div>
                         <div style="margin: 10rem auto; border: 2px solid black; border-radius: 2em; padding: 0px; background-color: rgb(88, 87, 87); min-height: 10rem;">
-                            <div style="padding: 2.5rem 1.5rem; width: fit-content; margin: auto;">
+                            <div style="padding: 10% 5%; width: fit-content; margin: auto;">
                                 <p>advertisment</p>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                             <h2 class="banderol">Movies recently released</h2>
                             
                             <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                            <div class="row" style="padding: 0% 2%;">
+                            <div class="row" style="padding: 0% 1%;">
         
                                 {% for movie in recent_movies %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
@@ -115,7 +115,7 @@
                             <!------ Displaying the new series coming up here -------->
                             {% if returning_series %}
                             <h2 class="banderol">Ongoing TV Shows:</h2>
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
         
                                 {% for serie in returning_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
@@ -177,7 +177,7 @@
                                 </h2>
                             </div>
                             
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
                                 {% for item in watchlist_content %}
         
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
@@ -261,7 +261,7 @@
                             <h2 class="banderol">Upcoming</h2>
                             <h4 style="margin-top: 15px; text-align: center;">Movies</h4>
         
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
                                 {% for movie in movies_coming_soon %}
                                 <div  class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 20% 0;">
@@ -314,7 +314,7 @@
                             {% if new_series %}
                             <h4 style="margin-top: 0; text-align: center;"> Series</h4>
         
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
                                 {% for serie in new_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 20% 0;">
@@ -372,7 +372,7 @@
                             {% if random_movies %}
                             <h4 style="margin-top: 15px; text-align: center;">Movies</h5>
         
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
                                 {% for movie in random_movies %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 20% 0;">
@@ -424,7 +424,7 @@
                             {% if random_series %}
                             <h4 style="margin-top: 0; text-align: center;">Series</h4>
         
-                            <div class="row" style="padding: 0rem 1rem;">
+                            <div class="row" style="padding: 0 1%;">
                                 {% for serie in random_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 20% 0;">
