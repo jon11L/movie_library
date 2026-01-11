@@ -68,12 +68,16 @@ img {
 /* Banderol on homepage */
 .banderol {
     background-color: rgb(56, 9, 16);
-    /* color: rgb(192, 190, 99); */
-    color: rgb(243, 209, 16);
-
     text-align: center;
     padding: 8px;
-    border-radius: 1em;
+    border-radius: 2em;
+}
+
+.banderol h2 {
+    color: rgb(243, 209, 16);
+    text-align: center;
+    padding-top: 0px;
+    margin-bottom: 0px;
 }
 
 /* =========== reset filter button in search page ============== */
@@ -173,14 +177,16 @@ img {
 /* behind the poster image */
 .watchlist-button {
     cursor: pointer;
-    /* transition: transform 0.2s; */
+    transition: transform 0.5s;
     /* transform:translateY(25%) */
 
 }
 .watchlist-button:hover {
     cursor: pointer;
-    transition: transform 0.5s;
-    transform:translateY(-25%)
+    transition: transform 0.75s;
+    transform:translateY(-25%);
+    /* padding-bottom: 12px; */
+
 
 }
 
@@ -231,11 +237,11 @@ img {
     width: 12.5%;
   }
   
-  /* .custom-wide {
+  .custom-wide {
       max-width: 1920px;
       width: 100%;
       margin: auto;
-    } */
+    }
 
     .custom-col-1-5 {
       flex: 0 0 12.5%;
