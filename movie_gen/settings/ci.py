@@ -2,6 +2,10 @@ from .base import *
 
 DEBUG = False
 
+import secrets
+SECRET_KEY = secrets.token_urlsafe(50)
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -18,3 +22,6 @@ PASSWORD_HASHERS = [
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+
+
+STATIC_URL = "/static/"
