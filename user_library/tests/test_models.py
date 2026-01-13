@@ -179,7 +179,7 @@ class WatchlistModelTest(TestCase):
         serie.save()
 
         new_user = User.objects.create(
-            username="new user",
+            username="new_user22",
             password="passs_123"
         )
         new_user.full_clean()
