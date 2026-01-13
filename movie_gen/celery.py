@@ -26,5 +26,5 @@ if platform.system() == 'Windows':
 else:
     print("Running on Linux system.")
     # app.conf.task_always_eager = False
-    app.conf.worker_concurrency = 2  # Adjust based on your CPU cores
+    app.conf.worker_concurrency = 1  # Adjust based on your CPU cores
     app.conf.broker_connection_retry_on_startup = True

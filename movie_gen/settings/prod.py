@@ -89,7 +89,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY' # Prevents from being embedded in iframes
 
 
-# =========================== REDIS feature =============================
+# =========================== Celery + REDIS feature =============================
 CELERY_BROKER_URL = f'redis://localhost:6379/1' # Use Redis as the message broker
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'  # Use Redis as the result backend
 
