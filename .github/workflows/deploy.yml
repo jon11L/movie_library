@@ -9,7 +9,24 @@ jobs:
 
   build_and_test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -23,10 +40,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run Migrations
+        env:
+          DJANGO_SETTINGS_MODULE: movie_gen.settings.ci
+        run: |
+          python manage.py migrate --verbosity 3
+
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: movie_gen.settings.ci
-        run: python manage.py test
+        run: |
+          python manage.py test
 
 
   deploy:
