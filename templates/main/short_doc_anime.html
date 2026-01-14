@@ -41,71 +41,11 @@
                 {% endif %}
             
                 <br><br>
-
                 <!---------------  Pagination system  ------------------>
-                {% if page_obj and page_obj.paginator.num_pages > 1 %}
-                <div style="display: flex; justify-content: center; padding-bottom: 2rem;">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination">
+                <section id="pagination-section">
+                    {% include "partials/paginator.html" %}
 
-                            {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a  href="?page=1" class="btn btn-outline-info mb-4" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    &laquo First
-                                </a>
-                            </li>
-                            <!-- previous page -->
-                            <li class="page-item">
-                                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    &laquo Prev
-                                </a>
-                            </li>
-                            {% endif %}
-
-                            <!-- enumerate pages around current page -->
-                            {% for num in page_obj.paginator.page_range %}
-
-                            {% if num == page_obj.number %}
-                            <li class="page-item" style="margin: 0px 1px;">
-                                <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
-                            </li>
-                            {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
-                            <li class="page-item" style="margin: 0px 1px;">
-                                <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a>
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-
-                            {% if page_obj.has_next %}
-                            <!-- Next page -->
-                            <li class="page-item">
-                                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    Next &raquo
-                                </a>
-                            </li>
-                            <!-- Last page -->
-                            <li class="page-item">
-                                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                    Last &raquo
-                                </a>
-                            </li>
-                            {% endif %}
-
-                            <!-- Show the current page and how many pages there are -->
-                            <li class="page-item disabled" style="margin: 8px 0px 0px 20px;">
-                                <h6 style="color: darkgray;">( Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} )</h6>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                {% elif page_obj and page_obj.paginator.num_pages == 1 %}
-                <!-- Show only page info when there's just one page -->
-                <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">
-                    <h6 style="color: darkgray;">( Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} )</h6>
-                </div>
-                {% endif %}
-                <!-- ---------  End of Pagination system  ---------- -->
-
+                </section>
             </main>
 
             <!-- Right section of the screen -->

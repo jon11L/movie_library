@@ -124,25 +124,26 @@
 
                     <div style="text-align: center;">
                         <!-- click on search button in Navbar without search given // same with search filter button-->
-                        {% if not query and not filters_applied %}
+                        {% if not total_found and not query_url %}
                         <h3 style="color: green;">Start your search</h3>
                         <div style="padding-bottom: 18%;"></div>
                     
                         <!-- filter form button clicked with filters and results -->
-                        {% elif filter and query_params and total_found %}
+                        {% elif query_url and total_found %}
                         <h3 style="color: green;">Search results for your query.</h3>
-                        <p style="color: darkgreen;">{{ total_found }} items match your query.</p>        
+                        <h6 style="color: darkgreen;">{{ total_found }} items match your query.</h6>        
 
                         <!-- filter form button clicked with filters no result -->
-                        {% elif filter and not total_fount %}
-                        <h3 style="color: red;">No result could be found base on your query</h3>        
-                        <p style="color: darkred;"> please refine the filtering options</p>
+                        {% elif query_url and not total_fount %}
+                        <h3 style="color: red;">No result could be found based on your query</h3>        
+                        <h6 style="color: darkred;"> please refine your filtering options</h6>
                         <div style="padding-bottom: 15%;"></div>
                         {% endif %}
                     </div>
                     <br>
-                <!-- New combined results for Movies and Series. that will handle from Navbar search and filtered queries -->
-
+                    
+                    <!-- New combined results for Movies and Series. -->
+                    <!-- that will handle from Navbar search and filtered queries -->
                     {% if list_media %}
                     <div class="row" style="border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
                         {% for item in list_media %}
@@ -156,70 +157,10 @@
                 <br><br>
 
                 <!----- Pagination system ------->
+                <!-- Trickier to remove the block below and use the partial paginator template due to url tracking for the filtering -->
                 <section id="pagination-section">
+                    {% include "partials/paginator.html" %}
 
-                    {% if filters_applied and list_content.paginator.num_pages > 1  %}
-                    <div style="display: flex; justify-content: center; padding-bottom: 2rem;">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination">
-                                {% if list_content.has_previous and query_params  %}
-                                <li class="page-item">
-                                    <a  href="?page=1&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                        &laquo first
-                                    </a>
-                                </li>
-                                <!-- previous page -->
-                                <li class="page-item">
-                                    <a href="?page={{ list_content.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                        &laquo Prev
-                                    </a>
-                                </li>
-                                {% endif %}
-
-                                <!-- enumerate pages around current page -->
-                                {% for num in list_content.paginator.page_range %}
-
-                                    {% if num == list_content.number %}
-                                    <li class="page-item" style="margin: 0px 1px;">
-                                        <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
-                                    </li>
-                                    {% elif num > list_content.number|add:'-5' and num < list_content.number|add:'5' %}
-                                    <li class="page-item" style="margin: 0px 1px;">
-                                        <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">{{ num }}</a>
-                                    </li>
-                                    {% endif %}
-                                {% endfor %}
-
-                                {% if query_params and list_content.has_next %}
-                                <!-- Next page -->
-                                <li class="page-item">
-                                    <a href="?page={{ list_content.next_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                        Next &raquo
-                                    </a>
-                                </li>
-                                <!-- Last page -->
-                                <li class="page-item">
-                                    <a href="?page={{ list_content.paginator.num_pages }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                                        Last &raquo
-                                    </a>
-                                </li>
-                                {% endif %}
-
-                                <!-- Show the current page and how many pages there are -->
-                                <li class="page-item" style="margin: 8px 0px 0px 20px;">
-                                    <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    {% elif list_content and list_content.paginator.num_pages == 1 %}
-                    <!-- Show only page info when there's just one page -->
-                    <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">
-                        <h6 style="color: darkgray;">( Page {{ list_content.number }} of {{ list_content.paginator.num_pages }} )</h6>
-                    </div>
-                    {% endif %}
-                    <!-- --- End of Pagination system ----- -->
-                    
                 </section>
 
             </main>
