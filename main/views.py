@@ -344,7 +344,7 @@ def show_content(request, content):
         # print(combined[0:10])
 
         # Sort the content media by vote count (descending order)
-        combined = sorted(combined, key=lambda x: x.vote_count, reverse=True)
+        # combined = sorted(combined, key=lambda x: x.vote_count, reverse=True)
         combined.sort(key=lambda x: x.vote_count, reverse=True)
 
         # -- paginate over the results, limit to 24per page --
