@@ -90,7 +90,7 @@ def profile_page(request, pk):
 
     if request.user.is_authenticated:
         # fetch the profile being requested
-        profile = Profile.objects.get(user_id=pk)
+        profile = Profile.objects.get(user=pk)
         like = Like.objects.filter(user=pk)
         # print(f"like: {like}") # debug print
 
@@ -118,6 +118,8 @@ def profile_page(request, pk):
                 })
         print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
 
+        # Templates for future fav movies display
+        fav_movies = (1, 2, 3)
 
         # fetch the movies and series that are commented by the user
         comment_content = []
@@ -140,6 +142,7 @@ def profile_page(request, pk):
             'total_like': total_like,
             'comment_content': comment_content,
             'last_watchlist': last_watchlist,
+            'fav_movies': fav_movies
         }
 
         end_time = time.time()
@@ -268,8 +271,6 @@ def update_password(request, pk):
         return redirect(to='user:login')
 
 
-
-
 def toggle_watchlist_privacy(request):
     '''
     This function is called when the user clicks on the button to toggle the watchlist status
@@ -291,11 +292,11 @@ def toggle_watchlist_privacy(request):
             profile.watchlist_private = False
         else:
             profile.watchlist_private = True
-        profile.save()
+        profile.save()# update the profile watchlist status
 
         status = "Private" if profile.watchlist_private else "Public"
         # message = f"Your watchlist is now {status}."
-        print(f"Watchlist status changed to: {status}\n")
+        print(f"User {request.user}'s Watchlist status changed to: {status}\n")
 
         # return JsonResponse({'new_status': status, 'message': message})
         context = {

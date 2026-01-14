@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid my-4">
+<div class="container-fluid my-4" style="padding: 0 0.75%;">
 
     <div class="row">
 
@@ -37,7 +37,7 @@
 
 
         <!-- Main/middle section of the screen -->
-        <main class="custom-col-9" style="margin: auto; padding: 0 0.25%;">
+        <main class="custom-col-9" style="margin: auto; padding: 0 0.5%;">
             <div>
 
                 <div style="width: 100%; margin: auto; align-items: center;">
@@ -73,38 +73,38 @@
 
                         <!------ Displaying the movies recently released ------->
                         {% if recent_movies %}
-                        <div class="test" style="margin-top: 2%;">
+                        <div class="test" style="margin-top: 2.5%;">
 
                             <div class="banderol">
                                 <h2>Movies recently released</h2>
                             </div>
 
                             <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                            <div class="row" style="width: 100%; padding: 0% 1%;">
+                            <div class="row" style="width: 100%; padding: 0% 1.5%;">
 
                                 {% for movie in recent_movies %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
+                                    
                                     <div class="media-card h-100 w-100" style="margin: 5% 0% 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ movie.render_vote_average }}/10</small>
 
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="movie"
+                                                <button class="watchlist-button" 
+                                                    data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
                                                 <!-- like button feature -->
                                                 <button class="like-button" id="like_button" data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                                    <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -137,20 +137,20 @@
 
                         <!------ Displaying the new series coming up here -------->
                         {% if returning_series %}
-                        <div class="test" style="margin-top: 2%;">
+                        <div class="test" style="margin-top: 2.5%;">
 
                             <div class="banderol">
                                 <h2>Ongoing TV Shows:</h2>
                             </div>
-                            <div class="row" style="padding: 0 1%;">
+                            <div class="row" style="padding: 0 1.5%;">
 
                                 {% for serie in returning_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
 
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ serie.render_vote_average }}/10</small>
 
                                             <div>
@@ -200,7 +200,7 @@
 
                         <!----- Displaying Some content from the user's watchlist ------->
                         {% if watchlist_content %}
-                        <div class="test" style="margin-top: 2%;">
+                        <div class="test" style="margin-top: 2.5%;">
 
                             <div class="banderol">
                                 <h2>
@@ -211,15 +211,15 @@
                                 </h2>
                             </div>
 
-                            <div class="row" style="padding: 0 1%;">
+                            <div class="row" style="padding: 0 1.5%;">
                                 {% for item in watchlist_content %}
 
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
 
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ item.object.render_vote_average }}/10</small>
 
                                             {% if item.type == 'movie' %}
@@ -301,14 +301,14 @@
 
                         <!--------- Displaying the Media coming soon ------------>
                         {% if movies_coming_soon or new_series %}
-                        <div class="test" style="margin-top: 2%;">
+                        <div class="test" style="margin-top: 2.5%;">
 
                             <div class="banderol">
                                 <h2>Upcoming</h2>
                             </div>
 
                             {% if movies_coming_soon %}
-                            <div class="row" style="padding: 0 1%;">
+                            <div class="row" style="padding: 0 1.5%;">
                                 <div style="margin-top: 1.5%; text-align: center;">
                                     <h4>Movies</h4>
                                     <div style="width: 80%; margin: auto;">
@@ -318,10 +318,10 @@
 
                                 {% for movie in movies_coming_soon %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average" style="color: gray;">{{movie.render_vote_average }}/10</small>
 
                                             <div>
@@ -371,7 +371,7 @@
 
                             <!-- displaying Series being released soon -->
                             {% if new_series %}
-                            <div class="row" style="padding: 0 1%;">
+                            <div class="row" style="padding: 0 1.5%;">
 
                                 <div style="margin-top: 1.5%; text-align: center;">
                                     <h4>Series</h4>
@@ -382,10 +382,10 @@
 
                                 {% for serie in new_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ serie.render_vote_average }}/10</small>
 
                                             <div>
@@ -438,7 +438,7 @@
 
                         <!------ Displaying Randmom pick  --------->
                         {% if random_movies or random_series %}
-                        <div class="test" style="margin-top: 2%;">
+                        <div class="test" style="margin-top: 2.5%;">
 
                             <div class="banderol">
                                 <h2>Random Pick</h2>
@@ -455,10 +455,10 @@
                             <div class="row" style="padding: 0 1% 0 1%;">
                                 {% for movie in random_movies %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ movie.render_vote_average }}/10</small>
 
                                             <div>
@@ -518,10 +518,10 @@
                             <div class="row" style="padding: 0 1%;">
                                 {% for serie in random_series %}
                                 <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2"
-                                    style="height: 100%; padding: 0% 0.5%;">
+                                    style="height: 100%; padding: 0 0.25rem;">
                                     <div class="media-card h-100 w-100" style="margin: 5% 0 5% 0;">
 
-                                        <div style="display: flex; justify-content: space-between;">
+                                        <div class="vote_button_list">
                                             <small class="vote-average">{{ serie.render_vote_average }}/10</small>
 
                                             <div>
@@ -573,6 +573,9 @@
                         {% endif %}
 
 
+
+
+                        
                         {% if not movies_count or not series_count %}
                         <div class="mt-5" style="text-align: center; color: antiquewhite;">
                             <h2>No Media or database found!</h2>

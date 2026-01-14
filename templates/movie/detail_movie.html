@@ -206,9 +206,12 @@
                     <br>
 
                     <section id="trailers">
+
                         <div class="display-trailer" style="display: flex; flex-wrap: wrap;">
                             {% if movie.trailers %}
+
                             {% for trailer in movie.trailers|slice:"0:4" %}
+                            
                             <div class="ms-2 mb-2">
                                 <iframe width="300" height="200"
                                     src="https://www.youtube.com/embed/{{ trailer.key }}"
