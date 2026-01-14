@@ -1,5 +1,6 @@
 import time
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -202,8 +203,15 @@ def toggle_like(request, content_type: str, object_id: int):
 
 
 def watch_list_view(request, pk: int):
-    '''retrieve the user's watchlist from the database and display them in the template'''
+    '''
+        retrieve the user's watchlist from the database and display them in the template
+    '''
     start_time = time.time()
+    list_media = [] # list to hold the content (movies, series)
+    user_liked_movies = set()
+    user_watchlist_movies = set()
+    user_liked_series = set()
+    user_watchlist_series = set()
 
     # retrieve the profile being requested
     try:
@@ -223,56 +231,95 @@ def watch_list_view(request, pk: int):
         request.user.is_authenticated and
         (request.user.id == pk or not target_profile.watchlist_private)
     ):  # or request.user == t_user
-        
+
         if request.method == "GET":
+            list_media = [] # intialize the list of watchlist instances 
 
-            # fetch the profile being requested
-            # user = User.objects.get(id=pk)
-            watchlist = WatchList.objects.filter(user=pk).select_related('movie', 'serie')
+            watchlist = WatchList.objects.filter(user=pk).select_related(
+                "movie", "serie"
+            )
 
-            watchlist_content = [] # intialize the list of watchlist instances 
-            for item in watchlist:
+            # Get the user's watchlist content (movies, series)
+            user_watchlist_movies = set(
+                WatchList.objects.filter(
+                    user=request.user.id, movie__isnull=False
+                ).values_list("movie_id", flat=True)
+            )
+
+            user_watchlist_series = set(
+                WatchList.objects.filter(
+                    user=request.user.id, serie__isnull=False
+                ).values_list("serie_id", flat=True)
+            )
+
+            # ----- Get the user's like content (movies, series)  ------
+            user_liked_movies = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type="movie"
+                ).values_list("object_id", flat=True)
+            )
+
+            user_liked_series = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type="serie"
+                ).values_list("object_id", flat=True)
+            )
+
+            # -- paginate over the results --
+            paginator = Paginator(watchlist, 24)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+            print(f"List content: {page_obj}")
+
+            # create a standardized data stack to pass in templates.
+            # Avoiding any extra hidden queries on the frontend
+            for item in page_obj:
                 try:
                     media_obj = item.movie if item.movie else item.serie
-                    if media_obj:
-                        watchlist_content.append({
-                            'object': media_obj,
-                            'type': item.kind
+                    if isinstance(media_obj, Movie):
+                        list_media.append({
+                            "title": item.movie.title, 
+                            "id": item.movie.pk, 
+                            "genre": item.movie.render_genre(), 
+                            "vote_avg": item.movie.render_vote_average(), 
+                            "vote_count": item.movie.vote_count, 
+                            "poster": item.movie.render_poster(),
+                            "slug": item.movie.slug,
+                            "type": "movie",
+                            })
+
+                    elif isinstance(media_obj, Serie):
+                        list_media.append({
+                            "title": item.serie.title, 
+                            "id": item.serie.pk, 
+                            "genre": item.serie.render_genre(), 
+                            "vote_avg": item.serie.render_vote_average(), 
+                            "vote_count": item.serie.vote_count, 
+                            "poster": item.serie.render_poster(),
+                            "slug": item.serie.slug,
+                            "type": "serie",
                             })
 
                 except (Movie.DoesNotExist, Serie.DoesNotExist):
                     print(f"Item with id {item} does not exist in the database.\n")
                     continue
 
-            # ----- Get the user's like content (movies, series)  ------
-            user_liked_movies = set(Like.objects.filter(
-                                                user=request.user.id, content_type='movie'
-                                                ).values_list('object_id', flat=True))
-
-            user_liked_series = set(Like.objects.filter(
-                                                user=request.user.id, content_type='serie'
-                                                ).values_list('object_id', flat=True))
-
-            # -- paginate over the results --
-            paginator = Paginator(watchlist_content, 24)
-            page_number = request.GET.get('page')
-            watchlist_pages = paginator.get_page(page_number)
-            print(f"List content: {watchlist_pages}")
-
             total_content = watchlist.count()
 
             context = {
                 'user': t_user,
+                "user_watchlist_movies": user_watchlist_movies,
+                "user_watchlist_series": user_watchlist_series,
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
-                'watchlist' : watchlist,
-                'watchlist_page': watchlist_pages,
+                'list_media' : list_media,
+                'page_obj': page_obj,
                 'total_content': total_content,
             }
 
             end_time = time.time()
             elapsed_time = end_time - start_time
-            print(f"time: {elapsed_time:.2f} seconds.")
+            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
             return render(request, 'user_library/watch_list.html', context=context)
 
     else:

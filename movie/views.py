@@ -79,9 +79,10 @@ def movie_list(request):
     page's goal is to display up to 24 content pieces per page
     '''
     start_time = time.time()
-    user_liked_movies = []
-    user_watchlist_movies = []
-
+    user_liked_movies = None
+    user_watchlist_movies = None
+    list_media = [] # list to hold the content (movies, series)
+    
     try:
         if Movie:
             # paginator implementation
@@ -92,13 +93,29 @@ def movie_list(request):
             else:
                 movies = Movie.objects.only(
                     "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-                ).exclude(is_active=False).order_by("-popularity")
-                # paginator = Paginator(Movie.objects.all().order_by('-popularity'), 24)
+                ).exclude(is_active=False).order_by("-vote_count")
 
             paginator = Paginator(movies, 24)
             # Get the current page number from the GET request
             page = request.GET.get('page')
-            movie_list = paginator.get_page(page)
+            page_obj = paginator.get_page(page)
+            print("\n\n--", page_obj, "\n\n--")
+
+            # create a standardized data stack to pass in templates.
+            # Avoiding any extra hidden queries on the frontend
+            for item in page_obj:
+                list_media.append({
+                    "id": item.pk, 
+                    "title": item.title, 
+                    "genre": item.render_genre(), 
+                    "vote_avg": item.render_vote_average(), 
+                    "vote_count": item.vote_count, 
+                    "poster": item.render_poster(),
+                    "slug": item.slug,
+                    "type": "movie"
+                    })
+            
+            print(list_media[0:3])
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = set(
@@ -117,14 +134,17 @@ def movie_list(request):
             )
 
             context = {
-                'movie_list' : movie_list,
+                'page_obj' : page_obj,
+                'list_media': list_media,
                 'user_liked_movies': user_liked_movies,
                 'user_watchlist_movies': user_watchlist_movies, 
                 }
 
+            # record how long took the view to execute.
             end_time = time.time()
             elapsed_time = end_time - start_time
-            print(f"time: {elapsed_time:.2f} seconds.")
+            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
+            
             return render(request, 'movie/list_movie.html', context=context)
 
         else:
@@ -138,8 +158,9 @@ def movie_list(request):
 
 
 def movie_detail(request, slug):
-    ''' get the movie object from the database using the movie_id parameter in the URL request.\n
-        will also pass on with the necessary information such as 'Like' or 'WatchList' 
+    '''
+    get the movie object from the database using the movie_id parameter in the URL request.
+    \nwill also pass on with the necessary information such as 'Like' or 'WatchList' 
     '''
     start_time = time.time()
     try:
@@ -149,7 +170,7 @@ def movie_detail(request, slug):
 
             # get the comments related to the movie
             comments = movie.comments.all().order_by('-created_at')
-            print(f"Number of comments:\n {len(comments)}")
+            print(f"\nNumber of comments: {len(comments)}")
 
             form = CommentForm() # present the Comment block form
 
@@ -192,12 +213,13 @@ def movie_detail(request, slug):
                         
                     }
                 )
-
+            
+            # record how long took the view to execute.
             end_time = time.time()
             elapsed_time = end_time - start_time
-            print(f"time: {elapsed_time:.2f} seconds.")
+            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
+            
             return render(request,'movie/detail_movie.html', context=context)
-
 
         else:
             messages.error(request, "No Movie found in the database with this title")

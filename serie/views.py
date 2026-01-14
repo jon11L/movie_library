@@ -55,7 +55,11 @@ def serie_list(request):
     '''retrieve the series from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
+
     start_time = time.time()
+    list_media = [] # list to hold the content (movies, series)
+    user_liked_series = None
+    user_watchlist_series = None
 
     try:
         if Serie:
@@ -72,29 +76,48 @@ def serie_list(request):
             # paginates over the model
             paginator = Paginator(series, 24)
             page = request.GET.get('page') # Get the current page number from the GET request
-            serie_list = paginator.get_page(page)
+            page_obj = paginator.get_page(page)
+
+            # create a standardized data stack to pass in templates.
+            # Avoiding any extra hidden queries on the frontend
+            for item in page_obj:
+                list_media.append({
+                    "id": item.pk, 
+                    "title": item.title, 
+                    "genre": item.render_genre(), 
+                    "vote_avg": item.render_vote_average(), 
+                    "vote_count": item.vote_count, 
+                    "poster": item.render_poster(),
+                    "slug": item.slug,
+                    "type": "serie" 
+                    })
 
             # Get the user's watchlist content (series only here)
-            user_watchlist_series = WatchList.objects.filter(
-                                                user=request.user.id,
-                                                serie__isnull=False
-                                                ).values_list('serie_id', flat=True)
+            user_watchlist_series = set(
+                WatchList.objects.filter(
+                    user=request.user.id, serie__isnull=False, 
+                ).values_list("serie_id", flat=True)
+            )
 
             # Get the user's like content
-            user_liked_series = Like.objects.filter(
-                                            user=request.user.id,
-                                            content_type='serie'
-                                            ).values_list('object_id', flat=True)
+            user_liked_series = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type="serie"
+                ).values_list("object_id", flat=True)
+            )
 
             context = {
                 'user_liked_series': user_liked_series,
                 'user_watchlist_series': user_watchlist_series,
-                'serie_list' : serie_list,
+                'list_media' : list_media,
+                'page_obj' : page_obj,
             }
 
+            # record how long took the view to execute.
             end_time = time.time()
             elapsed_time = end_time - start_time
-            print(f"time: {elapsed_time:.2f} seconds.")
+            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
+
             return render(request, 'serie/list_serie.html', context=context)
 
         else:

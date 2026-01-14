@@ -125,11 +125,11 @@ def home(request):
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
                 :3
-            ]  # list to hold the user ids already processed
+            ]
+            # list to hold the user ids already processed
         else:
-            discover_list = WatchList.objects.all().order_by("?")[
-                :3
-            ]  # list to hold any watchlist instances
+            # list to hold any watchlist instances
+            discover_list = WatchList.objects.all().order_by("?")[:3]
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
@@ -227,7 +227,7 @@ def home(request):
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"time: {elapsed_time:.2f} seconds.")
+        print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
         return render(request, "main/home.html", context=context)
 
     except Exception as e:
@@ -247,98 +247,127 @@ def show_content(request, content):
     - Anime
     """
     start_time = time.time()
-    media = []  # list to hold the content (movies, series)
+    list_media = [] # list to hold the content (movies, series)
+    combined = []
+    user_liked_movies = set()
+    user_watchlist_movies = set()
+    user_liked_series = set()
+    user_watchlist_series = set()
 
     try:
         if content == "documentaries":
             # Check in Movies&Series if genre contains 'documentary' then load them for templating
-            movies = Movie.objects.filter(genre__icontains="documentary").only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-                "popularity",
-            ).exclude(is_active=False)
+            movies = (
+                Movie.objects.filter(genre__icontains="documentary")
+                .only(
+                    "id",
+                    "title",
+                    "genre",
+                    "slug",
+                    "poster_images",
+                    "vote_average",
+                    "vote_count",
+                )
+                .exclude(is_active=False)
+                .order_by("-vote_count")
+            )
 
-            series = Serie.objects.filter(genre__icontains="documentary").only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-                "popularity",
+            series = (
+                Serie.objects.filter(genre__icontains="documentary")
+                .only(
+                    "id",
+                    "title",
+                    "genre",
+                    "slug",
+                    "poster_images",
+                    "vote_average",
+                    "vote_count",
+                )
+                .order_by("-vote_count")
             )
 
         elif content == "short films":
             # Check if they are short Movies under 45 minutes
-            movies = Movie.objects.filter(length__lte=45, length__gt=0).only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-                "popularity",
-            ).exclude(is_active=False)  # length between 0 and 45 minutes
+            movies = (
+                Movie.objects.filter(length__lte=45, length__gt=0)
+                .only(
+                    "id",
+                    "title",
+                    "genre",
+                    "slug",
+                    "poster_images",
+                    "vote_average",
+                    "vote_count",
+                )
+                .exclude(is_active=False)
+                .order_by("-vote_count")
+            )  # length between 0 and 45 minutes
 
             series = Serie.objects.none()  # No series for short content
+
         elif content == "anime":
             # Check if they are Anime Movies and Series
-            movies = Movie.objects.filter(genre__icontains="Animation").only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-                "popularity",
-            ).exclude(is_active=False)
-            series = Serie.objects.filter(genre__icontains="Animation").only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-                "popularity",
+            movies = (
+                Movie.objects.filter(genre__icontains="Animation")
+                .only(
+                    "id",
+                    "title",
+                    "genre",
+                    "slug",
+                    "poster_images",
+                    "vote_average",
+                    "vote_count",
+                )
+                .exclude(is_active=False)
+                .order_by("-vote_count")
+            )
+            
+            series = (
+                Serie.objects.filter(genre__icontains="Animation")
+                .only(
+                    "id",
+                    "title",
+                    "genre",
+                    "slug",
+                    "poster_images",
+                    "vote_average",
+                    "vote_count",
+                )
+                .order_by("-vote_count")
             )
 
         print(f"\n{content} has:\n{len(movies)} Movies\n{len(series)} Series:\n")
-        # combine movies and series into a single list or object to pass in paginator
-        if movies:
-            for movie in movies:
-                media.append(
-                    {
-                        "object": movie,
-                        "type": "movie",
-                    }
-                )
 
-        if series:
-            for serie in series:
-                media.append(
-                    {
-                        "object": serie,
-                        "type": "serie",
-                    }
-                )
+        # Combine both queries into one for sorting
+        # even if evaluation done before paginating/limiting and normalizing
+        combined = (list(movies) + list(series))
+        # print(combined[0:10])
 
-        # Sort the content media by title (ascending order)
-        media = sorted(media, key=lambda x: x["object"].vote_count, reverse=True)
+        # Sort the content media by vote count (descending order)
+        combined = sorted(combined, key=lambda x: x.vote_count, reverse=True)
+        combined.sort(key=lambda x: x.vote_count, reverse=True)
 
-        # -- paginate over the results --
-        paginator = Paginator(media, 24)
+        # -- paginate over the results, limit to 24per page --
+        paginator = Paginator(combined, 24)
         page_number = request.GET.get("page")
-        page_object = paginator.get_page(page_number)
-        print(f"Number of pages: {page_object}")
+        page_obj = paginator.get_page(page_number)
+        print(f"Number of pages: {page_obj}")
+
+        # create a standardized data stack to pass in templates.
+        # Avoiding any extra hidden queries on the frontend
+        for item in page_obj:
+            print(item)
+            list_media.append({
+                "title": item.title, 
+                "id": item.pk, 
+                "genre": item.render_genre(), 
+                "vote_avg": item.render_vote_average(), 
+                "vote_count": item.vote_count, 
+                "poster": item.render_poster(),
+                "slug": item.slug,
+                "type": "movie" if isinstance(item, Movie) else "serie"
+                })
+        print("\n", list_media[0:2], "\n")
 
         # Get the user's like content (movies, series)
         user_liked_movies = set(
@@ -366,13 +395,14 @@ def show_content(request, content):
             ).values_list("serie_id", flat=True)
         )
 
-        # print(f"User's watchlist movies: {user_watchlist_movies}...\n")  # debug print
-        # print(f"User's watchlist series: {user_watchlist_series}...\n")
+        print("User's watchlist contains:")
+        print(f"{len(user_watchlist_movies)} movies") 
+        print(f"{len(user_watchlist_series)} series\n")
+
         context = {
             "content": content.capitalize(),
-            "movies": movies,
-            "series": series,
-            "list_content": page_object,
+            "list_media" : list_media,
+            "page_obj": page_obj,
             "user_liked_movies": user_liked_movies,
             "user_liked_series": user_liked_series,
             "user_watchlist_movies": user_watchlist_movies,
@@ -381,10 +411,10 @@ def show_content(request, content):
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"time: {elapsed_time:.2f} seconds.")
+        print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
         return render(request, "main/short_doc_anime.html", context=context)
 
     except Exception as e:
-        print(f"An error occurred while loading the documentaries page: {e}\n")
-        messages.error(request, f"An error occurred while loading the page. {e}")
+        print(f"An error occurred while loading the {content} page:\n{e}\n")
+        messages.error(request, f"An error occurred while loading the page.\n{e}")
         return redirect(to="main:home")

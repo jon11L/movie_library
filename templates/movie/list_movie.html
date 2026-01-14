@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid" style="padding: 0 0.75%;">
     <div class="custom-wide">
         <div class="row">
 
@@ -13,9 +13,9 @@
             </aside>
 
 
-            <main class="custom-col-9" style="padding: 0 1%; margin: auto;">
+            <main class="custom-col-9" style="margin: auto; padding: 0 0.25%;">
 
-                {% if movie_list %}
+                {% if list_media %}
                 <!-- <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1> -->
 
                 <div style="text-align: center; margin-top: 2rem; margin-bottom: 0.25rem;">
@@ -27,52 +27,13 @@
                 </div>
 
 
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 2.5% 1.5% 1% 1.5%;">
-                    {% for movie in movie_list %}
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding-left: 0.4rem; padding-right: 0.4rem;">
-                        <div class="media-card h-100 w-100" style="margin-bottom: 1rem;">
+                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
+                    {% for item in list_media %}
+                        {% include "partials/media_list.html" %}
 
-                            <div style="display: flex; justify-content: space-between;">
-                                <small class="vote-average" title="{{ movie.vote_count }} votes">{{ movie.render_vote_average }}/10</small>
-                            
-                                <div>
-                                    <!-- Watchlist button feature -->
-                                    <button class="watchlist-button"
-                                            data-type="movie"
-                                            data-id="{{ movie.id }}"
-                                            data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                            <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                    </button>
-                                
-                                    <!-- like button feature -->
-                                    <button class="like-button"
-                                            id="like_button"
-                                            data-type="movie"
-                                            data-id="{{ movie.id }}"
-                                            data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
-                                            <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                    </button>
-                                </div>
-                            
-                            </div>
-
-                            <div class="poster-wrapper" title="{{ movie.render_genre }}">
-                                {% if movie.render_poster %}
-                                <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster" class="img-fluid rounded">
-                                {% endif %}
-                            </div>
-                            
-                            <div class="" style="width: fit-content;">
-                                <a href="{% url 'movie:detail' slug=movie.slug %}" style="text-decoration: none;">
-                                    <h6 class="list-movie-title" style="margin-top: 5px;">{{ movie.title|slice:":35" }}</h6>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
                     {% endfor %}
                 </div>
-                {% elif not movie_list %}
+                {% elif not list_media %}
                 <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
                     <h3>No movies found...</h3>
                     <p>please visit this page later</p>
@@ -80,14 +41,14 @@
                 </div>
                 {% endif %}
 
-                <br>
+                <br><br>
 
                 <!----- Pagination system ------->
-                {% if movie_list.paginator.num_pages > 1 %}
+                {% if page_obj.paginator.num_pages > 1 %}
                 <div style="display: flex; justify-content: center; padding-bottom: 2rem;">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
-                            {% if movie_list.has_previous %}
+                            {% if page_obj.has_previous %}
                             <li class="page-item">
                                 <a  href="?page=1" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     &laquo first
@@ -95,19 +56,19 @@
                             </li>
                             <!-- previous page -->
                             <li class="page-item">
-                                <a href="?page={{ movie_list.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     &laquo Prev
                                 </a>
                             </li>
                             {% endif %}
 
-                            {% for num in movie_list.paginator.page_range %}
+                            {% for num in page_obj.paginator.page_range %}
                                 <!-- enumerate pages around current page -->
-                                {% if num == movie_list.number %}
+                                {% if num == page_obj.number %}
                                 <li class="page-item" style="margin: 0px 1px;">
                                     <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
                                 </li>
-                                {% elif num > movie_list.number|add:'-5' and num < movie_list.number|add:'5' %}
+                                {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
                                 <li class="page-item" style="margin: 0px 1px;">
                                     <a  href="?page={{ num }}" class="btn btn-outline-info" style="border: none;">
                                         {{ num }}
@@ -116,17 +77,17 @@
                                 {% endif %}
                             {% endfor %}
 
-                            {% if movie_list.has_next %}
+                            {% if page_obj.has_next %}
                             <!-- Next page -->
                             <li class="page-item">
-                                <a href="?page={{ movie_list.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     Next &raquo
                                 </a>
                             </li>
                         
                             <!-- Last page -->
                             <li class="page-item">
-                                <a href="?page={{ movie_list.paginator.num_pages}}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                                <a href="?page={{ page_obj.paginator.num_pages}}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                                     Last &raquo
                                 </a>
                             </li>
@@ -134,15 +95,15 @@
 
                             <!-- Current page and how many pages are there -->
                             <li class="page-item" style="margin: 8px 0px 0px 20px;">
-                                <h6 style="color: darkgray;">( Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }} )</h6>
+                                <h6 style="color: darkgray;">( Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} )</h6>
                             </li>
                         </ul>
                     </nav>
                 </div>
-                {% elif movie_list and movie_list.paginator.num_pages == 1 %}
+                {% elif page_obj and page_obj.paginator.num_pages == 1 %}
                 <!-- Show only page info when there's just one page -->
                 <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">
-                    <h6 style="color: darkgray;">( Page {{ movie_list.number }} of {{ movie_list.paginator.num_pages }} )</h6>
+                    <h6 style="color: darkgray;">( Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} )</h6>
                 </div>
                 {% endif %}
 
