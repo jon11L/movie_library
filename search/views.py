@@ -47,7 +47,7 @@ def search(request):
 
     # Render/Initialize the filter form (without queryset)
     Media_filter = SharedMediaFilter(request.GET)
-    print(f"content_filter: {Media_filter}")
+    print(f"-- content_filter: {Media_filter}\n")
 
     # ----- Initial search page load, no query/filter/ done yet-----
     if request.method == 'GET' and not request.GET:
@@ -56,21 +56,21 @@ def search(request):
         context = {'filter': Media_filter}
         return render(request, 'search/search.html', context=context)
 
-    # Handle GET requests with parameters // action from the Filter Form Button (in the search page)
+    # -- Handle GET requests with parameters //
+    #  user's action from the Filter Form Button (the search page)
     if request.method == 'GET' and request.GET:
         print("\n-- User submit a filtered search --")
 
         #  when no filters are selected; return only the filter form
         if not has_filter_values :
-            print("no filter values applied")
+            print("-- no filter values applied --")
 
             context = {
                 'filter': Media_filter,
-                'filters_applied': False  # Flag to show a message in the template
             }
 
         else: # Filter values are applied.
-            print("filter values applied")# debug print
+            print("-- filter values applied --")# debug print
             filtered_movies = []
             filtered_series = []
 
@@ -152,9 +152,8 @@ def search(request):
                 'query_params': query_params,
                 'query_url': query_string_url,
                 'list_media': list_media,
-                'list_content': page_object,
+                'page_obj': page_object,
                 'total_found': total_found if total_found > 0 else None,
-                'filters_applied': True
             }
 
             if request.user.is_authenticated:
