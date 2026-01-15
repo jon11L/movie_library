@@ -293,14 +293,12 @@ img {
 }
 
 
-
 .poster-wrapper {
-    
-  height: max-content;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    height: max-content;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   /* background-color: #111; fallback bg */
 }
 
@@ -312,6 +310,12 @@ img {
 }
 
 
+/* ---  Pagination section  --- */
+/* give some space around */
+.pagination-section {
+    padding: 1.5rem 0 2rem 0;
+
+}
 
 /* ===================== Help text in forms ========================= */
 .form-help-text small,
