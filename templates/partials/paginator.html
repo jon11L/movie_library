@@ -22,54 +22,44 @@
                 <!-- previous page -->
                 <li class="page-item">
                     <a href="?page={{ page_obj.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                        &laquo Prev
+                        &lsaquo; Prev
                     </a>
                 </li>
                 {% endif %}
     
                 <!-- enumerate pages around current page -->
-                {% for num in page_obj.paginator.page_range %}
-                    <!-- Desktop size 5 pages around current-->
-                    {% if num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
-                    <div class="page-desktop">
-                        {% if num == page_obj.number %}
-                        <li class="page-item page-current">
-                            <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
-                        </li>
-
-                        {% else %}
-                        <li class="page-item">
-                            <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
-                                {{ num }}
-                            </a>
-                        </li>
-                        {% endif %}
-                    </div>
+                {% for num in desktop_pages %}
+                <!-- Desktop size 5 pages around current-->
+                <li class="page-item page-desktop">
+                    {% if num == page_obj.number %}
+                    <a  href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
+                    {% else %}
+                    <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
+                        {{ num }}
+                    </a>
                     {% endif %}
-                    
+                </li>
+                
+                {% endfor %}
+                
+                {% for num in mobile_pages %}
                     <!-- Mobile size, 2 pages around current-->
-                    {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <div class="page-mobile">
+                    <li class="page-item  page-mobile">
                         {% if num == page_obj.number %}
-                        <li class="page-item page-current">
-                            <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
-                        </li>
+                            <a  href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
                         {% else %}
-                        <li class="page-item">
                             <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
                                 {{ num }}
                             </a>
-                        </li>
                         {% endif %}
-                    </div>
-                    {% endif %}
+                    </li>
                 {% endfor %}
     
                 {% if page_obj.has_next %}
                 <!-- Next page -->
                 <li class="page-item">
                     <a href="?page={{ page_obj.next_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
-                        Next &raquo
+                        Next &rsaquo;
                     </a>
                 </li>
             

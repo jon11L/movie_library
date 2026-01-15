@@ -9,6 +9,9 @@ from serie.models import Serie
 from user_library.models import Like, WatchList
 
 
+# Temporary placement for paginator design
+from core.tools.paginator import page_window
+
 # ----- Need to fix Bug if user only put space char in title, then all Movie&Serie pass through filter -------
 def search(request):
     """
@@ -121,11 +124,11 @@ def search(request):
             # -- paginate over the results --
             paginator = Paginator(results, 24)
             page_number = request.GET.get('page')
-            page_object = paginator.get_page(page_number)
-            print(f"-- List content: {page_object}")
+            page_obj = paginator.get_page(page_number)
+            print(f"-- List content: {page_obj}")
 
             list_media = []
-            for item in page_object:
+            for item in page_obj:
                 list_media.append({
                     "title": item.title, 
                     "id": item.pk, 
@@ -152,9 +155,23 @@ def search(request):
                 'query_params': query_params,
                 'query_url': query_string_url,
                 'list_media': list_media,
-                'page_obj': page_object,
+                'page_obj': page_obj,
                 'total_found': total_found if total_found > 0 else None,
             }
+
+            # Temporary placement for paginator design
+            context["desktop_pages"] = page_window(
+                page_obj.number, # current page number
+                page_obj.paginator.num_pages, # total amount of pages
+                size=5 # amount of buttons to display around current page
+            )
+
+            context["mobile_pages"] = page_window(
+                page_obj.number,
+                page_obj.paginator.num_pages,
+                size=2
+            )
+
 
             if request.user.is_authenticated:
                 # Get the user's watchlist and like content (movies, series)

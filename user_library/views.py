@@ -21,6 +21,9 @@ from serie.models import Serie
 
 # from rest_framework import renderers
 
+# Temporary placement for paginator design
+from core.tools.paginator import page_window
+
 class WatchListListView(generics.ListCreateAPIView):
     '''This serializer '''
     
@@ -316,6 +319,20 @@ def watch_list_view(request, pk: int):
                 'page_obj': page_obj,
                 'total_content': total_content,
             }
+
+            # Temporary placement for paginator design
+            context["desktop_pages"] = page_window(
+                page_obj.number, # current page number
+                page_obj.paginator.num_pages, # total amount of pages
+                size=5 # amount of buttons to display around current page
+            )
+
+            context["mobile_pages"] = page_window(
+                page_obj.number,
+                page_obj.paginator.num_pages,
+                size=2
+            )
+
 
             end_time = time.time()
             elapsed_time = end_time - start_time
