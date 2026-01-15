@@ -11,21 +11,24 @@
     gap: 1px;
     justify-content: center;
     padding: 0;
+    margin: 0;
 }
 
 
-.page-item {
+/* .page-item {
     margin: 0px 1px;
-}
+} */
 
 /* Default: mobile-first */
-
 .page-mobile {
     display: inline-block;
+    margin: 0px 0px;
+
 }
 
 .page-desktop {
     display: none;
+    margin: 0px 1px;
 }
 
 /* desktop adjustments layout */

@@ -14,6 +14,8 @@ from serie.models import Serie
 from user_library.models import Like, WatchList
 from user.models import User
 
+# Temporary placement for paginator design
+from core.tools.paginator import page_window
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
@@ -408,6 +410,20 @@ def show_content(request, content):
             "user_watchlist_movies": user_watchlist_movies,
             "user_watchlist_series": user_watchlist_series,
         }
+
+
+        # Temporary placement for paginator design
+        context["desktop_pages"] = page_window(
+            page_obj.number, # current page number
+            page_obj.paginator.num_pages, # total amount of pages
+            size=5 # amount of buttons to display around current page
+        )
+
+        context["mobile_pages"] = page_window(
+            page_obj.number,
+            page_obj.paginator.num_pages,
+            size=2
+        )
 
         end_time = time.time()
         elapsed_time = end_time - start_time

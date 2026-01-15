@@ -18,8 +18,14 @@ from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
 
+# Temporary placement for paginator design
+from core.tools.paginator import page_window
+
+
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from rest_framework.throttling import AnonRateThrottle
+
+
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
@@ -139,6 +145,19 @@ def movie_list(request):
                 'user_liked_movies': user_liked_movies,
                 'user_watchlist_movies': user_watchlist_movies, 
                 }
+
+            # Temporary placement for paginator design
+            context["desktop_pages"] = page_window(
+                page_obj.number, # current page number
+                page_obj.paginator.num_pages, # total amount of pages
+                size=5 # amount of buttons to display around current page
+            )
+
+            context["mobile_pages"] = page_window(
+                page_obj.number,
+                page_obj.paginator.num_pages,
+                size=2
+            )
 
             # record how long took the view to execute.
             end_time = time.time()
