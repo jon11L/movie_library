@@ -1,11 +1,18 @@
 {% load static %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'css/paginator.css' %}">
+{% endblock %}
+
+
 <div style="width: fit-content; margin: auto;">
 
     {% if page_obj.paginator.num_pages > 1 %}
-    <div style="display: flex; justify-content: center; padding-bottom: 2rem;">
+    <div class="pagination-wrapper">
         <nav aria-label="Page navigation example">
-            <ul class="pagination">
+            <ul class="pagination pagination-flex">
+
+
                 {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a  href="?page=1&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
@@ -20,18 +27,41 @@
                 </li>
                 {% endif %}
     
+                <!-- enumerate pages around current page -->
                 {% for num in page_obj.paginator.page_range %}
-                    <!-- enumerate pages around current page -->
-                    {% if num == page_obj.number %}
-                    <li class="page-item" style="margin: 0px 1px;">
-                        <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
-                    </li>
-                    {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
-                    <li class="page-item" style="margin: 0px 1px;">
-                        <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
-                            {{ num }}
-                        </a>
-                    </li>
+                    <!-- Desktop size 5 pages around current-->
+                    {% if num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+                    <div class="page-desktop">
+                        {% if num == page_obj.number %}
+                        <li class="page-item page-current">
+                            <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
+                        </li>
+
+                        {% else %}
+                        <li class="page-item">
+                            <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Mobile size, 2 pages around current-->
+                    {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <div class="page-mobile">
+                        {% if num == page_obj.number %}
+                        <li class="page-item page-current">
+                            <a  href="#" class="btn btn-info" style="border: none;">{{ num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    </div>
                     {% endif %}
                 {% endfor %}
     
@@ -50,14 +80,34 @@
                     </a>
                 </li>
                 {% endif %}
+
+                <!-- Scroll down page selector, for fastest pages navigation -->
+                <div class="pagination-jump">
+                    <label for="page-jump" class="sr-only">Jump to page</label>
+                
+                    <select id="page-jump"
+                            class="form-select form-select-sm"
+                            onchange="location = this.value;">
+                        <option value="">page..</option>
+                
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if num|divisibleby:10 or num == page_obj.paginator.num_pages %}
+                            <option value="?page={{ num }}&{{ query_url }}">
+                                {{ num }}
+                            </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
     
                 <!-- Current page and how many pages are there -->
-                <li class="page-item" style="margin: 8px 0px 0px 20px;">
+                <li class="page-item" style="margin: 8px 0px 0px 0px;">
                     <h6 style="color: darkgray;">( Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} )</h6>
                 </li>
             </ul>
         </nav>
     </div>
+
     {% elif page_obj and page_obj.paginator.num_pages == 1 %}
     <!-- Show only page info when there's just one page -->
     <div style="display: flex; justify-content: center; margin: 10px 0; padding-bottom: 2rem;">

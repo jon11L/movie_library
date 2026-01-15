@@ -1,0 +1,47 @@
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2rem;
+}
+
+.pagination-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    justify-content: center;
+    padding: 0;
+}
+
+
+.page-item {
+    margin: 0px 1px;
+}
+
+/* Default: mobile-first */
+
+.page-mobile {
+    display: inline-block;
+}
+
+.page-desktop {
+    display: none;
+}
+
+/* desktop adjustments layout */
+@media (min-width: 768px) {
+    .page-mobile {
+        display: none;
+    }
+
+    .page-desktop {
+        display: inline-block;
+    }
+}
+
+
+/* Scroll down paginator selection */
+.pagination-jump select {
+    width: 90%;
+    margin: auto;
+}
