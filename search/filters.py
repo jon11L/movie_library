@@ -29,7 +29,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         ('thriller', 'Thriller'), ('tv movie', 'TV Movie'),
         ('war', 'War'), ('western', 'Western')
     )
-# ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
+    # ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
 
     LANGUAGE_CHOICES = (
         ("ar", 'Arabic'), ('bg', 'Bulgarian'), 
@@ -174,23 +174,23 @@ class SharedMediaFilter(django_filters.FilterSet):
             })
         )
     
-# ------- Ongoing work -------
-#TODO:
-# filter by length
-# check if movies are less than 30min, 90min() or more than 120min, in between medium 
-# find movies/series by the Cast/actors/directors/productions
+    # ------- Ongoing work -------
+    #TODO:
+    # filter by length
+    # check if movies are less than 30min, 90min() or more than 120min, in between medium 
+    # find movies/series by the Cast/actors/directors/productions
 
-    # Will include filter for casting, Also Director and Writer at the moment
-    # casting = django_filters.CharFilter(
-    #     field_name="casting__name",
-    #     lookup_expr="icontains",
-    #     label="Casting",
-    #     widget=forms.TextInput(attrs={
-    #         'class': 'form-control',
-    #         'placeholder': 'Search by casting name...',
-    #     })
-    # )
-# --------- End of ongoing work -------
+        # Will include filter for casting, Also Director and Writer at the moment
+        # casting = django_filters.CharFilter(
+        #     field_name="casting__name",
+        #     lookup_expr="icontains",
+        #     label="Casting",
+        #     widget=forms.TextInput(attrs={
+        #         'class': 'form-control',
+        #         'placeholder': 'Search by casting name...',
+        #     })
+        # )
+    # --------- End of ongoing work -------
 
     def filter_content_type(self, queryset, name, value):
         ''' This is a placeholder - actual filtering happens in the view '''

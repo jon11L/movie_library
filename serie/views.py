@@ -70,7 +70,7 @@ def serie_list(request):
             if request.user.is_superuser:
                 series = Serie.objects.only(
                     "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-                ).order_by("-id")
+                )
             else:
                 series = Serie.objects.raw(
                     'SELECT id, title, genre, vote_average, vote_count, poster_images, slug FROM serie ORDER BY popularity DESC NULLS LAST'

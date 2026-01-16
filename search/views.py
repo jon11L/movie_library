@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+from django.db.models import Case, When, Value, IntegerField
 
 import time
 
@@ -77,6 +78,8 @@ def search(request):
             filtered_movies = []
             filtered_series = []
 
+            title_value = request.GET.get("title", "").strip()
+
             # Apply the filters to the Movie and Serie models if 'all' selected or specific content type
             if content_type in ['movie', 'all']:
                 movie_filter = SharedMediaFilter(
@@ -94,6 +97,20 @@ def search(request):
                 filtered_movies = movie_filter.qs
                 # print(f"Filtered movies: {len(filtered_movies)}")
 
+                if title_value:
+                    # Create a relevance system by Title: exact->startwith->remaining.
+                    filtered_movies = filtered_movies.annotate(
+                        relevance=Case(
+                            # exact match
+                            When(title__iexact=title_value, then=Value(1)),
+                            # startswith
+                            When(title__istartswith=title_value, then=Value(2)),
+                            # contains (already filtered)
+                            default=Value(3),
+                            output_field=IntegerField(),
+                        )
+                    ).order_by("-relevance", "title")
+
             if content_type in ['serie', 'all']:
                 serie_filter = SharedMediaFilter(
                     request.GET,
@@ -110,16 +127,42 @@ def search(request):
                 filtered_series = serie_filter.qs
                 # print(f"Filtered series: {len(filtered_series)}")
 
+                if title_value:
+                    # Same process for the series
+                    filtered_series = filtered_series.annotate(
+                        relevance=Case(
+                            When(title__iexact=title_value, then=Value(1)),
+                            When(title__istartswith=title_value, then=Value(2)),
+                            default=Value(3),
+                            output_field=IntegerField(),
+                        )
+                    ).order_by("-relevance", "title")
+
             # Combine both queries into one for sorting
             # even if evaluation done before paginating/limiting and normalizing
             combined = (list(filtered_movies) + list(filtered_series))
 
-            # Sort the media found by title
-            results = sorted(combined, key=lambda x: x.title, reverse=False)
+            # Sort the media found by relevance to group Movie and Serie.
+            #  Won't no longer need if creating a common Media model.Neither 'combined'
+            if title_value:
+                results = sorted(
+                    combined,
+                    key=lambda x: (getattr(x, "relevance", 0), getattr(x, "title", "")),
+                    reverse=False,
+                )
+            else:
+                results = sorted(
+                    combined,
+                    key=lambda x: x.title,
+                    reverse=False,
+                )
 
-            print(results[0:5])
+            print("\n", results[0:5], "\n")
             total_found = len(results)
-            print(f"\nTotal found {total_found}: {len(filtered_movies)} movies and {len(filtered_series)} series")
+            print(
+                f"\n-- Total found {total_found}: "
+                f"{len(filtered_movies)} movies -- {len(filtered_series)} series --\n"
+            )
 
             # -- paginate over the results --
             paginator = Paginator(results, 24)
@@ -171,7 +214,6 @@ def search(request):
                 page_obj.paginator.num_pages,
                 size=2
             )
-
 
             if request.user.is_authenticated:
                 # Get the user's watchlist and like content (movies, series)
