@@ -3,12 +3,8 @@
 .navbar {
     width: 100%;
     height: 50px;
+    padding: 0;
     background-color: rgb(56, 9, 16);
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    position:fixed;
     top:0;
     z-index: 1030; /* to prevent the navbar getting covered up by other content */
 }
@@ -18,40 +14,116 @@
 }
 
 
+.navbar-layout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+}
 
+
+/* Mobile screen: navbar is collapsed */
+@media (max-width: 768px) {
+    /* layout of the Left drop down menu */
+    .navbar-collapse {
+        background-color: rgb(90, 87, 87);
+        border: solid 1px whitesmoke;
+    }
+    
+    .link-btn:hover {
+        color: whitesmoke;
+    }
+
+    .navbar-search {
+        max-width: 140px;
+    }
+
+    .navbar-brand {
+        display: none;
+    }
+    
+    /* shows the Media links on navbar desktop */
+    /* .navbar-collapse .navbar-brand{
+        display: block;
+    } */
+
+    /* .nav-item a {
+        padding: 8px 0 0 0;
+    } */
+}
+
+/* Desktop screen: navbar is not collapsed */
+@media (min-width: 768px) {
+
+    .nav-item h6 {
+        font-size: large;
+    }
+
+    .link-btn:hover {
+        color: whitesmoke;
+        transform: scale(1.1);
+        transition: transform 1s;
+        
+    }
+    
+    .navbar-collapse .navbar-brand{
+        display: none;
+    }
+    .home-btn:hover {
+        transform: scale(1.1);
+        transition: transform 1s;
+    }
+
+
+}
 /* ============== Home button ======================== */
 .home-btn {
-    /* color: rgb(243, 209, 16); */
     color: rgb(224, 185, 57);
+    /* margin-left: 8px; */
 }
 
 .home-btn:hover {
     color: whitesmoke;
-    transform: scale(1.15);
-    transition: transform 1s;
-
 }
 
-/* .home-btn .active {
-    background-color: rgb(224, 185, 57);
-    color: black;
-
-} */
 
 .navbar a:hover {
     color: rgb(224, 185, 57);
-
 }
 
 /* =========== Media links on Navbar =========== */
-.main-link {
+.link-btn {
     color: rgb(224, 185, 57);
     /* color: rgb(243, 209, 16); */
 }
 
-.main-link:hover {
-    color: whitesmoke;
-    transform: scale(1.1);
-    transition: transform 1s;
 
+/* ========== Search Navbar ====================== */
+.navbar-search {
+    flex: 1;
+    max-width: 400px;
+    /* padding: 0 1rem; */
+    margin: auto;
+    align-items: center;
+}
+
+.search-form {
+    /* padding-right: 1rem; */
+    display: flex;
+    gap: 0.5rem;
+    width: 75%;
+    margin: auto;
+    padding-right: 0;
+}
+
+
+.search-input {
+    transition: width 0.3s ease;
+    /* border-radius: 2em; */
+}
+
+
+/* ========== Profile links =========== */
+.navbar-profile {
+    margin-left: auto;
 }
