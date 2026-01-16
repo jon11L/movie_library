@@ -4,79 +4,96 @@
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 {% endblock %}
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-	<div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+	<div class="container-fluid navbar-layout">
 
+		<!-- LEFT SIDE of navbar -->
 		<!-- Home page button -->
 		<a class="navbar-brand mt-2" href="{% url 'main:home' %}">
 			<h5 class="home-btn">Home</h5>
 		</a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		
+		<button class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#mainNavDropMenu"
+				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 
+		<!-- Center-left -->
 		<!-- Search content by title / redirect to search page // Search input and submit button -->
-		<form class="d-flex ms-5" role="search" method="GET" action="{% url 'search:search' %}">
-			<input type="text" class="form-control ms-5 me-2" placeholder="search..." name="title" aria-label="Search" style="border-radius: 2em;">
-			<button class="btn btn-outline-info" type="submit"
-				style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
-				search
-			</button>
-			<!-- <button class="btn btn-outline-info" type="submit"
-				style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
-				search
-			</button> -->
-		</form>
+		<div class="navbar-search">
+			<form class="search-form" role="search" method="GET" action="{% url 'search:search' %}">
+				<input type="text"
+					class="form-control search-input"
+					placeholder=" 🔍search..." 
+					name="title" 
+					aria-label="Search"
+					style="border-radius: 2em;">
+				<button class="btn btn-outline-info" type="submit"
+					style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
+					search
+				</button>
+			</form>
+		</div>
 
+		<!-- CENTER of the navbar -->
 		<!-- Links of different pages -->
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<div>
-				<ul class="navbar-nav ms-5 mt-2 mb-lg-0">
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
-							<h5 class="main-link">Movies</h5>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
-							<h5 class="main-link">TV shows</h5>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">
-							<h5 class="main-link">Documentaries</h5>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
-							<h5 class="main-link">Short films</h5>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">
-							<h5 class="main-link">Anime</h5>
-						</a>
-					</li>
-				</ul>
-			</div>
+		<div class="collapse navbar-collapse" id="mainNavDropMenu">
+			<ul class="navbar-nav ms-3 mt-2">
+
+				<li class="nav-item">
+					<a class="nav-link active d-md-none " href="{% url 'main:home' %}">
+						<h6 class="link-btn">Home</h6>
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
+						<h6 class="link-btn">Movies</h6>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
+						<h6 class="link-btn">TV shows</h6>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">
+						<h6 class="link-btn">Documentaries</h6>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
+						<h6 class="link-btn">Short films</h6>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">
+						<h6 class="link-btn">Anime</h6>
+					</a>
+				</li>
+			</ul>
 		</div>
 
 		<!-- Right-aligned dropdown menu -->
-		<ul class="navbar-nav ms-auto mt-2 mb-lg-2" id="navbarSupportedContent">
+		<ul class="navbar-nav navbar-profile">
 			{% if user.is_authenticated %}
 			<li class="nav-item dropdown">
 				
-				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-				aria-expanded="false">
-				{% if user.is_authenticated and request.user.profile.profile_picture %}
-				<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
-					style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-				{% elif user.is_authenticated %}
-                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-				{% endif %}
-				
-					{{ request.user.username.capitalize }}
+				<a class="nav-link dropdown-toggle" 
+					href="#" role="button" 
+					data-bs-toggle="dropdown"
+					aria-expanded="false">
+
+					{% if user.is_authenticated and request.user.profile.profile_picture %}
+					<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
+						style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+					{% elif user.is_authenticated %}
+					<img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+					{% endif %}
+					<small class="d-none d-md-inline-block">{{ request.user.username.capitalize }}</small>
 				</a>
 
 				<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
@@ -93,9 +110,8 @@
 						<a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a>
 					</li>
 				</ul>
-
 			</li>
-			
+		
 			{% else %}
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -112,3 +128,17 @@
 	</div>
 </nav>
 <div class="navbar-spacer"></div>
+
+
+
+<script>
+document.addEventListener("show.bs.dropdown", function (event) {
+    document.querySelectorAll(".dropdown.show").forEach(dropdown => {
+        if (dropdown !== event.target) {
+            bootstrap.Dropdown.getInstance(
+                dropdown.querySelector('[data-bs-toggle="dropdown"]')
+            )?.hide();
+        }
+    });
+});
+</script>
