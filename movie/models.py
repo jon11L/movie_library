@@ -78,7 +78,7 @@ class Movie(BaseModel):
         db_table = "movie"
         verbose_name = "Movie"
         verbose_name_plural = "Movies"
-        ordering = ["id"]
+        ordering = ["-id"]
 
     def __str__(self):
         return self.title

@@ -63,6 +63,7 @@ class Serie(BaseModel):
         db_table = "serie"
         verbose_name = "Serie"
         verbose_name_plural = "Series"
+        ordering = ["-id"]
 
     def __str__(self):
         return self.title
