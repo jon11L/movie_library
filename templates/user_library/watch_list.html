@@ -4,20 +4,18 @@
 {% block content %}
 
 
-
-<div class="container-fluid" style="padding: 0 0.75%;">
     <div class="custom-wide">
         <div class="row">
 
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
+            <aside class="custom-col-1-5 l-side-wrapper">
                 <div></div>
             </aside>
             
             
             <!-- Main/middle section of the screen -->
-            <main class="main-wrapper custom-col-9" style="margin: auto; padding: 0 0.25%;">
+            <main class="main-wrapper custom-col-9">
 
                 <div style="text-align: center; margin-top: 2rem; margin-bottom: 0.25rem;">
                     {% if request.user == user %}
@@ -54,14 +52,12 @@
             
             
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
-                <div>
-                </div>
+            <aside class="custom-col-1-5 r-side-wrapper">
+                <div></div>
             </aside>
             
         </div>
     </div>
-</div>
 
 
 {% endblock %}

@@ -3,13 +3,12 @@
 
 {% block content %}
 
-<div class="container-fluid my-4">
     <div class="custom-wide">
-        <div class="row">
+        <div class="row main-row">
             
             
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block">
+            <aside class="custom-col-1-5  l-side-wrapper">
                 <div>
                     <!-- For dev purpose -->
                     {% if request.user.is_superuser %}
@@ -29,7 +28,7 @@
             </aside>
             
 
-            <main class="custom-col-9">
+            <main class="custom-col-9 main-wrapper">
                 <br>
                 {% if movie %}
                 <div class="card" style="justify-content: center; width: 90%; margin: auto; border-radius: 0.5em;">
@@ -261,15 +260,13 @@
 
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block">
+            <aside class="custom-col-1-5 r-side-wrapper">
                 <div>
                 </div>
             </aside>
 
         </div>
     </div>
-</div>
-<br/>
 
 
 <script src="{% static 'js/create_comment.js' %}"></script>

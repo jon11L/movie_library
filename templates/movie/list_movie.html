@@ -2,63 +2,59 @@
 {% load static %}
 
 {% block content %}
+<div class="custom-wide">
+    <div class="row main-row">
 
-<div class="container-fluid" style="padding: 0 0.75%;">
-    <div class="custom-wide">
-        <div class="row">
-
-            <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
-                <div></div>
-            </aside>
+        <!-- Left section of the screen -->
+        <aside class="custom-col-1-5 l-side-wrapper">
+            <div></div>
+        </aside>
 
 
-            <main class="custom-col-9" style="margin: auto; padding: 0 0.25%;">
+        <main class="custom-col-9 main-wrapper">
 
-                {% if list_media %}
-                <!-- <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1> -->
+            {% if list_media %}
+            <!-- <h1 style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">Movies:</h1> -->
 
-                <div style="text-align: center; margin-top: 2rem; margin-bottom: 0.25rem;">
-                    <h1 style="margin-bottom: 0;">Movies:</h1>
-                </div>
-                <div style="padding: 0;">
-                    <!-- prepare to add an order_by feature -->
-                    <h6 style="text-align:right; margin-right: 2rem; padding: 0;">order by</h6>  
-                </div>
-
-
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
-                    {% for item in list_media %}
-                        {% include "partials/media_list.html" %}
-
-                    {% endfor %}
-                </div>
-                {% elif not list_media %}
-                <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
-                    <h3>No movies found...</h3>
-                    <p>please visit this page later</p>
-                    <div style="padding-bottom: 35%;"></div>
-                </div>
-                {% endif %}
-
-                
-                <!----- Pagination system ------->
-                <section class="pagination-section">
-                    {% include "partials/paginator.html" %}
-
-                </section>
-            </main>
+            <div style="text-align: center; margin-bottom: 0.25rem;">
+                <h1 style="margin-bottom: 0;">Movies:</h1>
+            </div>
+            <div style="padding: 0;">
+                <!-- prepare to add an order_by feature -->
+                <h6 style="text-align:right; margin-right: 2rem; padding: 0;">order by</h6>
+            </div>
 
 
-            <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
-                <div>
-                </div>
-            </aside>
+            <div class="row media-row">
+                {% for item in list_media %}
+                {% include "partials/media_list.html" %}
 
-        </div>
+                {% endfor %}
+            </div>
+            {% elif not list_media %}
+            <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
+                <h3>No movies found...</h3>
+                <p>please visit this page later</p>
+                <div style="padding-bottom: 35%;"></div>
+            </div>
+            {% endif %}
+
+
+            <!----- Pagination system ------->
+            <section class="pagination-section">
+                {% include "partials/paginator.html" %}
+
+            </section>
+        </main>
+
+
+        <!-- Right section of the screen -->
+        <aside class="custom-col-1-5 r-side-wrapper">
+            <div>
+            </div>
+        </aside>
+
     </div>
 </div>
 
 {% endblock %}
-d-none d-md-block
