@@ -42,10 +42,14 @@ body {
 .l-side-wrapper {
     /* background-color: rgba(211, 163, 163, 0.459); */
 	display: none;
+    /* padding: 0% 1%;
+    margin: 0% 0%; */
 }
 .r-side-wrapper {
     /* background-color: rgba(211, 163, 163, 0.459); */
 	display: none;
+    /* padding: 0%;
+    margin: 0% 0%; */
 }
 
 .main-wrapper {
@@ -54,21 +58,39 @@ body {
 	/* width: fit-content; */
 }
 
-/* Where lay some template for advertizements. */
+.main-wrapper-home {
+	margin: auto;
+	padding: 2rem 0.25%;
+	/* width: fit-content; */
+}
+
+/* Where lay some template for advertizements. // ASIDE LEFT WRAPPER */
 .side-publicity {
-	display: none;
-	padding-top: 15rem; 
+    display: none;
+	padding-top: 10rem; 
 	/* width: 95%;  */
 	/* margin: auto; */
 	border-right: solid 2px;
-
+    
 }
 
+/* some template for discoery/reccomendation. // ASIDE RIGHT WRAPPER */
 .side-discovery {
 	display: none;
 	text-align: center;
 	border-left: solid 2px;
+    margin: auto;
 	/* padding: 2rem 0; */
+
+}
+
+
+
+@media (min-width: 1220px) {
+    .total-available p {
+        font-size: 18px;
+    }
+
 
 }
 
@@ -77,8 +99,11 @@ body {
 /* making min-width 990px instead of 960 due to custom class d-lg-block */
 /* which makes appear the side-wrapper at 990px */
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
 	.main-wrapper {
+		max-width: 95%;
+	}
+	.main-wrapper-home {
 		max-width: 90%;
 	}
 
@@ -162,13 +187,27 @@ h1, h2, h3, h4, h5, h6 {
 
 /* =============== LEFT side wrapper =========== */
 
-/* list templates */
+/* ========= list templates advert ====== */
 .list_advert {
-	width: 90%;
+    width: 93%;
 	margin: auto;
-	align-items: center;
+	/* align-items: center; */
 }
 
+.card-advert {
+    background-color: rgb(88, 87, 87);
+    /* width: fit-content; */
+    margin: 10rem auto; 
+    padding: 0px; 
+    border: 2px solid black; 
+    border-radius: 2em; 
+}
+
+.inner-card-advert {
+    padding: 10% 5%;
+    margin: auto;
+    text-align: center;
+}
 
 
 .card, .card-body, .list-group-item  {
