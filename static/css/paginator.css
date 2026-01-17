@@ -9,7 +9,7 @@ nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    
 }
 
 .pagination-btns {
@@ -25,7 +25,7 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
@@ -38,40 +38,60 @@ nav {
 
 .page-desktop {
     display: none;
-    margin: 0px 1px;
+    margin: 0px;
 }
 
 /* Mobile size adjustments layout */
 @media (max-width: 768px) {
     
     .page-item a {
-        width: fit-content;
-        padding: 0.25rem 0.40rem;
+        padding: 0.25rem 4px;
         font-size: 0.9rem;
     }
-
+    
 }
 
-/* desktop size adjustments layout */
-@media (min-width: 768px) {
-    nav {
-        flex-direction: row;
-        align-items: center;
+@media (max-width: 1268px) {
+    .pagination-meta {
+        /* padding-right: 1.5rem; */
+        margin-top: 0.6rem;
     }
+    
+}
 
-
+/* Pass into desktop, shows 5 btns around current page*/
+@media (min-width: 768px) {
     .page-mobile {
         display: none;
     }
     .page-desktop {
         display: inline-block;
     }
+
+    .page-item a {
+        padding: 0.25rem 5px;
+    }
+}
+
+
+/* desktop size adjustments layout */
+/* Wide enough to pass all pagination on the same line */
+@media (min-width: 1268px) {
+    nav {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .page-item a {
+        padding: 0.25rem 0.45rem;
+    }
+
 }
 
 /* Scroll down pag option selector */
 .pagination-jump {
     /* padding-right: 1.5rem; */
-    margin-left: 1rem;
+    margin-left: 0.5rem;
 }
 
 .pagination-jump select {

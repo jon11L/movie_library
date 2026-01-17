@@ -3,12 +3,11 @@
 
 {% block content %}
 
-<div class="container-fluid" style="padding: 0 0.75%;">
     <div class="custom-wide">
-        <div class="row">
+        <div class="row main-row">
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
+            <aside class="custom-col-1-5 l-side-wrapper">
                 <div></div>
             </aside>
 
@@ -28,7 +27,7 @@
                 </div>
 
 
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
+                <div class="row media-row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
                     {% for item in list_media %}
 
                         {% include "partials/media_list.html" %}
@@ -52,7 +51,7 @@
             </main>
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
+            <aside class="custom-col-1-5 r-side-wrapper">
                 <div>
                 </div>
             </aside>
@@ -61,6 +60,5 @@
         </div>
 
     </div>
-</div>
 
 {% endblock %}

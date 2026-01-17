@@ -22,8 +22,10 @@
 }
 
 
+
 /* Mobile screen: navbar is collapsed */
-@media (max-width: 768px) {
+/* Max to md/medium screen */
+@media (max-width: 990px) {
     /* layout of the Left drop down menu */
     .navbar-collapse {
         background-color: rgb(90, 87, 87);
@@ -36,10 +38,13 @@
 
     .navbar-search {
         max-width: 140px;
+
     }
 
-    .navbar-brand {
-        display: none;
+
+    .link-btn {
+        color: whitesmoke;
+
     }
     
     /* shows the Media links on navbar desktop */
@@ -52,8 +57,10 @@
     } */
 }
 
+
 /* Desktop screen: navbar is not collapsed */
-@media (min-width: 768px) {
+/* From lg/large screens */
+@media (min-width: 990px) {
 
     .nav-item h6 {
         font-size: large;
@@ -73,13 +80,21 @@
         transform: scale(1.1);
         transition: transform 1s;
     }
-
-
 }
+
+
+
+
 /* ============== Home button ======================== */
 .home-btn {
-    color: rgb(224, 185, 57);
+    display: none;
     /* margin-left: 8px; */
+}
+
+.home-btn h5 {
+    color: rgb(224, 185, 57);
+    margin-left: 8px;
+
 }
 
 .home-btn:hover {
@@ -91,11 +106,24 @@
     color: rgb(224, 185, 57);
 }
 
+
+
+@media (min-width: 990px) {
+
+    .home-btn {
+        display: block;
+        /* margin-left: 8px; */
+    }
+
+
+}
+
 /* =========== Media links on Navbar =========== */
 .link-btn {
     color: rgb(224, 185, 57);
     /* color: rgb(243, 209, 16); */
 }
+
 
 
 /* ========== Search Navbar ====================== */
@@ -111,16 +139,16 @@
     /* padding-right: 1rem; */
     display: flex;
     gap: 0.5rem;
-    width: 75%;
+    width: 90%;
     margin: auto;
     padding-right: 0;
 }
-
 
 .search-input {
     transition: width 0.3s ease;
     /* border-radius: 2em; */
 }
+
 
 
 /* ========== Profile links =========== */

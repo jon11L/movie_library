@@ -7,10 +7,12 @@
 /* ========== Screen sizes for Bootstrap 5 =======================================
 xs    >576px
 sm	<576px
-md	720px
-lg	960px
-xl	1140px
-xxl	1320px */
+md	720px 768
+lg	960px 992
+xl	1140px 1200
+xxl	1320px 1400 
+
+*/ 
 
 
 
@@ -21,9 +23,9 @@ xxl	1320px */
 }
 
 @media screen and (max-width: 768px) {
-    #container {
+    /* #container {
         width: 90%;
-    }
+    } */
     
     h1 {
         font-size: 200%;
@@ -31,15 +33,143 @@ xxl	1320px */
 }
 
 
-/* ===== BODY element ========================= */
+/* ===== Main and side element ========================= */
 body {
     background-color: #171623; /* Dark blue background */
 }
 
 
+.l-side-wrapper {
+    /* background-color: rgba(211, 163, 163, 0.459); */
+	display: none;
+}
+.r-side-wrapper {
+    /* background-color: rgba(211, 163, 163, 0.459); */
+	display: none;
+}
+
+.main-wrapper {
+	margin: auto;
+	padding: 2rem 0.25%;
+	/* width: fit-content; */
+}
+
+/* Where lay some template for advertizements. */
+.side-publicity {
+	display: none;
+	padding-top: 15rem; 
+	/* width: 95%;  */
+	/* margin: auto; */
+	border-right: solid 2px;
+
+}
+
+.side-discovery {
+	display: none;
+	text-align: center;
+	border-left: solid 2px;
+	/* padding: 2rem 0; */
+
+}
+
+/* ============== custom display depending on screen size ======================== */
+/* To have two sides and a main row on screen (middle being the main) */
+/* making min-width 990px instead of 960 due to custom class d-lg-block */
+/* which makes appear the side-wrapper at 990px */
+
+@media (min-width: 720px) {
+	.main-wrapper {
+		max-width: 90%;
+	}
+
+}
+
+
+@media (min-width: 990px) {
+	/* .col-xl-1-5 {
+		flex: 0 0 auto;
+		width: 12.5%;
+	} */
+	/* .custom-wide {
+		max-width: 1920px;
+		width: 100%;
+		margin: auto;
+    } */
+    .l-side-wrapper {
+        flex: 0 0 12.5%;
+        width: 12.5%;
+        display: block;
+    }
+    .r-side-wrapper {
+        flex: 0 0 12.5%;
+        max-width: 12.5%;
+        display: block;
+    }
+    
+    .custom-col-9 {
+        flex: 1 0 75%;
+        max-width: 100%;
+    }
+	.side-discovery {
+		display: block;
+	}
+	.side-publicity {
+		display: block;
+	}
+
+}
+
+/* ==== Try prepare separate wrapper for home page style */
+/* Only right wrapper on home page for medium screens */
+
+
+/* @media (min-width: 1260px) {
+	.col-xl-1-5 {
+		flex: 0 0 auto;
+		width: 12.5%;
+	}
+    .l-side-wrapper {
+        flex: 0 0 12.5%;
+        max-width: 12.5%;
+        display: block;
+    }
+
+    .r-side-wrapper {
+        flex: 0 0 12.5%;
+        width: 12.5%;
+        display: block;
+    }
+
+    .custom-col-9 {
+        flex: 1 0 75%;
+        max-width: 100%;
+    }
+} */
+
+
 h1, h2, h3, h4, h5, h6 {
     color:antiquewhite ;
 }
+
+
+/* Optional: make sure .row has no gaps pushing layout */
+.row {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+
+
+/* =============== LEFT side wrapper =========== */
+
+/* list templates */
+.list_advert {
+	width: 90%;
+	margin: auto;
+	align-items: center;
+}
+
+
 
 .card, .card-body, .list-group-item  {
     background-color:rgb(191, 195, 188) ;
@@ -49,7 +179,6 @@ h1, h2, h3, h4, h5, h6 {
 img {
     width: 25%;
     height: auto;
-
 }
 
 
@@ -58,18 +187,16 @@ img {
     color: rgb(224, 185, 57);
 }
 
-
 .vote-average{
     /* color: rgb(192, 190, 99); */
     color: rgb(224, 185, 57);
     margin: 0.5rem 0 0 0.5rem;
 }
 
-
 /* HOme page */
 
 
-/* Banderol on homepage */
+/* ============  Banderol on homepage =============== */
 .banderol {
     background-color: rgb(56, 9, 16);
     text-align: center;
@@ -85,9 +212,9 @@ img {
 }
 
 
-/* list media  */
+/* ============= list media cards ============= */
 
-/* vote and users buttons  */
+/* ================ vote and users buttons on Media list =========== */
 .vote_button_list {
     display: flex;
     justify-content: space-between;
@@ -259,39 +386,6 @@ img {
 
 
 
-/* ============== custom display depending on screen size ======================== */
-/* To have two sides and a main row on screen (middle being the main) */
-@media (min-width: 960px) {
-  .col-xl-1-5 {
-    flex: 0 0 auto;
-    width: 12.5%;
-  }
-  
-  .custom-wide {
-      max-width: 1920px;
-      width: 100%;
-      margin: auto;
-    }
-
-    .custom-col-1-5 {
-      flex: 0 0 12.5%;
-      max-width: 12.5%;
-    }
-    
-    .custom-col-9 {
-      flex: 0 0 75%;
-      max-width: 75%;
-    }
-    
-}
-
-
-/* Optional: make sure .row has no gaps pushing layout */
-.row {
-  margin-left: 0;
-  margin-right: 0;
-}
-
 
 .poster-wrapper {
     height: max-content;
@@ -310,18 +404,34 @@ img {
 }
 
 
-/* ---  Pagination section  --- */
+
+/* ============== list media card ============ */
+/* Only for lists not sample like home page.  */
+.media-row {
+    justify-content: center;
+    border: solid 2px;
+    border-radius: 2em;
+    padding: 1% 1.5%;
+}
+
+
+
+/* ==================  Pagination section  ================== */
 /* give some space around */
 .pagination-section {
     padding: 1.5rem 0 2rem 0;
 
 }
 
+
+
 /* ===================== Help text in forms ========================= */
 .form-help-text small,
 .form-help-text li {
     color: #b8860b;  /* Bootstrap's text-secondary color */
 }
+
+
 
 
 

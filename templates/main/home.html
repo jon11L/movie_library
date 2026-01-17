@@ -2,14 +2,15 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid my-4" style="padding: 0 0.75%;">
 
-    <div class="row">
+    <div class="row main-row">
 
         <!-- Left section of the screen -->
-        <aside class="custom-col-1-5 d-none d-lg-block" style="border-right: solid 2px;">
-            <div style="padding: 0;">
-                <div style="padding-top: 15rem; width: 100%;">
+        <aside class="custom-col-1-5 l-side-wrapper">
+                
+            <div class="side-publicity">
+                <div class="list_advert">
+
                     <!-- <h5 style="color: rgb(99, 192, 161); text-align: center;">Adds:</h5> -->
                     <div
                         style="margin: auto; border: 2px solid black; border-radius: 2em; padding: 0rem 0rem; background-color: rgb(88, 87, 87);">
@@ -26,18 +27,18 @@
                     </div>
                     <div
                         style="margin: 10rem auto; border: 2px solid black; border-radius: 2em; padding: 0px; background-color: rgb(88, 87, 87); min-height: 10rem;">
-                        <div style="padding: 10% 5%; width: fit-content; margin: auto; text-align: center;">
+                        <div style="padding: 10% 5%; margin: auto; text-align: center;">
                             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
                         </div>
                     </div>
                 </div>
-
+            
             </div>
         </aside>
 
 
         <!-- Main/middle section of the screen -->
-        <main class="custom-col-9" style="margin: auto; padding: 0 0.5%;">
+        <main class="custom-col-9 main-wrapper">
             <div>
 
                 <div style="width: 100%; margin: auto; align-items: center;">
@@ -55,14 +56,14 @@
                                     </strong>
                                 </div>
 
-                                <div class="d-block d-lg-none">
-                                    <strong style="color: rgb(146, 19, 19); font-size: 18px;">
-                                        <p>
+                                <div class="total-available d-block d-lg-none">
+                                    <h5 style="color: rgb(146, 19, 19); margin: auto; width: 75%;">
+            
                                             {% if movies_count %} {{ movies_count }} movies - {% else %}No movies - {% endif %}
                                             {% if series_count %} {{ series_count }} series  {% else %} No series  {% endif %}
                                             available in library
-                                        </p>
-                                    </strong>
+                                        
+                                    </h5>
                                 </div>
 
                             </div>
@@ -591,10 +592,12 @@
 
 
         <!--------------------- Right section (wrapper) of the screen ----------------------------->
-        <aside class="custom-col-1-5 d-none d-lg-block" style="border-left: solid 2px;">
-            <div class="mt-2 mb-2" style="text-align: center;">
+        <aside class="custom-col-1-5 r-side-wrapper">
+            <div class="side-discovery">
 
-                <div>
+                <div style="padding-top: 4rem;"></div>
+
+                <div class="total-available">
                     <strong style="color: rgb(146, 19, 19); font-size: 18px;">
                         <p style="margin: 0;">
                             {% if movies_count %}
@@ -615,7 +618,7 @@
                     </strong>
                 </div>
 
-                <div style="padding-top: 50%;">
+                <div style="padding-top: 50%; margin: auto;">
                     <h5 style="color: rgb(224, 185, 57); text-align: center; width: 100%; margin: auto;">Others saved in
                         their watchlist:</h5>
                     {% for media in discover_media %}
@@ -641,6 +644,5 @@
         </aside>
 
     </div>
-</div>
 
 {% endblock %}

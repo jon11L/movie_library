@@ -4,18 +4,17 @@
 {% block content %}
 
 
-<div class="container-fluid" style="padding: 0 0.75%;">
     <div class="custom-wide">
-        <div class="row">
+        <div class="row main-row">
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
+            <aside class="custom-col-1-5 l-side-wrapper">
                 <div></div>
             </aside>
             
 
             <!-- Main/middle section of the screen -->
-            <main class="custom-col-9" style="margin: auto; padding: 0 0.25%;">
+            <main class="custom-col-9 main-wrapper">
 
                 <section id="search-filter-section" style="padding-top: 2.5%;">
 
@@ -164,13 +163,13 @@
             </main>
             
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block" style="padding: 0;">
+            <aside class="custom-col-1-5 r-side-wrapper">
                 <div></div>
             </aside>
             
         </div>
     </div>
-</div>
+
 
 <script>
     document.getElementById('toggleDateRange').addEventListener('change', function() {
