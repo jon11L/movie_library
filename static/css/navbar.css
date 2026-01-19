@@ -130,6 +130,7 @@
 .navbar-search {
     flex: 1;
     max-width: 400px;
+    min-width: 80px;
     /* padding: 0 1rem; */
     margin: auto;
     align-items: center;
@@ -154,4 +155,5 @@
 /* ========== Profile links =========== */
 .navbar-profile {
     margin-left: auto;
+    width: fit-content;
 }
