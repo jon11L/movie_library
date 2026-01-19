@@ -77,54 +77,57 @@
 			</ul>
 		</div>
 
-		<!-- Right-aligned dropdown menu -->
-		<ul class="navbar-nav navbar-profile">
-			{% if user.is_authenticated %}
-			<li class="nav-item dropdown">
-				
-				<a class="nav-link dropdown-toggle" 
-					href="#" role="button" 
-					data-bs-toggle="dropdown"
-					aria-expanded="false">
+		<div>
+			<!-- Right-aligned dropdown menu -->
+			<ul class="navbar-nav navbar-profile">
+				{% if user.is_authenticated %}
+				<li class="nav-item dropdown">
+					
+					<a class="nav-link dropdown-toggle" 
+						href="#" role="button" 
+						data-bs-toggle="dropdown"
+						aria-expanded="false">
+	
+						{% if user.is_authenticated and request.user.profile.profile_picture %}
+						<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
+							style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+						{% elif user.is_authenticated %}
+						<img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
+						{% endif %}
+						<small class="d-none d-md-inline-block">{{ request.user.username.capitalize }}</small>
+					</a>
+	
+					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
+						<li>
+							<a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a>
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a>
+						</li>
+					</ul>
+				</li>
+			
+				{% else %}
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false">
+						Sign up / Login
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
+						<li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
+						<li><a class="dropdown-item" href="{% url 'user:register' %}">Register</a></li>
+					</ul>
+				</li>
+				{% endif %}
+			</ul>
+		</div>
 
-					{% if user.is_authenticated and request.user.profile.profile_picture %}
-					<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
-						style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-					{% elif user.is_authenticated %}
-					<img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-					{% endif %}
-					<small class="d-none d-md-inline-block">{{ request.user.username.capitalize }}</small>
-				</a>
-
-				<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
-					<li>
-						<a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a>
-					</li>
-					<li>
-						<a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a>
-					</li>
-					<li>
-						<hr class="dropdown-divider">
-					</li>
-					<li>
-						<a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a>
-					</li>
-				</ul>
-			</li>
-		
-			{% else %}
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-					aria-expanded="false">
-					Sign up / Login
-				</a>
-				<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
-					<li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>
-					<li><a class="dropdown-item" href="{% url 'user:register' %}">Register</a></li>
-				</ul>
-			</li>
-			{% endif %}
-		</ul>
 	</div>
 </nav>
 <div class="navbar-spacer"></div>

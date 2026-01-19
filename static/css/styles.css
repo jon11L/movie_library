@@ -56,13 +56,13 @@ body {
 
 .main-wrapper {
 	margin: auto;
-	padding: 0rem 0.25% 0 0.25%;
+	padding: 1rem 0.25% 0 0.25%;
 	/* width: fit-content; */
 }
 
 .main-wrapper-home {
 	margin: auto;
-	padding: 0rem 0.25%;
+	padding: 1rem 0.25% 1rem 0.25%;
 
 	/* width: fit-content; */
 }
@@ -258,20 +258,19 @@ img {
 }
 
 
-/* ============= list media cards ============= */
 
-/* ================ vote and users buttons on Media list =========== */
-.vote_button_list {
-    display: flex;
-    justify-content: space-between;
-    border: solid rgba(37, 36, 36, 0.884) 1px; 
-    border-bottom: none; 
-    border-top-left-radius: 0.5em; 
-    border-top-right-radius: 0.5em;
+
+
+/* ========== SSEARCH filter form ================== */
+
+.search-card {
+    min-width: fit-content; 
+    max-width: 90%; 
+    margin: auto;
 }
 
 
-/* =========== reset and submit button in filter search page ============== */
+/* ====== reset and submit button in filter search page ======= */
 .reset-btn {
     display: inline-block;
     padding: 10px 20px;
@@ -304,7 +303,21 @@ img {
 
 
 
-/*===================== Like button ============================ */
+/* ================ list media cards =================== */
+
+
+/* ========== vote and users buttons on Media list ========= */
+.vote_button_list {
+    display: flex;
+    justify-content: space-between;
+    border: solid rgba(37, 36, 36, 0.884) 1px; 
+    border-bottom: none; 
+    border-top-left-radius: 0.5em; 
+    border-top-right-radius: 0.5em;
+}
+
+
+/*============= Like button =============== */
 .like-button {
     background: transparent;
     border: none;
@@ -525,7 +538,7 @@ img {
 }
 
 .under-login-form {
-    margin-bottom: 10rem;
+    margin-bottom: 3rem;
 }
 
 
