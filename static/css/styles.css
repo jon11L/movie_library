@@ -48,19 +48,22 @@ body {
 .r-side-wrapper {
     /* background-color: rgba(211, 163, 163, 0.459); */
 	display: none;
+	
+
     /* padding: 0%;
     margin: 0% 0%; */
 }
 
 .main-wrapper {
 	margin: auto;
-	padding: 2rem 0.25%;
+	padding: 0rem 0.25% 0 0.25%;
 	/* width: fit-content; */
 }
 
 .main-wrapper-home {
 	margin: auto;
-	padding: 2rem 0.25%;
+	padding: 0rem 0.25%;
+
 	/* width: fit-content; */
 }
 
@@ -68,17 +71,17 @@ body {
 .side-publicity {
     display: none;
 	padding-top: 10rem; 
+
 	/* width: 95%;  */
 	/* margin: auto; */
-	border-right: solid 2px;
+
     
 }
 
-/* some template for discoery/reccomendation. // ASIDE RIGHT WRAPPER */
+/* some template for discovery/reccomendation. // ASIDE RIGHT WRAPPER */
 .side-discovery {
 	display: none;
 	text-align: center;
-	border-left: solid 2px;
     margin: auto;
 	/* padding: 2rem 0; */
 
@@ -90,7 +93,6 @@ body {
     .total-available p {
         font-size: 18px;
     }
-
 
 }
 
@@ -120,6 +122,11 @@ body {
 		width: 100%;
 		margin: auto;
     } */
+    .main-wrapper-home {
+        border-left: solid 2px;
+        border-right: solid 2px;
+    }
+
     .l-side-wrapper {
         flex: 0 0 12.5%;
         width: 12.5%;
@@ -425,7 +432,7 @@ img {
 
 
 
-
+/* ---------- Images size settings ------------- */
 .poster-wrapper {
     height: max-content;
     overflow: hidden;
@@ -444,7 +451,7 @@ img {
 
 
 
-/* ============== list media card ============ */
+/* ============== list media card -- That displays rows of Movie/Ser  ============ */
 /* Only for lists not sample like home page.  */
 .media-row {
     justify-content: center;
@@ -458,8 +465,81 @@ img {
 /* ==================  Pagination section  ================== */
 /* give some space around */
 .pagination-section {
-    padding: 1.5rem 0 2rem 0;
+    padding: 1.5rem 0 1rem 0;
 
+}
+
+/* ================= REGISTER // LOGIN PAGES =============== */
+
+/* ------ register page / form  ------- */
+.register-card {
+    background-color: rgb(57, 55, 55);
+    width: 95%; 
+    max-width: 768px; 
+    margin: auto; 
+    border: solid 2px gray; 
+    border-radius: 1em; 
+}
+
+.inner-register-card {
+    width: 95%; 
+    margin: auto;
+}
+
+.register-form {
+    margin: auto;
+    width: fit-content;
+}
+
+
+/* ------ Login page / form  ------- */
+.login-card {
+    margin: auto;
+    /* width: fit-content; */
+    margin-top: 10%;
+}
+
+.login-card form {
+    max-width: 220px;
+    margin: auto;
+}
+
+
+.login-form-btn {
+    width: 95%; 
+    padding-top: 10px;
+    display: flex;
+    margin: auto;
+    justify-content: space-between;
+}
+
+.register-btn a {
+    padding-top: 0.5rem;
+    border-bottom: rgb(56, 9, 16) 0.5px solid;
+    text-decoration: none;
+    color: antiquewhite;
+}
+
+.register-btn a:hover {
+    color: rgb(224, 185, 57);
+}
+
+.under-login-form {
+    margin-bottom: 10rem;
+}
+
+
+/* Adapt the login form width on large screen + fix empty space below */
+@media (min-width: 1220px) {
+    .login-card form {
+        max-width: 320px;
+    }
+    .login-form-btn {
+        width: 90%; 
+    }
+    .under-login-form {
+        margin-bottom: 21%;
+    }
 }
 
 

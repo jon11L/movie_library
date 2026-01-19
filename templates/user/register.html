@@ -3,46 +3,48 @@
 
 {% block content %}
 
+<div class="custom-wide">
+    <div class="row">
 
+        <!-- Left section of the screen -->
+        <aside class="custom-col-1-5 l-side-wrapper">
+            <div></div>
+        </aside>
 
-<div class="container-fluid my-4">
-    <div class="custom-wide">
-        <div class="row">
+        <main class="custom-col-9 main-wrapper">
             
-            
-            <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block">
-                <div></div>
-            </aside>
+            <div class="register-card">
+                <div class="inner-register-card">
 
-
-            <main class="custom-col-9">
-                <div class="col-md-6" style="margin: auto;">
-                    <h3 style="padding: 5% 0; text-align: center;">Register</h3>
-                
-                    <form method="POST" action="{% url 'user:register' %}">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        
-                        <!-- Correct the color of the help text -->
-
-                        <div style="text-align: center; padding-top: 4%;">
-                            <button type="submit" class="btn btn-secondary" style="display: block; margin: 0 20px; display: inline-block;">
-                                submit
-                            </button>
+                    <div class="register-form">
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <h2>Register</h2>
+                            <hr style="margin: 8px;">
                         </div>
-                    </form>
+        
+                        <form method="POST" action="{% url 'user:register' %}">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <!-- help text's color set directly in forms.py -->
+                            <div style="text-align: center; padding: 4% 0;">
+                                <button type="submit" class="btn btn-secondary">
+                                    submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div style="padding-bottom: 5%;"></div>
+            </div>
+            <div style="padding-bottom: 5%;"></div>
 
+        </main>
 
-            <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-lg-block">
-                <div>
-                </div>
-            </aside>
+        <!-- Right section of the screen -->
+        <aside class="custom-col-1-5 r-side-wrapper">
+            <div>
+            </div>
+        </aside>
 
-        </div>
     </div>
 </div>
 
