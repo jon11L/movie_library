@@ -3,67 +3,68 @@
 {% block content %}
 {% load static %}
 
-<div class="container-fluid my-4">
-    <div class="custom-wide">
-        <div class="row">
-            
-
-            <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
-                <div></div>
-            </aside>
-            
-
-            <main class="custom-col-9">
-
-                <div style="margin: auto; align-items: center; width: 40%;">
-                    <div style="padding-top: 15%;">
-                        <h3 style="text-align: center;">Update</h3>
-                
-                        <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
-                            {% csrf_token %}
-
-                            {% for field in form %}
-                            <label for="{{ field.id_for_label }}" style="color:antiquewhite">
-                                {{ field.label }}
-                            </label>
-
-                            {{ field }}
-                            {% if field.help_text %}
-                                <div class="form-text" style="padding-top: 15px;">
-                                    {% autoescape off %}{{ field.help_text }}{% endautoescape %}
-                                </div>
-                            {% endif %}
-                            {% endfor %}
-                            
-                            <div class="d-flex" style="padding-top: 8%; padding-bottom: 2%; justify-content: space-between; width: 75%; margin: auto;">
-
-                                <a href="{% url 'user:update_profile' request.user.id %}" class="btn btn-secondary">
-                                    Go Back
-                                </a>
-
-                                <button type="submit" class="btn btn-secondary">
-                                    submit
-                                </button>
-                                
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-                <div style="padding-bottom: 16%;"></div>
+<div class="custom-wide">
+    <div class="row">
 
 
-            </main>
+        <!-- Left section of the screen -->
+        <aside class="custom-col-1-5 l-side-wrapper">
+            <div></div>
+        </aside>
 
-            <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
+
+        <main class="custom-col-9 main-wrapper">
+
+            <div class="edit-user-card">
+
                 <div>
+                    <h2 style="text-align: center;">Update</h2>
+
+                    <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                        <label for="{{ field.id_for_label }}" style="color:antiquewhite">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">
+                            {% autoescape off %}{{ field.help_text }}{% endautoescape %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+                        <!--  Buttons -->
+                        <div class="d-flex"
+                            style="justify-content: space-between; width: 95%; margin: auto; padding-top: 2rem;">
+
+                            <a href="{% url 'user:update_profile' request.user.id %}" class="btn btn-secondary">
+                                Go Back
+                            </a>
+
+                            <button type="submit" class="btn btn-secondary">
+                                submit
+                            </button>
+
+                        </div>
+                    </form>
+
                 </div>
-            </aside>
+            </div>
+            <div class="under-user-update-form"></div>
 
 
-        </div>
+        </main>
+
+        <!-- Right section of the screen -->
+        <aside class="custom-col-1-5 r-side-wrapper">
+            <div>
+            </div>
+        </aside>
+
+
     </div>
 </div>
 
