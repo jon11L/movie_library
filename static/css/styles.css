@@ -513,7 +513,7 @@ img {
 }
 
 .login-card form {
-    max-width: 220px;
+    max-width: 250px;
     margin: auto;
 }
 
@@ -537,12 +537,67 @@ img {
     color: rgb(224, 185, 57);
 }
 
+/* Pushes empty space for footer to be at the bottom */
 .under-login-form {
     margin-bottom: 3rem;
 }
 
 
-/* Adapt the login form width on large screen + fix empty space below */
+/* Edit user's account info page */
+.edit-user-card {
+    margin: auto;
+    margin-top: 5%;
+}
+
+.edit-user-card form{
+    width: 90%;
+    margin: auto;
+}
+
+
+.edit-password-card {
+    margin: auto;
+    margin-top: 5%;
+}
+
+.edit-password-card form{
+    width: fit-content;
+    text-align: center;
+    margin: auto;
+    /* margin-top: 1rem; */
+}
+
+.edit-password-card form ul{
+    text-align: left;
+    margin: auto;
+}
+
+.update-password-field {
+    margin-bottom: 1rem;
+    /* min-width: 280px; */
+}
+
+.update-password-field input{
+    min-width: 280px;
+}
+
+
+
+
+@media (min-width: 990px) {
+    .edit-user-card form{
+        max-width: 320px;
+    }
+
+    .edit-password-card form ul{
+        width: 75%;
+
+    }
+    
+}
+
+
+/* Adapt the login form/page width on large screen + fix empty space below */
 @media (min-width: 1220px) {
     .login-card form {
         max-width: 320px;
@@ -553,7 +608,18 @@ img {
     .under-login-form {
         margin-bottom: 21%;
     }
+    
+
+    .under-user-update-form {
+        margin-bottom: 15%;
+    }
+
 }
+
+
+
+
+
 
 
 
