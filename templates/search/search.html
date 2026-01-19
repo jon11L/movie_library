@@ -29,35 +29,34 @@
                                 <!-- {% csrf_token %} -->
                                 <div class="d-flex" style="flex-direction:row; flex-wrap: wrap; justify-content: center;">
 
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="form-group mb-2 me-3">
-                                                <label for="content_type">Content Type:</label>
+                                    <div class="d-flex d-lg-block" style="align-items: self-start;">
+
+                                            <div class="form-group me-3" style="margin-bottom: 1rem;" style="text-align: center;">
+                                                <label for="content_type"><strong>Content Type:</strong></label>
                                                 {{ filter.form.content_type }}
                                             </div>
 
-                                            <div class="form-group me-3" style="margin-top: 1em;" id="genre">
-                                                <label for="genre">Genre:</label>
+                                            <div class="form-group me-3" id="genre" style="text-align: center;">
+                                                <label for="genre"><strong>Genre:</strong></label>
                                                 {{ filter.form.genre }}
                                             </div>
-                                        </div>                    
                                     </div>
                                 
-                                    <div class="d-inline-block">
+                                    <div class="d-inline-block d-lg-flex">
 
-                                        <div class="form-group mb-2 me-3">
-                                            <label for="title">Title:</label>
+                                        <div class="form-group mb-2 me-3" id="title" style="width: 75%; max-width: 200px; text-align: center;">
+                                            <label for="title"><strong>Title:</strong></label>
                                             {{ filter.form.title }}
                                         </div>
                                     
                                     
-                                        <div class="d-flex">
-                                            <div class="form-group mb-2 me-3" style="width: 80%;">
-                                                <label for="vote_average_from">Min Rating:</label>
+                                        <div class="d-flex d-lg-block" style="flex-wrap: wrap;">
+                                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                                <label for="vote_average_from"><strong>Min Rating:</strong></label>
                                                 {{ filter.form.vote_average_gte }}
                                             </div>
-                                            <div class="form-group mb-2 me-3" style="width: 80%;">
-                                                <label for="vote_average_to">Max Rating:</label>
+                                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                                <label for="vote_average_to"><strong>Max Rating:</strong></label>
                                                 {{ filter.form.vote_average_lte }}
                                             </div>
                                         </div>
@@ -65,20 +64,19 @@
                                 
                                     <!-- Date fields / option between exact and range filter -->
                                     <div class="form-group" id="dateFieldsContainer">
-                                    <!-- Find a way to use a calendar with Bootstrap or so. Nicer Ux -->
-                                        <div class="form-group me-2" id="exactDateField">
-                                            <label for="release_date">Date:</label>
+                                        <div class="form-group me-2" id="exactDateField" style="text-align: center;">
+                                            <label for="release_date"><strong>Date:</strong></label>
                                             {{ filter.form.release_date }}
                                         </div>
                                         
                                         <div id="rangeDateField" style="display: none;">
-                                            <div class="form-group mb-2 me-2">
-                                                <label for="release_date_from">year From:</label>
+                                            <div class="form-group mb-2 me-2" style="text-align: center;">
+                                                <label for="release_date_from"><strong>year From:</strong></label>
                                                 {{ filter.form.release_date_gte }}
                                             </div>
                                         
-                                            <div class="form-group me-2">
-                                                <label for="release_date_to">year To:</label>
+                                            <div class="form-group me-2" style="text-align: center;">
+                                                <label for="release_date_to"><strong>year To:</strong></label>
                                                 {{ filter.form.release_date_lte }}
                                             </div>
                                         </div>
@@ -95,8 +93,8 @@
 
                                     </div>
                                 
-                                    <div class="form-group mb-2" id="language">
-                                        <label for="language">Language:</label>
+                                    <div class="form-group mb-2" id="language" style="text-align: center;">
+                                        <label for="language"><strong>Language:</strong></label>
                                         {{ filter.form.language }}
                                     </div>
 

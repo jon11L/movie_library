@@ -2,67 +2,76 @@
 
 {% block content %}
 
+<div class="custom-wide">
+    <div class="row">
 
-<div class="container-fluid my-4">
-    <div class="custom-wide">
-        <div class="row">
-            
-            
-            <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
-                <div></div>
-            </aside>
-            
-            <main class="custom-col-9">
 
-                {% if user.is_authenticated %}
-                <div class="mt-5" style="text-align: center;">
-                    <h2>You are already connected, {{ user.username }}!</h2>
-                    <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin-top: 3em;">Home</a>
-                </div>
-            
-                {% else %}
-                <div class="col-md-8" style="margin: auto;">
-                    <h3 style="padding-top:5rem; text-align: center;">Login</h3>
-                    <br>
-                
-                    <form method="POST" action="{% url 'user:login' %}">
-                        {% csrf_token %}
-                        <div class="mb-4" style="width: 40%; margin: auto;">
-                            <input type="text" class="form-control" placeholder="Enter Your Username" name="username">
-                        </div>
-                        <div class="mb-4" style="width: 40%; margin: auto;">
-                            <input type="password" class="form-control" placeholder="Enter Your Password" name="password">
-                        </div>
-                    
-                        <div style="text-align: center; padding-top: 10px;">
-                            <button type="submit" class="btn btn-secondary" style="margin: 0 45px; display: inline-block;">
+        <!-- Left section of the screen -->
+        <aside class="custom-col-1-5 l-side-wrapper">
+            <div></div>
+        </aside>
+
+        <main class="custom-col-9 main-wrapper">
+
+            {% if user.is_authenticated %}
+            <div class="mt-5" style="text-align: center;">
+                <h2>You are already connected, {{ user.username }}!</h2>
+                <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin-top: 3em;">Home</a>
+            </div>
+
+            {% else %}
+            <div class="login-card">
+
+                <h3 style="text-align: center;">Login</h3>
+                <br>
+
+                <form method="POST" action="{% url 'user:login' %}">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" class="form-control" placeholder="Enter Your Username" name="username">
+                    </div>
+                    <div class="mb-4">
+                        <input type="password" class="form-control" placeholder="Enter Your Password" name="password">
+                    </div>
+
+                    <div class="login-form-btn">
+                        <div>
+                            <button type="submit" class="btn btn-secondary">
                                 Log In
                             </button>
-                            <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin: 0 45px;">Go Back</a>
+                            <div class="register-btn">
+                                <a href="{% url 'user:register' %}">
+                                    <p style="margin-top: 0.5rem; border-bottom: rgb(56, 9, 16) 0.5px solid;">Register
+                                        here</p>
+                                </a>
+                            </div>
                         </div>
-                        <div style="text-align: center; margin: 8px 170px 0px 0px;">
-                            <a href="{% url 'user:register' %}" style="text-decoration: none; color: #000;">
-                                <p><small style="color: antiquewhite;">Register here</small></p></a>
+                        <div>
+                            <a href="{% url 'main:home' %}" class="btn btn-secondary">Go Back</a>
                         </div>
-                    </form>
-                </div>
-                {% endif %}
-                
-                <div style="padding-bottom: 25%;"></div>
+                    </div>
 
-            </main>
+                </form>
+
+            </div>
+
+            {% endif %}
+
+            <!-- Provide some extra space below the form & before the footer / avoiding weird end of page -->
+            <div class="under-login-form"></div>
+
+        </main>
 
 
-            <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 d-none d-md-block">
-                <div>
-                </div>
-            </aside>
+        <!-- Right section of the screen -->
+        <aside class="custom-col-1-5 r-side-wrapper">
+            <div>
+            </div>
+        </aside>
 
-        </div>
     </div>
 </div>
+
 
 
 {% endblock %}
