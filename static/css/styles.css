@@ -261,6 +261,15 @@ img {
 
 
 
+/* Detail movie / Serie pages */
+@media (min-width: 769px) {
+    .movie-info-1 {
+        padding-top: 21%;
+    }
+}
+
+
+
 /* ========== SSEARCH filter form ================== */
 
 .search-card {

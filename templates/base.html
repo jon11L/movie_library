@@ -24,7 +24,6 @@
 		{% if messages %}
 		{% for message in messages %}
 		<div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-warning{% endif %} alert-dismissible fade show mb-2"
-			style="width: fit-content;" 
 			role="alert">
 			{{ message }}
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -62,8 +61,10 @@
 	<!-- custom js script -->
 	<script src="{% static 'js/main.js' %}"></script>
 
-	<!-- pop-up message handling -->
+	<!-- pop-up message handling / -->
 	<script>
+		// Below is only for the message directly coming from django like success login message.
+		// But it seem to create a friction with the message coming from 
 		document.addEventListener('DOMContentLoaded', function() {
 			// Auto dismiss alerts after a few seconds
 			setTimeout(function() {
@@ -74,7 +75,7 @@
 					// Close it
 					bsAlert.close();
 				});
-			}, 3500); // in milliseconds (3.5s)
+			}, 4000); // in milliseconds
 		});
 
 

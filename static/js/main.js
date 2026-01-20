@@ -19,7 +19,7 @@ $(document).ready(function() {
         messageContainer.fadeIn();
         
         // Hide message after 3,5 seconds
-        setTimeout(() => messageContainer.fadeOut(), 3500);
+        setTimeout(() => messageContainer.fadeOut(), 4000);
     }
 
 
@@ -105,9 +105,9 @@ $(document).ready(function() {
     });
 
 
-    //============================= Watchlist feature, in progress =======================================
+//============================= Watchlist feature, in progress =======================================
 
-    // Listen for clicks on any element with class 'watchlist-button'
+    // ------ Listen for clicks on any element with class 'watchlist-button'  -------
     $('.watchlist-button').click(function(e) {
         console.log('Watchlist button clicked!');
         e.preventDefault();
@@ -152,8 +152,11 @@ $(document).ready(function() {
                 icon.addClass('pulse');
                 setTimeout(() => button.removeClass('pulse'), 1000);
             },
+            //------------------- end for watchlist-------------------------
+
+
             
-            // Handle errors messages
+            // ---------- Handle errors messages ------------------
             error: function(xhr) {
                 console.error('Error:', xhr.responseText);
                 
@@ -179,11 +182,11 @@ $(document).ready(function() {
             
             complete: function() {
                 // Re-enable button after request completes
+                // Should set a little timer to avoid multi clicking too fast
                 button.prop('disabled', false);
                 
             }
             
-    //------------------- end of TRial for watchlist-------------------------
         });
     });
 

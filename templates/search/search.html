@@ -18,7 +18,7 @@
 
                 <section id="search-filter-section" style="padding-top: 2.5%;">
 
-                    <div class="card" style="min-width: fit-content; max-width: 90%; margin: auto;">
+                    <div class="card search-card">
                         <div class="card-header" style="text-align: center; margin-top: 8px;">
                             <h5 class="card-title">Filter your search here</h5>  
                         </div>
@@ -50,8 +50,8 @@
                                         </div>
                                     
                                     
-                                        <div class="d-flex d-lg-block" style="flex-wrap: wrap;">
-                                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                        <div class="d-flex d-lg-block col-md-4" style="flex-wrap: wrap;">
+                                            <div class="form-group col-sm-4 mb-2 me-3" style="max-width: 180px; text-align: center;">
                                                 <label for="vote_average_from"><strong>Min Rating:</strong></label>
                                                 {{ filter.form.vote_average_gte }}
                                             </div>
@@ -62,6 +62,7 @@
                                         </div>
                                     </div>
                                 
+                                    
                                     <!-- Date fields / option between exact and range filter -->
                                     <div class="form-group" id="dateFieldsContainer">
                                         <div class="form-group me-2" id="exactDateField" style="text-align: center;">
@@ -118,7 +119,129 @@
                 </section>
 
                 <br>
+                <br>
+                <br>
+                <br>
+                <br>
                 
+
+
+
+
+
+
+
+
+                <section id="search-filter-section" style="padding-top: 2.5%;">
+
+                    <div class="card search-card">
+                        <div class="card-header" style="text-align: center; margin-top: 8px;">
+                            <h5 class="card-title">Filter your search here</h5>  
+                        </div>
+
+                        <!------------------ Search Filter  form  ----------------->
+                        <div class="card-body" style="margin-top: 1%;">
+                            <form method="get" action="{% url 'search:search' %}">
+                                <!-- {% csrf_token %} -->
+                                <div class="d-flex" style="flex-direction:row; flex-wrap: wrap; justify-content: center;">
+
+                                    <div class="d-flex d-lg-block" style="align-items: self-start;">
+
+                                            <div class="form-group me-3" style="margin-bottom: 1rem;" style="text-align: center;">
+                                                <label for="content_type"><strong>Content Type:</strong></label>
+                                                {{ filter.form.content_type }}
+                                            </div>
+
+                                            <div class="form-group me-3" id="genre" style="text-align: center;">
+                                                <label for="genre"><strong>Genre:</strong></label>
+                                                {{ filter.form.genre }}
+                                            </div>
+                                    </div>
+                                
+                                    <div class="d-inline-block d-lg-flex">
+
+                                        <div class="form-group mb-2 me-3" id="title" style="width: 75%; max-width: 200px; text-align: center;">
+                                            <label for="title"><strong>Title:</strong></label>
+                                            {{ filter.form.title }}
+                                        </div>
+                                    
+                                    
+                                        <div class="d-flex d-lg-block col-md-4" style="flex-wrap: wrap;">
+                                            <div class="form-group col-sm-4 mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                                <label for="vote_average_from"><strong>Min Rating:</strong></label>
+                                                {{ filter.form.vote_average_gte }}
+                                            </div>
+                                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                                <label for="vote_average_to"><strong>Max Rating:</strong></label>
+                                                {{ filter.form.vote_average_lte }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    
+                                    <!-- Date fields / option between exact and range filter -->
+                                    <div class="form-group" id="dateFieldsContainer">
+                                        <div class="form-group me-2" id="exactDateField" style="text-align: center;">
+                                            <label for="release_date"><strong>Date:</strong></label>
+                                            {{ filter.form.release_date }}
+                                        </div>
+                                        
+                                        <div id="rangeDateField" style="display: none;">
+                                            <div class="form-group mb-2 me-2" style="text-align: center;">
+                                                <label for="release_date_from"><strong>year From:</strong></label>
+                                                {{ filter.form.release_date_gte }}
+                                            </div>
+                                        
+                                            <div class="form-group me-2" style="text-align: center;">
+                                                <label for="release_date_to"><strong>year To:</strong></label>
+                                                {{ filter.form.release_date_lte }}
+                                            </div>
+                                        </div>
+                                    
+                                        <!-- toggle the release date field between Exact or Range-filter -->
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="toggleDateRange" role="switch">
+                                            <label class="form-check-label" for="toggleDateRange">
+                                                <small>Use range period instead</small>
+                                                <!-- If switch checked then -->
+                                                <!-- <p>Select a specific year instead</p> -->
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                
+                                    <div class="form-group mb-2" id="language" style="text-align: center;">
+                                        <label for="language"><strong>Language:</strong></label>
+                                        {{ filter.form.language }}
+                                    </div>
+
+                                </div>
+
+                                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                                    <a class="reset-btn" 
+                                        aria-current="page" 
+                                        href="{% url 'search:search' %}">
+                                        Reset filters
+                                    </a>
+                                
+                                    <button type="submit" class="submit-btn btn btn-secondary">
+                                        Apply filters
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+
+
+
+
+
+
+
+
                 <!------------- Result Query Result Found or no items found -------------->
                 <section id="search-results-section">
 

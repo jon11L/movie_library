@@ -31,7 +31,7 @@
             <main class="custom-col-9 main-wrapper">
                 <br>
                 {% if movie %}
-                <div class="card" style="justify-content: center; width: 90%; margin: auto; border-radius: 0.5em;">
+                <div class="card col-12 col-sm-12  col-lg-10" style="justify-content: center; flex-wrap: wrap; margin: auto; border-radius: 0.5em;">
 
                     <section id="movie-detail-section">
 
@@ -82,9 +82,9 @@
 
                             <div class="row">
 
-                                <div class="col-4">
+                                <div class="col-10 col-sm-8 col-md-4" style="margin: auto;">
 
-                                    <div class="card-img-top" style="text-align: center; margin-top: 20px;">
+                                    <div class="card-img-top" style="text-align: center; margin-top: 1rem;">
                                         {% if movie.render_poster %}
                                         <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="{{ movie }} photo">
                                         {% endif %}
@@ -118,14 +118,14 @@
 
                                 </div>
 
-                                <div class="col-4" style="padding-top: 21%;">
+                                <div class="movie-info-1 col-6 col-sm-4 col-md-4">
                                     <div>
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item" style="padding: 0">
 
                                             <li class="list-group-item">
-                                                <div class="d-flex" style="justify-content:space-around;">
-                                                    <div>
+                                                <div class="d-block d-md-flex" style="flex-wrap: wrap;">
+                                                    <div class="mb-2">
                                                         <strong>Released:</strong> {{ movie.render_release_date }}
                                                     </div>
                                                     <div>
@@ -161,7 +161,7 @@
                                 </div>
 
 
-                                <div class="col-4" style="padding-top: 21%;">
+                                <div class="col-6 col-md-4" style="padding-top: 21%;">
 
                                     <div>
                                         <ul class="list-group list-group-flush">
@@ -179,13 +179,14 @@
                                                 <p>{{ movie.render_writer }}</p>
                                             </li>
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <div class="d-flex">
+                                                
+                                                <div class="d-flex" style="flex-wrap: wrap; justify-content: space-evenly;">
 
-                                                    <div style="margin-right: 5em; width: 40%;">
+                                                    <div style="text-align: center;">
                                                         <strong>Origin country:</strong>
                                                         <p>{{ movie.render_origin_country }}</p>
                                                     </div>
-                                                    <div style=" width: 60%;">
+                                                    <div style="text-align: center;">
                                                         <strong>Language:</strong>
                                                         <p>{{ movie.render_spoken_languages }}</p>
                                                     </div>
