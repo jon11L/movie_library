@@ -543,21 +543,25 @@ img {
 }
 
 
-/* Edit user's account info page */
-.edit-user-card {
+
+
+
+/* ======= Edit user's account info page  ========= */
+/* .edit-user-card {
     margin: auto;
     margin-top: 5%;
-}
+    width: 95%;
+} */
 
-.edit-user-card form{
+/* .edit-user-card form{
     width: 90%;
     margin: auto;
-}
+} */
 
-
+/* ======== Edit user's password Page/form ===== */
 .edit-password-card {
-    margin: auto;
-    margin-top: 5%;
+    margin: 0 auto;
+    margin-top: 2%;
 }
 
 .edit-password-card form{
@@ -570,6 +574,7 @@ img {
 .edit-password-card form ul{
     text-align: left;
     margin: auto;
+    width: 75%;
 }
 
 .update-password-field {
@@ -583,18 +588,21 @@ img {
 
 
 
+.under-login-form {
+    margin-bottom: 14%;
+}
 
 @media (min-width: 990px) {
-    .edit-user-card form{
+    /* .edit-user-card form{
         max-width: 320px;
-    }
+    } */
 
-    .edit-password-card form ul{
-        width: 75%;
-
-    }
     
+    .under-user-update-form {
+        margin-bottom: 8%;
+    }
 }
+
 
 
 /* Adapt the login form/page width on large screen + fix empty space below */
@@ -609,10 +617,11 @@ img {
         margin-bottom: 21%;
     }
     
-
     .under-user-update-form {
-        margin-bottom: 15%;
+        margin-bottom: 16%;
     }
+    
+    /* Pushes down to fill the page on large screen / for edit_user */
 
 }
 

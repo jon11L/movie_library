@@ -15,9 +15,9 @@
 
         <main class="custom-col-9 main-wrapper">
 
-            <div class="edit-user-card">
+            <div class="edit-user-card col-10 col-xl-8 mx-auto align-items-center">
 
-                <div>
+                <div class="col-sm-8 col-md-6 col-lg-6 col-xl-6 mx-auto mt-2 mt-xl-5">
                     <h2 style="text-align: center;">Update</h2>
 
                     <form method="POST" action="{% url 'user:update_user_name' request.user.id %}">
@@ -29,6 +29,7 @@
                         </label>
 
                         {{ field }}
+                        
                         {% if field.help_text %}
                         <div class="form-text">
                             {% autoescape off %}{{ field.help_text }}{% endautoescape %}
@@ -37,8 +38,8 @@
                         {% endfor %}
 
                         <!--  Buttons -->
-                        <div class="d-flex"
-                            style="justify-content: space-between; width: 95%; margin: auto; padding-top: 2rem;">
+                        <div class="d-flex w-75 pt-5 pb-xl-4 mx-auto"
+                            style="justify-content: space-between;">
 
                             <a href="{% url 'user:update_profile' request.user.id %}" class="btn btn-secondary">
                                 Go Back
@@ -53,7 +54,7 @@
 
                 </div>
             </div>
-            <div class="under-user-update-form"></div>
+            <div class="under-user-update-form " ></div>
 
 
         </main>

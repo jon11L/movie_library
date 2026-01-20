@@ -248,7 +248,7 @@ def update_password(request, pk):
 
         if request.method == 'GET':
             form = PasswordChangeForm(user=user)
-            return render(request, 'user/edit_pw.html', {'form': form})
+            return render(request, 'user/edit_password.html', {'form': form})
 
         if request.method == 'POST':
             # update the profile with the new information
@@ -264,7 +264,7 @@ def update_password(request, pk):
             else:
                 print("Something went wrong, password not matching or too short")
                 messages.error(request, "Something went wrong, password not matching or too short.\nTry again.")
-                return render(request, 'user/edit_pw.html', {'form': form})
+                return render(request, 'user/edit_password.html', {'form': form})
         
     else:
         messages.error(request, ("You must be logged in to access this page"))
