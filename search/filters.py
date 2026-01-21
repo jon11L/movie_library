@@ -169,6 +169,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         widget=forms.NumberInput(attrs={
             'class': 'form-control', 'placeholder':'Ending range...',
             'type': 'number',
+            'min': '1900',  # set to start search from 1900
             'max': f'{curr_year}',
             'style': 'width: 75%;',
             })
@@ -206,7 +207,8 @@ class SharedMediaFilter(django_filters.FilterSet):
         print(f"*Filtering by {name}: {value}")
         print(f"self.data is: {self.data}")
         print(f"self.data is: {queryset}")
-        print(f"self.data.get('content_type') is: {self.data.get('content_type')}")
+        if self.data != None:
+            print(f"self.data.get('content_type') is: {self.data.get('content_type')}")
         print(f"queryset_model is: {queryset.model}\n")
 
         # if 'release_date_lte' in self.data:
@@ -237,7 +239,9 @@ class SharedMediaFilter(django_filters.FilterSet):
 
             print(f"query_set: {queryset} ")
             filtered_queryset = queryset
-            print(f"content_type is:  {self.data.get('content_type')}")
+            
+            if self.data != None:
+                print(f"content_type is:  {self.data.get('content_type')}")
             
             # For each selected genre, filter the queryset
             # to include only those that contain the genre in their genre list
