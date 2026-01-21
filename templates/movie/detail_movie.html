@@ -82,7 +82,7 @@
 
                             <div class="row">
                                 <!-- ROW 1 = Poster/title/tagline/overview -->
-                                <div class="detail-title-poster col-12 col-sm-10 col-md-4">
+                                <div class="detail-title-poster col-12 col-sm-10 col-md-5 col-xl-4">
                                     
                                     <div class="pt-md-5">
 
@@ -109,12 +109,12 @@
                                         </div>
                                     </div>
                                 
-                                    <div class="detail-overview col-12 col-md-10 mx-auto">
+                                    <div class="detail-overview col-11 col-md-12 mx-auto mb-3 mb-md-0">
                                         {% if movie.overview %}
                                         <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                        <p>{{ movie.overview }}</p>
+                                        <p style="text-align: center;">{{ movie.overview }}</p>
                                         {% else %}
-                                        <p class="card-text"><strong>Overview:</strong></p>
+                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
                                         <p>No description available.</p>
                                         {% endif %}
                                     </div>
@@ -123,11 +123,11 @@
 
 
                                 <!--  ROW 2 = Release/length/genre/casting -->
-                                <div class="movie-info-1 col-10 col-sm-6 col-md-4">
+                                <div class="movie-info-1 col-10 col-sm-6 col-md-7 col-xl-4">
 
                                     <div>
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item" style="padding: 0">
+                                            <li class="list-group-item" style="padding: 0"></li>
 
                                             <li class="list-group-item">
                                                 <div class="release-length d-flex" style=" justify-content: space-around;">
@@ -168,10 +168,10 @@
                                 </div>
 
                                 <!-- ROW 3 = Production/director/writer/country/language -->
-                                <div class="movie-info-2 col-10 col-sm-6 col-md-4">
+                                <div class="movie-info-2 col-10 col-sm-6 col-md-12 col-xl-4">
 
                                     <div>
-                                        <ul class="list-group list-group-flush">
+                                        <ul class="list-group list-group-flush d-block d-md-flex d-lg-block">
                                             <li class="list-group-item" style="padding: 0">
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="text-align: center; margin: 1% 0;"><strong>Production:</strong></p>
@@ -222,7 +222,7 @@
     
                                 {% for trailer in movie.trailers|slice:"0:4" %}
                                 
-                                <div class="ms-2 mb-2 trailer-wrapper">
+                                <div class="mb-2 ms-sm-2 trailer-wrapper">
                                     <iframe 
     
                                         src="https://www.youtube.com/embed/{{ trailer.key }}"
