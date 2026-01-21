@@ -216,7 +216,10 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-
+/* 
+Need to reorganize the name or call a parent custom class
+ as it may affect other content
+ */
 .card, .card-body, .list-group-item  {
     background-color:rgb(191, 195, 188) ;
 }
@@ -281,6 +284,11 @@ img {
 }
 
 
+.banner-space {
+    padding-bottom: 30%;
+}
+
+
 /* .detail-title-poster {
 } */
 
@@ -341,7 +349,7 @@ img {
     min-height: 100px;
     /* max-height: 200px; */
     aspect-ratio: 4/3;
-    /* flex: 0 0 46%; */
+    flex: 0 0 47%;
 }
 
 .trailer-wrapper iframe {
