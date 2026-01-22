@@ -171,7 +171,7 @@
                                             </li>
 
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <div class="d-flex">
+                                                <div class="d-flex" style="justify-content: space-around;">
                                                     <div>
                                                         <strong>Origin country:</strong>
                                                         <p>{{ serie.render_origin_country }}</p>
@@ -196,18 +196,18 @@
 
                 
                     <!------- Display the seasons here and episodes ---------->
-                    <section class="season-episode-content">
+                    <section class="season-episode-content" style="width: 100%;">
                     
-                        <div style="padding-left: 5rem; padding-top: 1rem;">
+                        <div style="padding-left: 7%; padding-top: 1rem;">
                             <h5 style="color: inherit;">Seasons:</h5>
                         </div>
                     
-                        <div class="season-btn" style="display: flex; flex-wrap: wrap; width: 85%; margin-left: 80px;">
+                        <div class="season-btn" style="display: flex; flex-wrap: wrap; padding-left: 7%;">
                             {% for season in seasons %}
                             <!-- try to not display season if no episode are present -->
                             {% if season.episodes %}
-                            <div style="margin-left: 10px; margin-bottom: 20px;  width: fit-content;">
-                                <button class="season-toggle" data-season="{{ season.id }}" style="padding:8px 15px 8px 15px;">
+                            <div style="margin-left: 0.5rem; margin-bottom: 1rem;  width: fit-content;">
+                                <button class="season-toggle" data-season="{{ season.id }}" style="padding:0.5rem 1rem;">
                                     {{ season }}
                                 </button>
                             </div>
@@ -224,71 +224,78 @@
                             {% for season in seasons %}
                             <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none; padding: 0;">
                                 <!-- Trailers -->
-                                <div style="text-align: center; margin: auto; padding-top: 10px; width: fit-content;">
-                                    <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
-                                </div>
-
-
+                                
                                 <section id="trailers" style="margin: auto;">
+                                    
+                                    <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
+                                        <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                                    </div>
+                                    {% if season.trailers %}
+
                                     <div class="outer-trailer" style="padding-top: 1rem;">
 
                                         <div class="display-trailer">
 
-                                            {% if season.trailers %}
-                                            <div style="background-color:rgb(131, 125, 125); padding: 0;">
-                                                <div class="display-trailer" style="display: flex; flex-wrap: wrap;  padding-top: 0.6em; padding-bottom: 0em; padding-left: 0.7em;">
+                                            <!-- <div style="display: flex; flex-wrap: wrap; padding-top: 0.6em; padding-bottom: 0em; background-color:rgb(131, 125, 125);"> -->
 
-                                                    {% for trailer in season.trailers|slice:"0:4" %}
-                                                    <div class="mb-2 ms-sm-2 trailer-wrapper">
-                                                        <iframe
-                                                            src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                                            title="YouTube video player"
-                                                            frameborder="0"
-                                                            referrerpolicy="strict-origin-when-cross-origin"
-                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                            allowfullscreen>
-                                                        </iframe>
-                                                    </div>
-                                                    {% endfor %}
-                                                </div>
-
+                                            {% for trailer in season.trailers|slice:"0:4" %}
+                                            <div class="mb-2 ms-sm-2 trailer-wrapper">
+                                                <iframe
+                                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                                    title="YouTube video player"
+                                                    frameborder="0"
+                                                    referrerpolicy="strict-origin-when-cross-origin"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowfullscreen>
+                                                </iframe>
                                             </div>
-                                            {% else %}
-                                            <div style="padding-top: 13.8rem; background-color:rgb(131, 125, 125);"></div>
+                                            {% endfor %}
 
-                                            {% endif %}
                                         </div>
                                     </div>
 
+                                    <!-- </div> -->
+                                    {% else %}
+                                    <div style="padding-top: 13.8rem; background-color:rgb(131, 125, 125);"></div>
+                                    {% endif %}
+
+
                                 </section>
 
+                                <section class="episodes">
 
-                                <div class="d-flex" style="min-height: 400px; padding-top: 2em;">
-                                    <div style="width: 80%; padding: 1em 1.5em;">
-                                        {% for episode in season.episodes.all|slice:"0:40" %}
-                                        <li style="padding-bottom: 0.1em; list-style: none;">
-                                            <strong>{{ episode }} </strong>
-                                            <small style="margin-left: 0.5rem;"> {{ episode.render_length }} -- (released on {{episode.render_release_date}})</small>
-                                            <div class="d-flex" style="width: 75%; padding-top: 0.3em; padding-bottom: 0.5em; margin-left: 0.5rem;">
-                                                <!-- Banner image -->
-                                                {% if episode.render_banner %}
-                                                <img src="{{ episode.render_banner }}" class="img-fluid rounded"  style="min-width: auto; width: 25%; max-width: fit-content; height: fit-content;" alt="Banner">
-                                                {% endif %}
-                                                <!-- episode overview -->
-                                                {% if episode.overview %}
-                                                <p style="margin-left: 1em; padding-bottom: 0; padding-top: 0.3rem; margin-bottom: 0.5em;">{{ episode.overview|slice:":140"}}...</p>
-                                                {% endif %}
+                                    <div class="row" style="min-height: 400px; padding-top: 2rem;">
 
-                                            </div>
-                                        </li>
-                                        {% endfor %}
+                                        <div class="col-8" style="padding: 1rem 1.5rem;">
+                                            {% for episode in season.episodes.all|slice:"0:40" %}
+                                            <table style="padding-bottom: 0.1rem; list-style: none;">
+                                                <div class="d-flex" style="flex-wrap: wrap;">
+                                                    <p class="md-0 md-lg-2"><strong>{{ episode }} </strong></p>
+                                                    <p><small class="mx-md-3"> {{ episode.render_length }} -- (released on {{episode.render_release_date}})</small></p>
+                                                </div>
+                                                
+                                                <div class="d-block d-md-flex" style="padding-top: 0.3rem; padding-bottom: 0.5rem; margin-left: 0.5rem;">
+                                                    <!-- Banner image -->
+                                                    {% if episode.render_banner %}
+                                                    <img src="{{ episode.render_banner }}" class="img-fluid rounded"  style="min-width: auto; width: 25%; max-width: fit-content; height: fit-content;" alt="Banner">
+                                                    {% endif %}
+                                                    <!-- episode overview -->
+                                                    {% if episode.overview %}
+                                                    <p style="margin-left: 1em; padding-bottom: 0; padding-top: 0.3rem; margin-bottom: 0.5rem;">{{ episode.overview|slice:":140"}}...</p>
+                                                    {% endif %}
+    
+                                                </div>
+                                            </table>
+                                            {% endfor %}
+                                        </div>
+
+                                        <div class="col-4" id="season-poster" style="text-align: center;">
+                                            {% if season.render_poster %}
+                                            <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="width: 100%; max-width: 280px;" alt="{{ season }}">
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    <div id="season-poster" style="width: 25%; padding-right: 2em;">
-                                        {% if season.render_poster %}
-                                        <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="min-width: auto; width: 100%; max-width: fit-content; height: 95%; height: min-content;  max-height: fit-content;" alt="{{ season }}">
-                                        {% endif %}
-                                    </div>
-                                </div>
+                                </section>
                             
                             <!-- end of div per season id -->
                             </div>

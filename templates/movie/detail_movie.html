@@ -189,9 +189,9 @@
                                             </li>
 
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <div class="d-flex">
+                                                <div class="d-flex" style="justify-content: space-around;">
 
-                                                    <div >
+                                                    <div>
                                                         <strong>Origin country:</strong>
                                                         <p>{{ movie.render_origin_country }}</p>
                                                     </div>
@@ -215,18 +215,22 @@
                     </section>
 
                     <section id="trailers" style="margin: auto;">
+                        {% if movie.trailers %}
+
+                        <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
+                            <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                        </div>
+                        
 
                         <div class="outer-trailer" style="padding-top: 1rem;">
 
                             <div class="display-trailer">
 
-                                {% if movie.trailers %}
     
                                 {% for trailer in movie.trailers|slice:"0:4" %}
                                 
                                 <div class="mb-2 ms-sm-2 trailer-wrapper">
                                     <iframe 
-    
                                         src="https://www.youtube.com/embed/{{ trailer.key }}"
                                         title="YouTube video player"
                                         frameborder="0"
@@ -236,9 +240,9 @@
                                     </iframe>
                                 </div>
                                 {% endfor %}
-                                {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                     </section>
 
                 </div>
