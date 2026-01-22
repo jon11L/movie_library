@@ -78,46 +78,45 @@
 
                             <!-- To give space between the backcgrounf image and the next parts -->
                             <!-- <div style="padding-bottom: 25.6em;"></div> -->
-                            <div style="padding-bottom: 33%;"></div>
+                            <div style="padding-bottom: 30%;"></div>
 
                             <div class="row">
                                 <!-- ROW 1 = Poster/title/tagline/overview -->
-                                <div class="detail-title-poster col-12 col-sm-10 col-md-5 col-xl-4">
+                                <div class="detail-title-poster col-12 col-sm-12 col-md-5 col-xl-4">
                                     
-                                    <div class="pt-md-5">
+                                    <div class="row row-cols-1 row-cols-md-1 d-md-block pt-md-5">
 
-                                        <div class="card-img-top" style="text-align: center;">
+                                        <div class="col-4 col-sm-4 col-md-12" style="margin: auto; text-align: center; padding: 0;">
                                             {% if movie.render_poster %}
-                                            <img src=" {{ movie.render_poster }} " class="img-fluid rounded" style="margin: 0px 25px; width: 60%;" alt="{{ movie }} photo">
+                                            <img src=" {{ movie.render_poster }} " class="img-fluid rounded" alt="{{ movie }} photo">
                                             {% endif %}
                                         </div>
                                         
-                                        <div class="card-body" style="background-color: none;">
+                                        <div class="detail-title col-8 col-md-12 mt-0 mt-md-3">
                                             <div style="text-align: center;">
                                                 {% if movie.title != movie.original_title %}
-                                                <h4 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h4>
+                                                <h5 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h5>
                                                 {% else %}
                                                 <h4 class="card-title">{{ movie.title }}</h4>
                                                 {% endif %}
                                                 
                                                 {% if movie.tagline %}
-                                                <p>({{ movie.tagline }})</p>
+                                                <h6 style="color: black;">({{ movie.tagline }})</h6>
                                                 {% endif %}
                                             </div>   
-                                            
-                                            
                                         </div>
+                                        
                                     </div>
                                 
-                                    <div class="detail-overview col-11 col-md-12 mx-auto mb-3 mb-md-0">
-                                        {% if movie.overview %}
-                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                        <p style="text-align: center;">{{ movie.overview }}</p>
-                                        {% else %}
-                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                        <p>No description available.</p>
-                                        {% endif %}
-                                    </div>
+                                        <div class="detail-overview col-11 col-md-12 mx-auto mt-3 mt-md-5  mb-3 mb-md-0">
+                                            {% if movie.overview %}
+                                            <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                            <p style="text-align: center;">{{ movie.overview }}</p>
+                                            {% else %}
+                                            <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                            <p>No description available.</p>
+                                            {% endif %}
+                                        </div>
 
                                 </div>
 
