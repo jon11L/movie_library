@@ -318,6 +318,10 @@ img {
 
 
 
+.outer-trailer {
+    padding-top: 1rem;
+}
+
 .display-trailer {
     display: flex; 
     flex-wrap: wrap; 
