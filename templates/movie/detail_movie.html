@@ -214,7 +214,7 @@
 
                     </section>
 
-                    <section id="trailers" style="margin: auto;">
+                    <section id="trailers">
                         {% if movie.trailers %}
 
                         <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
@@ -229,7 +229,7 @@
     
                                 {% for trailer in movie.trailers|slice:"0:4" %}
                                 
-                                <div class="mb-2 ms-sm-2 trailer-wrapper">
+                                <div class="trailer-wrapper">
                                     <iframe 
                                         src="https://www.youtube.com/embed/{{ trailer.key }}"
                                         title="YouTube video player"
