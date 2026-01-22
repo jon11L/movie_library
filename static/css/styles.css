@@ -313,7 +313,7 @@ img {
     display: flex; 
     flex-wrap: wrap; 
     justify-content: center;
-    gap: 1px;
+    /* gap: 1px; */
     
 }
 
@@ -323,11 +323,13 @@ img {
  flex 47% to have 2 next to each other
  or 60-70% good ratio for one per row  */
 .trailer-wrapper {
+    /* Need to configure a good ratio depending on screen size */
     max-width: 560px;
-    min-width: 280px;
-    min-height: 100px;
+    min-width: 300px;
+    min-height: 200px;
+    max-height: 373px;
     /* max-height: 200px; */
-    aspect-ratio: 4/3;
+    aspect-ratio: 16/9;
     flex: 0 0 47%;
     /* gap: 2px; */
 }

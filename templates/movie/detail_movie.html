@@ -108,15 +108,15 @@
                                         
                                     </div>
                                 
-                                        <div class="detail-overview col-11 col-md-12 mx-auto mt-3 mt-md-5  mb-3 mb-md-0">
-                                            {% if movie.overview %}
-                                            <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                            <p style="text-align: center;">{{ movie.overview }}</p>
-                                            {% else %}
-                                            <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                            <p>No description available.</p>
-                                            {% endif %}
-                                        </div>
+                                    <div class="detail-overview col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
+                                        {% if movie.overview %}
+                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                        <p style="text-align: center;">{{ movie.overview }}</p>
+                                        {% else %}
+                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                        <p>No description available.</p>
+                                        {% endif %}
+                                    </div>
 
                                 </div>
 
@@ -154,7 +154,7 @@
                                                         {% if not cast.role %}
                                                         <p style="margin: auto;">{{ cast.name }}</p>
                                                         {% else  %}
-                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i> </p>
+                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i></p>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </div>
@@ -172,51 +172,54 @@
                                     <div>
                                         <ul class="list-group list-group-flush d-block d-md-flex d-lg-block">
                                             <li class="list-group-item" style="padding: 0">
+
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="text-align: center; margin: 1% 0;"><strong>Production:</strong></p>
                                                 <p>{{ movie.render_production }}</p>
                                             </li>
+
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="text-align: center; margin: 0;"><strong>director:</strong></p>
                                                 <p>{{ movie.render_director }}</p>
                                             </li>
+
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="text-align: center; margin: 0;"><strong>Writer:</strong></p>
                                                 <p>{{ movie.render_writer }}</p>
                                             </li>
-                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                
-                                                <div class="d-flex" style="flex-wrap: wrap; justify-content: space-evenly;">
 
-                                                    <div style="text-align: center;">
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <div class="d-flex">
+
+                                                    <div >
                                                         <strong>Origin country:</strong>
                                                         <p>{{ movie.render_origin_country }}</p>
                                                     </div>
-                                                    <div style="text-align: center;">
+                                                    <div style="margin-left: 4rem;">
                                                         <strong>Language:</strong>
                                                         <p>{{ movie.render_spoken_languages }}</p>
                                                     </div>
                                                 </div>
                                             </li>
 
-                                            <!-- <li class="list-group-item" style="padding: 4px 8px 4px 8px;"> -->
-                                            </li>
                                         </ul>
                                     </div>
 
                                 </div>
                                 <!-- End Row 3 -->
                             </div>
+                            <!-- End of rows -->
                             
                         </div>
+
                     </section>
-                    <br>
 
                     <section id="trailers" style="margin: auto;">
 
-                        <div class="outer-trailer">
+                        <div class="outer-trailer" style="padding-top: 1rem;">
 
                             <div class="display-trailer">
+
                                 {% if movie.trailers %}
     
                                 {% for trailer in movie.trailers|slice:"0:4" %}
