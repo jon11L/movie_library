@@ -12,6 +12,15 @@ lg	960px 992
 xl	1140px 1200
 xxl	1320px 1400 
 
+
+--bs-breakpoint-xs: 0;
+    --bs-breakpoint-sm: 576px;
+    --bs-breakpoint-md: 768px;
+    --bs-breakpoint-lg: 992px;
+    --bs-breakpoint-xl: 1200px;
+    --bs-breakpoint-xxl: 1400px;
+}
+
 */ 
 
 
@@ -112,7 +121,7 @@ body {
 }
 
 
-@media (min-width: 990px) {
+@media (min-width: 992px) {
 	/* .col-xl-1-5 {
 		flex: 0 0 auto;
 		width: 12.5%;
@@ -314,7 +323,11 @@ img {
     flex-wrap: wrap; 
     justify-content: center;
     /* gap: 1px; */
-    
+    padding-top: 0.6rem; 
+    padding-bottom: 0rem; 
+    background-color:rgb(131, 125, 125);
+    border-radius: 0.5em;
+
 }
 
 
@@ -359,7 +372,7 @@ img {
     }
     .detail-title-poster img{
         margin: auto;
-        width: 95%;
+        width: 100%;
     }
     .detail-title {
         padding: 22% 0 0rem 0;
@@ -414,7 +427,7 @@ img {
     
 }
 
-@media (min-width: 990px) {
+@media (min-width: 992px) {
 
     /* allows 4 per horizontal line */
     .trailer-wrapper {
@@ -779,7 +792,7 @@ img {
     margin-bottom: 14%;
 }
 
-@media (min-width: 990px) {
+@media (min-width: 992px) {
     /* .edit-user-card form{
         max-width: 320px;
     } */
