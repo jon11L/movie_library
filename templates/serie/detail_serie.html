@@ -39,9 +39,9 @@
 
                             <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
                             
-                                <div style="margin-top: 1em; margin-left: 0.7em;">
+                                <div style="margin-top: 1rem; margin-left: 0.7rem;">
                                     <p class="vote-average-detail">
-                                        <small>{{ serie.render_vote_average }}/10 ({{serie.vote_count}} votes)</small>
+                                        {{ serie.render_vote_average }}/10 ({{serie.vote_count}} votes)
                                     </p>
                                 </div>                                <!-- Display the like and watchlist buttons -->
 
@@ -196,7 +196,7 @@
 
                 
                     <!------- Display the seasons here and episodes ---------->
-                    <section class="season-episode-content" style="width: 100%;">
+                    <section class="season-episode-content">
                     
                         <div style="padding-left: 7%; padding-top: 1rem;">
                             <h5 style="color: inherit;">Seasons:</h5>
@@ -230,13 +230,11 @@
                                     <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
                                         <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
                                     </div>
-                                    {% if season.trailers %}
-
-                                    <div class="outer-trailer" style="padding-top: 1rem;">
-
+                                    
+                                    <div class="outer-trailer">
+                                        
                                         <div class="display-trailer">
-
-                                            <!-- <div style="display: flex; flex-wrap: wrap; padding-top: 0.6em; padding-bottom: 0em; background-color:rgb(131, 125, 125);"> -->
+                                            {% if season.trailers %}
 
                                             {% for trailer in season.trailers|slice:"0:4" %}
                                             <div class="mb-2 ms-sm-2 trailer-wrapper">
@@ -254,9 +252,8 @@
                                         </div>
                                     </div>
 
-                                    <!-- </div> -->
                                     {% else %}
-                                    <div style="padding-top: 13.8rem; background-color:rgb(131, 125, 125);"></div>
+                                    <div style="padding-top: 13rem;"></div>
                                     {% endif %}
 
 
