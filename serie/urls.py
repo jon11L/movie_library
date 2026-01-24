@@ -25,4 +25,6 @@ urlpatterns = [
     path('list/', views.serie_list, name='list'),
     path('detail/<slug:slug>', views.serie_detail, name='detail'),
 
+    path('season/<int:season_id>', views.load_season_data, name='season_data'),
+
 ]

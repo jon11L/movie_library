@@ -4,6 +4,10 @@ from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
 
+
+from django.db import connection
+from django.conf import settings
+
 import time
 
 from rest_framework import generics, filters
@@ -149,12 +153,14 @@ def serie_list(request):
 
 def serie_detail(request, slug):
     ''' get the movie object from the database using the movie_id parameter in the URL request.'''
+    start_time = time.time()
     try:
         if Serie:
             # retrieve the specified serie requested by user
             # Get the seasons and episodes related to the serie
             serie = get_object_or_404(Serie, slug=slug)
-            seasons = serie.seasons.all().prefetch_related("episodes")
+            # seasons = serie.seasons.all().prefetch_related("episodes")
+            seasons = serie.seasons.all()
 
             # Show the cast of season 1 as main casting of the serie to display
             main_cast = None
@@ -200,15 +206,25 @@ def serie_detail(request, slug):
                 form = CommentForm(request.POST or None)
                 context.update(
                     {
-                        "serie": serie,
-                        "seasons": seasons,
-                        "main_cast": main_cast,
+
                         "user_liked_serie": user_liked_serie,
                         "user_watchlist_series": user_watchlist_series,
                         "form": form,
                         # "comments": comments,
                     }
                 )
+
+            # Debug: Print number of queries
+            if settings.DEBUG:
+                print(f"Number of queries: {len(connection.queries)}")
+                for query in connection.queries:
+                    print(query['sql'])
+
+            # record how long took the view to execute.
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
+
 
             return render(request,'serie/detail_serie.html', context=context)
 
@@ -220,5 +236,57 @@ def serie_detail(request, slug):
 
     except Exception as e:
         messages.error(request, "the page seem to experience some issue, please try again later")
-        print(f" error :{e}")
+        print(f" error :{e}\n")
         return redirect('main:home')
+
+
+def load_season_data(request, season_id):
+    '''
+    Will pass the season data being requested via HTMX.
+    Prevent detail_serie view from overloading too much content at once in the DOM.
+    '''
+    print(" i arrived here !! ")
+    # get the correct season
+    season = Season.objects.get(id=season_id)
+    print(f"seasons: {season}")
+    # get the data and episodes from it
+
+    episode_content = season.episodes.all()
+
+    # episode_content = Episode.objects.filter(season_id=season_id).only(
+    #     "title", "number", "overview", "release_date", "v"
+    # )
+
+    print(f" season_content: {episode_content} \n")
+
+    episode = None
+    episode_card = []
+
+    for item in episode_content:
+        episode_card.append({
+            # "id": item.pk, 
+            "title": item.title,
+            "number": item.episode_number,
+            # "episode": item.episode_number,
+            "overview": item.overview,
+            'release_date': item.render_release_date(),
+            "length": item.render_length(), 
+            # "vote_avg": item.render_vote_average(), 
+            # "vote_count": item.vote_count, 
+            "banner": item.render_banner(),
+            # "slug": item.slug,
+            })
+
+    context = {
+        'episode_card': episode_card,
+        'season': season,
+    }
+
+    # Debug: Print number of queries
+    if settings.DEBUG:
+        print(f"Number of queries: {len(connection.queries)}")
+        for query in connection.queries:
+            print(query['sql'])
+
+    print("I am now there")
+    return render(request, 'serie/partials/season_content.html', context=context )

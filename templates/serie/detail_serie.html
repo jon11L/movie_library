@@ -31,6 +31,7 @@
             <main class="custom-col-9 main-wrapper">
                 
                 {% if serie %}
+                <!-- Main card for Serie - contains Season and Episode data -->
                 <div class="card col-12 col-sm-12" style="margin: auto; border-radius: 0.5em;">
                     
                     <section id="serie-detail-section">
@@ -66,7 +67,7 @@
                             </div>
 
                             <!-- To give space between the backcgrounf image and the next parts -->
-                            <div style="padding-bottom: 30%;"></div>
+                            <div class="banner-space"></div>
 
                             <div class="row">
 
@@ -76,13 +77,13 @@
                                     <div class="row row-cols-1 row-cols-md-1 d-md-block pt-md-5">
 
 
-                                        <div class="col-4 col-sm-4 col-md-12" style="margin: auto; text-align: center; padding: 0px;">
+                                        <div class="detail-poster col-5 col-md-12" style="margin: auto; text-align: center; padding: 0px;">
                                             {% if serie.render_poster %}
                                             <img src=" {{ serie.render_poster }} " class="img-fluid rounded" alt="poster photo">
                                             {% endif %}
                                         </div>
                                         
-                                        <div class="detail-title col-8 col-md-12 mt-0 mt-md-3">
+                                        <div class="detail-title col-7 col-md-12 mt-0 mt-md-3">
                                             <div style="text-align: center;">
                                                 {% if serie.title != serie.original_title %}
                                                 <h4 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h4>
@@ -117,25 +118,26 @@
 
                                             <li class="list-group-item" style="padding: 0"></li>
 
-                                            <li class="list-group-item">
+                                            <li class="list-group-item" style="padding: 0.5rem 0.25rem;">
                                                 <div class="release-length d-flex" style="justify-content:space-around;">
                                                     <div class="mb-2" style="text-align: left;">
                                                         <strong>Released:</strong> {{ serie.first_air_date }}
                                                     </div>
                                                     <div style="text-align: left;">
-                                                        <strong>Length:</strong> {{ serie.length }}
+                                                        <strong>Length:</strong>
+                                                        <span>{% if serie.length %} {{ serie.length }} {% else %} N/a {% endif %}</span>
                                                     </div>
                                                 </div>
                                             </li>
 
-                                            <li class="list-group-item">
+                                            <li class="list-group-item" style="padding: 0.5rem 0.25rem;">
                                                 <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
                                                 <p style="padding: 0; margin: 0; text-align: center;">
                                                     {{ serie.render_genre }}
                                                 </p>
                                             </li>
 
-                                            <li class="list-group-item" style=" width: 100%; margin: auto;">
+                                            <li class="list-group-item" style="width: 100%; margin: auto; padding: 0.5rem 0.25rem;">
                                                 <p style="text-align: center;"><strong>Casting:</strong></p>
                                                 {% if main_cast %}
                                                 <div style="text-align: center;">
@@ -195,7 +197,7 @@
                     </section>
 
                 
-                    <!------- Display the seasons here and episodes ---------->
+                    <!-- ============ Display the seasons here and episodes =============== -->
                     <section class="season-episode-content">
                     
                         <div style="padding-left: 7%; padding-top: 1rem;">
@@ -205,99 +207,29 @@
                         <div class="season-btn" style="display: flex; flex-wrap: wrap; padding-left: 7%;">
                             {% for season in seasons %}
                             <!-- try to not display season if no episode are present -->
+                            <!-- Button trigger htmx to get the season&episode's data. Render then in #season-content -->
                             {% if season.episodes %}
                             <div style="margin-left: 0.5rem; margin-bottom: 1rem;  width: fit-content;">
-                                <button class="season-toggle" data-season="{{ season.id }}" style="padding:0.5rem 1rem;">
+                                
+                                <button class="season-toggle" 
+                                style="padding:0.5rem 1rem;"
+                                data-season-id="{{ season.id }}" 
+                                hx-get="{% url 'serie:season_data' season.id %}"
+                                hx-swap="innerHTML"
+                                hx-target="#season-content">
                                     {{ season }}
                                 </button>
                             </div>
+
                             {% endif %}
                             {% endfor %}
                         </div>
 
                         <br>
 
-                        <!-- will display the data through js when seasons btn clicked -->
+                        <!-- Empty container for htmx -->
                         <div id="season-content">
-
-                            <!-- display the Trailer and episodes when user click on the season -->
-                            {% for season in seasons %}
-                            <div id="season-{{ season.id }}" class="trailer-episode-data" style="display: none; padding: 0;">
-                                <!-- Trailers -->
-                                
-                                <section id="trailers">
-                                    
-                                    <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
-                                        <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
-                                    </div>
-                                    
-                                    <div class="outer-trailer">
-                                        
-                                        <div class="display-trailer">
-                                            {% if season.trailers %}
-
-                                            {% for trailer in season.trailers|slice:"0:4" %}
-                                            <div class="trailer-wrapper" data-video-id="{{ trailer.key }}">
-                                                <!-- <iframe
-                                                    src="https://www.youtube.com/embed/{{ trailer.key }}"
-                                                    title="YouTube video player"
-                                                    frameborder="0"
-                                                    referrerpolicy="strict-origin-when-cross-origin"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowfullscreen>
-                                                </iframe> -->
-                                            </div>
-                                            {% endfor %}
-
-                                        </div>
-                                    </div>
-
-                                    {% else %}
-                                    <div style="padding-top: 12.5rem;"></div>
-                                    {% endif %}
-
-
-                                </section>
-
-                                <section class="episodes">
-
-                                    <div class="row" style="min-height: 400px; padding-top: 2rem;">
-
-                                        <div class="col-8" style="padding: 1rem 1.5rem;">
-                                            {% for episode in season.episodes.all|slice:"0:40" %}
-                                            <table style="padding-bottom: 0.1rem; list-style: none;">
-                                                <div class="d-flex" style="flex-wrap: wrap;">
-                                                    <p class="md-0 md-lg-2"><strong>{{ episode }} </strong></p>
-                                                    <p><small class="mx-md-3"> {{ episode.render_length }} -- (released on {{episode.render_release_date}})</small></p>
-                                                </div>
-                                                
-                                                <div class="d-block d-md-flex" style="padding-top: 0.3rem; padding-bottom: 0.5rem; margin-left: 0.5rem;">
-                                                    <!-- Banner image -->
-                                                    {% if episode.render_banner %}
-                                                    <img src="{{ episode.render_banner }}" class="img-fluid rounded"  style="min-width: auto; width: 25%; max-width: fit-content; height: fit-content;" alt="Banner">
-                                                    {% endif %}
-                                                    <!-- episode overview -->
-                                                    {% if episode.overview %}
-                                                    <p style="margin-left: 1em; padding-bottom: 0; padding-top: 0.3rem; margin-bottom: 0.5rem;">{{ episode.overview|slice:":140"}}...</p>
-                                                    {% endif %}
-    
-                                                </div>
-                                            </table>
-                                            {% endfor %}
-                                        </div>
-
-                                        <div class="col-4" id="season-poster" style="text-align: center;">
-                                            {% if season.render_poster %}
-                                            <img src="{{ season.render_poster }}" class="img-fluid rounded"  style="width: 100%; max-width: 280px;" alt="{{ season }}">
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </section>
-                            
-                            <!-- end of div per season id -->
-                            </div>
-                            {% endfor %}
-                        
+                            <!-- display the Trailer and episodes through htmx when user click on the season button -->
                         </div>
                     
                     </section>
@@ -353,66 +285,20 @@
 
 <script>
     // ------------- Display the seasons Trailers and episodes when clicked --------------
-    document.addEventListener("DOMContentLoaded", function () {
-        // select all the seasons button
-        const seasonButtons = document.querySelectorAll('.season-toggle');
-        // Select all the Seasons content (trailer and episode) per seasons
-        const seasonContent = document.querySelectorAll('.trailer-episode-data');
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains('season-toggle')) {
 
-        // action when a season button is clicked
-        seasonButtons.forEach(selectedButton => {
-            selectedButton.addEventListener("click", () => {
-                const seasonId = selectedButton.getAttribute("data-season");
-                const selectedSeason = document.getElementById('season-' + seasonId);
-                // Check if the season clicked was already displayed
-                const isCurrentSeasonOpen = selectedSeason.style.display === 'block';
-            
-                console.log(`user clicked on season id: ${seasonId}`)
-                
-                //  hide all seasons data and display the one being clicked
-                seasonContent.forEach(div => {
-                    div.style.display = 'none';
-                    console.log(`previous displayed season closed.`);
-                });
-                
+            const seasonButtons = document.querySelectorAll('.season-toggle');
                 // Remove 'active' class from all buttons, set to original color
                 seasonButtons.forEach(btn => {
                     btn.classList.remove('active');
                     console.log(`unactive seasons gets original btn color`);
+                    event.target.classList.add('active')
                 });
-                
-                //  If season clicked display is None then turn to Block
-                if (!isCurrentSeasonOpen) {
-                    selectedSeason.style.display = 'block';
-                    console.log(`displaying content from season ${seasonId}.`);
-                    // Add 'active' class to clicked-none d-md-block button
-                    selectedButton.classList.add('active');
-                    console.log(`change btn color on current clicked season`);
-
-
-                    // load iframes only when season is opened 
-                    //  Prevent the bug from low quality img when opening a new season 
-                    const emptyWrappers = selectedSeason.querySelectorAll('.trailer-wrapper:not(.loaded)');
-                    console.log(`loading the trailer for season: ${seasonId}`);
-                    emptyWrappers.forEach(wrapper => {
-                        const videoId = wrapper.getAttribute('data-video-id');
-                        const iframe = document.createElement('iframe');
-                        iframe.src = `https://www.youtube.com/embed/${videoId}`;
-                        iframe.title = "YouTube video player";
-                        iframe.frameBorder = "0";
-                        iframe.referrerPolicy = "strict-origin-when-cross-origin";
-                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-                        iframe.allowFullscreen = true;
-                        wrapper.appendChild(iframe);
-                        wrapper.classList.add('loaded'); // Mark as loaded
-                    });
-            
-                }
-                
-            });
-        });
+        }
     });
-</script>
 
+
+</script>
 
 {% endblock %}
