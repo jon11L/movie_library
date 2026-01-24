@@ -237,10 +237,10 @@ Need to reorganize the name or call a parent custom class
 
 
 /* ============== For images in movie/serie list =========================== */
-img {
+/* img {
     width: 25%;
     height: auto;
-}
+} */
 
 /* for list page */
 .list-movie-title {
@@ -298,7 +298,7 @@ img {
     margin-bottom: 0;
 }
 
-
+/* Space left for the background image and poster/content below */
 .banner-space {
     padding-bottom: 30%;
 }
@@ -311,6 +311,16 @@ img {
 
 
 
+#season-poster img {
+    text-align: left;
+    min-width: 130px;
+    width: 100%;
+    max-width: 220px;
+    /* padding: 0 0.5rem; */
+}
+
+
+/* Trailer section */
 .outer-trailer {
     padding-top: 1rem;
 }
@@ -329,10 +339,10 @@ img {
 }
 
 
-/* Trailer section */
 /*
  flex 47% to have 2 next to each other
- or 60-70% good ratio for one per row  */
+ or 60-70% good ratio for one per row 
+ */
 .trailer-wrapper {
     /* Need to configure a good ratio depending on screen size */
     max-width: 560px;
@@ -353,6 +363,32 @@ img {
 
 
 
+.episode-head {
+    margin: 0rem 0.5rem 0 0rem;
+}
+
+
+.episode-img {
+    min-width: 140px;
+    /* margin: auto;  */
+    width: 100%;
+    max-width: 220px; 
+    text-align: center;
+    /* max-width: fit-content;  */
+    /* height: fit-content; */
+    /* border-radius: 1%; */
+}
+
+
+.ep-overview {
+    padding-bottom: 0; 
+    padding-top: 0.3rem; 
+    margin-bottom: 0.5rem;
+    padding-left: 1rem;
+}
+
+
+
 @media (max-width: 768px) {
     /* .movie-info-1 {
         padding-top: 15%;
@@ -369,21 +405,22 @@ img {
         margin: auto;
         width: 100%;
     }
-    .detail-title-poster img{
+    .detail-poster img{
         margin: auto;
         width: 100%;
+        max-width: 220px;
     }
     .detail-title {
         padding: 22% 0 0 0;
     }
 
     .movie-info-1 {
-    margin: auto; 
-    width: 100%;    
+        margin: auto; 
+        width: 100%;    
     }
     .movie-info-2 {
-    margin: auto; 
-    width: 100%;
+        margin: auto; 
+        width: 100%;
     }
 
 }
@@ -423,11 +460,21 @@ img {
     .trailer-wrapper {
         flex: 0 0 33%;
     }
+
+    .episode-head {
+        margin-left: 0rem 1rem 0 3rem;
+    }
+
+    .episode-img {
+        margin: auto;
+        padding-left: 1rem;
+        max-width: 420px;
+        width: 100%;
+    }
     
 }
 
 @media (min-width: 992px) {
-
     /* allows 4 per horizontal line */
     .trailer-wrapper {
         flex: 0 0 23%; /* put it in 33% when carousel set up */
@@ -436,6 +483,7 @@ img {
         padding: 0;
     }
 }
+
 
 @media (min-width: 1200px) {
     .card {
@@ -452,13 +500,47 @@ img {
     .movie-info-2 {
         padding-top: 24%;
     }
-    
+
+    #season-poster img {
+        max-width: 280px;
+        text-align: center;
+    /* padding: 0 0.5rem; */
+    }
 
 }
 
 
 
 
+
+/* =================== Temporary display for the seasons and episodes  ======================= */
+.season-toggle {
+    background-color: rgb(61, 8, 20);
+    color: bisque;
+    padding: 8px;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+    border-radius: 0.75em;
+}
+
+.season-toggle.active {
+    background-color:rgb(198, 179, 142);
+    color: black;
+}
+
+.trailer-episode-data {
+    padding: 10px;
+    border-top: 3px solid black;
+    /* border-bottom: 3px solid black; */
+    margin-bottom: 10px;
+}
+
+
+
+/* #season-content {} */
 
 /* ========== SSEARCH filter form ================== */
 
@@ -606,29 +688,6 @@ img {
 }
 
 
-
-/* =================== Temporary display for the seasons and episodes  ======================= */
-.season-toggle {
-    background-color: rgb(71, 22, 22);
-    color: bisque;
-    padding: 8px;
-    cursor: pointer;
-    margin-top: 5px;
-    width: 100%;
-    text-align: left;
-}
-
-.season-toggle.active {
-    background-color: #007bff;
-    color: white;
-}
-
-.trailer-episode-data {
-    padding: 10px;
-    border-top: 3px solid black;
-    /* border-bottom: 3px solid black; */
-    margin-bottom: 10px;
-}
 
 
 
