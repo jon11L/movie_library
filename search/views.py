@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Case, When, Value, IntegerField
 
+from django.db import connection
+from django.conf import settings
+
 import time
 
 from .filters import SharedMediaFilter
@@ -251,6 +254,12 @@ def search(request):
                     'user_watchlist_series': user_watchlist_series, 
                     }
                 )
+
+        # Debug: Print number of queries
+        if settings.DEBUG:
+            print(f"Number of queries: {len(connection.queries)}")
+            for query in connection.queries:
+                print(query['sql'])
 
         end_time = time.time()
         elapsed_time = end_time - start_time

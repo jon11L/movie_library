@@ -17,34 +17,68 @@
 .navbar-layout {
     display: flex;
     align-items: center;
+    justify-content: space-around;
     gap: 0.5rem;
     padding: 0 0.25rem;
 }
 
+.navbar-nav .dropdown-menu {
+    position:absolute;
+}
+
+.nav-search-btn {
+    background-color: rgb(49, 132, 132);
+    border-radius: 1em; 
+    border-color: rgb(62, 158, 158); 
+    color: white;
+    /* background-color: rgb(62, 158, 158); */
+}
+
+.nav-search-btn:hover, .home-search-btn:active {
+    background-color: rgb(9, 95, 95);
+    color: rgb(224, 185, 57);
+    border-color: rgb(62, 158, 158);
+    transition: color 0.4s ease-in-out, background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out
+}
 
 
 /* Mobile screen: navbar is collapsed */
 /* Max to md/medium screen */
-@media (max-width: 990px) {
+@media (max-width: 991px) {
     /* layout of the Left drop down menu */
     .navbar-collapse {
         background-color: rgb(90, 87, 87);
         border: solid 1px whitesmoke;
+        border-radius: 0.5em;
+    }
+
+    .nav-link {
+        padding: 0.25rem 0rem;
     }
     
-    .link-btn:hover {
+    .link-btn {
+        font-size: large;
+    }
+    .link-btn:hover, .link-btn:active {
         color: whitesmoke;
     }
 
     .navbar-search {
         max-width: 140px;
-
     }
 
+    #mainNavDropMenu {
+        position:absolute;
+        margin-top: 4rem;
+        top: 0;
+        min-width: 220px;
+    }
+    #mainNavDropMenu .nav-link {
+        padding: 0 auto;
+    }
 
     .link-btn {
         color: whitesmoke;
-
     }
     
     /* shows the Media links on navbar desktop */
@@ -108,7 +142,7 @@
 
 
 
-@media (min-width: 990px) {
+@media (min-width: 992px) {
 
     .home-btn {
         display: block;

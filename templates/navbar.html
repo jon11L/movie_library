@@ -9,11 +9,7 @@
 
 		<!-- LEFT SIDE of navbar -->
 		<!-- Home page button -->
-		<a class="navbar-brand mt-2 home-btn" href="{% url 'main:home' %}">
-			<h5 class="">Home</h5>
-		</a>
-		
-		<button class="navbar-toggler"
+		<button class="navbar-toggler" 
 				type="button"
 				data-bs-toggle="collapse"
 				data-bs-target="#mainNavDropMenu"
@@ -21,18 +17,23 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 
+
+		<a class="navbar-brand mt-2 home-btn" href="{% url 'main:home' %}">
+			<h4 class="">Home</h4>
+		</a>
+		
+
 		<!-- Center-left -->
 		<!-- Search content by title / redirect to search page // Search input and submit button -->
 		<div class="navbar-search">
 			<form class="search-form form-inline" role="search" method="GET" action="{% url 'search:search' %}">
 				<input type="text"
 					class="form-control search-input"
-					placeholder=" 🔍search..." 
+					placeholder=" 🔍 search..." 
 					name="title" 
 					aria-label="Search"
 					style="border-radius: 2em;">
-				<button class="btn btn-outline-info" type="submit"
-					style="border-radius: 1em; border-color: rgb(62, 158, 158); background-color: (62, 158, 158);">
+				<button class="submit-btn btn nav-search-btn" type="submit">
 					search
 				</button>
 			</form>
@@ -41,13 +42,21 @@
 		<!-- CENTER of the navbar -->
 		<!-- Links of different pages -->
 		<div class="collapse navbar-collapse" id="mainNavDropMenu">
-			<ul class="navbar-nav ms-3 mt-2">
+			<ul class="navbar-nav ms-3">
 
 				<li class="nav-item">
 					<a class="nav-link active d-lg-none " href="{% url 'main:home' %}">
 						<h6 class="link-btn">Home</h6>
 					</a>
 				</li>
+
+				{% if user.is_authenticated %}
+				<li class="nav-item">
+					<a class="nav-link active d-lg-none " href="{% url 'user_library:watch_list' request.user.id %}">
+						<h6 class="link-btn">Watchlist</h6>
+					</a>
+				</li>
+				{% endif %}
 
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
@@ -94,10 +103,15 @@
 						{% elif user.is_authenticated %}
 						<img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
 						{% endif %}
-						<small class="d-none d-md-inline-block">{{ request.user.username.capitalize }}</small>
 					</a>
-	
+					
 					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
+						<li>
+							<small class="dropdown-item">{{ request.user.username.capitalize }}</small>
+						</li>
+						<hr class="dropdown-divider">
+						
+						
 						<li>
 							<a class="dropdown-item" href="{% url 'user:profile_page' request.user.id %}">My profile</a>
 						</li>
@@ -117,7 +131,11 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
 						aria-expanded="false">
-						Sign up / Login
+						<span class="d-none d-md-inline-block">Sign up / Login</span> 
+						<!-- <i class="fa-solid fa-user d-inline-block d-md-none"></i>  -->
+						<img src="{% static 'images/user_icone.svg' %}" class="img-fluid rounded-circle d-inline-block d-md-none" 
+						style="width: 1,75rem; height: 1.75rem; background-color: gray; margin-top: 0.2rem;"  alt="user icone">
+
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
 						<li><a class="dropdown-item" href="{% url 'user:login' %}">Login</a></li>

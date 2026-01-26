@@ -8,7 +8,7 @@
         <div class="row main-row">
 
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 l-side-wrapper">
+            <aside class="custom-col-1-5 side-wrapper">
                 <div></div>
             </aside>
             
@@ -30,9 +30,9 @@
                                 <!-- {% csrf_token %} -->
                                 <div class="d-flex col-12 col-xl-10" style="flex-direction:row; flex-wrap: wrap; justify-content: center; margin: auto;">
 
-                                    <div class="col-6 col-md-4 col-lg-2">
+                                    <div class="col-6 col-md-3 col-lg-2">
 
-                                            <div class="form-group me-3" style="margin-bottom: 1rem;">
+                                            <div class="form-group me-3" style="margin-bottom: 1rem; text-align: center;">
                                                 <label for="content_type"><strong>Content Type:</strong></label>
                                                 {{ filter.form.content_type }}
                                             </div>
@@ -112,7 +112,7 @@
                                         Reset filters
                                     </a>
                                 
-                                    <button type="submit" class="submit-btn btn btn-secondary">
+                                    <button type="submit" class="submit-btn btn">
                                         Apply filters
                                     </button>
                                 </div>
@@ -170,7 +170,7 @@
             </main>
             
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 r-side-wrapper">
+            <aside class="custom-col-1-5 side-wrapper">
                 <div></div>
             </aside>
             
