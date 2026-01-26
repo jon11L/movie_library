@@ -51,13 +51,6 @@ nav {
     
 }
 
-@media (max-width: 1268px) {
-    .pagination-meta {
-        /* padding-right: 1.5rem; */
-        margin-top: 0.6rem;
-    }
-    
-}
 
 /* Pass into desktop, shows 5 btns around current page*/
 @media (min-width: 768px) {
@@ -74,12 +67,21 @@ nav {
 }
 
 
+@media (max-width: 1268px) {
+    .pagination-meta {
+        /* padding-right: 1.5rem; */
+        margin-top: 0.6rem;
+    }
+    
+}
+
 /* desktop size adjustments layout */
 /* Wide enough to pass all pagination on the same line */
 @media (min-width: 1268px) {
     nav {
         flex-direction: row;
         align-items: center;
+        flex-wrap: wrap;
     }
 
     .page-item a {

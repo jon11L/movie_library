@@ -7,7 +7,7 @@
 
 
         <!-- Left section of the screen -->
-        <aside class="custom-col-1-5 l-side-wrapper">
+        <aside class="custom-col-1-5 side-wrapper">
             <div></div>
         </aside>
 
@@ -16,12 +16,12 @@
             {% if user.is_authenticated %}
             <div style="text-align: center; margin-top: 7rem;">
                 <h2>You are already connected, {{ user.username }}!</h2>
-                <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin-top: 3em;">Home</a>
+                <a href="{% url 'main:home' %}" class="btn btn-secondary" style="margin-top: 3em;">Go to main page</a>
                 <div style="padding-top: 12.5%;"></div>
             </div>
 
             {% else %}
-            <div class="login-card">
+            <div class="login-card col-8 col-sm-6 col-md-4 col-xl-3">
 
                 <h3 style="text-align: center;">Login</h3>
                 <br>
@@ -39,17 +39,19 @@
                         <div>
                             <a href="{% url 'main:home' %}" class="btn btn-secondary">Go Back</a>
                         </div>
+
                         <div>
                             <button type="submit" class="btn btn-secondary">
                                 Log In
                             </button>
-                            <div class="register-btn">
-                                <a href="{% url 'user:register' %}">
-                                    <p style="margin-top: 0.5rem; border-bottom: rgb(56, 9, 16) 0.5px solid;">Register
-                                        here</p>
-                                </a>
-                            </div>
                         </div>
+                    </div>
+                    
+                    <div class="register-btn">
+                        <span>Not yet a user? </span>
+                        <a href="{% url 'user:register' %}">
+                            Register here
+                        </a>
                     </div>
 
                 </form>
@@ -65,7 +67,7 @@
 
 
         <!-- Right section of the screen -->
-        <aside class="custom-col-1-5 r-side-wrapper">
+        <aside class="custom-col-1-5 side-wrapper">
             <div>
             </div>
         </aside>

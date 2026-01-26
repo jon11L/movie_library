@@ -47,21 +47,21 @@ body {
     background-color: #171623; /* Dark blue background */
 }
 
+/* ========= standart wrappers of pages: l-left r-right main-center */
+/* general sides */
+.side-wrapper {
+	display: none;
+}
 
+/* Sides homepage */
 .l-side-wrapper {
-    /* background-color: rgba(211, 163, 163, 0.459); */
 	display: none;
-    /* padding: 0% 1%;
-    margin: 0% 0%; */
 }
-.r-side-wrapper {
-    /* background-color: rgba(211, 163, 163, 0.459); */
-	display: none;
-	
 
-    /* padding: 0%;
-    margin: 0% 0%; */
+.r-side-wrapper {
+	display: none;
 }
+
 
 .main-wrapper {
 	margin: auto;
@@ -69,6 +69,8 @@ body {
 	/* width: fit-content; */
 }
 
+
+/* ========== Main Rows of the Home page ========= */
 .main-wrapper-home {
 	margin: auto;
 	padding: 1rem 0.25% 1rem 0.25%;
@@ -97,13 +99,12 @@ body {
 }
 
 
-
-@media (min-width: 1220px) {
-    .total-available p {
-        font-size: 18px;
-    }
-
+.inner-wrapper-home {
+    width: 100%; 
+    margin: auto; 
+    align-items: center;
 }
+
 
 /* ============== custom display depending on screen size ======================== */
 /* To have two sides and a main row on screen (middle being the main) */
@@ -134,29 +135,65 @@ body {
     .main-wrapper-home {
         border-left: solid 2px;
         border-right: solid 2px;
+        flex: 0 0 70%;
+        max-width: 100%;
     }
 
-    .l-side-wrapper {
+    .main-wrapper {
+        flex: 1 0 75%;
+    }
+    /* Empty side wrapper stays narrower */
+    .side-wrapper {
         flex: 0 0 12.5%;
         width: 12.5%;
         display: block;
     }
-    .r-side-wrapper {
-        flex: 0 0 12.5%;
-        max-width: 12.5%;
+    /* Content in side wrapper Homepage */
+    .l-side-wrapper {
+        flex: 0 0 15%;
+        width: 12.5%;
         display: block;
     }
-    
-    .custom-col-9 {
-        flex: 1 0 75%;
-        max-width: 100%;
+    .r-side-wrapper {
+        flex: 0 0 15%;
+        max-width: 15%;
+        display: block;
     }
+
+
 	.side-discovery {
 		display: block;
 	}
 	.side-publicity {
 		display: block;
 	}
+
+    .inner-wrapper-home {
+        width: 95%; 
+
+    }
+    
+}
+
+
+@media (min-width: 1220px) {
+    .total-available p {
+        font-size: 18px;
+    }
+
+    .l-side-wrapper {
+        flex: 0 0 12.5%;
+        width: 12.5%;
+    }
+    .r-side-wrapper {
+        flex: 0 0 12.5%;
+        max-width: 12.5%;
+    }
+    /* size the main wrapper in the home page */
+    .custom-col-9 {
+        flex: 1 0 75%;
+        max-width: 100%;
+    }
 
 }
 
@@ -305,6 +342,13 @@ Need to reorganize the name or call a parent custom class
 
 
 
+.detail-poster {
+    margin: auto; 
+    text-align: center; 
+    padding: 0px;
+}
+
+
 .release-length {
     flex-wrap: wrap;
 }
@@ -389,7 +433,7 @@ Need to reorganize the name or call a parent custom class
 
 
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     /* .movie-info-1 {
         padding-top: 15%;
     } */
@@ -402,16 +446,16 @@ Need to reorganize the name or call a parent custom class
     }
 
     .detail-title-poster {
-        margin: auto;
+        /* margin: auto; */
         width: 100%;
     }
     .detail-poster img{
         margin: auto;
-        width: 100%;
+        width: 95%;
         max-width: 220px;
     }
     .detail-title {
-        padding: 22% 0 0 0;
+        padding: 24% 0 0 0;
     }
 
     .movie-info-1 {
@@ -435,7 +479,7 @@ Need to reorganize the name or call a parent custom class
 @media (min-width: 768px) {
     .detail-title-poster {
         padding-right: 0;
-        margin: auto;
+        /* margin: auto; */
     }
 
     .detail-title-poster img{
@@ -539,10 +583,7 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-
-/* #season-content {} */
-
-/* ========== SSEARCH filter form ================== */
+/* ========== SSEARCH filter form / Page ================== */
 
 .search-card {
     min-width: fit-content; 
@@ -556,7 +597,7 @@ Need to reorganize the name or call a parent custom class
     display: inline-block;
     padding: 10px 20px;
     background-color: rgb(143, 138, 138);
-    color: white;
+    color: antiquewhite;
     text-align: center;
     /* border-radius: 5px; */
     border-radius: 2em;
@@ -564,21 +605,26 @@ Need to reorganize the name or call a parent custom class
     margin: 0 3%; 
 }
 
-.reset-btn:hover {
+.reset-btn:hover, .reset-btn:active {
     background-color: rgb(71, 71, 71);
     color: rgb(224, 185, 57);
+    transition: color 0.4s ease-in-out, background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out
 }
 
 .submit-btn {
     margin: 0 3%;
-    background-color: darkcyan;
+    color: antiquewhite;
+    /* background-color: darkcyan; */
+    background-color: rgb(49, 132, 132);
     border-radius: 2em;
 }
 
 
-.submit-btn:hover {
+.submit-btn:hover, .submit-btn:active {
     background-color: rgb(9, 95, 95);
     color: rgb(224, 185, 57);
+    transition: color 0.4s ease-in-out, background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out
+
 }
 
 
@@ -652,7 +698,7 @@ Need to reorganize the name or call a parent custom class
 
 /* ======================= alert message ================================ */
 .alert {
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn 0.5s ease-out;
 }
 
 @keyframes slideIn {
@@ -771,24 +817,32 @@ Need to reorganize the name or call a parent custom class
 }
 
 .login-card form {
-    max-width: 250px;
+    /* max-width: 250px; */
     margin: auto;
 }
 
 
-.login-form-btn {
-    width: 95%; 
+.login-form-btn { 
+    width: 90%;
     padding-top: 10px;
     display: flex;
     margin: auto;
     justify-content: space-between;
 }
 
-.register-btn a {
+.register-btn {
     padding-top: 0.5rem;
+    display: flex;
+    justify-content:end;
+    color: antiquewhite;
+
+    gap: 0.5rem;   
+}
+
+.register-btn a {
     border-bottom: rgb(56, 9, 16) 0.5px solid;
     text-decoration: none;
-    color: antiquewhite;
+    color: white;
 }
 
 .register-btn a:hover {
@@ -865,11 +919,11 @@ Need to reorganize the name or call a parent custom class
 
 /* Adapt the login form/page width on large screen + fix empty space below */
 @media (min-width: 1220px) {
-    .login-card form {
+    /* .login-card form {
         max-width: 320px;
-    }
+    } */
     .login-form-btn {
-        width: 90%; 
+        width: 85%; 
     }
     .under-login-form {
         margin-bottom: 21%;

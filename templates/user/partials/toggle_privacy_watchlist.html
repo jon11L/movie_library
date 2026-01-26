@@ -2,6 +2,7 @@
 
 <div id="privacy-toggle-watchlist">
     <div class="form-check form-switch d-flex" style="padding: 0.5em;">
+        <!-- input with htmx -->
         <input type="checkbox"
             class="form-check-input"
             role="switch"
@@ -12,6 +13,7 @@
             hx-swap="outerHTML"
             hx-target="#privacy-toggle-watchlist">
         </input>
+
         <div style="margin-left: 0.3rem; margin-top: 0.1rem;">
             {% if profile.watchlist_private == True %}
             <label for="watchlist-private">
@@ -23,5 +25,6 @@
             </label>
             {% endif %}
         </div>
+
     </div>
 </div>

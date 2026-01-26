@@ -8,7 +8,7 @@
             
             
             <!-- Left section of the screen -->
-            <aside class="custom-col-1-5  l-side-wrapper">
+            <aside class="custom-col-1-5 side-wrapper">
                 <div>
                     <!-- For dev purpose -->
                     {% if request.user.is_superuser %}
@@ -78,7 +78,7 @@
 
                             <!-- To give space between the backcgrounf image and the next parts -->
                             <!-- <div style="padding-bottom: 25.6em;"></div> -->
-                            <div style="padding-bottom: 30%;"></div>
+                            <div class="banner-space"></div>
 
                             <div class="row">
                                 <!-- ROW 1 = Poster/title/tagline/overview -->
@@ -86,13 +86,13 @@
                                     
                                     <div class="row row-cols-1 row-cols-md-1 d-md-block pt-md-5">
 
-                                        <div class="col-4 col-sm-4 col-md-12" style="margin: auto; text-align: center; padding: 0;">
+                                        <div class="detail-poster col-5 col-md-12">
                                             {% if movie.render_poster %}
                                             <img src=" {{ movie.render_poster }} " class="img-fluid rounded" alt="{{ movie }} photo">
                                             {% endif %}
                                         </div>
                                         
-                                        <div class="detail-title col-8 col-md-12 mt-0 mt-md-3">
+                                        <div class="detail-title col-7 col-md-12 mt-0 mt-md-3">
                                             <div style="text-align: center;">
                                                 {% if movie.title != movie.original_title %}
                                                 <h5 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h5>
@@ -279,7 +279,7 @@
 
 
             <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 r-side-wrapper">
+            <aside class="custom-col-1-5 side-wrapper">
                 <div>
                 </div>
             </aside>
