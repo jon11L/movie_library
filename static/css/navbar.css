@@ -4,7 +4,8 @@
     width: 100%;
     height: 50px;
     padding: 0;
-    background-color: rgb(56, 9, 16);
+    /* background-color: rgb(56, 9, 16); */
+    background-color: rgb(40, 2, 7);
     top:0;
     z-index: 1030; /* to prevent the navbar getting covered up by other content */
 }
@@ -13,13 +14,14 @@
     height: 50px; /* Same as navbar height */
 }
 
-
+/* General navbar layout */
 .navbar-layout {
     display: flex;
-    align-items: center;
-    justify-content: space-around;
+    /* align-items: center; */
+    justify-content: space-between;
     gap: 0.5rem;
-    padding: 0 0.25rem;
+    padding: 0 0.4rem;
+    width: 100%;
 }
 
 .navbar-nav .dropdown-menu {
@@ -42,78 +44,13 @@
 }
 
 
-/* Mobile screen: navbar is collapsed */
-/* Max to md/medium screen */
-@media (max-width: 991px) {
-    /* layout of the Left drop down menu */
-    .navbar-collapse {
-        background-color: rgb(90, 87, 87);
-        border: solid 1px whitesmoke;
-        border-radius: 0.5em;
-    }
-
-    .nav-link {
-        padding: 0.25rem 0rem;
-    }
-    
-    .link-btn {
-        font-size: large;
-    }
-    .link-btn:hover, .link-btn:active {
-        color: whitesmoke;
-    }
-
-    .navbar-search {
-        max-width: 140px;
-    }
-
-    #mainNavDropMenu {
-        position:absolute;
-        margin-top: 4rem;
-        top: 0;
-        min-width: 220px;
-    }
-    #mainNavDropMenu .nav-link {
-        padding: 0 auto;
-    }
-
-    .link-btn {
-        color: whitesmoke;
-    }
-    
-    /* shows the Media links on navbar desktop */
-    /* .navbar-collapse .navbar-brand{
-        display: block;
-    } */
-
-    /* .nav-item a {
-        padding: 8px 0 0 0;
-    } */
+/* =========== Media links on Navbar =========== */
+.link-btn:hover, .link-btn:active {
+    color: antiquewhite;
 }
-
-
-/* Desktop screen: navbar is not collapsed */
-/* From lg/large screens */
-@media (min-width: 990px) {
-
-    .nav-item h6 {
-        font-size: large;
-    }
-
-    .link-btn:hover {
-        color: whitesmoke;
-        transform: scale(1.1);
-        transition: transform 1s;
-        
-    }
-    
-    .navbar-collapse .navbar-brand{
-        display: none;
-    }
-    .home-btn:hover {
-        transform: scale(1.1);
-        transition: transform 1s;
-    }
+.link-btn {
+    color: rgb(224, 185, 57);
+    /* color: rgb(243, 209, 16); */
 }
 
 
@@ -125,37 +62,14 @@
     /* margin-left: 8px; */
 }
 
-.home-btn h5 {
+.home-btn h4 {
     color: rgb(224, 185, 57);
-    margin-left: 8px;
-
+    margin-left: 0.5rem;
+    font-weight:600 ;
 }
 
 .home-btn:hover {
-    color: whitesmoke;
-}
-
-
-.navbar a:hover {
-    color: rgb(224, 185, 57);
-}
-
-
-
-@media (min-width: 992px) {
-
-    .home-btn {
-        display: block;
-        /* margin-left: 8px; */
-    }
-
-
-}
-
-/* =========== Media links on Navbar =========== */
-.link-btn {
-    color: rgb(224, 185, 57);
-    /* color: rgb(243, 209, 16); */
+    color: antiquewhite;
 }
 
 
@@ -164,7 +78,7 @@
 .navbar-search {
     flex: 1;
     max-width: 400px;
-    min-width: 80px;
+    min-width: 180px;
     /* padding: 0 1rem; */
     margin: auto;
     align-items: center;
@@ -185,9 +99,83 @@
 }
 
 
-
 /* ========== Profile links =========== */
 .navbar-profile {
-    margin-left: auto;
+    /* margin-left: auto; */
     width: fit-content;
+}
+
+
+/* Mobile screen: navbar is collapsed */
+/* Max to md/medium screen */
+@media (max-width: 991px) {
+    /* layout of the Left drop down menu */
+    .navbar-collapse {
+        background-color: rgb(90, 87, 87);
+        border: solid 1px whitesmoke;
+        border-radius: 0.5em;
+    }
+
+    .nav-item {
+        gap: 2rem;
+    }
+
+    .nav-link {
+        padding: 0.25rem 0rem;
+        width: fit-content;
+    }
+
+    .nav-link h5{
+        padding: 0rem;
+        border-bottom: solid gray 1px;
+
+    }
+
+    .navbar-search {
+        min-width: 120px;
+
+        max-width: 280px;
+    }
+
+    #mainNavDropMenu {
+        position:absolute;
+        margin-top: 3rem;
+        top: 0;
+        min-width: 220px;
+    }
+    #mainNavDropMenu .nav-link {
+        padding: 0 auto;
+    }
+
+    
+    /* shows the Media links on navbar desktop */
+    /* .navbar-collapse .navbar-brand{
+        display: block;
+    } */
+
+}
+
+
+
+/* Desktop screen: navbar is not collapsed */
+/* From lg/large screens */
+@media (min-width: 992px) {
+    .navbar-collapse .navbar-brand{
+        display: none;
+    }
+    .home-btn {
+        display: block;
+        /* margin-left: 8px; */
+    }
+
+    .link-btn:hover {
+        transform: scale(1.1);
+        transition: transform 1s;
+        
+    }
+    
+    .home-btn:hover {
+        transform: scale(1.1);
+        transition: transform 1s;
+    }
 }
