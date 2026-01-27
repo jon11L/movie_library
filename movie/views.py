@@ -20,6 +20,7 @@ from comment.forms import CommentForm
 
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
+from core.tools.wrappers import timer, num_queries
 
 
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
@@ -80,11 +81,12 @@ class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
     ]
 
 # Regular template views
+@timer
+@num_queries
 def movie_list(request):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
-    start_time = time.time()
     user_liked_movies = None
     user_watchlist_movies = None
     list_media = [] # list to hold the content (movies, series)
@@ -159,11 +161,6 @@ def movie_list(request):
                 size=2
             )
 
-            # record how long took the view to execute.
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
-            
             return render(request, 'movie/list_movie.html', context=context)
 
         else:
@@ -175,13 +172,13 @@ def movie_list(request):
         print(f" error :\n{e}")
         return redirect('main:home')
 
-
+@timer
+@num_queries
 def movie_detail(request, slug):
     '''
     get the movie object from the database using the movie_id parameter in the URL request.
     \nwill also pass on with the necessary information such as 'Like' or 'WatchList' 
     '''
-    start_time = time.time()
     try:
         if Movie:
             # retrieve the specified movie requested by user
@@ -232,11 +229,6 @@ def movie_detail(request, slug):
                         
                     }
                 )
-            
-            # record how long took the view to execute.
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
             
             return render(request,'movie/detail_movie.html', context=context)
 

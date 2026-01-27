@@ -6,12 +6,14 @@ import traceback
 import json
 from django.utils import timezone
 
+from core.tools.wrappers import timer, num_queries
 from comment.forms import CommentForm
 from .models import Comment
 from movie.models import Movie
 from serie.models import Serie
 
-
+@timer
+@num_queries
 def create_comment(request):
     '''
     Views to create/post a new comment.\n
@@ -27,7 +29,7 @@ def create_comment(request):
             'message': "You must be logged to use the Watchlist feature."
             }, status=401)
 
-
+    # User logged in send a POST request
     print("Reaching the create_comment() function...")
     if request.method == 'POST':
         try:
@@ -78,7 +80,8 @@ def create_comment(request):
         return JsonResponse({'success': False, 'error': 'invalid request!'}, status=400)
 
 
-# Create your views here.
+@timer
+@num_queries
 def delete_comment(request, pk):
     '''delete a comment from the database'''
     try:
@@ -93,7 +96,6 @@ def delete_comment(request, pk):
             if request.method == "DELETE":
                 print(f"request.user: {request.user}")
                 print(f"request.method: {request.method}")
-                # print(f"request.POST: {request}")
                 
                 print(f"comment to delete: {comment}")
                 comment.delete()
@@ -106,7 +108,8 @@ def delete_comment(request, pk):
             return JsonResponse({'success': False, 'message': f'Comment of {request.user} could not be deleted.'}, status=404)
 
 
-
+@timer
+@num_queries
 def edit_comment(request, pk):
     '''edit a comment from the database
     ### display the Comment form if user is authenticated and the comment belongs to them
@@ -166,12 +169,6 @@ def edit_comment(request, pk):
 
                     print(f"The comment has been edited: {comment}")
                     return JsonResponse({'success': True, 'message': 'Comment was updated successfully!'}, status=200)
-                    
-                    # else:
-                    #     print(f"form is not valid")
-                    #     print(f"form.errors: {form.errors}") 
-                    #     return JsonResponse({'success': False, 'error': 'Form submitted Invalid!'})
-
 
                 except Exception as e:
                     print(f"Error in trying to edit a comment\n Error: {e}")
