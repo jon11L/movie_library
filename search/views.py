@@ -2,21 +2,17 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Case, When, Value, IntegerField
 
-from django.db import connection
-from django.conf import settings
-
-import time
-
+from core.tools.paginator import page_window # Temporary placement for paginator design
+from core.tools.wrappers import timer, num_queries
 from .filters import SharedMediaFilter
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like, WatchList
 
 
-# Temporary placement for paginator design
-from core.tools.paginator import page_window
 
-# ----- Need to fix Bug if user only put space char in title, then all Movie&Serie pass through filter -------
+@timer
+@num_queries
 def search(request):
     """
     View function for search page
@@ -25,7 +21,6 @@ def search(request):
     or from search bar (title filter only)
     """
     # Initialize variables with empty values
-    start_time = time.time()
     total_found = 0
     user_liked_movies = set()
     user_liked_series = set()
@@ -255,13 +250,4 @@ def search(request):
                     }
                 )
 
-        # Debug: Print number of queries
-        if settings.DEBUG:
-            print(f"Number of queries: {len(connection.queries)}")
-            for query in connection.queries:
-                print(query['sql'])
-
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
         return render(request, 'search/search.html', context=context)

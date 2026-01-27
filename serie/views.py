@@ -4,12 +4,6 @@ from django.contrib import messages
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-
-from django.db import connection
-from django.conf import settings
-
-import time
-
 from rest_framework import generics, filters
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 # from .serializer import MovieSerializer
@@ -17,15 +11,13 @@ from .serializers import SerieListSerializer, SerieDetailSerializer
 from rest_framework.throttling import AnonRateThrottle
 
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+from core.tools.paginator import page_window # Temporary placement for paginator design
+from core.tools.wrappers import timer, num_queries
 
 from .models import Serie, Season, Episode
 from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
-
-# Temporary placement for paginator design
-from core.tools.paginator import page_window
-
 
 class SerieListView(generics.ListCreateAPIView):
     # queryset = Movie.objects.all().order_by('-id')
@@ -58,12 +50,12 @@ class SerieDetailView(generics.RetrieveUpdateDestroyAPIView):
     ]
 
 
+@timer
+@num_queries
 def serie_list(request):
     '''retrieve the series from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
-
-    start_time = time.time()
     list_media = [] # list to hold the content (movies, series)
     user_liked_series = None
     user_watchlist_series = None
@@ -133,11 +125,6 @@ def serie_list(request):
                 size=2
             )
 
-            # record how long took the view to execute.
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
-
             return render(request, 'serie/list_serie.html', context=context)
 
         else:
@@ -151,9 +138,14 @@ def serie_list(request):
         return redirect('main:home')
 
 
+@timer
+@num_queries
 def serie_detail(request, slug):
-    ''' get the movie object from the database using the movie_id parameter in the URL request.'''
-    start_time = time.time()
+    '''
+    - get the serie object from the database using the serie_id=serie.id parameter in the URL request.
+    - Check if logged user has a watchlist or like entry with this serie
+    - add the comment form and list entries with reference to that Serie. 
+    '''
     try:
         if Serie:
             # retrieve the specified serie requested by user
@@ -214,17 +206,6 @@ def serie_detail(request, slug):
                     }
                 )
 
-            # Debug: Print number of queries
-            if settings.DEBUG:
-                print(f"Number of queries: {len(connection.queries)}")
-                for query in connection.queries:
-                    print(query['sql'])
-
-            # record how long took the view to execute.
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
-
 
             return render(request,'serie/detail_serie.html', context=context)
 
@@ -240,6 +221,8 @@ def serie_detail(request, slug):
         return redirect('main:home')
 
 
+@timer
+@num_queries
 def load_season_data(request, season_id):
     '''
     Will pass the season data being requested via HTMX.
@@ -281,12 +264,6 @@ def load_season_data(request, season_id):
         'episode_card': episode_card,
         'season': season,
     }
-
-    # Debug: Print number of queries
-    if settings.DEBUG:
-        print(f"Number of queries: {len(connection.queries)}")
-        for query in connection.queries:
-            print(query['sql'])
 
     print("I am now there")
     return render(request, 'serie/partials/season_content.html', context=context )

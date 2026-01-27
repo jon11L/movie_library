@@ -53,7 +53,7 @@ body {
 	display: none;
 }
 
-/* Sides homepage */
+/* --- homepage sides ---- */
 .l-side-wrapper {
 	display: none;
 }
@@ -62,31 +62,23 @@ body {
 	display: none;
 }
 
-
+/* --- general main wrapper --- */
 .main-wrapper {
 	margin: auto;
 	padding: 1rem 0.25% 0 0.25%;
-	/* width: fit-content; */
 }
 
 
 /* ========== Main Rows of the Home page ========= */
 .main-wrapper-home {
 	margin: auto;
-	padding: 1rem 0.25% 1rem 0.25%;
-
-	/* width: fit-content; */
+	padding: 0.5rem 0.5% 1rem 0.5%;
 }
 
-/* Where lay some template for advertizements. // ASIDE LEFT WRAPPER */
+/* dummy templates side wrapper. // ASIDE LEFT WRAPPER */
 .side-publicity {
     display: none;
 	padding-top: 10rem; 
-
-	/* width: 95%;  */
-	/* margin: auto; */
-
-    
 }
 
 /* some template for discovery/reccomendation. // ASIDE RIGHT WRAPPER */
@@ -94,8 +86,6 @@ body {
 	display: none;
 	text-align: center;
     margin: auto;
-	/* padding: 2rem 0; */
-
 }
 
 
@@ -116,9 +106,8 @@ body {
 		max-width: 95%;
 	}
 	.main-wrapper-home {
-		max-width: 90%;
+		max-width: 95%;
 	}
-
 }
 
 
@@ -142,6 +131,7 @@ body {
     .main-wrapper {
         flex: 1 0 75%;
     }
+    
     /* Empty side wrapper stays narrower */
     .side-wrapper {
         flex: 0 0 12.5%;
@@ -160,19 +150,12 @@ body {
         display: block;
     }
 
-
 	.side-discovery {
 		display: block;
 	}
 	.side-publicity {
 		display: block;
 	}
-
-    .inner-wrapper-home {
-        width: 95%; 
-
-    }
-    
 }
 
 
@@ -190,9 +173,12 @@ body {
         max-width: 12.5%;
     }
     /* size the main wrapper in the home page */
-    .custom-col-9 {
+    .main-wrapper-home {
         flex: 1 0 75%;
-        max-width: 100%;
+    }
+
+    .inner-wrapper-home {
+        max-width: 95%;
     }
 
 }
@@ -298,13 +284,16 @@ Need to reorganize the name or call a parent custom class
 
 /* === Banderol on homepage ==== */
 .banderol {
-    background-color: rgb(56, 9, 16);
+    /* background-color: rgb(56, 9, 16); */
+    background-color: rgb(40, 2, 7);
+
     text-align: center;
-    padding: 8px;
+    padding: 0.75rem;
+    margin: 2.5% 0 1% 0;
     border-radius: 2em;
 }
 
-.banderol h2 {
+.banderol h3 {
     color: rgb(243, 209, 16);
     text-align: center;
     padding-top: 0px;
@@ -446,7 +435,6 @@ Need to reorganize the name or call a parent custom class
     }
 
     .detail-title-poster {
-        /* margin: auto; */
         width: 100%;
     }
     .detail-poster img{
@@ -469,7 +457,6 @@ Need to reorganize the name or call a parent custom class
 
 }
 
-
 /* @media (min-width: 576px) {
     .movie-info-1 {
         padding-top: 15%;
@@ -479,7 +466,6 @@ Need to reorganize the name or call a parent custom class
 @media (min-width: 768px) {
     .detail-title-poster {
         padding-right: 0;
-        /* margin: auto; */
     }
 
     .detail-title-poster img{

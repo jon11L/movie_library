@@ -5,7 +5,7 @@
 {% endblock %}
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-	<div class="container-fluid navbar-layout">
+	<div class="navbar-layout">
 
 		<!-- LEFT SIDE of navbar -->
 		<!-- Home page button -->
@@ -42,45 +42,45 @@
 		<!-- CENTER of the navbar -->
 		<!-- Links of different pages -->
 		<div class="collapse navbar-collapse" id="mainNavDropMenu">
-			<ul class="navbar-nav ms-3">
+			<ul class="navbar-nav ms-3 mt-2">
 
 				<li class="nav-item">
 					<a class="nav-link active d-lg-none " href="{% url 'main:home' %}">
-						<h6 class="link-btn">Home</h6>
+						<h5 class="link-btn">Home</h5>
 					</a>
 				</li>
 
 				{% if user.is_authenticated %}
 				<li class="nav-item">
 					<a class="nav-link active d-lg-none " href="{% url 'user_library:watch_list' request.user.id %}">
-						<h6 class="link-btn">Watchlist</h6>
+						<h5 class="link-btn">Watchlist</h6>
 					</a>
 				</li>
 				{% endif %}
 
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
-						<h6 class="link-btn">Movies</h6>
+						<h5 class="link-btn">Movies</h5>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
-						<h6 class="link-btn">TV shows</h6>
+						<h5 class="link-btn">TV shows</h5>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'main:documentaries' %}">
-						<h6 class="link-btn">Documentaries</h6>
+						<h5 class="link-btn">Documentaries</h5>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
-						<h6 class="link-btn">Short films</h6>
+						<h5 class="link-btn">Short films</h5>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'main:anime' %}">
-						<h6 class="link-btn">Anime</h6>
+						<h5 class="link-btn">Anime</h5>
 					</a>
 				</li>
 			</ul>
@@ -107,7 +107,7 @@
 					
 					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
 						<li>
-							<small class="dropdown-item">{{ request.user.username.capitalize }}</small>
+							<small style="font-weight: 500;">{{ request.user.username.capitalize }}</small>
 						</li>
 						<hr class="dropdown-divider">
 						

@@ -35,7 +35,7 @@
 
 
         <!-- Main/middle section of the screen -->
-        <main class="custom-col-9 main-wrapper-home">
+        <main class="main-wrapper-home">
             <div>
 
                 <div class="inner-wrapper-home">
@@ -71,10 +71,10 @@
 
                         <!------ Displaying the movies recently released ------->
                         {% if recent_movies %}
-                        <div class="test" style="margin-top: 2.5%;">
+                        <div class="media-sample-row">
 
                             <div class="banderol">
-                                <h2>Movies recently released</h2>
+                                <h3>Movies recently released</h3>
                             </div>
 
                             <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
@@ -135,10 +135,10 @@
 
                         <!------ Displaying the new series coming up here -------->
                         {% if returning_series %}
-                        <div class="test" style="margin-top: 2.5%;">
+                        <div class="media-sample-row">
 
                             <div class="banderol">
-                                <h2>Ongoing TV Shows:</h2>
+                                <h3>Ongoing TV Shows:</h3>
                             </div>
                             <div class="row" style="padding: 0 1.5%;">
 
@@ -198,15 +198,15 @@
 
                         <!----- Displaying Some content from the user's watchlist ------->
                         {% if watchlist_content %}
-                        <div class="test" style="margin-top: 2.5%;">
+                        <div class="media-sample-row">
 
                             <div class="banderol">
-                                <h2>
+                                <h3>
                                     <a href="{% url 'user_library:watch_list' request.user.id %}"
                                         style="text-decoration: none; color: inherit;">
                                         From your watchlist:
                                     </a>
-                                </h2>
+                                </h3>
                             </div>
 
                             <div class="row" style="padding: 0 1.5%;">
@@ -299,10 +299,10 @@
 
                         <!--------- Displaying the Media coming soon ------------>
                         {% if movies_coming_soon or new_series %}
-                        <div class="test" style="margin-top: 2.5%;">
+                        <div class="media-sample-row">
 
                             <div class="banderol">
-                                <h2>Upcoming</h2>
+                                <h3>Upcoming</h3>
                             </div>
 
                             {% if movies_coming_soon %}
@@ -436,10 +436,10 @@
 
                         <!------ Displaying Randmom pick  --------->
                         {% if random_movies or random_series %}
-                        <div class="test" style="margin-top: 2.5%;">
+                        <div class="media-sample-row">
 
                             <div class="banderol">
-                                <h2>Random Pick</h2>
+                                <h3>Random Pick</h3>
                             </div>
 
                             {% if random_movies %}

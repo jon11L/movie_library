@@ -9,13 +9,13 @@ import time
 import random
 import traceback
 
+from core.tools.paginator import page_window # Temporary placement for paginator design
+from core.tools.wrappers import timer, num_queries
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like, WatchList
 from user.models import User
 
-# Temporary placement for paginator design
-from core.tools.paginator import page_window
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
@@ -24,7 +24,8 @@ from core.tools.paginator import page_window
 def about_page(request):
     return render(request, "main/about.html")
 
-
+@timer
+@num_queries
 def home(request):
     """
     Home landing page. Display some of latest content
@@ -35,7 +36,6 @@ def home(request):
     - from user Watchlist
     - coming back (Series only)
     """
-    start_time = time.time()
 
     try:
         # to display movies & series that are coming soon or recently released
@@ -227,9 +227,6 @@ def home(request):
                 }
             )
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
         return render(request, "main/home.html", context=context)
 
     except Exception as e:
@@ -241,6 +238,8 @@ def home(request):
         return redirect(to="user:login")
 
 
+@timer
+@num_queries
 def show_content(request, content):
     """
     Display the content media available in the database per style:
@@ -248,7 +247,6 @@ def show_content(request, content):
     - Short Films
     - Anime
     """
-    start_time = time.time()
     list_media = [] # list to hold the content (movies, series)
     combined = []
     user_liked_movies = set()
@@ -358,7 +356,7 @@ def show_content(request, content):
         # create a standardized data stack to pass in templates.
         # Avoiding any extra hidden queries on the frontend
         for item in page_obj:
-            print(item)
+            # print(item)
             list_media.append({
                 "title": item.title, 
                 "id": item.pk, 
@@ -425,9 +423,7 @@ def show_content(request, content):
             size=2
         )
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
+
         return render(request, "main/short_doc_anime.html", context=context)
 
     except Exception as e:
