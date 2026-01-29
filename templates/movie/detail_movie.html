@@ -35,7 +35,7 @@
 
                     <section id="movie-detail-section">
 
-                        <div class="rounded" style="background-image: url('{{ movie.render_banner }}'); background-repeat: no-repeat; background-size: contain; width: 100%; max-width: 100%;">
+                        <div class="background-media-img rounded" style="background-image: url('{{ movie.render_banner }}');">
 
                             <!-- <div class="banner" style="width: fit-content; ">
                                 {% if movie.banner_images %}
@@ -45,17 +45,13 @@
                                 {% endif %}
                             </div> -->
                         
-                            <div style="display: flex; flex-wrap: wrap; justify-content:space-between;">
+                            <div class="detail-vote-buttons">
 
-                                <div style="margin-top: 1rem; margin-left: 0.7rem;">
-                                    <p class="vote-average-detail">
+                                    <p class="detail-vote-avg-count">
                                         {{ movie.render_vote_average }}/10 ({{movie.vote_count}} votes)
                                     </p>
-                                </div>
                             
-                                <div style="align-self: flex-end; margin-top: 0.5em; margin-right: 0.7em;">
-                                
-                                    <div class="user-feature-btn">
+                                <div class="detail-media-user-btns">
                                         <!-- watchlist button feature -->
                                         <button class="watchlist-button"
                                                 data-type="movie"
@@ -71,13 +67,11 @@
                                                 data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
                                             <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                         </button>
-                                    
                                     </div>
-                                </div>
-                            </div>
 
-                            <!-- To give space between the backcgrounf image and the next parts -->
-                            <!-- <div style="padding-bottom: 25.6em;"></div> -->
+                                </div>
+
+                            <!-- To give space between the backcground image and the next parts -->
                             <div class="banner-space"></div>
 
                             <div class="row">
@@ -95,9 +89,9 @@
                                         <div class="detail-title col-7 col-md-12 mt-0 mt-md-3">
                                             <div style="text-align: center;">
                                                 {% if movie.title != movie.original_title %}
-                                                <h5 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h5>
+                                                <h3 class="card-title">{{ movie.title }} ({{ movie.original_title }})</h3>
                                                 {% else %}
-                                                <h4 class="card-title">{{ movie.title }}</h4>
+                                                <h3 class="card-title">{{ movie.title }}</h3>
                                                 {% endif %}
                                                 
                                                 {% if movie.tagline %}
@@ -113,7 +107,7 @@
                                         <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
                                         <p style="text-align: center;">{{ movie.overview }}</p>
                                         {% else %}
-                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
+                                        <p class="card-text" style="text-align: center; height: 220px; overflow-y: auto;"><strong>Overview:</strong></p>
                                         <p>No description available.</p>
                                         {% endif %}
                                     </div>
@@ -122,7 +116,7 @@
 
 
                                 <!--  ROW 2 = Release/length/genre/casting -->
-                                <div class="movie-info-1 col-10 col-sm-6 col-md-7 col-xl-4">
+                                <div class="media-info-row-1 col-10 col-sm-6 col-md-7 col-xl-4">
 
                                     <div>
                                         <ul class="list-group list-group-flush">
@@ -146,15 +140,15 @@
                                                 </p>
                                             </li>
 
-                                            <li class="list-group-item" style=" width: 100%; margin: auto;">
+                                            <li class="list-group-item" style=" width: 100%; margin: auto; padding: 0.5rem 0.25rem;">
                                                 <p style="text-align: center;"><strong>Casting:</strong></p>
                                                 {% if movie.casting %}
-                                                <div style="text-align: center;">
+                                                <div style="text-align: center; max-height: 200px; overflow-y: auto;">
                                                     {% for cast in movie.casting %}
                                                         {% if not cast.role %}
                                                         <p style="margin: auto;">{{ cast.name }}</p>
                                                         {% else  %}
-                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i></p>
+                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:600;">{{ cast.role }}</i></p>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </div>
@@ -167,7 +161,7 @@
                                 </div>
 
                                 <!-- ROW 3 = Production/director/writer/country/language -->
-                                <div class="movie-info-2 col-10 col-sm-6 col-md-12 col-xl-4">
+                                <div class="media-info-row-2 col-10 col-sm-6 col-md-12 col-xl-4">
 
                                     <div>
                                         <ul class="list-group list-group-flush d-block d-md-flex d-lg-block">

@@ -1,13 +1,13 @@
-
 /* ================ Navbar design =========================== */
 .navbar {
     width: 100%;
     height: 50px;
-    padding: 0;
     /* background-color: rgb(56, 9, 16); */
     background-color: rgb(40, 2, 7);
     top:0;
     z-index: 1030; /* to prevent the navbar getting covered up by other content */
+    display: flex;
+    align-items: center;
 }
 
 .navbar-spacer {
@@ -17,15 +17,16 @@
 /* General navbar layout */
 .navbar-layout {
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0 0.4rem;
+    padding: 0 0.3rem 0 0rem;
     width: 100%;
+    height: 100%;
 }
 
 .navbar-nav .dropdown-menu {
-    position:absolute;
+    position: absolute;
 }
 
 .nav-search-btn {
@@ -54,8 +55,6 @@
 }
 
 
-
-
 /* ============== Home button ======================== */
 .home-btn {
     display: none;
@@ -73,23 +72,21 @@
 }
 
 
-
 /* ========== Search Navbar ====================== */
 .navbar-search {
     flex: 1;
-    max-width: 400px;
-    min-width: 180px;
-    /* padding: 0 1rem; */
-    margin: auto;
-    align-items: center;
+    max-width: 180px;
+    min-width: 120px;
+    margin: 0;
+    /* align-items: center; */
 }
 
-.search-form {
+.navbar-search .search-form {
     /* padding-right: 1rem; */
     display: flex;
-    gap: 0.5rem;
-    width: 90%;
-    margin: auto;
+    gap: 0.25rem;
+    /* width: 100%; */
+    /* margin: auto; */
     padding-right: 0;
 }
 
@@ -105,10 +102,16 @@
     width: fit-content;
 }
 
+@media (max-width: 768px) {
+
+}
 
 /* Mobile screen: navbar is collapsed */
 /* Max to md/medium screen */
 @media (max-width: 991px) {
+    .navbar {
+        padding: 0 0.25rem;
+    }
     /* layout of the Left drop down menu */
     .navbar-collapse {
         background-color: rgb(90, 87, 87);
@@ -128,12 +131,10 @@
     .nav-link h5{
         padding: 0rem;
         border-bottom: solid gray 1px;
-
     }
 
     .navbar-search {
         min-width: 120px;
-
         max-width: 280px;
     }
 
@@ -143,16 +144,14 @@
         top: 0;
         min-width: 220px;
     }
-    #mainNavDropMenu .nav-link {
+    /* #mainNavDropMenu .nav-link {
         padding: 0 auto;
-    }
+    } */
 
-    
     /* shows the Media links on navbar desktop */
     /* .navbar-collapse .navbar-brand{
         display: block;
     } */
-
 }
 
 
@@ -168,6 +167,10 @@
         /* margin-left: 8px; */
     }
 
+    #mainNavDropMenu {
+        align-items: center;
+    }
+
     .link-btn:hover {
         transform: scale(1.1);
         transition: transform 1s;
@@ -178,4 +181,16 @@
         transform: scale(1.1);
         transition: transform 1s;
     }
+
+    .navbar-search {
+        min-width: 220px;
+        max-width: 320px;
+    }
 }
+
+/* @media (min-width: 1200px) {
+    .navbar-search {
+        min-width: 280px;
+        max-width: 320px;
+    }
+} */

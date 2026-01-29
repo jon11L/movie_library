@@ -22,10 +22,10 @@
 
                 <br><br>
                 {% if liked_content %}
-                <div class="row" style="justify-content: center; ">
+                <div class="row col-12 col-md-8" style="justify-content: center; margin: auto;">
                     {% for item in liked_content %}
 
-                    <div style="justify-items: center; padding-bottom: 50px;" >
+                    <div class="col-6 col-md-3" style="justify-items: center; padding-bottom: 50px;" >
                     
                         <div style=" margin-right: 30px; color: bisque;">
                             <p><strong>liked on:</strong> {{ item.liked_on }}</p>

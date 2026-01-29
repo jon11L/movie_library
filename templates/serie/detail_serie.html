@@ -36,37 +36,33 @@
                     
                     <section id="serie-detail-section">
 
-                        <div class="rounded" id="banner-background" style="background-image: url('{{ serie.render_banner }}'); background-repeat: no-repeat; background-size: contain; max-width: 100%; width: 100%;">
+                        <div class="background-media-img rounded" id="banner-background" style="background-image: url('{{ serie.render_banner }}');">
 
-                            <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                            
-                                <div style="margin-top: 1rem; margin-left: 0.7rem;">
-                                    <p class="vote-average-detail">
+                            <div class="detail-vote-buttons">
+                                
+                                    <p class="detail-vote-avg-count">
                                         {{ serie.render_vote_average }}/10 ({{serie.vote_count}} votes)
                                     </p>
-                                </div>                                <!-- Display the like and watchlist buttons -->
 
-                                <div style="align-self: flex-end; margin-top: 0.5em; margin-right: 0.7em;">
-                                    <div class="user-feature-btn" >
-                                        <!-- Watchlist button feature -->
-                                        <button class="watchlist-button"
+                                <div class="detail-media-user-btns">
+                                    <!-- Watchlist button feature -->
+                                    <button class="watchlist-button"
+                                        data-type="serie"
+                                        data-id="{{ serie.id }}"
+                                        data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                        <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                    </button>
+                                    <!-- like button feature -->
+                                    <button class="like-button"
                                             data-type="serie"
                                             data-id="{{ serie.id }}"
-                                            data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                            <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                        </button>
-                                        <!-- like button feature -->
-                                        <button class="like-button"
-                                                data-type="serie"
-                                                data-id="{{ serie.id }}"
-                                                data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
-                                                <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                        </button>
-                                    </div>
+                                            data-liked="{% if serie.id in user_liked_serie %}true{% else %}false{% endif %}">
+                                            <i class="{% if serie.id in user_liked_serie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- To give space between the backcgrounf image and the next parts -->
+                            <!-- To give space between the backcground image and the next parts -->
                             <div class="banner-space"></div>
 
                             <div class="row">
@@ -86,9 +82,9 @@
                                         <div class="detail-title col-7 col-md-12 mt-0 mt-md-3">
                                             <div style="text-align: center;">
                                                 {% if serie.title != serie.original_title %}
-                                                <h4 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h4>
+                                                <h3 class="card-title">{{ serie.title }} ({{ serie.original_title }})</h3>
                                                 {% else %}
-                                                <h4 class="card-title">{{ serie.title }}</h4>
+                                                <h3 class="card-title">{{ serie.title }}</h3>
                                                 {% endif %}
                                             
                                                 {% if serie.tagline %}
@@ -111,7 +107,7 @@
 
 
                                 <!--  ROW 2 = Release/length/genre/casting -->
-                                <div class="movie-info-1 col-10 col-sm-6 col-md-7 col-xl-4">
+                                <div class="media-info-row-1 col-10 col-sm-6 col-md-7 col-xl-4">
 
                                     <div>
                                         <ul class="list-group list-group-flush">
@@ -140,12 +136,12 @@
                                             <li class="list-group-item" style="width: 100%; margin: auto; padding: 0.5rem 0.25rem;">
                                                 <p style="text-align: center;"><strong>Casting:</strong></p>
                                                 {% if main_cast %}
-                                                <div style="text-align: center;">
+                                                <div style="text-align: center; max-height: 200px; overflow-y: auto;">
                                                     {% for cast in main_cast %}
                                                         {% if not cast.role %}
                                                         <p style="margin: auto;">{{ cast.name }}</p>
                                                         {% else  %}
-                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:500;">{{ cast.role }}</i></p>
+                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:600;">{{ cast.role }}</i></p>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </div>
@@ -157,7 +153,7 @@
                                 </div>
 
                                 <!-- ROW 3 = Production/director/writer/country/language -->
-                                <div class="movie-info-2 col-10 col-sm-6 col-md-12 col-xl-4">
+                                <div class="media-info-row-2 col-10 col-sm-6 col-md-12 col-xl-4">
 
                                     <div>
                                         <ul class="list-group list-group-flush d-block d-md-flex d-lg-block">
@@ -204,10 +200,10 @@
                             <h5 style="color: inherit;">Seasons:</h5>
                         </div>
                     
-                        <div class="season-btn" style="display: flex; flex-wrap: wrap; padding-left: 7%;">
-                            {% for season in seasons %}
+                        <div class="season-btn">
                             <!-- try to not display season if no episode are present -->
                             <!-- Button trigger htmx to get the season&episode's data. Render then in #season-content -->
+                            {% for season in seasons %}
                             {% if season.episodes %}
                             <div style="margin-left: 0.5rem; margin-bottom: 1rem;  width: fit-content;">
                                 
