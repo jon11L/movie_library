@@ -320,7 +320,6 @@ Need to reorganize the name or call a parent custom class
 
 /* Background image cover|banner */
 .background-media-img {
-    background-image: url('{{ movie.render_banner }}'); 
     background-repeat: no-repeat; 
     background-size: contain; 
     width: 100%; 
@@ -368,6 +367,33 @@ Need to reorganize the name or call a parent custom class
     flex-wrap: wrap;
 }
 
+
+#trailers {
+    padding-top: 1rem;
+}
+
+/* Trailer section */
+.outer-trailer {
+    padding-top: 1rem;
+    max-height: 280px; 
+    overflow-y: auto;
+}
+
+
+.display-trailer {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 0.6rem; 
+    padding-bottom: 0.6rem; 
+    background-color:rgb(131, 125, 125);
+    border-radius: 0.5em;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
 /*
  flex 47% to have 2 next to each other
  or 60-70% good ratio for one per row 
@@ -406,26 +432,18 @@ Need to reorganize the name or call a parent custom class
     padding-left: 7%;
 }
 
-/* Trailer section */
-.outer-trailer {
-    padding-top: 1rem;
+.episodes{
+    padding-top: 2rem;
 }
 
-.display-trailer {
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: center;
-    gap: 0.5rem;
-    padding-top: 0.6rem; 
-    padding-bottom: 0.6rem; 
-    background-color:rgb(131, 125, 125);
-    border-radius: 0.5em;
-    box-sizing: border-box;
-    width: 100%;
+.episodes-list {
+    padding: 0.5rem; 
+    max-height: 400px; 
+    overflow-y: auto;
 }
 
 
-.episode-head {
+.episode-header {
     margin: 0rem 0.5rem 0 0rem;
 }
 
@@ -435,9 +453,6 @@ Need to reorganize the name or call a parent custom class
     width: 100%;
     max-width: 220px; 
     text-align: center;
-    /* max-width: fit-content;  */
-    /* height: fit-content; */
-    /* border-radius: 1%; */
 }
 
 .ep-overview {
@@ -515,10 +530,6 @@ Need to reorganize the name or call a parent custom class
         flex: 0 0 33%;
     }
 
-    .episode-head {
-        margin-left: 0rem 1rem 0 3rem;
-    }
-
     .episode-img {
         margin: auto;
         padding-left: 1rem;
@@ -534,6 +545,9 @@ Need to reorganize the name or call a parent custom class
     }
     .detail-title {
         padding: 0;
+    }
+    .episodes-list {
+        max-height: 600px; 
     }
 }
 
@@ -585,7 +599,6 @@ Need to reorganize the name or call a parent custom class
     /* border-bottom: 3px solid black; */
     margin-bottom: 10px;
 }
-
 
 
 
