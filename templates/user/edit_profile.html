@@ -3,7 +3,6 @@
 {% block content %}
 {% load static %}
 
-
     <div class="custom-wide">
         <div class="row">
             
@@ -14,25 +13,25 @@
             
             <main class="custom-col-9 main-wrapper">
 
-                <div style="margin: auto;">
+                <div style="margin: auto; width: 95%;">
 
                     <!-- Forms input to edit profile -->
-                    <div style="text-align: center; margin: auto;">
+                    <div style="text-align: center; padding-bottom: 2rem;">
                         <h2 >Edit your profile here:</h2>
                     </div>
 
-                    <div style="width: 95%; margin: auto;">
+                    <div style="text-align: center;">
                         <form  style="color:antiquewhite;" 
                             method="POST" 
                             enctype="multipart/form-data" 
                             action="{% url 'user:update_profile' request.user.id %}">
-
                             {% csrf_token %}
-                            <div class="d-sm-block d-md-flex mx-auto" style="max-width: 990px; flex-wrap: wrap; padding: 0 1rem; justify-content: center; ">
+
+                            <div class="edit-profile-form">
 
                                 {% for field in form %}
-                                <div class="mb-sm-2 mb-md-3 ms-2 me-2 col-sm-10 col-md-4 col-lg-3 mx-auto">
-                                    <div style="text-align: center;">
+                                <div class="form-group">
+                                    <div style="">
                                         <label for="{{ field.id_for_label }}" style="color: rgb(224, 185, 57);">{{ field.label }}</label>   
                                     </div>
 
@@ -45,16 +44,14 @@
                                 {% endfor %}
                             </div>
                         
-                            <div class="d-flex" style="padding: 2rem; margin: auto; justify-content: space-around; width: fit-content;">
-
+                            <div class="edit-profile-buttons">
                                 <a href="{% url 'user:profile_page' request.user.id %}" class="btn btn-secondary">
                                     Go Back
                                 </a>
 
-                                <button type="submit" class="btn btn-outline-secondary" style="margin-left: 5rem;">
+                                <button type="submit" class="btn btn-primary">
                                     Update
                                 </button>
-
                             </div>
                         </form>
 
@@ -63,17 +60,17 @@
                     <hr>
     
                     <!-- Links to update credentials: user name, password -->
-                    <div class="card" style="text-align: center; margin: auto;  max-width: 768px; background-color: white; border: solid darkgrey;">
+                    <div class="edit-account-card">
                         
                         <div>
-                            <h5 style="color: inherit;">To edit your user account</h5>
+                            <h5 style="color: inherit; padding-top: 0.5rem;">To edit your user account</h5>
                             <p><small>(user-name, password, first and last name.)</small></p>
     
-                            <div class="d-sm-flex d-block" style="justify-content: center; margin: auto; margin: 0.5rem;">
-                                <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary" style="margin: 10px 10px;">
-                                    <small>Update your account</small>
+                            <div class="edit-account-btns">
+                                <a href="{% url 'user:update_user_name' request.user.id %}" class="btn btn-secondary">
+                                    <small>Update account</small>
                                 </a>
-                                <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary" style="margin: 10px 10px;">
+                                <a href="{% url 'user:update_user_pw' request.user.id %}" class="btn btn-secondary">
                                     <small>change password</small>
                                 </a>
                             </div>

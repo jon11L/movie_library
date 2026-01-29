@@ -20,10 +20,7 @@ xxl	1320px 1400
     --bs-breakpoint-xl: 1200px;
     --bs-breakpoint-xxl: 1400px;
 }
-
 */ 
-
-
 
 @media (prefers-reduced-motion: no-preference) {
     :root {
@@ -32,32 +29,50 @@ xxl	1320px 1400
 }
 
 @media screen and (max-width: 768px) {
-    /* #container {
-        width: 90%;
-    } */
-    
     h1 {
         font-size: 200%;
     }
 }
 
 
-/* ===== Main and side element ========================= */
-body {
-    background-color: #171623; /* Dark blue background */
+/* ======================= alert message ================================ */
+.alert {
+    animation: slideIn 0.5s ease-out;
 }
 
-/* ========= standart wrappers of pages: l-left r-right main-center */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Overall styling */
+h1, h2, h3, h4, h5, h6 {
+    color:antiquewhite ;
+}
+
+body {
+    background-color: #171623; /* Dark blue background */
+    font-family: Tahoma, 'Segoe UI', Geneva, Verdana, sans-serif;
+}
+
+
+/* ================ Main and side rows/wrapper =============== */
+
+/* ---- standart wrappers of pages: l-left r-right main-center ---- */
 /* general sides */
 .side-wrapper {
 	display: none;
 }
-
 /* --- homepage sides ---- */
 .l-side-wrapper {
 	display: none;
 }
-
 .r-side-wrapper {
 	display: none;
 }
@@ -67,7 +82,6 @@ body {
 	margin: auto;
 	padding: 1rem 0.25% 0 0.25%;
 }
-
 
 /* ========== Main Rows of the Home page ========= */
 .main-wrapper-home {
@@ -87,7 +101,6 @@ body {
 	text-align: center;
     margin: auto;
 }
-
 
 .inner-wrapper-home {
     width: 100%; 
@@ -141,7 +154,7 @@ body {
     /* Content in side wrapper Homepage */
     .l-side-wrapper {
         flex: 0 0 15%;
-        width: 12.5%;
+        width: 15%;
         display: block;
     }
     .r-side-wrapper {
@@ -211,20 +224,13 @@ body {
 } */
 
 
-h1, h2, h3, h4, h5, h6 {
-    color:antiquewhite ;
-}
-
-
-/* Optional: make sure .row has no gaps pushing layout */
+/* make sure .row has no gaps pushing layout */
 .row {
 	margin-left: 0;
 	margin-right: 0;
 }
 
 
-
-/* =============== LEFT side wrapper =========== */
 
 /* ========= list templates advert ====== */
 .list_advert {
@@ -301,21 +307,44 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-
-
-
-/* ============= Detail movie / Serie pages =============== */
-.movie-info-1 {
+/* =============== Detail movie / Serie pages ================= */
+.media-info-row-1 {
     /* margin-top: 5%; */
     text-align: center;
 }
-.movie-info-2 {
+.media-info-row-2 {
     /* margin-top: 5%; */
     text-align: center;
 }
 
 
-.vote-average-detail {
+/* Background image cover|banner */
+.background-media-img {
+    background-image: url('{{ movie.render_banner }}'); 
+    background-repeat: no-repeat; 
+    background-size: contain; 
+    width: 100%; 
+    max-width: 100%;
+}
+
+/* ---  Row with vote average & watchlist buttons --- */
+.detail-vote-buttons {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.25rem;
+    margin: auto;
+    width: 98%;
+}
+
+@media (min-width: 768px) {
+    .detail-vote-buttons {
+        padding-top: 0.5rem;
+    }
+}
+
+.detail-vote-avg-count {
     font-weight: 500; 
     background-color: rgba(53, 49, 49, 0.65); 
     border-radius: 2em; 
@@ -329,48 +358,15 @@ Need to reorganize the name or call a parent custom class
     padding-bottom: 30%;
 }
 
-
-
 .detail-poster {
     margin: auto; 
     text-align: center; 
     padding: 0px;
 }
 
-
 .release-length {
     flex-wrap: wrap;
 }
-
-
-
-#season-poster img {
-    text-align: left;
-    min-width: 130px;
-    width: 100%;
-    max-width: 220px;
-    /* padding: 0 0.5rem; */
-}
-
-
-/* Trailer section */
-.outer-trailer {
-    padding-top: 1rem;
-}
-
-.display-trailer {
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: center;
-    gap: 0.5rem;
-    padding-top: 0.6rem; 
-    padding-bottom: 0.6rem; 
-    background-color:rgb(131, 125, 125);
-    border-radius: 0.5em;
-    box-sizing: border-box;
-    width: 100%;
-}
-
 
 /*
  flex 47% to have 2 next to each other
@@ -395,11 +391,43 @@ Need to reorganize the name or call a parent custom class
 }
 
 
+/* ----- Specific to serie detail page ------ */
+#season-poster img {
+    text-align: left;
+    min-width: 130px;
+    width: 100%;
+    max-width: 220px;
+    /* padding: 0 0.5rem; */
+}
+
+.season-btn {
+    display: flex; 
+    flex-wrap: wrap; 
+    padding-left: 7%;
+}
+
+/* Trailer section */
+.outer-trailer {
+    padding-top: 1rem;
+}
+
+.display-trailer {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 0.6rem; 
+    padding-bottom: 0.6rem; 
+    background-color:rgb(131, 125, 125);
+    border-radius: 0.5em;
+    box-sizing: border-box;
+    width: 100%;
+}
+
 
 .episode-head {
     margin: 0rem 0.5rem 0 0rem;
 }
-
 
 .episode-img {
     min-width: 140px;
@@ -412,15 +440,12 @@ Need to reorganize the name or call a parent custom class
     /* border-radius: 1%; */
 }
 
-
 .ep-overview {
     padding-bottom: 0; 
     padding-top: 0.3rem; 
     margin-bottom: 0.5rem;
     padding-left: 1rem;
 }
-
-
 
 @media (max-width: 767px) {
     /* .movie-info-1 {
@@ -446,15 +471,14 @@ Need to reorganize the name or call a parent custom class
         padding: 24% 0 0 0;
     }
 
-    .movie-info-1 {
+    .media-info-row-1 {
         margin: auto; 
         width: 100%;    
     }
-    .movie-info-2 {
+    .media-info-row-2 {
         margin: auto; 
         width: 100%;
     }
-
 }
 
 /* @media (min-width: 576px) {
@@ -472,11 +496,11 @@ Need to reorganize the name or call a parent custom class
         width: 60%;
     }
 
-    .movie-info-1 {
+    .media-info-row-1 {
         padding-top: 23%;
         padding-left: 0;
     }
-    .movie-info-2 {
+    .media-info-row-2 {
         padding-top: 1%;
     }
 
@@ -501,7 +525,6 @@ Need to reorganize the name or call a parent custom class
         max-width: 420px;
         width: 100%;
     }
-    
 }
 
 @media (min-width: 992px) {
@@ -523,27 +546,20 @@ Need to reorganize the name or call a parent custom class
         padding-right: 0;
     }
 
-
-    .movie-info-1 {
+    .media-info-row-1 {
         padding-top: 24%;
     }
-    .movie-info-2 {
+    .media-info-row-2 {
         padding-top: 24%;
     }
 
     #season-poster img {
         max-width: 280px;
         text-align: center;
-    /* padding: 0 0.5rem; */
     }
-
 }
 
 
-
-
-
-/* =================== Temporary display for the seasons and episodes  ======================= */
 .season-toggle {
     background-color: rgb(61, 8, 20);
     color: bisque;
@@ -561,6 +577,8 @@ Need to reorganize the name or call a parent custom class
     color: black;
 }
 
+/* ----  display for the seasons and episodes ----- */
+
 .trailer-episode-data {
     padding: 10px;
     border-top: 3px solid black;
@@ -569,16 +587,31 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ========== SSEARCH filter form / Page ================== */
 
+
+/* =================== Comment form ============================= */
+.comment-form {
+    background-color: black;
+    color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+
+
+
+
+/* ================== SEARCH PAGE ======================== */
+/* ------ SEARCH filter form / Page ----- */
 .search-card {
     min-width: fit-content; 
     max-width: 90%; 
     margin: auto;
 }
 
-
-/* ====== reset and submit button in filter search page ======= */
+/* ---- reset and submit button in filter search page ----- */
 .reset-btn {
     display: inline-block;
     padding: 10px 20px;
@@ -605,21 +638,16 @@ Need to reorganize the name or call a parent custom class
     border-radius: 2em;
 }
 
-
 .submit-btn:hover, .submit-btn:active {
     background-color: rgb(9, 95, 95);
     color: rgb(224, 185, 57);
     transition: color 0.4s ease-in-out, background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out
-
 }
-
-
 
 
 /* ================ list media cards =================== */
 
-
-/* ========== vote and users buttons on Media list ========= */
+/* ==== vote and users buttons on Media list ==== */
 .vote_button_list {
     display: flex;
     justify-content: space-between;
@@ -630,7 +658,7 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/*============= Like button =============== */
+/* ============ Like & watchlist buttons ================== */
 .like-button {
     background: transparent;
     border: none;
@@ -644,23 +672,19 @@ Need to reorganize the name or call a parent custom class
     opacity: 0.7;
 }
 
-
 .like-button i {
     color: #6d1b1b;
     transition: all 1.3s ease;
 }
-
 .like-button i.liked {
     color: #6d1b1b;
 }
-
 
 .fa-heart {
     color: #ccc;
     font-size: 1.4rem;
     transition: color 0.3s;
 }
-
 .fa-heart.liked {
     color: #6d1b1b;
 }
@@ -669,7 +693,6 @@ Need to reorganize the name or call a parent custom class
 .like-button:hover {
     transform: scale(1.4) rotate(5deg);
 }
-
 
 @keyframes pulse {
     0% { transform: scale(1); }
@@ -682,25 +705,6 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ======================= alert message ================================ */
-.alert {
-    animation: slideIn 0.5s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-
-
-
 /* ============ Watchlist button ======================== */
 /*  Before hovering over the watch button make it appear slightly below and hidden  */
 /* behind the poster image */
@@ -708,29 +712,12 @@ Need to reorganize the name or call a parent custom class
     cursor: pointer;
     transition: transform 0.5s;
     /* transform:translateY(25%) */
-
 }
 .watchlist-button:hover {
     cursor: pointer;
     transition: transform 0.75s;
     transform:translateY(-25%);
     /* padding-bottom: 12px; */
-
-
-}
-
-
-
-
-
-/* =================== Comment form ============================= */
-.comment-form {
-    background-color: black;
-    color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
 }
 
 
@@ -755,7 +742,7 @@ Need to reorganize the name or call a parent custom class
 
 
 /* ============== list media card -- That displays rows of Movie/Ser  ============ */
-/* Only for lists not sample like home page.  */
+/* Only for lists pages. Different from sample like home page.  */
 .media-row {
     justify-content: center;
     border: solid 2px;
@@ -764,16 +751,14 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-
 /* ==================  Pagination section  ================== */
 /* give some space around */
 .pagination-section {
     padding: 1.5rem 0 1rem 0;
-
 }
 
-/* ================= REGISTER // LOGIN PAGES =============== */
 
+/* ================= REGISTER // LOGIN PAGES =============== */
 /* ------ register page / form  ------- */
 .register-card {
     background-color: rgb(57, 55, 55);
@@ -783,17 +768,14 @@ Need to reorganize the name or call a parent custom class
     border: solid 2px gray; 
     border-radius: 1em; 
 }
-
 .inner-register-card {
     width: 95%; 
     margin: auto;
 }
-
 .register-form {
     margin: auto;
     width: fit-content;
 }
-
 
 /* ------ Login page / form  ------- */
 .login-card {
@@ -801,13 +783,10 @@ Need to reorganize the name or call a parent custom class
     /* width: fit-content; */
     margin-top: 10%;
 }
-
 .login-card form {
     /* max-width: 250px; */
     margin: auto;
 }
-
-
 .login-form-btn { 
     width: 90%;
     padding-top: 10px;
@@ -821,16 +800,13 @@ Need to reorganize the name or call a parent custom class
     display: flex;
     justify-content:end;
     color: antiquewhite;
-
     gap: 0.5rem;   
 }
-
 .register-btn a {
     border-bottom: rgb(56, 9, 16) 0.5px solid;
     text-decoration: none;
     color: white;
 }
-
 .register-btn a:hover {
     color: rgb(224, 185, 57);
 }
@@ -839,10 +815,6 @@ Need to reorganize the name or call a parent custom class
 .under-login-form {
     margin-bottom: 3rem;
 }
-
-
-
-
 
 /* ======= Edit user's account info page  ========= */
 /* .edit-user-card {
@@ -861,14 +833,12 @@ Need to reorganize the name or call a parent custom class
     margin: 0 auto;
     margin-top: 2%;
 }
-
 .edit-password-card form{
     width: fit-content;
     text-align: center;
     margin: auto;
     /* margin-top: 1rem; */
 }
-
 .edit-password-card form ul{
     text-align: left;
     margin: auto;
@@ -879,28 +849,24 @@ Need to reorganize the name or call a parent custom class
     margin-bottom: 1rem;
     /* min-width: 280px; */
 }
-
 .update-password-field input{
     min-width: 280px;
 }
 
-
-
 .under-login-form {
     margin-bottom: 14%;
 }
+
 
 @media (min-width: 992px) {
     /* .edit-user-card form{
         max-width: 320px;
     } */
 
-    
     .under-user-update-form {
         margin-bottom: 8%;
     }
 }
-
 
 
 /* Adapt the login form/page width on large screen + fix empty space below */
@@ -920,12 +886,63 @@ Need to reorganize the name or call a parent custom class
     }
     
     /* Pushes down to fill the page on large screen / for edit_user */
-
 }
 
 
 
+/* ============ Profile update page =========== */
+.edit-profile-form {
+    display: flex;
+    margin: auto;
+    width: fit-content; 
+    max-width: 990px; 
+    flex-wrap: wrap; 
+    padding: 0 1rem; 
+    justify-content: center; gap: 1rem;
+}
 
+.edit-profile-form .form-group {
+    flex: 1 1 250px;
+    min-width: 250px; 
+    max-width: 90%;
+}
+
+@media (min-width: 768px) {
+    .edit-profile-form .form-group {
+        max-width: 75%;
+    }
+}
+@media (min-width: 990px) {
+    .edit-profile-form .form-group {
+        max-width: 60%;
+    }
+}
+
+
+.edit-profile-buttons {
+    display: flex;
+    padding: 2rem;
+    margin: auto;
+    justify-content: space-around;
+    gap: 5rem;
+    width: fit-content;
+}
+
+
+.edit-account-card {
+    text-align: center;
+    margin: auto;
+    max-width: 768px;
+    background-color: white;
+    border: solid darkgrey;
+}
+.edit-account-btns {
+    display: flex;
+    justify-content: center; 
+    margin: auto;
+    gap: 3rem;
+    padding-bottom: 1rem;
+}
 
 
 
@@ -935,8 +952,6 @@ Need to reorganize the name or call a parent custom class
 .form-help-text li {
     color: #b8860b;  /* Bootstrap's text-secondary color */
 }
-
-
 
 
 
