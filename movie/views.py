@@ -77,7 +77,8 @@ def movie_list(request):
     user_liked_movies = None
     user_watchlist_movies = None
     list_media = [] # list to hold the content (movies, series)
-    sort_by = 
+    sort_by = None
+    
     try:
         if Movie:
 
