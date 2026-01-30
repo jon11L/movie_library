@@ -18,9 +18,25 @@
                 <div style="text-align: center; margin-bottom: 0.25rem;">
                     <h1 style="margin-bottom: 0;">{{ content }}:</h1>
                 </div>
-                <div style="padding: 0;">
-                    <!-- prepare to add an order_by feature -->
-                    <h6 style="text-align:right; margin: 1rem 2rem 0.5rem 0;">order by</h6>  
+                <div style="padding: 0.5rem;">
+
+                    <!-- Sort-by selector -->
+                    <div class="" style="width: fit-content; margin-left: auto; margin-right: 1rem;">
+                        <label for="order-by" class="sr-only">sort-by</label>
+                    
+                        <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
+                            <option value="">sort-by</option>
+                        
+                            {% if sort_by %}
+                            {% for item, key in sort_by %}
+                            <option value="?order_by={{ key }}">
+                                {{ item }}
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
                 </div>
 
                 <!-- Display of Documentaries media genre -->

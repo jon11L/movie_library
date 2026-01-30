@@ -58,7 +58,7 @@ def serie_list(request):
     list_media = [] # list to hold the content (movies, series)
     user_liked_series = None
     user_watchlist_series = None
-
+    sort_by = None
     try:
         if Serie:
 
