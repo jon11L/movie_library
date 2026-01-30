@@ -77,10 +77,11 @@ def movie_list(request):
     user_liked_movies = None
     user_watchlist_movies = None
     list_media = [] # list to hold the content (movies, series)
-
+    sort_by = 
     try:
         if Movie:
-            # ========== Building a sort-by feature ==========================
+
+            # ========== setting values for sorting-by feature ==========================
             sort_by = (
                 # ('display name', 'django field')
                 ('newest first', '-release_date'), 

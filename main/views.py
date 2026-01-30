@@ -247,14 +247,17 @@ def show_content(request, content):
     - Short Films
     - Anime
     """
-    list_media = [] # list to hold the content (movies, series)
+    sort_by = None
     combined = []
+    list_media = [] # list to hold the content (movies, series)
+
     user_liked_movies = set()
     user_watchlist_movies = set()
     user_liked_series = set()
     user_watchlist_series = set()
 
     try:
+
         if content == "documentaries":
             # Check in Movies&Series if genre contains 'documentary' then load them for templating
             movies = (
@@ -263,10 +266,12 @@ def show_content(request, content):
                     "id",
                     "title",
                     "genre",
-                    "slug",
+                    'release_date',
+                    'popularity',
                     "poster_images",
                     "vote_average",
                     "vote_count",
+                    "slug",
                 )
                 .exclude(is_active=False)
                 .order_by("-vote_count")
@@ -278,10 +283,12 @@ def show_content(request, content):
                     "id",
                     "title",
                     "genre",
-                    "slug",
+                    'first_air_date',
+                    'popularity',
                     "poster_images",
                     "vote_average",
                     "vote_count",
+                    "slug",
                 )
                 .order_by("-vote_count")
             )
@@ -294,10 +301,12 @@ def show_content(request, content):
                     "id",
                     "title",
                     "genre",
-                    "slug",
+                    'release_date',
+                    'popularity',
                     "poster_images",
                     "vote_average",
                     "vote_count",
+                    "slug",
                 )
                 .exclude(is_active=False)
                 .order_by("-vote_count")
@@ -313,10 +322,12 @@ def show_content(request, content):
                     "id",
                     "title",
                     "genre",
-                    "slug",
+                    'release_date',
+                    'popularity',
                     "poster_images",
                     "vote_average",
                     "vote_count",
+                    "slug",
                 )
                 .exclude(is_active=False)
                 .order_by("-vote_count")
@@ -328,24 +339,62 @@ def show_content(request, content):
                     "id",
                     "title",
                     "genre",
-                    "slug",
+                    'first_air_date',
+                    'popularity',
                     "poster_images",
                     "vote_average",
                     "vote_count",
+                    "slug",
                 )
                 .order_by("-vote_count")
             )
 
         print(f"\n{content} has:\n{len(movies)} Movies\n{len(series)} Series:\n")
 
+        # ========== setting values for sorting-by feature ==========================
+        sort_by = (
+            # ('display name', 'django field')
+            # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
+            # ('oldest first', 'release_date'),
+            ('least popular', 'popularity'),
+            ('most popular', '-popularity'),
+            ('lowest vote', 'vote_count'),
+            ('highest vote', '-vote_count'),
+            ('A-z title', 'title'), 
+            ('Z-a title', '-title'),
+            ('first added', 'id'),
+            ('last added', '-id'),
+        )
+
+        query_params = request.GET.copy()
+        print(f"-- Query params: {query_params}\n")  # Debug print
+        # Remove the 'page' parameter to avoid pagination issues
+        if 'page' in query_params:
+            query_params.pop('page')
+
+        # Allow to keep the query parameter in the url for pagination
+        query_string_url = query_params.urlencode()
+        print(query_string_url, "\n")
+        # ========== END /// Building a sort-by feature ==========================
+
+        sel_order = '-id'
+        if 'order_by' in query_params:
+            sel_order = query_params.get('order_by')
+            print(f"selected order: {sel_order}")
+
         # Combine both queries into one for sorting
         # even if evaluation done before paginating/limiting and normalizing
         combined = (list(movies) + list(series))
         # print(combined[0:10])
 
+        combined = sorted(
+            combined,
+            key=lambda x: getattr(x, sel_order.strip('-')),
+            reverse=True if '-' in sel_order else False,
+        )
+
         # Sort the content media by vote count (descending order)
-        # combined = sorted(combined, key=lambda x: x.vote_count, reverse=True)
-        combined.sort(key=lambda x: x.vote_count, reverse=True)
+        # combined.sort(key=lambda x: x.vote_count, reverse=True)
 
         # -- paginate over the results, limit to 24per page --
         paginator = Paginator(combined, 24)
@@ -395,14 +444,12 @@ def show_content(request, content):
             ).values_list("serie_id", flat=True)
         )
 
-        print("User's watchlist contains:")
-        print(f"{len(user_watchlist_movies)} movies") 
-        print(f"{len(user_watchlist_series)} series\n")
-
         context = {
             "content": content.capitalize(),
             "list_media" : list_media,
             "page_obj": page_obj,
+            'sort_by': sort_by,
+            'query_url': query_string_url,
             "user_liked_movies": user_liked_movies,
             "user_liked_series": user_liked_series,
             "user_watchlist_movies": user_watchlist_movies,
