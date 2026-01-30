@@ -102,12 +102,11 @@
                                         
                                     </div>
                                 
-                                    <div class="detail-overview col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
+                                    <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
+                                        <p class="card-text"><strong>Overview:</strong></p>
                                         {% if movie.overview %}
-                                        <p class="card-text" style="text-align: center;"><strong>Overview:</strong></p>
-                                        <p style="text-align: center;">{{ movie.overview }}</p>
+                                        <p style="min-height: 100px; max-height: 200px; overflow-y: auto; padding: 0 0.5rem 0 0.5rem;">{{ movie.overview }}</p>
                                         {% else %}
-                                        <p class="card-text" style="text-align: center; height: 220px; overflow-y: auto;"><strong>Overview:</strong></p>
                                         <p>No description available.</p>
                                         {% endif %}
                                     </div>
@@ -122,28 +121,26 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item" style="padding: 0"></li>
 
-                                            <li class="list-group-item">
-                                                <div class="release-length d-flex" style=" justify-content: space-around;">
-                                                    <div class="mb-2" style="text-align: left;">
-                                                        <strong>Released:</strong> {{ movie.render_release_date }}
+                                            <li class="list-group-item px-2 px-sm-4">
+                                                <div class="release-length d-flex">
+                                                    <div class="" style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                                        <strong>Released:</strong> <p style="margin-bottom: 0.5rem;">{{ movie.render_release_date }}</p>
                                                     </div>
-                                                    <div style="text-align: left;">
-                                                        <strong>Length:</strong> {{ movie.render_length }}
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                                        <strong>Length:</strong> <p style="margin-bottom: 0.5rem;">{{ movie.render_length }}</p>
                                                     </div>
                                                 </div>
                                             </li>
 
-                                            <li class="list-group-item">
-                                                <p style="text-align: center; padding: 0; margin: 0;"><strong>Genre:</strong></p>
-                                                <p style="padding: 0; margin: 0; text-align: center;">
-                                                    {{ movie.render_genre }}
-                                                </p>
+                                            <li class="list-group-item" style="padding: 0.5rem 0.25rem;">
+                                                <p style="margin-bottom: 0.5rem;"><strong>Genre:</strong></p>
+                                                <p style="margin: auto;">{{ movie.render_genre }}</p>
                                             </li>
 
-                                            <li class="list-group-item" style=" width: 100%; margin: auto; padding: 0.5rem 0.25rem;">
-                                                <p style="text-align: center;"><strong>Casting:</strong></p>
+                                            <li class="list-group-item casting">
+                                                <p><strong>Casting:</strong></p>
                                                 {% if movie.casting %}
-                                                <div style="text-align: center; max-height: 200px; overflow-y: auto;">
+                                                <div style="max-height: 200px; overflow-y: auto;">
                                                     {% for cast in movie.casting %}
                                                         {% if not cast.role %}
                                                         <p style="margin: auto;">{{ cast.name }}</p>
@@ -168,32 +165,32 @@
                                             <li class="list-group-item" style="padding: 0">
 
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <p style="text-align: center; margin: 1% 0;"><strong>Production:</strong></p>
-                                                <p>{{ movie.render_production }}</p>
-                                            </li>
-
-                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <p style="text-align: center; margin: 0;"><strong>director:</strong></p>
-                                                <p>{{ movie.render_director }}</p>
-                                            </li>
-
-                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
-                                                <p style="text-align: center; margin: 0;"><strong>Writer:</strong></p>
-                                                <p>{{ movie.render_writer }}</p>
-                                            </li>
-
-                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <div class="d-flex" style="justify-content: space-around;">
 
                                                     <div>
                                                         <strong>Origin country:</strong>
                                                         <p>{{ movie.render_origin_country }}</p>
                                                     </div>
-                                                    <div style="margin-left: 4rem;">
+                                                    <div >
                                                         <strong>Language:</strong>
                                                         <p>{{ movie.render_spoken_languages }}</p>
                                                     </div>
                                                 </div>
+                                            </li>
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Production:</strong></p>
+                                                <p>{{ movie.render_production }}</p>
+                                            </li>
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>director:</strong></p>
+                                                <p>{{ movie.render_director }}</p>
+                                            </li>
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Writer:</strong></p>
+                                                <p>{{ movie.render_writer }}</p>
                                             </li>
 
                                         </ul>

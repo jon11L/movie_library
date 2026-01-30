@@ -39,13 +39,14 @@ class EditProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['date_of_birth', 'phone', 'country', 'city', 'profile_picture', 'bio' ]
+        fields = ['date_of_birth', 'phone', 'country', 'city', 'profile_picture', 'background_picture', 'bio' ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'country': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+            'background_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'bio': forms.Textarea(attrs={'class': 'form-control'}),
         }
     
@@ -65,6 +66,9 @@ class EditProfileForm(forms.ModelForm):
 
         self.fields['profile_picture'].label = 'Profile Picture'
         self.fields['profile_picture'].help_text = '<small>Upload an image file for your profile.</small>'
+
+        self.fields['background_picture'].label = 'background Picture'
+        self.fields['background_picture'].help_text = '<small>Upload an image file for your background.</small>'
 
         self.fields['bio'].label = 'Bio'
         self.fields['bio'].help_text = '<small>Write a short bio about yourself.</small>'

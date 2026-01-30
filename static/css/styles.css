@@ -311,10 +311,17 @@ Need to reorganize the name or call a parent custom class
 .media-info-row-1 {
     /* margin-top: 5%; */
     text-align: center;
+
 }
 .media-info-row-2 {
     /* margin-top: 5%; */
     text-align: center;
+}
+
+
+.media-info-row-1 .casting {
+    margin: 0.5rem 0.25rem;
+    padding: 0;
 }
 
 
@@ -341,6 +348,9 @@ Need to reorganize the name or call a parent custom class
     .detail-vote-buttons {
         padding-top: 0.5rem;
     }
+    .media-info-row-1 .casting {
+        margin: 0.5rem 0.25rem 0.5rem 0.5rem;
+    }
 }
 
 .detail-vote-avg-count {
@@ -357,14 +367,20 @@ Need to reorganize the name or call a parent custom class
     padding-bottom: 30%;
 }
 
+.detail-title-poster {
+    text-align: center;
+}
+
+
 .detail-poster {
     margin: auto; 
-    text-align: center; 
     padding: 0px;
 }
 
 .release-length {
     flex-wrap: wrap;
+    justify-content: space-between; 
+    gap: 2rem;
 }
 
 
