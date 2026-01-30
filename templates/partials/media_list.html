@@ -11,6 +11,7 @@
             <div>
                 <!-- Watchlist button feature -->
                 <button class="watchlist-button"
+                    aria-label="Add {{ movie.title }} to watchlist"
                     data-type="{{ item.type }}"
                     data-id="{{ item.id }}"
                     data-bookmarked="{% if item.id in user_watchlist_movies %}true{% else %}false{% endif %}">
@@ -32,17 +33,18 @@
 
             <div>
                 <!-- Watchlist button feature -->
-                <button class="watchlist-button" data-type="{{ item.type }}" data-id="{{ item.id }}"
+                <button class="watchlist-button" 
+                    aria-label="Add {{ serie.title }} to watchlist" 
+                    data-type="{{ item.type }}"
+                    data-id="{{ item.id }}"
                     data-bookmarked="{% if item.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                    <i
-                        class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                    <i class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                 </button>
-
+            
                 <!-- like button feature  -->
                 <button class="like-button" id="like_button" data-type="{{ item.type }}" data-id="{{ item.id }}"
                     data-liked="{% if item.id in user_liked_series %}true{% else %}false{% endif %}">
-                    <i
-                        class="{% if item.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                    <i class="{% if item.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                 </button>
             </div>
             {% endif %}

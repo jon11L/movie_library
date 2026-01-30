@@ -18,35 +18,49 @@
                 <!------- Display the Series.  --------->
 
                 <div style="text-align: center;">
-                    <h1 style="margin-bottom: 0;">TV Shows:</h1>
+                    <h1>TV Shows:</h1>
                 </div>
 
-                <div>
+                <div style="padding: 0.5rem;">
                     <!-- prepare to add an order_by feature -->
-                    <h6 style="text-align:right; margin: 1rem 2rem 0.5rem 0; padding: 0;">order by</h6>  
+
+                    <!-- Scroll down page selector, for fastest pages navigation -->
+                    <div class="" style="width: fit-content; margin-left: auto; margin-right: 2rem;">
+                        <label for="order-by" class="sr-only">sort-by</label>
+                    
+                        <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
+                            <option value="">sort-by</option>
+                        
+                            {% if sort_by %}
+                            {% for item, key in sort_by %}
+                            <option value="?order_by={{ key }}">
+                                {{ item }}
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
                 </div>
 
-
-                <div class="row media-row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
+                <div class="row media-row">
                     {% for item in list_media %}
-
                         {% include "partials/media_list.html" %}
-
                     {% endfor %}
                 </div>
-                {% elif not serie_list %}
-                <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
-                    <h3>No Series found...</h3>
-                    <p>please visit this page later</p>
-                    <div style="padding-bottom: 40%;"></div>
-                </div>
-                {% endif %}
-
+                
                 <!----------- Pagination system --------------->
                 <section class="pagination-section">
                     {% include "partials/paginator.html" %}
-
                 </section>
+                
+                {% elif not list_media %}
+                <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
+                    <h3>No Series found...</h3>
+                    <p>please visit this page later</p>
+                    <!-- LE -->
+                    <div style="padding-bottom: 40%;"></div>
+                </div>
+                {% endif %}
 
             </main>
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
-import time
+# import time
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -11,21 +11,17 @@ from rest_framework.response import Response
 from rest_framework import generics, filters
 
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
-# from .serializer import MovieSerializer
 from .serializers import MovieListSerializer, MovieDetailSerializer
 from .models import Movie
 from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
 
-# Temporary placement for paginator design
-from core.tools.paginator import page_window
+from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
-
 
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from rest_framework.throttling import AnonRateThrottle
-
 
 
 # def admin_check(user):
@@ -40,16 +36,7 @@ from rest_framework.throttling import AnonRateThrottle
 #     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
 
 
-# HTTP_200_OK
-# HTTP_201_CREATED
-# HTTP_400_BAD_REQUEST
-# HTTP_401_UNAUTHORIZED
-# HTTP_403_FORBIDDEN
-
-# HTTP_429_TOO_MANY_REQUESTS  does it exist in rest_framework.status ?
-
-
-# API views
+# =============== API views ===================
 class MovieListView(generics.ListCreateAPIView):
     # queryset = Movie.objects.all().order_by('-id')
     queryset = Movie.objects.select_related().prefetch_related() 
@@ -80,7 +67,7 @@ class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
         UserDayThrottle,
     ]
 
-# Regular template views
+# ======= Regular template views ==================
 @timer
 @num_queries
 def movie_list(request):
@@ -90,19 +77,58 @@ def movie_list(request):
     user_liked_movies = None
     user_watchlist_movies = None
     list_media = [] # list to hold the content (movies, series)
-    
+
     try:
         if Movie:
-            # paginator implementation
-            if request.user.is_superuser:
-                movies = Movie.objects.only(
-                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-                ).exclude(is_active=False).order_by("-id")
-            else:
-                movies = Movie.objects.only(
-                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-                ).exclude(is_active=False).order_by("-vote_count")
+            # ========== Building a sort-by feature ==========================
+            sort_by = (
+                # ('display name', 'django field')
+                ('newest first', '-release_date'), 
+                ('oldest first', 'release_date'),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('lowest vote', 'vote_count'),
+                ('highest vote', '-vote_count'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                ('first added', 'id'),
+                ('last added', '-id'),
+            )
 
+            query_params = request.GET.copy()
+            print(f"-- Query params: {query_params}\n")  # Debug print
+            # Remove the 'page' parameter to avoid pagination issues
+            if 'page' in query_params:
+                query_params.pop('page')
+
+            # Allow to keep the query parameter in the url for pagination
+            query_string_url = query_params.urlencode()
+            print(query_string_url, "\n")
+            # ========== END /// Building a sort-by feature ==========================
+
+            sel_order = '-id' # default selection order / first reach of the list page
+            if 'order_by' in query_params:
+                sel_order = query_params.get('order_by')
+            print(f"selected order: {sel_order}")
+
+            # paginator implementation
+            movies = (
+                Movie.objects.only(
+                    "id",
+                    "title",
+                    "genre",
+                    "release_date",
+                    "vote_average",
+                    "vote_count",
+                    "popularity",
+                    "poster_images",
+                    "slug",
+                )
+                .exclude(is_active=False).exclude(release_date__isnull=True)
+                .order_by(f"{sel_order}")
+            )  # .exclude(length__lt=45)
+
+            # paginates over the pre loaded query
             paginator = Paginator(movies, 24)
             # Get the current page number from the GET request
             page = request.GET.get('page')
@@ -122,7 +148,7 @@ def movie_list(request):
                     "slug": item.slug,
                     "type": "movie"
                     })
-            
+
             print(list_media[0:3])
 
             # Get the user's watchlist content (movies, series)
@@ -146,6 +172,8 @@ def movie_list(request):
                 'list_media': list_media,
                 'user_liked_movies': user_liked_movies,
                 'user_watchlist_movies': user_watchlist_movies, 
+                'sort_by': sort_by,
+                'query_url': query_string_url,
                 }
 
             # Temporary placement for paginator design
@@ -171,6 +199,7 @@ def movie_list(request):
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
         return redirect('main:home')
+
 
 @timer
 @num_queries

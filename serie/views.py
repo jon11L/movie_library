@@ -5,11 +5,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from rest_framework import generics, filters
-from core.permissions import IsAdminOrIsAuthenticatedReadOnly
-# from .serializer import MovieSerializer
-from .serializers import SerieListSerializer, SerieDetailSerializer
 from rest_framework.throttling import AnonRateThrottle
 
+from .serializers import SerieListSerializer, SerieDetailSerializer
+from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
@@ -62,17 +61,56 @@ def serie_list(request):
 
     try:
         if Serie:
-            # paginator implementation
-            if request.user.is_superuser:
-                series = Serie.objects.only(
-                    "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-                )
-            else:
-                series = Serie.objects.raw(
-                    'SELECT id, title, genre, vote_average, vote_count, poster_images, slug FROM serie ORDER BY popularity DESC NULLS LAST'
-                )
 
-            # paginates over the model
+            # ========== Building a sort-by feature ==========================
+            sort_by = (
+                # ('display name', 'django field')
+                ('newest first', '-first_air_date'), 
+                ('oldest first', 'first_air_date'),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('lowest vote', 'vote_count'),
+                ('highest vote', '-vote_count'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                ('first added', 'id'),
+                ('last added', '-id'),
+            )
+
+            query_params = request.GET.copy()
+            print(f"-- Query params: {query_params}\n")  # Debug print
+            # Remove the 'page' parameter to avoid pagination issues
+            if 'page' in query_params:
+                query_params.pop('page')
+
+            # Allow to keep the query parameter in the url for pagination
+            query_string_url = query_params.urlencode()
+            print(query_string_url, "\n")
+            # ========== END /// Building a sort-by feature ==========================
+
+            sel_order = '-id' # default selection order / first reach of the list page
+            if 'order_by' in query_params:
+                sel_order = query_params.get('order_by')
+                print(f"selected order: {sel_order}")
+
+            series = (
+                Serie.objects.only(
+                    "id",
+                    "title",
+                    "genre",
+                    "first_air_date",
+                    "vote_average",
+                    "vote_count",
+                    "popularity",
+                    "poster_images",
+                    "slug",
+                )
+                .exclude(is_active=False)
+                .exclude(first_air_date__isnull=True)
+                .order_by(sel_order)
+            )
+
+            # paginates over the pre loaded query
             paginator = Paginator(series, 24)
             page = request.GET.get('page') # Get the current page number from the GET request
             page_obj = paginator.get_page(page)
@@ -110,6 +148,8 @@ def serie_list(request):
                 'user_watchlist_series': user_watchlist_series,
                 'list_media' : list_media,
                 'page_obj' : page_obj,
+                'sort_by': sort_by,
+                'query_url': query_string_url,
             }
 
             # Temporary placement for paginator design
@@ -165,8 +205,8 @@ def serie_detail(request, slug):
             print(f"serie {serie.title} contains: {len(seasons)} seasons")
 
             # get the comments related to the serie
-            comments = serie.comments.all().order_by('-created_at')
-
+            comments = serie.comments.all()
+            
             print(f"number of comments: {len(comments)}")
 
             form = CommentForm()
@@ -196,16 +236,14 @@ def serie_detail(request, slug):
 
                 # display the Comment form if user is connected
                 form = CommentForm(request.POST or None)
+
                 context.update(
                     {
-
                         "user_liked_serie": user_liked_serie,
                         "user_watchlist_series": user_watchlist_series,
                         "form": form,
-                        # "comments": comments,
                     }
                 )
-
 
             return render(request,'serie/detail_serie.html', context=context)
 
