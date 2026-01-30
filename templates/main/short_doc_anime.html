@@ -15,29 +15,27 @@
             <main class="custom-col-9 main-wrapper">
 
                 {% if list_media %}
-                <div style="text-align: center; margin-bottom: 0.25rem;">
-                    <h1 style="margin-bottom: 0;">{{ content }}:</h1>
+                <div style="text-align: center;">
+                    <h1>{{ content }}:</h1>
                 </div>
-                <div style="padding: 0.5rem;">
 
-                    <!-- Sort-by selector -->
-                    <div class="" style="width: fit-content; margin-left: auto; margin-right: 1rem;">
-                        <label for="order-by" class="sr-only">sort-by</label>
+                <!-- Sort-by selector -->
+                <div class="" style="width: fit-content; margin-left: auto; margin-right: 0.5rem; padding: 0.5rem;">
+                    <label for="order-by" class="sr-only">sort-by</label>
+                
+                    <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
+                        <option value="">sort-by</option>
                     
-                        <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
-                            <option value="">sort-by</option>
-                        
-                            {% if sort_by %}
-                            {% for item, key in sort_by %}
-                            <option value="?order_by={{ key }}">
-                                {{ item }}
-                            </option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                    </div>
-
+                        {% if sort_by %}
+                        {% for item, key in sort_by %}
+                        <option value="?order_by={{ key }}">
+                            {{ item }}
+                        </option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
                 </div>
+
 
                 <!-- Display of Documentaries media genre -->
                 <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">

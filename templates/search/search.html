@@ -129,7 +129,7 @@
                 <section id="search-results-section">
 
                     <div style="text-align: center;">
-                        <!-- click on search button in Navbar without search given // same with search filter button-->
+                        <!-- click on search button in Navbar without search given // same with search filter button without any filter applied-->
                         {% if not total_found and not query_url %}
                         <h3 style="color: green;">Start your search</h3>
                         <div style="padding-bottom: 18%;"></div>
@@ -139,6 +139,42 @@
                         <h3 style="color: green;">Search results for your query.</h3>
                         <h6 style="color: darkgreen;">{{ total_found }} items match your query.</h6>        
 
+                        <!-- Sort-by selector -->
+                        <div class="" style="width: fit-content; margin-left: auto; margin-right: 0.5rem; padding: 0.5rem;">
+                            <label for="order-by" class="sr-only">sort-by</label>
+                        
+                            <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
+                                <option value="">sort-by</option>
+                            
+                                {% if sort_by %}
+                                {% for item, key in sort_by %}
+                                <option value="?&{{ query_url }}&order_by={{ key }}">
+                                    {{ item }}
+                                </option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        
+                        <!-- New combined results for Movies and Series. -->
+                        <!-- that will handle from Navbar search and filtered queries -->
+                        {% if list_media %}
+                        <div class="row" style="border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
+                            {% for item in list_media %}
+                                {% include "partials/media_list.html" %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+    
+                        
+                        <!----- Pagination system ------->
+                        <!-- Trickier to remove the block below and use the partial paginator template due to url tracking for the filtering -->
+                        <section class="pagination-section">
+                            {% include "partials/paginator.html" %}
+                            
+                        </section>
+                        
+                        
                         <!-- filter form button clicked with filters no result -->
                         {% elif query_url and not total_fount %}
                         <h3 style="color: red;">No result could be found based on your query</h3>        
@@ -146,26 +182,9 @@
                         <div style="padding-bottom: 15%;"></div>
                         {% endif %}
                     </div>
-                    <br>
                     
-                    <!-- New combined results for Movies and Series. -->
-                    <!-- that will handle from Navbar search and filtered queries -->
-                    {% if list_media %}
-                    <div class="row" style="border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
-                        {% for item in list_media %}
-                            {% include "partials/media_list.html" %}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
                 </section>
 
-                <!----- Pagination system ------->
-                <!-- Trickier to remove the block below and use the partial paginator template due to url tracking for the filtering -->
-                <section class="pagination-section">
-                    {% include "partials/paginator.html" %}
-
-                </section>
 
             </main>
             

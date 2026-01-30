@@ -2,77 +2,71 @@
 {% load static %}
 
 {% block content %}
+<div class="custom-wide">
+    <div class="row main-row">
 
-    <div class="custom-wide">
-        <div class="row main-row">
+        <!-- Left section of the screen -->
+        <aside class="custom-col-1-5 side-wrapper">
+            <div></div>
+        </aside>
 
-            <!-- Left section of the screen -->
-            <aside class="custom-col-1-5 side-wrapper">
-                <div></div>
-            </aside>
+        <!-- Main/middle section of the screen -->
+        <main class="custom-col-9 main-wrapper ">
 
-            <!-- Main/middle section of the screen -->
-            <main class="custom-col-9 main-wrapper ">
-                
-                {% if list_media %}
-                <!------- Display the Series.  --------->
+            <div style="text-align: center;">
+                <h1>TV Shows:</h1>
+            </div>
+            
+            {% if list_media %}
+            <!-- Sort-by selector -->
+            <div class="" style="width: fit-content; margin-left: auto; margin-right: 0.5rem; padding: 0.5rem;">
+                <label for="order-by" class="sr-only">sort-by</label>
 
-                <div style="text-align: center;">
-                    <h1>TV Shows:</h1>
-                </div>
+                <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
+                    <option value="">sort-by</option>
 
-                <div style="padding: 0.5rem;">
-                    <!-- prepare to add an order_by feature -->
-
-                    <!-- Scroll down page selector, for fastest pages navigation -->
-                    <div class="" style="width: fit-content; margin-left: auto; margin-right: 2rem;">
-                        <label for="order-by" class="sr-only">sort-by</label>
-                    
-                        <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
-                            <option value="">sort-by</option>
-                        
-                            {% if sort_by %}
-                            {% for item, key in sort_by %}
-                            <option value="?order_by={{ key }}">
-                                {{ item }}
-                            </option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row media-row">
-                    {% for item in list_media %}
-                        {% include "partials/media_list.html" %}
+                    {% if sort_by %}
+                    {% for item, key in sort_by %}
+                    <option value="?order_by={{ key }}">
+                        {{ item }}
+                    </option>
                     {% endfor %}
-                </div>
-                
-                <!----------- Pagination system --------------->
-                <section class="pagination-section">
-                    {% include "partials/paginator.html" %}
-                </section>
-                
-                {% elif not list_media %}
-                <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
-                    <h3>No Series found...</h3>
-                    <p>please visit this page later</p>
-                    <!-- LE -->
-                    <div style="padding-bottom: 40%;"></div>
-                </div>
-                {% endif %}
+                    {% endif %}
+                </select>
+            </div>
 
-            </main>
+            <!------- Display the Series.  --------->
+            <div class="row media-row">
+                {% for item in list_media %}
+                {% include "partials/media_list.html" %}
+                {% endfor %}
+            </div>
 
-            <!-- Right section of the screen -->
-            <aside class="custom-col-1-5 side-wrapper">
-                <div>
-                </div>
-            </aside>
-            
-            
-        </div>
+            <!----------- Pagination system --------------->
+            <section class="pagination-section">
+                {% include "partials/paginator.html" %}
+            </section>
+
+            {% elif not list_media %}
+            <div style="text-align: center; color: antiquewhite; margin-top: 4rem;">
+                <h3>No Series found...</h3>
+                <p>please visit this page later</p>
+                <!-- LE -->
+                <div style="padding-bottom: 40%;"></div>
+            </div>
+            {% endif %}
+
+        </main>
+
+        <!-- Right section of the screen -->
+        <aside class="custom-col-1-5 side-wrapper">
+            <div>
+            </div>
+        </aside>
+
 
     </div>
+
+</div>
 
 {% endblock %}

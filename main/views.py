@@ -366,6 +366,7 @@ def show_content(request, content):
             ('last added', '-id'),
         )
 
+        # Preserve all GET parameters except 'page' for the Paginator system
         query_params = request.GET.copy()
         print(f"-- Query params: {query_params}\n")  # Debug print
         # Remove the 'page' parameter to avoid pagination issues
@@ -375,12 +376,12 @@ def show_content(request, content):
         # Allow to keep the query parameter in the url for pagination
         query_string_url = query_params.urlencode()
         print(query_string_url, "\n")
-        # ========== END /// Building a sort-by feature ==========================
 
         sel_order = '-id'
         if 'order_by' in query_params:
             sel_order = query_params.get('order_by')
             print(f"selected order: {sel_order}")
+        # ========== END /// Building a sort-by feature ==========================
 
         # Combine both queries into one for sorting
         # even if evaluation done before paginating/limiting and normalizing
@@ -445,11 +446,11 @@ def show_content(request, content):
         )
 
         context = {
-            "content": content.capitalize(),
-            "list_media" : list_media,
             "page_obj": page_obj,
             'sort_by': sort_by,
             'query_url': query_string_url,
+            "list_media" : list_media,
+            "content": content.capitalize(),
             "user_liked_movies": user_liked_movies,
             "user_liked_series": user_liked_series,
             "user_watchlist_movies": user_watchlist_movies,
@@ -457,7 +458,7 @@ def show_content(request, content):
         }
 
 
-        # Temporary placement for paginator design
+        # ========== Temporary placement for paginator design ============
         context["desktop_pages"] = page_window(
             page_obj.number, # current page number
             page_obj.paginator.num_pages, # total amount of pages

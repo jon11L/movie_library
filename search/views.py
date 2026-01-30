@@ -16,19 +16,21 @@ from user_library.models import Like, WatchList
 def search(request):
     """
     View function for search page
-    - request.method == 'GET' and not request.GET -> render the filter landing page
+    - request.method == 'GET' and not request.GET -> render the filter landing page / user fetch the search
     - if request.method == 'GET' and request.GET -> user search with Filtering system
     or from search bar (title filter only)
+    - rquest.GET being the parameters being passed on for the filtering.
     """
     # Initialize variables with empty values
     total_found = 0
+    sort_by = None
+    Media_filter = None
     user_liked_movies = set()
     user_liked_series = set()
     user_watchlist_movies = set()
     user_watchlist_series = set()
-
     results = [] # Will hold the mixed list query (Movie+Serie)
-
+    
     # Determine which content type to display, Default to 'all'
     content_type = request.GET.get('content_type', 'all')
 
@@ -47,7 +49,7 @@ def search(request):
 
     print(f"\n--has_filter_values: {has_filter_values}")
 
-    # Render/Initialize the filter form (without queryset)
+    # Render/Initialize the filter form (without queryset applied)
     Media_filter = SharedMediaFilter(request.GET)
     print(f"-- content_filter: {Media_filter}\n")
 
@@ -56,6 +58,7 @@ def search(request):
         print("\n-- going to search page --")
 
         context = {'filter': Media_filter}
+
         return render(request, 'search/search.html', context=context)
 
     # -- Handle GET requests with parameters //
@@ -63,15 +66,16 @@ def search(request):
     if request.method == 'GET' and request.GET:
         print("\n-- User submit a filtered search --")
 
-        #  when no filters are selected; return only the filter form
+        # ===== when no filters are selected; return only the filter form ========
         if not has_filter_values :
-            print("-- no filter values applied --")
+            print("-- no filter values applied // return page --")
 
             context = {
                 'filter': Media_filter,
             }
 
-        else: # Filter values are applied.
+        # ====== Filter values are applied. Filtering through Model ===========
+        else: 
             print("-- filter values applied --")# debug print
             filtered_movies = []
             filtered_series = []
@@ -86,10 +90,12 @@ def search(request):
                         "id",
                         "title",
                         "genre",
-                        "slug",
+                        'release_date',
+                        'popularity',
                         "poster_images",
                         "vote_average",
                         "vote_count",
+                        "slug",
                     ),
                 )
                 filtered_movies = movie_filter.qs
@@ -116,10 +122,12 @@ def search(request):
                         "id",
                         "title",
                         "genre",
-                        "slug",
+                        'first_air_date',
+                        'popularity',
                         "poster_images",
                         "vote_average",
                         "vote_count",
+                        "slug",
                     ),
                 )
                 filtered_series = serie_filter.qs
@@ -140,6 +148,38 @@ def search(request):
             # even if evaluation done before paginating/limiting and normalizing
             combined = (list(filtered_movies) + list(filtered_series))
 
+            # ========== setting values for sorting-by feature ==========================
+            sort_by = (
+                # ('display name', 'django field')
+                # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
+                # ('oldest first', 'release_date'),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('lowest vote', 'vote_count'),
+                ('highest vote', '-vote_count'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                ('first added', 'id'),
+                ('last added', '-id'),
+            )
+
+
+            # Preserve all GET parameters except 'page' for the Paginator system
+            query_params = request.GET.copy()
+            print(f"-- Query params: {query_params}\n")  # Debug print
+            # Remove the 'page' parameter to avoid pagination issues
+
+            sel_order = 'title' # default to title when no sort-by given
+            if 'order_by' in query_params:
+                sel_order = query_params.get('order_by')
+                print(f"selected order: {sel_order}")
+
+            if 'page' in query_params:
+                query_params.pop('page')
+            # Allow to keep the query parameter in the url for pagination
+            query_string_url = query_params.urlencode()
+
+
             # Sort the media found by relevance to group Movie and Serie.
             #  Won't no longer need if creating a common Media model.Neither 'combined'
             if title_value:
@@ -151,8 +191,9 @@ def search(request):
             else:
                 results = sorted(
                     combined,
-                    key=lambda x: x.title,
-                    reverse=False,
+                    # key=lambda x: x.title,
+                    key=lambda x: getattr(x, sel_order.strip('-')),
+                    reverse=True if '-' in sel_order else False,
                 )
 
             print("\n", results[0:5], "\n")
@@ -181,26 +222,18 @@ def search(request):
                     "type": "movie" if isinstance(item, Movie) else "serie"
                     })
 
-            # Preserve all GET parameters except 'page' for the Paginator system
-            query_params = request.GET.copy()
-            print(f"-- Query params: {query_params}\n")  # Debug print
-            # Remove the 'page' parameter to avoid pagination issues
-            if 'page' in query_params:
-                query_params.pop('page')
-
-            # Allow to keep the query parameter in the url for pagination
-            query_string_url = query_params.urlencode()
 
             context = {
                 'filter': Media_filter,
-                'query_params': query_params,
+                'page_obj': page_obj,
+                'sort_by': sort_by,
                 'query_url': query_string_url,
                 'list_media': list_media,
-                'page_obj': page_obj,
+                # 'query_params': query_params,
                 'total_found': total_found if total_found > 0 else None,
             }
 
-            # Temporary placement for paginator design
+            #  ========== Temporary placement for paginator design ==============
             context["desktop_pages"] = page_window(
                 page_obj.number, # current page number
                 page_obj.paginator.num_pages, # total amount of pages
