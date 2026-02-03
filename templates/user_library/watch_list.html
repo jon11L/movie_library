@@ -25,15 +25,19 @@
                     {% endif %}
                 </div>
                 
-                <div style="padding: 0;">
-                    <h6 style="text-align:right; margin: 1rem 2rem 0.5rem 0; ">{{ total_content }} items saved in your watch list</h6>
+                {% if list_media %}
+                <div class="watchlist-count-sort">
+                    
+                    <h6 class="count-watchlist">{{ total_content }} items in your watchlist</h6>
+    
+                    <!-- Sort-by selector -->
+                    {% include "partials/sort_by.html" %}
+
                 </div>
 
-                {% if list_media %}
-                <div class="row" style="justify-content: center; border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
-                    {% for item in list_media %}
+
+                <div id="media-list">
                         {% include "partials/media_list.html" %}
-                    {% endfor %}
                 </div>
                 
                 {% else %}
@@ -42,11 +46,7 @@
                 <div style="padding-top: 32.5%;"></div>
                 {% endif %}
 
-                <!----- Pagination system ------->
-                <section class="pagination-section">
-                    {% include "partials/paginator.html" %}
 
-                </section>
 
             </main>
             

@@ -80,7 +80,7 @@ body {
 /* --- general main wrapper --- */
 .main-wrapper {
 	margin: auto;
-	padding: 1rem 0.25% 0 0.25%;
+	padding: 0.5rem 0.25% 0 0.25%;
 }
 
 /* ========== Main Rows of the Home page ========= */
@@ -383,7 +383,6 @@ Need to reorganize the name or call a parent custom class
     gap: 2rem;
 }
 
-
 #trailers {
     padding-top: 1rem;
 }
@@ -394,7 +393,6 @@ Need to reorganize the name or call a parent custom class
     max-height: 280px; 
     overflow-y: auto;
 }
-
 
 .display-trailer {
     display: flex; 
@@ -408,7 +406,6 @@ Need to reorganize the name or call a parent custom class
     box-sizing: border-box;
     width: 100%;
 }
-
 
 /*
  flex 47% to have 2 next to each other
@@ -431,7 +428,6 @@ Need to reorganize the name or call a parent custom class
     height: 100%;
     border-radius: 0.3em;
 }
-
 
 /* ----- Specific to serie detail page ------ */
 #season-poster img {
@@ -674,7 +670,45 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ================ list media cards =================== */
+
+/* ========== For list pages ============== */
+.watchlist-count-sort {
+    display: block;
+    justify-content: space-between; 
+    align-items: center;
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+
+.count-watchlist {
+    text-align:center; 
+    margin: 0 1rem 1.5rem 1rem ;
+}
+
+
+
+@media (min-width: 425px) {
+    .watchlist-count-sort {
+    display: flex;
+    }
+    .count-watchlist {
+        text-align:left; 
+        margin: 1rem 0rem 0 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .count-watchlist {
+        text-align:left; 
+        margin: 0 1rem 0rem 2rem ;
+    }
+}
+
+
+
+/* == list media cards ==  */
 
 /* ==== vote and users buttons on Media list ==== */
 .vote_button_list {
@@ -772,7 +806,7 @@ Need to reorganize the name or call a parent custom class
 
 /* ============== list media card -- That displays rows of Movie/Ser  ============ */
 /* Only for lists pages. Different from sample like home page.  */
-.media-row {
+.media-grid {
     justify-content: center;
     border: solid 2px;
     border-radius: 2em;

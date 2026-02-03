@@ -16,7 +16,7 @@
             <!-- Main/middle section of the screen -->
             <main class="custom-col-9 main-wrapper">
 
-                <section id="search-filter-section" style="padding-top: 2.5%;">
+                <section id="search-filter-section" style="padding-top: 1%;">
 
                     <div class="card search-card">
                         <div class="card-header" style="text-align: center; margin-top: 8px;">
@@ -77,7 +77,6 @@
                                                 <label for="release_date_from"><strong>year From:</strong></label>
                                                 {{ filter.form.release_date_gte }}
                                             </div>
-                                        
                                             <div class="form-group me-2" style="text-align: center;">
                                                 <label for="release_date_to"><strong>year To:</strong></label>
                                                 {{ filter.form.release_date_lte }}
@@ -102,7 +101,6 @@
                                         {{ filter.form.language }}
                                     </div>
                                 
-
                                 </div>
 
                                 <div style="display: flex; justify-content: center; margin-top: 20px;">
@@ -130,25 +128,34 @@
 
                     <div style="text-align: center;">
                         <!-- click on search button in Navbar without search given // same with search filter button without any filter applied-->
-                        {% if not total_found and not query_url %}
+                        {% if not total_found and not query_params %}
                         <h3 style="color: green;">Start your search</h3>
                         <div style="padding-bottom: 18%;"></div>
                     
                         <!-- filter form button clicked with filters and results -->
-                        {% elif query_url and total_found %}
+                        {% elif query_params and total_found %}
                         <h3 style="color: green;">Search results for your query.</h3>
                         <h6 style="color: darkgreen;">{{ total_found }} items match your query.</h6>        
 
-                        <!-- Sort-by selector -->
-                        <div class="" style="width: fit-content; margin-left: auto; margin-right: 0.5rem; padding: 0.5rem;">
-                            <label for="order-by" class="sr-only">sort-by</label>
+                        <!-- ---- Sort-by selector ---- -->
+                        <div class="d-flex" style="justify-content: end; margin-right: 0.5rem; padding: 0.5rem;">
+                            <!-- <p class="disabled">sort-by</p> -->
+                            <label for="order-by" style="color: darkgray; margin: 0.5rem 0.5rem 0 0;">sort-by</label>
                         
-                            <select id="order-by" class="form-select form-select-sm" onchange="location = this.value;">
-                                <option value="">sort-by</option>
+                            <select id="order-by" 
+                                class="form-select form-select-sm" 
+                                style="height: min-content; width: min-content; padding: 0.25rem 1.75rem 0.25rem 0.25rem;" 
+                                name="order_by" 
+                                hx-get="{{ base_url}}?{{ query_sort_url }}" 
+                                hx-trigger="change"
+                                hx-swap="innerHTML" 
+                                hx-target="#media-list" 
+                                hx-push-url="true">
+                                <!-- <option value="#"><img src="" alt=""></option> -->
                             
                                 {% if sort_by %}
                                 {% for item, key in sort_by %}
-                                <option value="?&{{ query_url }}&order_by={{ key }}">
+                                <option  value="{{ key }}" {% if current_order == key %}selected{% endif %}>
                                     {{ item }}
                                 </option>
                                 {% endfor %}
@@ -156,27 +163,20 @@
                             </select>
                         </div>
                         
+
+
                         <!-- New combined results for Movies and Series. -->
                         <!-- that will handle from Navbar search and filtered queries -->
                         {% if list_media %}
-                        <div class="row" style="border: solid 2px; border-radius: 2em; padding: 1% 1.5%;">
-                            {% for item in list_media %}
-                                {% include "partials/media_list.html" %}
-                            {% endfor %}
+                        <div id="media-list">
+                            {% include "partials/media_list.html" %}
                         </div>
                         {% endif %}
-    
-                        
-                        <!----- Pagination system ------->
-                        <!-- Trickier to remove the block below and use the partial paginator template due to url tracking for the filtering -->
-                        <section class="pagination-section">
-                            {% include "partials/paginator.html" %}
-                            
-                        </section>
+
                         
                         
                         <!-- filter form button clicked with filters no result -->
-                        {% elif query_url and not total_fount %}
+                        {% elif query_params and not total_fount %}
                         <h3 style="color: red;">No result could be found based on your query</h3>        
                         <h6 style="color: darkred;"> please refine your filtering options</h6>
                         <div style="padding-bottom: 15%;"></div>

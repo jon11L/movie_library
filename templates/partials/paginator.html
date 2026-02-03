@@ -6,22 +6,35 @@
 
 
 <div style="width: fit-content; margin: auto;">
-
+    <!-- Use HTMX to replace media grid and paginator -->
+    <!-- Keep href in <a> if user does not have javascript actif -->
     {% if page_obj.paginator.num_pages > 1 %}
     <div class="pagination-wrapper">
         <nav aria-label="Page navigation example">
             <!-- Row 1 - page buttons -->
             <ul class="pagination pagination-btns">
-
+    
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a  href="?page=1&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                    <a href="?{{ query_pagin_url }}&page=1"
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}&page=1"
+                        hx-swap="innerHTML"
+                        hx-target="#media-list" 
+                        hx-push-url="true" 
+                        class="btn btn-outline-info"
+                        style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                         &laquo first
                     </a>
                 </li>
                 <!-- previous page -->
                 <li class="page-item">
-                    <a href="?page={{ page_obj.previous_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                    <a href="?{{ query_pagin_url }}&page={{ page_obj.previous_page_number }}" 
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.previous_page_number }}" 
+                        hx-swap="innerHTML" 
+                        hx-target="#media-list" 
+                        hx-push-url="true"
+                        class="btn btn-outline-info"
+                        style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                         &lsaquo; Prev
                     </a>
                 </li>
@@ -32,40 +45,59 @@
                 <!-- Desktop size 5 pages around current-->
                 <li class="page-item page-desktop">
                     {% if num == page_obj.number %}
-                    <a  href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
+                    <a href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
                     {% else %}
-                    <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
+                    <a href="?{{ query_pagin_url }}&page={{ num }}" 
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ num }}" 
+                        hx-swap="innerHTML"
+                        hx-target="#media-list" 
+                        hx-push-url="true" 
+                        class="btn btn-outline-info" 
+                        style="border: none;">
                         {{ num }}
                     </a>
                     {% endif %}
                 </li>
-                
+    
                 {% endfor %}
-                
+    
                 {% for num in mobile_pages %}
-                    <!-- Mobile size, 2 pages around current-->
-                    <li class="page-item page-mobile">
-                        {% if num == page_obj.number %}
-                            <a  href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
-                        {% else %}
-                            <a  href="?page={{ num }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
-                                {{ num }}
-                            </a>
-                        {% endif %}
-                    </li>
+                <!-- Mobile size, 2 pages around current-->
+                <li class="page-item page-mobile">
+                    {% if num == page_obj.number %}
+                    <a href="#" class="btn btn-info page-current" style="border: none;">{{ num }}</a>
+                    {% else %}
+                    <a href="?{{ query_pagin_url }}&page={{ num }}" hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ num }}" hx-swap="innerHTML"
+                        hx-target="#media-list" hx-push-url="true" class="btn btn-outline-info" style="border: none;">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                </li>
                 {% endfor %}
 
                 {% if page_obj.has_next %}
                 <!-- Next page -->
                 <li class="page-item">
-                    <a href="?page={{ page_obj.next_page_number }}&{{ query_url }}" class="btn btn-outline-info" style="border: none;">
+                    <a href="?{{ query_pagin_url }}&page={{ page_obj.next_page_number }}"
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.next_page_number }}"
+                        hx-swap="innerHTML" 
+                        hx-target="#media-list" 
+                        hx-push-url="true" 
+                        class="btn btn-outline-info"
+                        style="border: none;">
                         Next &rsaquo;
                     </a>
                 </li>
             
                 <!-- Last page -->
                 <li class="page-item">
-                    <a href="?page={{ page_obj.paginator.num_pages}}&{{ query_url }}" class="btn btn-outline-info" style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
+                    <a href="?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages }}"
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages}}"
+                        hx-swap="innerHTML"
+                        hx-target="#media-list"
+                        hx-push-url="true"
+                        class="btn btn-outline-info" 
+                        style="border: none; margin: 0px; padding-left: 6px; padding-right: 6px;">
                         Last &raquo
                     </a>
                 </li>
@@ -80,16 +112,21 @@
                 <div class="pagination-jump">
                     <label for="page-jump" class="sr-only">Jump to page</label>
                     
-                    <select id="page-jump"
-                    class="form-select form-select-sm"
-                        onchange="location = this.value;">
-                    <option value="">page..</option>
+                    <select id="page-jump" 
+                        name="page"
+                        class="form-select form-select-sm"
+                        hx-get="{{ base_url }}?{{ query_pagin_url }}"
+                        hx-trigger="change"
+                        hx-swap="innerHTML"
+                        hx-target="#media-list"
+                        hx-push-url="true">
+                        <option value="">page..</option>
             
-                    {% for num in page_obj.paginator.page_range %}
+                        {% for num in page_obj.paginator.page_range %}
                         {% if num|divisibleby:10 or num == page_obj.paginator.num_pages %}
-                        <option value="?page={{ num }}&{{ query_url }}">
-                            {{ num }}
-                        </option>
+                            <option value="{{ num }}">
+                                {{ num }}
+                            </option>
                         {% endif %}
                         {% endfor %}
                     </select>
