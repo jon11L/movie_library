@@ -83,9 +83,12 @@ nav {
         align-items: center;
         flex-wrap: wrap;
     }
+    .pagination-btns {
+        gap: 1px;
+    }
 
     .page-item a {
-        padding: 0.25rem 0.45rem;
+        padding: 0.25rem 0.5rem;
     }
 
 }

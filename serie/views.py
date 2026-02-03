@@ -59,6 +59,7 @@ def serie_list(request):
     user_liked_series = None
     user_watchlist_series = None
     sort_by = None
+    base_url = "/serie/list/"
     try:
         if Serie:
 
@@ -82,16 +83,20 @@ def serie_list(request):
             # Remove the 'page' parameter to avoid pagination issues
             if 'page' in query_params:
                 query_params.pop('page')
+            query_pagin_url = query_params.urlencode()
 
             # Allow to keep the query parameter in the url for pagination
-            query_string_url = query_params.urlencode()
-            print(query_string_url, "\n")
+            # query_string_url = query_params.urlencode()
+
             # ========== END /// Building a sort-by feature ==========================
 
             sel_order = '-id' # default selection order / first reach of the list page
             if 'order_by' in query_params:
                 sel_order = query_params.get('order_by')
                 print(f"selected order: {sel_order}")
+            query_sort_url = query_params.urlencode()
+
+            # print(query_string_url, "\n")
 
             series = (
                 Serie.objects.only(
@@ -144,12 +149,15 @@ def serie_list(request):
             )
 
             context = {
-                'user_liked_series': user_liked_series,
-                'user_watchlist_series': user_watchlist_series,
-                'list_media' : list_media,
                 'page_obj' : page_obj,
                 'sort_by': sort_by,
-                'query_url': query_string_url,
+                'query_pagin_url': query_pagin_url,
+                'query_sort_url': query_sort_url,
+                'current_order': sel_order,
+                'base_url': base_url,
+                'list_media' : list_media,
+                'user_liked_series': user_liked_series,
+                'user_watchlist_series': user_watchlist_series,
             }
 
             # Temporary placement for paginator design
@@ -164,6 +172,11 @@ def serie_list(request):
                 page_obj.paginator.num_pages,
                 size=2
             )
+
+            # If user select a sort-by or page parameter, create a request with HTMX
+            if request.headers.get('HX-request'):
+                print("\n -- HTMX request detected - returning partial list --")
+                return render(request, 'partials/media_list.html', context=context)
 
             return render(request, 'serie/list_serie.html', context=context)
 

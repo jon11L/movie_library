@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 
 # Rest api imports
 from rest_framework import generics, filters
+# from rest_framework import renderers
 from rest_framework.throttling import AnonRateThrottle
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from core.permissions import IsAdminOrOwner
@@ -19,10 +20,10 @@ from user.models import User, Profile
 from movie.models import Movie
 from serie.models import Serie
 
-# from rest_framework import renderers
-
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
+from core.tools.wrappers import timer, num_queries
+
 
 class WatchListListView(generics.ListCreateAPIView):
     '''This serializer '''
@@ -204,12 +205,14 @@ def toggle_like(request, content_type: str, object_id: int):
                 message = f"*{content_type}-{object_id} Liked*"
                 return JsonResponse({'liked': True, 'message': message}) # responding to Ajax on front-end.
 
-
+@timer
+@num_queries
 def watch_list_view(request, pk: int):
     '''
         retrieve the user's watchlist from the database and display them in the template
     '''
-    start_time = time.time()
+    sort_by = None
+    base_url = f"/library/{pk}/watch_list/"
     list_media = [] # list to hold the content (movies, series)
     user_liked_movies = set()
     user_watchlist_movies = set()
@@ -236,11 +239,58 @@ def watch_list_view(request, pk: int):
     ):  # or request.user == t_user
 
         if request.method == "GET":
-            list_media = [] # intialize the list of watchlist instances 
+
+            # ========== setting values for sorting-by feature ==========================
+            sort_by = (
+                # ('display name', 'django field')
+                # ('newest first', '-release_date'), 
+                # ('oldest first', 'release_date'),
+                # (''),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('lowest vote', 'vote_count'),
+                ('highest vote', '-vote_count'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                ('first added', 'id'),
+                ('last added', '-id'),
+            )
+
+            query_params = request.GET.copy()
+            print(f"-- Query params: {query_params}\n")  # Debug print
+
+            # Remove the 'page' parameter to avoid pagination issues
+            if 'page' in query_params:
+                query_params.pop('page')
+            query_pagin_url = query_params.urlencode()
+
+            # query_string_url = query_params.urlencode()
+
+            sel_order = '-id' # default selection order / first reach of the list page
+            if 'order_by' in query_params:
+                sel_order = query_params.get('order_by')
+                # need to grab the movie/serie attribute for sorting-by
+
+
+            print(f"selected order: {sel_order}")
+            query_sort_url = query_params.urlencode()
 
             watchlist = WatchList.objects.filter(user=pk).select_related(
                 "movie", "serie"
             )
+
+            sorting_field = sel_order.strip('-')
+            list_watchlist = []
+            # Do the sorting of the watchlist depending on the sel_order
+            if 'id' in sel_order:
+                list_watchlist = watchlist.order_by(sel_order)
+
+            else:
+                list_watchlist = sorted(
+                    watchlist,
+                    key=lambda x: getattr(x.content_object, sorting_field),
+                    reverse= True if '-' in sel_order else False,
+                )
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = set(
@@ -269,7 +319,7 @@ def watch_list_view(request, pk: int):
             )
 
             # -- paginate over the results --
-            paginator = Paginator(watchlist, 24)
+            paginator = Paginator(list_watchlist, 24)
             page_number = request.GET.get('page')
             page_obj = paginator.get_page(page_number)
             print(f"List content: {page_obj}")
@@ -281,11 +331,13 @@ def watch_list_view(request, pk: int):
                     media_obj = item.movie if item.movie else item.serie
                     if isinstance(media_obj, Movie):
                         list_media.append({
-                            "title": item.movie.title, 
                             "id": item.movie.pk, 
+                            "title": item.movie.title, 
                             "genre": item.movie.render_genre(), 
+                            # "release_date": item.release_date
                             "vote_avg": item.movie.render_vote_average(), 
                             "vote_count": item.movie.vote_count, 
+                            "popularity": item.movie.popularity,
                             "poster": item.movie.render_poster(),
                             "slug": item.movie.slug,
                             "type": "movie",
@@ -293,11 +345,12 @@ def watch_list_view(request, pk: int):
 
                     elif isinstance(media_obj, Serie):
                         list_media.append({
-                            "title": item.serie.title, 
                             "id": item.serie.pk, 
+                            "title": item.serie.title, 
                             "genre": item.serie.render_genre(), 
                             "vote_avg": item.serie.render_vote_average(), 
                             "vote_count": item.serie.vote_count, 
+                            "popularity": item.serie.popularity,
                             "poster": item.serie.render_poster(),
                             "slug": item.serie.slug,
                             "type": "serie",
@@ -310,13 +363,18 @@ def watch_list_view(request, pk: int):
             total_content = watchlist.count()
 
             context = {
+                'page_obj': page_obj,
+                'sort_by': sort_by,
+                'query_pagin_url': query_pagin_url,
+                'query_sort_url': query_sort_url,
+                'current_order': sel_order,
+                'base_url': base_url,
+                'list_media' : list_media,
                 'user': t_user,
                 "user_watchlist_movies": user_watchlist_movies,
                 "user_watchlist_series": user_watchlist_series,
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
-                'list_media' : list_media,
-                'page_obj': page_obj,
                 'total_content': total_content,
             }
 
@@ -333,10 +391,11 @@ def watch_list_view(request, pk: int):
                 size=2
             )
 
+            # If user select a sort-by or page parameter, create a request with HTMX
+            if request.headers.get('HX-request'):
+                print("\n -- HTMX request detected - returning partial list --")
+                return render(request, 'partials/media_list.html', context=context)
 
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
             return render(request, 'user_library/watch_list.html', context=context)
 
     else:

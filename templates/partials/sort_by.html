@@ -1,0 +1,28 @@
+{% load static %}
+            
+<div class="d-flex mt-4 mt-sm-0" style="justify-content: end; text-align: right; margin-right: 1rem; padding-bottom: 0.5rem;">
+
+    <label for="order-by" style="color: darkgray; padding: 0.25rem 0.25rem 0 0; white-space: nowrap;">sort-by</label>
+
+    <!-- 'name' capture the value and sent it to Request.get -->
+    <select id="order-by" 
+        class="form-select form-select-sm" 
+        style="height: min-content; width: min-content; padding: 0.25rem 1.75rem 0.25rem 0.25rem;" 
+        name="order_by" hx-get="{{ base_url}}" 
+        hx-trigger="change"
+        hx-swap="innerHTML" 
+        hx-target="#media-list" 
+        hx-push-url="true">
+
+        {% if sort_by %}
+        {% for item, key in sort_by %}
+        <option value="{{ key }}" {% if current_order == key %}selected{% endif %}>
+            {{ item }} 
+            <!-- {% if current_order == key %}<span style="font-size: larger;"> ✓</span>{% endif %} -->
+        </option>
+        {% endfor %}
+        {% endif %}
+
+    </select>
+</div>
+    

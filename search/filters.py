@@ -206,7 +206,7 @@ class SharedMediaFilter(django_filters.FilterSet):
         # debug print below
         print(f"*Filtering by {name}: {value}")
         print(f"self.data is: {self.data}")
-        print(f"self.data is: {queryset}")
+        print(f"self.data is: {queryset[0:3]}...")
         if self.data != None:
             print(f"self.data.get('content_type') is: {self.data.get('content_type')}")
         print(f"queryset_model is: {queryset.model}\n")
@@ -237,7 +237,7 @@ class SharedMediaFilter(django_filters.FilterSet):
             """
             print(f"Filtering by genre: {value}")
 
-            print(f"query_set: {queryset} ")
+            print(f"query_set: {queryset[0:3]}... ")
             filtered_queryset = queryset
             
             if self.data != None:
@@ -253,7 +253,8 @@ class SharedMediaFilter(django_filters.FilterSet):
                 if genre == "sci-fi" and queryset.model.__name__ == "Movie":
                     genre = "science fiction"
                     print(f"value sci-fi changed to: '{genre}'\n.")
-
+                
+                # Return only media containing the genre data
                 filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
             return filtered_queryset
 
@@ -269,23 +270,21 @@ class SharedMediaFilter(django_filters.FilterSet):
         - 'queryset.model' is the model object being filtered 
         """
         print(f"Filtering by {name}: {value}")
-        print(f"self.data is: {self.data}")
-        print(f"queryset_model is: {queryset.model}")
-        print(f"queryset is: {queryset}\n")
+        print(f"self.data is: {self.data}")#  key and value passed from filter query search
+        print(f"queryset_model is: {queryset.model}") # the media/model it filters into
+        print(f"queryset is: {queryset[0:3]}...\n") # does this print create an evaluation (makes query?)
         try:
-            # need to solve the issue only if title is used and with empty space
-            # as it then returns all objects in the queryset!...
-
             value = value.strip()  # Remove leading/trailing whitespace
-            if not value:  # If no search term provided
+            if not value:  # If no title terms provided in search
                 return queryset
 
+            # Check the model id this given title is in title or original title, then return distincts objects
             title_query = Q(title__icontains=value) | Q(original_title__icontains=value)
 
             return queryset.filter(title_query).distinct()
         
         except Exception as e:
-            print(f"Error filtering by title: {e}\n")
+            print(f"-- Error filtering by title: {e}\n")
 
 
     class Meta:

@@ -78,6 +78,7 @@ def movie_list(request):
     user_watchlist_movies = None
     list_media = [] # list to hold the content (movies, series)
     sort_by = None
+    base_url = '/movie/list/'
     
     try:
         if Movie:
@@ -99,21 +100,23 @@ def movie_list(request):
 
             query_params = request.GET.copy()
             print(f"-- Query params: {query_params}\n")  # Debug print
+
             # Remove the 'page' parameter to avoid pagination issues
             if 'page' in query_params:
                 query_params.pop('page')
+            query_pagin_url = query_params.urlencode()
 
-            # Allow to keep the query parameter in the url for pagination
-            query_string_url = query_params.urlencode()
-            print(query_string_url, "\n")
-            # ========== END /// Building a sort-by feature ==========================
+            # query_string_url = query_params.urlencode()
 
             sel_order = '-id' # default selection order / first reach of the list page
             if 'order_by' in query_params:
                 sel_order = query_params.get('order_by')
             print(f"selected order: {sel_order}")
+            query_sort_url = query_params.urlencode()
 
-            # paginator implementation
+            # Allow to keep the query parameter in the url for pagination
+            # print(query_string_url, "\n")
+
             movies = (
                 Movie.objects.only(
                     "id",
@@ -151,7 +154,7 @@ def movie_list(request):
                     "type": "movie"
                     })
 
-            print(list_media[0:3])
+            print(list_media[0:2])
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = set(
@@ -171,11 +174,15 @@ def movie_list(request):
 
             context = {
                 'page_obj' : page_obj,
+                'sort_by': sort_by, # the list of sorting-by option
+                'query_pagin_url': query_pagin_url, # send the url parameters for pagination
+                'query_sort_url': query_sort_url, # send the url parameters for sort-by
+                'current_order': sel_order,
+                'base_url': base_url,
                 'list_media': list_media,
                 'user_liked_movies': user_liked_movies,
-                'user_watchlist_movies': user_watchlist_movies, 
-                'sort_by': sort_by,
-                'query_url': query_string_url,
+                'user_watchlist_movies': user_watchlist_movies,  
+
                 }
 
             # Temporary placement for paginator design
@@ -190,6 +197,11 @@ def movie_list(request):
                 page_obj.paginator.num_pages,
                 size=2
             )
+
+            # If user select a sort-by or page parameter, create a request with HTMX
+            if request.headers.get('HX-request'):
+                print("\n -- HTMX request detected - returning partial list --")
+                return render(request, 'partials/media_list.html', context=context)
 
             return render(request, 'movie/list_movie.html', context=context)
 
@@ -207,8 +219,9 @@ def movie_list(request):
 @num_queries
 def movie_detail(request, slug):
     '''
-    get the movie object from the database using the movie_id parameter in the URL request.
-    \nwill also pass on with the necessary information such as 'Like' or 'WatchList' 
+    - get the movie object from the database using the pk parameter in the URL request.
+    \n
+    - will also pass on with the necessary information such as 'Like' or 'WatchList' 
     '''
     try:
         if Movie:

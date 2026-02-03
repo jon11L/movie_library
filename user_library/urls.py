@@ -24,6 +24,6 @@ urlpatterns = [
     path('like/<str:content_type>/<int:object_id>/', views.toggle_like, name='toggle_like'),
     path('watchlist/<str:content_type>/<int:object_id>/', views.toggle_watchlist, name='toggle_watchlist'),
     path('liked/<int:pk>/liked_content', views.liked_content_view, name='liked_view'),
-    path('<int:pk>/watch_list', views.watch_list_view, name='watch_list'),
+    path('<int:pk>/watch_list/', views.watch_list_view, name='watch_list'),
 
 ]

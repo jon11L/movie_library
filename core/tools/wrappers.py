@@ -12,14 +12,14 @@ def timer(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
 
-        result = func(*args, **kwargs) # Call the rapped function
+        result = func(*args, **kwargs) # Call the wrapped function
 
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"-- processing page time: {elapsed_time:.2f} seconds. --\n")
 
         return result # Return first the result of the wrapped function
-    return wrapper
+    return wrapper # Then return the Wrapper // timer
 
 
 def num_queries(func):
@@ -34,13 +34,13 @@ def num_queries(func):
         # Debug: Print number of queries
         if settings.DEBUG:
             print(
-                "=================="
-                f"\n- Number of queries: {len(connection.queries)}"
+                "\n==================\n"
+                f"- Number of queries: {len(connection.queries)}"
             )
 
             for query in connection.queries:
-                print(query['sql'])
+                print(f"--> {query['sql']}")
             print("=======================\n")
 
         return result # Return first the result of the wrapped function
-    return wrapper
+    return wrapper # Then return the Wrapper // queries made
