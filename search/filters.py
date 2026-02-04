@@ -279,7 +279,7 @@ class SharedMediaFilter(django_filters.FilterSet):
                 return queryset
 
             # Check the model id this given title is in title or original title, then return distincts objects
-            title_query = Q(title__icontains=value) | Q(original_title__icontains=value)
+            title_query = Q(title__unaccent__icontains=value) | Q(original_title__unaccent__icontains=value)
 
             return queryset.filter(title_query).distinct()
         
