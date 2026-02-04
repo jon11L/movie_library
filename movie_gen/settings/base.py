@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles', # for serving static files
+    'django.contrib.postgres', # allow to add new operation to postgress eg: unaccent operation
     'django_filters', # for filtering in DRF
     'django_celery_beat', # for periodic tasks with Celery
     'rest_framework', # for building APIs
