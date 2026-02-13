@@ -196,35 +196,7 @@ body {
 
 }
 
-/* ==== Try prepare separate wrapper for home page style */
-/* Only right wrapper on home page for medium screens */
 
-
-/* @media (min-width: 1260px) {
-	.col-xl-1-5 {
-		flex: 0 0 auto;
-		width: 12.5%;
-	}
-    .l-side-wrapper {
-        flex: 0 0 12.5%;
-        max-width: 12.5%;
-        display: block;
-    }
-
-    .r-side-wrapper {
-        flex: 0 0 12.5%;
-        width: 12.5%;
-        display: block;
-    }
-
-    .custom-col-9 {
-        flex: 1 0 75%;
-        max-width: 100%;
-    }
-} */
-
-
-/* make sure .row has no gaps pushing layout */
 .row {
 	margin-left: 0;
 	margin-right: 0;
@@ -318,12 +290,10 @@ Need to reorganize the name or call a parent custom class
     text-align: center;
 }
 
-
 .media-info-row-1 .casting {
     margin: 0.5rem 0.25rem;
     padding: 0;
 }
-
 
 /* Background image cover|banner */
 .background-media-img {
@@ -626,8 +596,6 @@ Need to reorganize the name or call a parent custom class
 
 
 
-
-
 /* ================== SEARCH PAGE ======================== */
 /* ------ SEARCH filter form / Page ----- */
 .search-card {
@@ -672,6 +640,24 @@ Need to reorganize the name or call a parent custom class
 
 
 /* ========== For list pages ============== */
+/* general sort-by feature layout */
+.order-by-wrapper {
+    justify-content: end; 
+    text-align: right; 
+    margin-right: 1rem; 
+    padding-bottom: 0.5rem;
+    /* max-width: 120px; */
+}
+
+#order-by {
+    height: min-content; 
+    width: min-content; 
+    max-width: 120px;
+    padding: 0.25rem 1.75rem 0.25rem 0.25rem;
+}
+
+
+/* Only affect sor-by layout on watchlist page */
 .watchlist-count-sort {
     display: block;
     justify-content: space-between; 
@@ -683,10 +669,16 @@ Need to reorganize the name or call a parent custom class
 
 .count-watchlist {
     text-align:center; 
-    margin: 0 1rem 1.5rem 1rem ;
+    /* margin: 0 1rem 1.5rem 1rem ; */
 }
 
-
+/* Only affect sor-by layout on watchlist page */
+/* .watchlist-count-sort .order-by-wrapper {
+    justify-content: end; 
+    text-align: right; 
+    margin-right: 1rem; 
+    padding-bottom: 0.5rem;
+} */
 
 @media (min-width: 425px) {
     .watchlist-count-sort {
@@ -704,12 +696,15 @@ Need to reorganize the name or call a parent custom class
         text-align:left; 
         margin: 0 1rem 0rem 2rem ;
     }
+
+    .order-by-wrapper {
+        margin-right: 1.5rem;
+    }
 }
 
 
 
 /* == list media cards ==  */
-
 /* ==== vote and users buttons on Media list ==== */
 .vote_button_list {
     display: flex;

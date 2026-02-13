@@ -43,13 +43,15 @@
                                             </div>
                                     </div>
                                 
-                                    <div class="col-6 col-md- d-inline-block d-lg-flex">
+
+                                
+
+                                    <div class="col-6 col-md-5 d-inline-block d-lg-flex">
 
                                         <div class="form-group mb-2 me-3" id="title" style="width: 100%; max-width: 220px; text-align: center;">
                                             <label for="title"><strong>Title:</strong></label>
                                             {{ filter.form.title }}
                                         </div>
-                                    
                                     
                                         <div class="d-flex d-lg-block mt-3 mt-lg-0 " style="flex-wrap: wrap; align-items: center;">
                                             <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
@@ -64,39 +66,44 @@
 
                                     </div>
                                 
-                                    <!-- Date fields / option between exact and range filter -->
-                                    <div class="form-group col-6 col-md-4 col-lg-3 col-xl-2 mt-2 mt-md-0"
-                                        id="dateFieldsContainer">
-                                        <div class="form-group" id="exactDateField">
-                                            <label for="release_date"><strong>Date:</strong></label>
-                                            {{ filter.form.release_date }}
-                                        </div>
-                                        
-                                        <div id="rangeDateField" style="display: none;">
-                                            <div class="form-group mb-2 me-2" style="text-align: center;">
-                                                <label for="release_date_from"><strong>year From:</strong></label>
-                                                {{ filter.form.release_date_gte }}
-                                            </div>
-                                            <div class="form-group me-2" style="text-align: center;">
-                                                <label for="release_date_to"><strong>year To:</strong></label>
-                                                {{ filter.form.release_date_lte }}
-                                            </div>
-                                        </div>
+                                    <!-- Here remove the below div to have Date under -->
+                                    <div class="d-flex col-6 col-md-4 col-lg-3 col-xl-2 mt-2 mt-md-0">
                                     
-                                        <!-- toggle the release date field between Exact or Range-filter -->
-                                        <div class="form-check form-switch mb-2">
-                                            <input class="form-check-input" type="checkbox" id="toggleDateRange" role="switch">
-                                            <label class="form-check-label" for="toggleDateRange">
-                                                <small id="exact-year-actif">range period</small>
-                                                <small id="range-year-actif" style="display: none;">exact year</small>
-                                                <!-- If switch checked then -->
-                                                <!-- <p>Select a specific year instead</p> -->
-                                            </label>
+                                        <!-- Date fields / option between exact and range filter -->
+                                        <div class="form-group" id="dateFieldsContainer"
+                                            style="padding-right: 2rem;">
+
+                                            <div class="form-group" id="exactDateField">
+                                                <label for="release_date"><strong>Date:</strong></label>
+                                                {{ filter.form.release_date }}
+                                            </div>
+                                        
+                                            <div id="rangeDateField" style="display: none;">
+                                                <div class="form-group mb-2" style="text-align: center;">
+                                                    <label for="release_date_from"><strong>year From:</strong></label>
+                                                    {{ filter.form.release_date_gte }}
+                                                </div>
+                                                <div class="form-group" style="text-align: center;">
+                                                    <label for="release_date_to"><strong>year To:</strong></label>
+                                                    {{ filter.form.release_date_lte }}
+                                                </div>
+                                            </div>
+                                        
+                                            <!-- toggle the release date field between Exact or Range-filter -->
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input" type="checkbox" id="toggleDateRange" role="switch">
+                                                <label class="form-check-label" for="toggleDateRange">
+                                                    <small id="exact-year-actif">range period</small>
+                                                    <small id="range-year-actif" style="display: none;">exact year</small>
+                                                    <!-- If switch checked then -->
+                                                    <!-- <p>Select a specific year instead</p> -->
+                                                </label>
+                                            </div>
                                         </div>
 
                                     </div>
 
-                                    <div class="form-group col-5 col-md-3 col-lg-3 col-xl-2 my-2 mt-lg-0" id="language" style="text-align: center;">
+                                    <div class="form-group col-5 col-sm-4 col-md-3 col-lg-3 col-xl-2 my-2 mt-lg-0" id="language" style="width: fit-content; text-align: center;">
                                         <label for="language"><strong>Language:</strong></label>
                                         {{ filter.form.language }}
                                     </div>
@@ -135,34 +142,10 @@
                         <!-- filter form button clicked with filters and results -->
                         {% elif query_params and total_found %}
                         <h3 style="color: green;">Search results for your query.</h3>
-                        <h6 style="color: darkgreen;">{{ total_found }} items match your query.</h6>        
+                        <h6 style="color: darkgreen; margin-bottom: 1rem;">{{ total_found }} items match your query.</h6>        
 
                         <!-- ---- Sort-by selector ---- -->
-                        <div class="d-flex" style="justify-content: end; margin-right: 0.5rem; padding: 0.5rem;">
-                            <!-- <p class="disabled">sort-by</p> -->
-                            <label for="order-by" style="color: darkgray; margin: 0.5rem 0.5rem 0 0;">sort-by</label>
-                        
-                            <select id="order-by" 
-                                class="form-select form-select-sm" 
-                                style="height: min-content; width: min-content; padding: 0.25rem 1.75rem 0.25rem 0.25rem;" 
-                                name="order_by" 
-                                hx-get="{{ base_url}}?{{ query_sort_url }}" 
-                                hx-trigger="change"
-                                hx-swap="innerHTML" 
-                                hx-target="#media-list" 
-                                hx-push-url="true">
-                                <!-- <option value="#"><img src="" alt=""></option> -->
-                            
-                                {% if sort_by %}
-                                {% for item, key in sort_by %}
-                                <option  value="{{ key }}" {% if current_order == key %}selected{% endif %}>
-                                    {{ item }}
-                                </option>
-                                {% endfor %}
-                                {% endif %}
-                            </select>
-                        </div>
-                        
+                        {% include "partials/sort_by.html" %}
 
 
                         <!-- New combined results for Movies and Series. -->

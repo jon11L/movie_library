@@ -228,32 +228,40 @@ def watch_list_view(request, pk: int):
         return redirect('main:home')
 
     # Need to add a check that only current user can visit their own Like page.
-    if request.user.is_authenticated and request.user.id != pk and target_profile.watchlist_private and not request.user.is_staff:
-        print("\n** Unauthorised acces: user tried to access a private user's watchlist **\n")
-        messages.error(request, ("Page not accessible, private."))
+    if (
+        request.user.is_authenticated
+        and request.user.id != pk
+        and target_profile.watchlist_private
+        and not request.user.is_staff
+    ):
+        print(
+            "\n** Unauthorised acces: user tried to access a private user's watchlist **\n"
+        )
+        messages.error(request, ("Private access, Page not accessible."))
         return redirect(to='user:profile_page', pk=request.user.id)
 
     elif request.user.is_staff or (
         request.user.is_authenticated and
         (request.user.id == pk or not target_profile.watchlist_private)
-    ):  # or request.user == t_user
+    ):
 
         if request.method == "GET":
 
             # ========== setting values for sorting-by feature ==========================
             sort_by = (
                 # ('display name', 'django field')
-                # ('newest first', '-release_date'), 
-                # ('oldest first', 'release_date'),
-                # (''),
-                ('least popular', 'popularity'),
-                ('most popular', '-popularity'),
-                ('lowest vote', 'vote_count'),
-                ('highest vote', '-vote_count'),
-                ('A-z title', 'title'), 
-                ('Z-a title', '-title'),
                 ('first added', 'id'),
                 ('last added', '-id'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                # ('newest first', '-release_date'), # Release_date & filter_date variable name issue
+                # ('oldest first', 'release_date'),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('least voted', 'vote_count'),
+                ('most voted', '-vote_count'),
+                ('lowest rating', 'vote_average'),
+                ('highest rating', '-vote_average'),
             )
 
             query_params = request.GET.copy()
@@ -265,12 +273,10 @@ def watch_list_view(request, pk: int):
             query_pagin_url = query_params.urlencode()
 
             # query_string_url = query_params.urlencode()
-
             sel_order = '-id' # default selection order / first reach of the list page
             if 'order_by' in query_params:
+                # need to grab the Media attribute for sorting-by
                 sel_order = query_params.get('order_by')
-                # need to grab the movie/serie attribute for sorting-by
-
 
             print(f"selected order: {sel_order}")
             query_sort_url = query_params.urlencode()
@@ -279,7 +285,9 @@ def watch_list_view(request, pk: int):
                 "movie", "serie"
             )
 
-            sorting_field = sel_order.strip('-')
+            # for items in watchlist[0:3]:
+            #     print(f"{items.get_deferred_fields}")
+
             list_watchlist = []
             # Do the sorting of the watchlist depending on the sel_order
             if 'id' in sel_order:
@@ -288,7 +296,7 @@ def watch_list_view(request, pk: int):
             else:
                 list_watchlist = sorted(
                     watchlist,
-                    key=lambda x: getattr(x.content_object, sorting_field),
+                    key=lambda x: getattr(x.content_object, sel_order.strip('-')),
                     reverse= True if '-' in sel_order else False,
                 )
 
@@ -370,7 +378,7 @@ def watch_list_view(request, pk: int):
                 'current_order': sel_order,
                 'base_url': base_url,
                 'list_media' : list_media,
-                'user': t_user,
+                'user': t_user.username,
                 "user_watchlist_movies": user_watchlist_movies,
                 "user_watchlist_series": user_watchlist_series,
                 'user_liked_movies': user_liked_movies,
@@ -421,6 +429,8 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             'error': 'Login required',
             'message': message
             }, status=401)
+    
+
 
     # user clicked the 'like' button
     if request.method == "POST":

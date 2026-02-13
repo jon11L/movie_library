@@ -294,7 +294,7 @@ def show_content(request, content):
                 .order_by("-vote_count")
             )
 
-        elif content == "short films":
+        elif content == "short-films":
             # Check if they are short Movies under 45 minutes
             movies = (
                 Movie.objects.filter(length__lte=45, length__gt=0)
@@ -355,16 +355,19 @@ def show_content(request, content):
         # ========== setting values for sorting-by feature ==========================
         sort_by = (
             # ('display name', 'django field')
-            # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
+            ('first added', 'id'),
+            ('last added', '-id'),
+            ('A-z title', 'title'), 
+            ('Z-a title', '-title'),
+            # ('newest first', '-release_date'), # release_date issue as not same variable naming
             # ('oldest first', 'release_date'),
             ('least popular', 'popularity'),
             ('most popular', '-popularity'),
-            ('lowest vote', 'vote_count'),
-            ('highest vote', '-vote_count'),
-            ('A-z title', 'title'), 
-            ('Z-a title', '-title'),
-            ('first added', 'id'),
-            ('last added', '-id'),
+            ('least voted', 'vote_count'),
+            ('most voted', '-vote_count'),
+            ('lowest rating', 'vote_average'),
+            ('highest rating', '-vote_average'),
+
         )
 
         # Preserve all GET parameters except 'page' for the Paginator system
@@ -375,9 +378,7 @@ def show_content(request, content):
         if 'page' in query_params:
             query_params.pop('page')
         query_pagin_url = query_params.urlencode()
-
         # Allow to keep the query parameter in the url for pagination
-        # query_string_url = query_params.urlencode()
 
         sel_order = '-id'
         if 'order_by' in query_params:
@@ -385,7 +386,6 @@ def show_content(request, content):
         query_sort_url = query_params.urlencode()
 
         print(f"selected order: {sel_order}")
-        # print(query_string_url, "\n")
 
         # Combine both queries into one for sorting
         # even if evaluation done before paginating/limiting and normalizing
@@ -397,9 +397,6 @@ def show_content(request, content):
             key=lambda x: getattr(x, sel_order.strip('-')),
             reverse=True if '-' in sel_order else False,
         )
-
-        # Sort the content media by vote count (descending order)
-        # combined.sort(key=lambda x: x.vote_count, reverse=True)
 
         # -- paginate over the results, limit to 24per page --
         paginator = Paginator(combined, 24)
