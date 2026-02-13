@@ -29,10 +29,9 @@
 			<form class="search-form form-inline" role="search" method="GET" action="{% url 'search:search' %}">
 				<input type="text"
 					class="form-control search-input"
-					placeholder=" 🔍 search..." 
+					placeholder="🔍 search..." 
 					name="title" 
-					aria-label="Search"
-					style="border-radius: 2em;">
+					aria-label="Search">
 				<button class="submit-btn btn nav-search-btn" type="submit">
 					search
 				</button>
@@ -42,21 +41,23 @@
 		<!-- CENTER of the navbar -->
 		<!-- Links of different pages -->
 		<div class="collapse navbar-collapse" id="mainNavDropMenu">
-			<ul class="navbar-nav ms-3 mt-2">
+			<ul class="navbar-nav ms-lg-1 mt-2">
 
 				<li class="nav-item">
-					<a class="nav-link active d-lg-none " href="{% url 'main:home' %}">
+					<a class="nav-link active d-lg-none " href="{% url 'main:home' %}" aria-label="home page link">
 						<h5 class="link-btn">Home</h5>
 					</a>
 				</li>
 
-				{% if user.is_authenticated %}
+				{% if request.user.is_authenticated %}
 				<li class="nav-item">
-					<a class="nav-link active d-lg-none " href="{% url 'user_library:watch_list' request.user.id %}">
+					<a class="nav-link active" href="{% url 'user_library:watch_list' request.user.pk %}">
 						<h5 class="link-btn">Watchlist</h6>
 					</a>
 				</li>
 				{% endif %}
+
+				<hr class="divider" style="padding: 0; margin: 0;">
 
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
@@ -65,7 +66,7 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'serie:list' %}">
-						<h5 class="link-btn">TV shows</h5>
+						<h5 class="link-btn">TV-shows</h5>
 					</a>
 				</li>
 				<li class="nav-item">
@@ -75,7 +76,7 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'main:short-films' %}">
-						<h5 class="link-btn">Short films</h5>
+						<h5 class="link-btn">Short-films</h5>
 					</a>
 				</li>
 				<li class="nav-item">
@@ -89,25 +90,25 @@
 		<div>
 			<!-- Right-aligned dropdown menu -->
 			<ul class="navbar-nav navbar-profile">
-				{% if user.is_authenticated %}
+				{% if request.user.is_authenticated %}
 				<li class="nav-item dropdown">
 					
-					<a class="nav-link dropdown-toggle" 
-						href="#" role="button" 
+					<div class="nav-link dropdown-toggle" 
+						href="" role="button" 
 						data-bs-toggle="dropdown"
 						aria-expanded="false">
 	
-						{% if user.is_authenticated and request.user.profile.profile_picture %}
+						{% if request.user.profile.profile_picture %}
 						<img src="{{ request.user.profile.profile_picture.url }}" class="img-fluid rounded-circle"
 							style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
-						{% elif user.is_authenticated %}
+						{% else %}
 						<img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle" style="width: 2.25rem; height: 2.25rem;" alt="Profile photo">
 						{% endif %}
-					</a>
+					</div>
 					
 					<ul class="dropdown-menu dropdown-menu-end" style="background-color: darkgray; text-align: center;">
 						<li>
-							<small style="font-weight: 500;">{{ request.user.username.capitalize }}</small>
+							<small style="font-weight: 600;">{{ request.user.username.capitalize }}</small>
 						</li>
 						<hr class="dropdown-divider">
 						
@@ -118,9 +119,7 @@
 						<li>
 							<a class="dropdown-item" href="{% url 'user:update_profile' request.user.id %}">Edit profile</a>
 						</li>
-						<li>
-							<hr class="dropdown-divider">
-						</li>
+						<li><hr class="dropdown-divider"></li>
 						<li>
 							<a class="dropdown-item" href="{% url 'user:logout' %}">Log out</a>
 						</li>
