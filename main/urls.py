@@ -24,6 +24,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('about', views.about_page, name='about'),
     path('documentaries', views.show_content, {'content':'documentaries'} ,name='documentaries'),
-    path('short-films', views.show_content, {'content': 'short films'}, name='short-films'),
+    path('short-films', views.show_content, {'content': 'short-films'}, name='short-films'),
     path('anime', views.show_content, {'content': 'anime'}, name='anime'),
 ]

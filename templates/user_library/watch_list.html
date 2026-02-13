@@ -18,7 +18,7 @@
             <main class="custom-col-9 main-wrapper ">
 
                 <div style="text-align: center; margin-bottom: 0.25rem;">
-                    {% if request.user == user %}
+                    {% if request.user.username == user %}
                     <h1 style="margin-bottom: 0;">Your watch list:</h1>
                     {% else %}
                     <h1 style="margin-bottom: 0;">{{ user }}'s watch list:</h1>
@@ -27,8 +27,9 @@
                 
                 {% if list_media %}
                 <div class="watchlist-count-sort">
-                    
-                    <h6 class="count-watchlist">{{ total_content }} items in your watchlist</h6>
+                    <div>
+                        <h6 class="count-watchlist">{{ total_content }} items in your watchlist</h6>
+                    </div>
     
                     <!-- Sort-by selector -->
                     {% include "partials/sort_by.html" %}
@@ -45,8 +46,6 @@
                 <h3 style="text-align: center; color: bisque; margin: auto;">No Media saved yet...</h3>
                 <div style="padding-top: 32.5%;"></div>
                 {% endif %}
-
-
 
             </main>
             

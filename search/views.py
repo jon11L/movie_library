@@ -70,16 +70,6 @@ def search(request):
     elif request.method == 'GET' and request.GET:
         print("\n-- User submit a filtered search // filter values applied --")
 
-        # ===== when no filters are selected; return only the filter form ========
-        # if not has_filter_values :
-        #     print("-- no filter values applied // return page --")
-
-        #     context = {
-        #         'filter': Media_filter,
-        #     }
-
-        # ====== Filter values are applied. Filtering through Model ===========
-        # print("-- ")# debug print
         filtered_movies = []
         filtered_series = []
 
@@ -108,12 +98,9 @@ def search(request):
                 # Create a relevance system by Title: exact->startwith->remaining.
                 filtered_movies = filtered_movies.annotate(
                     relevance=Case(
-                        # title exact match
-                        When(title__iexact=title_value, then=Value(1)),
-                        # title startswith
-                        When(title__istartswith=title_value, then=Value(2)),
-                        # title in (already filtered)
-                        default=Value(3),
+                        When(title__iexact=title_value, then=Value(1)), # exact match
+                        When(title__istartswith=title_value, then=Value(2)), # title startswith
+                        default=Value(3), # title in (already filtered)
                         output_field=IntegerField(),
                     )
                 ).order_by("-relevance", "title")
@@ -154,16 +141,18 @@ def search(request):
         # === setting values for sorting-by feature ===
         sort_by = (
             # ('display name', 'django field')
-            # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
-            # ('oldest first', 'release_date'),
-            ('least popular', 'popularity'),
-            ('most popular', '-popularity'),
-            ('lowest vote', 'vote_count'),
-            ('highest vote', '-vote_count'),
             ('A-z title', 'title'), 
             ('Z-a title', '-title'),
             ('first added', 'id'),
             ('last added', '-id'),
+            # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
+            # ('oldest first', 'release_date'),
+            ('least popular', 'popularity'),
+            ('most popular', '-popularity'),
+            ('least voted', 'vote_count'),
+            ('most voted', '-vote_count'),
+            ('lowest rating', 'vote_average'),
+            ('highest rating', '-vote_average'),
         )
 
         # create two query_urls parameters holder
@@ -173,14 +162,12 @@ def search(request):
         # Preserve all GET parameters except 'page' for the Paginator system
         query_params = request.GET.copy()
         print(f"-- Query params: {query_params}\n")  # Debug print
+
         # Remove the 'page' parameter to avoid pagination issues
-
-
         if 'page' in query_params:
             query_params.pop('page')
         # Allow to keep the query parameter in the url for pagination
         query_pagin_url = query_params.urlencode()
-            
 
         sel_order = 'title' # default to title when no sort-by given
         if 'order_by' in query_params:
@@ -190,13 +177,14 @@ def search(request):
         query_sort_url = query_params.urlencode()
 
         # Sort the media found by relevance to group Movie and Serie.
-        #  Won't no longer need if creating a common Media model.Neither 'combined'
-        if title_value:
+        #  Won't no longer need when creating a common Media model. Neither 'combined'
+        if title_value and sel_order == 'title':
             results = sorted(
                 combined,
                 key=lambda x: (getattr(x, "relevance", 0), getattr(x, "title", "")),
                 reverse=False,
             )
+
         else:
             # Meaning a filter search based on other filtering value than title.
             results = sorted(
@@ -210,7 +198,7 @@ def search(request):
         total_found = len(results)
         print(
             f"-- Total found {total_found}: "
-            f"{len(filtered_movies)} movies -- {len(filtered_series)} series --\n" # Does this create a new query/evaluation
+            f"{len(filtered_movies)} movies -- {len(filtered_series)} series --\n" 
         )
 
         # -- paginate over the results --

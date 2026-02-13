@@ -86,16 +86,18 @@ def movie_list(request):
             # ========== setting values for sorting-by feature ==========================
             sort_by = (
                 # ('display name', 'django field')
+                ('first added', 'id'),
+                ('last added', '-id'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
                 ('newest first', '-release_date'), 
                 ('oldest first', 'release_date'),
                 ('least popular', 'popularity'),
                 ('most popular', '-popularity'),
-                ('lowest vote', 'vote_count'),
-                ('highest vote', '-vote_count'),
-                ('A-z title', 'title'), 
-                ('Z-a title', '-title'),
-                ('first added', 'id'),
-                ('last added', '-id'),
+                ('least voted', 'vote_count'),
+                ('most voted', '-vote_count'),
+                ('lowest rating', 'vote_average'),
+                ('highest rating', '-vote_average'),
             )
 
             query_params = request.GET.copy()
@@ -104,18 +106,14 @@ def movie_list(request):
             # Remove the 'page' parameter to avoid pagination issues
             if 'page' in query_params:
                 query_params.pop('page')
+            # Allow to keep the query parameter in the url for pagination
             query_pagin_url = query_params.urlencode()
-
-            # query_string_url = query_params.urlencode()
 
             sel_order = '-id' # default selection order / first reach of the list page
             if 'order_by' in query_params:
                 sel_order = query_params.get('order_by')
             print(f"selected order: {sel_order}")
             query_sort_url = query_params.urlencode()
-
-            # Allow to keep the query parameter in the url for pagination
-            # print(query_string_url, "\n")
 
             movies = (
                 Movie.objects.only(
@@ -138,7 +136,7 @@ def movie_list(request):
             # Get the current page number from the GET request
             page = request.GET.get('page')
             page_obj = paginator.get_page(page)
-            print("\n\n--", page_obj, "\n\n--")
+            print(f"\n-- {page_obj} --\n")
 
             # create a standardized data stack to pass in templates.
             # Avoiding any extra hidden queries on the frontend
@@ -153,8 +151,7 @@ def movie_list(request):
                     "slug": item.slug,
                     "type": "movie"
                     })
-
-            print(list_media[0:2])
+            # print(list_media[0:2])
 
             # Get the user's watchlist content (movies, series)
             user_watchlist_movies = set(
