@@ -57,36 +57,36 @@
     color: antiquewhite;
 }
 
-
 /* ========== Search Navbar ====================== */
 .navbar-search {
-    flex: 1;
+    flex: 1 0 120px;
     max-width: 180px;
     min-width: 120px;
     margin: 0;
-    /* align-items: center; */
 }
 
 .navbar-search .search-form {
-    /* padding-right: 1rem; */
     display: flex;
-    /* gap: 1rem; */
-    /* width: 100%; */
-    /* margin: auto; */
     padding-right: 0;
 }
 
 .search-input {
     /* transition: width 0.3s ease; */
     border-radius: 2em;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .nav-search-btn {
     background-color: rgb(49, 132, 132);
     border-radius: 1em; 
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
     border-color: rgb(62, 158, 158); 
     color: white;
+    margin-left: 0;
     /* background-color: rgb(62, 158, 158); */
+    padding: 0.25rem 0.4rem 0.25rem 0.25rem;
 }
 
 .nav-search-btn:hover, .home-search-btn:active {
@@ -102,14 +102,30 @@
 
 } */
 
+@media (min-width: 545px) {
+    .navbar-search {
+        margin-right: 20%;
+    }
+}
+
+
 @media (max-width: 768px) {
     .navbar-search {
+        /* max-width: 180px; */
         margin-left: 1rem;
     }
     .nav-search-btn {
-        padding: 0.25rem 0.4rem;
+        padding: 0.25rem 0.4rem 0.25rem 0.25rem;
     }
 }
+
+
+@media (min-width: 768px) {
+    .navbar-search {
+        margin-right: 45%;
+    }
+}
+
 
 /* Mobile screen: navbar is collapsed */
 /* Max to md/medium screen */
@@ -128,7 +144,6 @@
     .nav-item {
         margin-left: 0.75rem;
     }
-
     .nav-link {
         padding: 0.25rem 0rem;
         width: fit-content;
@@ -138,10 +153,9 @@
         padding: 0rem;
         border-bottom: solid gray 1px;
     }
-
     .navbar-search {
-        min-width: 120px;
-        max-width: 280px;
+        max-width: 220px;
+        /* width: 100%; */
     }
 
     #mainNavDropMenu {
@@ -159,7 +173,6 @@
         display: block;
     } */
 }
-
 
 
 /* Desktop screen: navbar is not collapsed */
@@ -190,17 +203,22 @@
 
     .navbar-search {
         min-width: 200px;
-        max-width: 320px;
+        /* max-width: 320px; */
+        margin-right: 0;
     }
 }
 
 @media (min-width: 1200px) {
     .navbar-layout {
-        gap: 2.5rem;
+        gap: 4rem;
     }
 
     .navbar-collapse {
         justify-content: left;
+    }
+
+    .navbar-search {
+        max-width: 280px;
     }
 
 }
