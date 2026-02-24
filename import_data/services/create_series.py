@@ -22,7 +22,7 @@ def save_or_update_series(tmdb_id):
     - One new Api call is made per season fetched 
     (No call for episodes, datas are retrieved within that same call)
     """
-    
+
     try:
         # search for the serie
         serie_data = get_api_data(
@@ -66,7 +66,10 @@ def save_or_update_series(tmdb_id):
     first_air_date = None
     if serie_data.get('first_air_date'):
         try:
-            first_air_date = datetime.datetime.strptime(serie_data.get('first_air_date'), '%Y-%m-%d').date()
+            first_air_date = datetime.datetime.strptime(
+                serie_data.get("first_air_date"), "%Y-%m-%d"
+            ).date()
+
         except ValueError:
             # If the first_air_date is not available, it stays set to None
             print(f"Invalid date format: {serie_data.get('first_air_date')}")
@@ -304,7 +307,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                     "season_number" : season_number,
                     "name" : season_data.get("name"),
                     "producer" : producers[:8],
-                    "casting" :  cast[:10],
+                    "casting" :  cast[:18],
                     "overview" : season_data.get('overview'),
                     "poster_images": posters,
                     "trailers" : yt_trailer,
@@ -412,9 +415,9 @@ def get_episodes(list_episodes, season: object):
                 existing_episode.overview = episode.get('overview', "")
                 existing_episode.length = episode.get("runtime") or None
                 existing_episode.release_date = episode.get('air_date') or None
-                existing_episode.guest_star = guest_names[:10]
-                existing_episode.director = directors[:4]  # Limit to first 5 directors
-                existing_episode.writer = writers[:4]
+                existing_episode.guest_star = guest_names[:18]
+                existing_episode.director = directors[:5]  # Limit to first 5 directors
+                existing_episode.writer = writers[:5]
                 existing_episode.banner_images = ep_banner_img
                 existing_episode.updated_at = timezone.now() # trigger updated_at as Bulk_update do not use .save()
                 existing_episode.tmdb_id = episode_tmdb_id
@@ -431,9 +434,9 @@ def get_episodes(list_episodes, season: object):
                     overview = episode.get('overview', ""),
                     length = episode.get("runtime") or None,
                     release_date = episode.get('air_date') or None,
-                    guest_star = guest_names[:10],
-                    director = directors[:4],
-                    writer = writers[:4],
+                    guest_star = guest_names[:18],
+                    director = directors[:5],
+                    writer = writers[:5],
                     banner_images = ep_banner_img,
                     tmdb_id = episode_tmdb_id
                 ))
@@ -557,4 +560,3 @@ def generate_episode_slug(season):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"time: {elapsed_time:.2f} seconds.\n")
-

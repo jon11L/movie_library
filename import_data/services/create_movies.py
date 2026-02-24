@@ -56,15 +56,12 @@ def save_or_update_movie(tmdb_id: int):
 
         second_trailer = [] # append optional "Featurette"
         for trailer in trailer_data:
-
             if trailer['site'] != "YouTube":
                 continue
-
             if trailer["type"] in ["Trailer", "Teaser"]:
                 yt_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
                 )
-
             if trailer["type"] in ["Featurette"]:
                 second_trailer.append(
                     {"website": trailer["site"], "key": trailer["key"]}
@@ -76,17 +73,21 @@ def save_or_update_movie(tmdb_id: int):
             for i in second_trailer[:need]:
                 yt_trailer.append(i)
 
-
         languages = movie_data.get("spoken_languages", [])
         spoken_languages = [language["english_name"] for language in languages]
 
-        production = [company["name"] for company in movie_data.get("production_companies", [])] # List of production companies
+        production = [
+            company["name"] for company in movie_data.get("production_companies", [])
+        ]  # List of production companies
 
         # Convert the release date to a datetime object if it exists
         release_date = None
         if movie_data.get('release_date'):
             try:
-                release_date = datetime.datetime.strptime(movie_data.get('release_date'), '%Y-%m-%d').date()
+                release_date = datetime.datetime.strptime(
+                    movie_data.get("release_date"), "%Y-%m-%d"
+                ).date()
+
             except ValueError:
                 # If the release date is not available, it stays set to None
                 print(f"Invalid date format: {movie_data.get('release_date')}")
@@ -175,7 +176,7 @@ def save_or_update_movie(tmdb_id: int):
                     "production" : production, # List of production companies
                     "director" : director,
                     "writer" : writers,
-                    "casting" : cast[:12],
+                    "casting" : cast[:18],
                     "length" : movie_data.get("runtime"),
                     "status": movie_data.get('status'),
 

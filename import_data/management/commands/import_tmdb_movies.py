@@ -150,13 +150,14 @@ class Command(BaseCommand):
             f"SUMMARY: Movies (import)"
             f" -- {imported['created']} Created"
             f" -- {imported['updated']} updated"
-            f" -- {imported['skipped']}  Skipped/Failed"
+            f" -- {imported['skipped']} Skipped/Failed"
             f" -- runtime: {imported['runtime']} seconds"
         )
 
         # saved log in file report import.
         logger.info(log_import)
         self.stdout.write(self.style.SUCCESS(log_import))
+
 
     def process_movie_list(self, list_movies, imported: dict):
         '''

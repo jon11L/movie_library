@@ -137,7 +137,7 @@ class Command(BaseCommand):
             f"SUMMARY: Series (import)"
             f" -- {imported['created']} Created"
             f" -- {imported['updated']} updated"
-            f" -- {imported['skipped']}  Skipped/Failed"
+            f" -- {imported['skipped']} Skipped/Failed"
             f" -- runtime: {imported['runtime']} seconds"
             )
 
