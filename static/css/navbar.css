@@ -60,7 +60,7 @@
 /* ========== Search Navbar ====================== */
 .navbar-search {
     flex: 1 0 120px;
-    max-width: 180px;
+    max-width: 120px;
     min-width: 120px;
     margin: 0;
 }
@@ -86,7 +86,7 @@
     color: white;
     margin-left: 0;
     /* background-color: rgb(62, 158, 158); */
-    padding: 0.25rem 0.4rem 0.25rem 0.25rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.4rem;
 }
 
 .nav-search-btn:hover, .home-search-btn:active {
@@ -97,32 +97,24 @@
 }
 
 
-/* ========== Profile links =========== */
-/* .navbar-profile {
-
-} */
-
 @media (min-width: 545px) {
     .navbar-search {
-        margin-right: 20%;
+        margin-right: 30%;
     }
 }
-
 
 @media (max-width: 768px) {
     .navbar-search {
-        /* max-width: 180px; */
-        margin-left: 1rem;
-    }
-    .nav-search-btn {
-        padding: 0.25rem 0.4rem 0.25rem 0.25rem;
+        max-width: 180px;
+        /* margin-left: 1rem; */
     }
 }
 
-
 @media (min-width: 768px) {
     .navbar-search {
-        margin-right: 45%;
+        /* Only Search bar at this size, pushing slightly on the left */
+        margin-right: 40%;
+        max-width: 220px;
     }
 }
 
@@ -153,10 +145,6 @@
         padding: 0rem;
         border-bottom: solid gray 1px;
     }
-    .navbar-search {
-        max-width: 220px;
-        /* width: 100%; */
-    }
 
     #mainNavDropMenu {
         position:absolute;
@@ -164,14 +152,6 @@
         top: 0;
         min-width: 220px;
     }
-    /* #mainNavDropMenu .nav-link {
-        padding: 0 auto;
-    } */
-
-    /* shows the Media links on navbar desktop */
-    /* .navbar-collapse .navbar-brand{
-        display: block;
-    } */
 }
 
 
@@ -187,13 +167,14 @@
     }
 
     .navbar-collapse {
-        justify-content: center;
+        /* justify-content: right; */
+        width: fit-content;
+
     }
 
     .link-btn:hover {
         transform: scale(1.1);
         transition: transform 1s;
-        
     }
     
     .home-btn:hover {
@@ -202,26 +183,19 @@
     }
 
     .navbar-search {
-        min-width: 200px;
-        /* max-width: 320px; */
+        width: 200px;
         margin-right: 0;
     }
 }
 
 @media (min-width: 1200px) {
     .navbar-layout {
-        gap: 4rem;
-    }
-
-    .navbar-collapse {
-        justify-content: left;
+        gap: 2rem;
     }
 
     .navbar-search {
-        max-width: 280px;
+        max-width: 220px;
+        margin-left: 1.5rem;
+        
     }
-
 }
-
-
-
