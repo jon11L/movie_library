@@ -41,15 +41,34 @@ nav {
     margin: 0px;
 }
 
-/* Mobile size adjustments layout */
-@media (max-width: 768px) {
-    
-    .page-item a {
-        padding: 0.25rem 4px;
-        font-size: 0.9rem;
-    }
-    
+
+/* Scroll down page option selector */
+.pagination-jump {
+    /* padding-right: 1.5rem; */
+    margin-left: 0.5rem;
 }
+
+.pagination-jump select {
+    width: 100%;
+    margin: auto;
+}
+
+#page-jump {
+    padding-right: 1.5rem;
+    /* margin-left: 0.5rem; */
+}
+
+.pagin-info {
+    padding-left: 0.5rem;
+}
+
+
+.page-item a {
+    padding: 0.4rem 0.4rem;
+    border: none;
+}
+
+/* --- Mobile size adjustments layout --- */
 
 
 /* Pass into desktop, shows 5 btns around current page*/
@@ -61,9 +80,9 @@ nav {
         display: inline-block;
     }
 
-    .page-item a {
+    /* .page-item a {
         padding: 0.25rem 5px;
-    }
+    } */
 }
 
 
@@ -84,31 +103,16 @@ nav {
         flex-wrap: wrap;
     }
     .pagination-btns {
-        gap: 1px;
+        gap: 2px;
     }
 
     .page-item a {
         padding: 0.25rem 0.5rem;
     }
 
-}
+    .pagin-info {
+        padding-left: 1rem;
+    }
 
-/* Scroll down pag option selector */
-.pagination-jump {
-    /* padding-right: 1.5rem; */
-    margin-left: 0.5rem;
-}
 
-.pagination-jump select {
-    width: 100%;
-    margin: auto;
-}
-
-#page-jump {
-    padding-right: 1.5rem;
-    /* margin-left: 0.5rem; */
-}
-
-.pagin-info {
-    padding-left: 1rem;
 }

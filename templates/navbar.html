@@ -29,11 +29,11 @@
 			<form class="search-form form-inline" role="search" method="GET" action="{% url 'search:search' %}">
 				<input type="text"
 					class="form-control search-input"
-					placeholder="🔍 search..." 
+					placeholder="search..." 
 					name="title" 
 					aria-label="Search">
 				<button class="submit-btn btn nav-search-btn" type="submit">
-					search
+					🔍
 				</button>
 			</form>
 		</div>
@@ -44,14 +44,14 @@
 			<ul class="navbar-nav ms-lg-1 mt-2">
 
 				<li class="nav-item">
-					<a class="nav-link active d-lg-none " href="{% url 'main:home' %}" aria-label="home page link">
+					<a class="nav-link active d-lg-none" href="{% url 'main:home' %}" aria-label="home page link">
 						<h5 class="link-btn">Home</h5>
 					</a>
 				</li>
 
 				{% if request.user.is_authenticated %}
 				<li class="nav-item">
-					<a class="nav-link active" href="{% url 'user_library:watch_list' request.user.pk %}">
+					<a class="nav-link active me-lg-4 me-xl-4 ms-xl-3" href="{% url 'user_library:watch_list' request.user.pk %}">
 						<h5 class="link-btn">Watchlist</h6>
 					</a>
 				</li>
