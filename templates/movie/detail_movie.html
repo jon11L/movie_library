@@ -20,6 +20,7 @@
                         {% elif movie.created_at != movie.updated_at %}
                         <p><strong>(last updated on {{ movie.updated_at|date:"d-M-y" }})</strong></p>
                         {% endif %}
+                        <p>is active: {{ movie.is_active }}</p>
                     </div>
                     {% endif %}
                     <!-- End of dev purpose -->

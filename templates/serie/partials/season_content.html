@@ -53,7 +53,7 @@
 <section class="episodes">
 
     <div class="episodes-list col-11 col-xl-10">
-        {% for episode in episode_card %}
+        {% for episode in episode_card|slice:":40" %}
         <div style="padding: 0.5rem 0.25rem; border-top: solid black 1px;">
 
             <div class="d-block d-sm-flex " style="flex-wrap: wrap; width: 100%;">

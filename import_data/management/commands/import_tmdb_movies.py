@@ -73,7 +73,6 @@ class Command(BaseCommand):
             # select a date depending on the endpoint and if a date for top pages.
             page = get_page(endpoint)
 
-
             self.stdout.write(
                 f"Fetching movies from '{endpoint}' list, With page n: {page}\n"
             )
@@ -96,6 +95,7 @@ class Command(BaseCommand):
                     f"\n" + "=" * 50 + "\n\n"
                 )
 
+                # process the list of movie to check and create new objects
                 batch = self.process_movie_list(list_movies, imported)
                 imported = batch
 
@@ -125,7 +125,7 @@ class Command(BaseCommand):
                     ))
                 time.sleep(retry*4)
 
-        # If all retries failed, exit early
+        # --- If all retries failed, exit early ---
         if retry == MAX_RETRIES:
             self.stdout.write(
                 self.style.ERROR(
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                     "-- Task ending.\n"
                 )
             )
-            return 
+            return # Stop the function here.
 
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -161,7 +161,10 @@ class Command(BaseCommand):
 
     def process_movie_list(self, list_movies, imported: dict):
         '''
-        Process a batch of movies from TMDB api response.\n
+        Process a batch of movie list from TMDB api response.\n
+        Check if the movie already exist.\n
+        send to check if enough to date to create/update\n
+        
         return the count of imported/saved movies and skipped
         - count, created, updated, skipped
         '''
