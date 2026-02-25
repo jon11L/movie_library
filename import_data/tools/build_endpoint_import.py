@@ -9,10 +9,12 @@ def get_page(endpoint):
     if function run during specific dates. then fetching with Top pages '1 to 5'
     '''
     max = 0
-    prime_date = check_date_prime()
+    prime_date = special_date()
 
-    if prime_date:
+    if prime_date == 1:
         return random.randint(1, 5) # Randomly select a page
+    elif prime_date == 2:
+        return random.randint(6, 25) # Randomly select a page
 
     if endpoint == "now_playing": # Movie
         return random.randint(5, 200)
@@ -26,13 +28,17 @@ def get_page(endpoint):
         return random.randint(1, 500)
 
 
-def check_date_prime():
+def special_date():
     '''
     - Check todays's date and if in selected days return True else False.
     '''
     today = datetime.date.today()
     if today.day in [1, 5, 10, 15, 20, 25]:
-        print(f"-- special days !!!!")
-        return True
+        print(f"--Top special days !!!!")
+        return 1
+    
+    elif today.day in [2, 8, 12, 14, 18, 22, 28]:
+        print(f"--Medium special days !!!!")
+        return 2
 
-    return False
+    return None
