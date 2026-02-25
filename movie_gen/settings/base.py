@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'comment',
     'search',
     'import_data',
-    # 'devtools',  # Custom app for development tools// to remove in Production
+    'devtools',  # Custom app for development tools// to remove in Production
 ]
 
 

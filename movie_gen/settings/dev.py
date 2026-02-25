@@ -17,7 +17,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1'] # place domain names or IP addresses here, e.g. when deploying to production
 
 # Add devtools only in development
-INSTALLED_APPS += ['devtools']
+# INSTALLED_APPS += ['devtools']
 
 print("**using development setting**")
 
