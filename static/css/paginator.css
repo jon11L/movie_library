@@ -1,46 +1,52 @@
 
+/* ==================  Pagination section  ================== */
+/* give some space around */
+.pagination-section {
+    padding: 1rem 0 0rem 0;
+}
+
+
 .pagination-wrapper {
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     /* padding-bottom: 2rem; */
 }
 
 nav {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    
+    flex-direction: row;
+    /* align-items: center; */
+    justify-content: center;
+    flex-wrap: wrap;
+    /* margin: auto; */
 }
 
 .pagination-btns {
     display: flex;
     flex-wrap:nowrap;
-    gap: 0px;
-    justify-content: center;
-    padding: 0;
+    gap: 1px;
     margin: 0;
 }
 
 .pagination-meta {
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     gap: 0.5rem;
     flex-wrap: wrap;
+    margin-top: 0.25rem;
 }
 
 /* Default: mobile-behavior */
 .page-mobile {
     display: inline-block;
-    margin: 0px 0px;
-    
+    margin: 0px;
 }
 
 .page-desktop {
     display: none;
     margin: 0px;
 }
-
 
 /* Scroll down page option selector */
 .pagination-jump {
@@ -62,16 +68,37 @@ nav {
     padding-left: 0.5rem;
 }
 
-
 .page-item a {
-    padding: 0.4rem 0.4rem;
+    padding: 0.5rem 0.4rem;
     border: none;
+    margin-bottom: 0.5rem;
+}
+
+.page-item .direction {
+    padding: 0.5rem 0.5rem;
+    min-width: 1.5rem;
+}
+.page-surround, .page-current {
+    min-width: 2rem;
 }
 
 /* --- Mobile size adjustments layout --- */
+@media (max-width: 568px) {
+    .page-item a {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.9rem;
+    }
 
+}
 
 /* Pass into desktop, shows 5 btns around current page*/
+@media (max-width: 768px) {
+    .page-icon {
+        font-size: x-large; 
+        margin-top: -0.5rem;
+    }
+}
+
 @media (min-width: 768px) {
     .page-mobile {
         display: none;
@@ -79,40 +106,22 @@ nav {
     .page-desktop {
         display: inline-block;
     }
-
-    /* .page-item a {
-        padding: 0.25rem 5px;
-    } */
-}
-
-
-@media (max-width: 1268px) {
-    .pagination-meta {
-        /* padding-right: 1.5rem; */
-        margin-top: 0.6rem;
-    }
-    
 }
 
 /* desktop size adjustments layout */
-/* Wide enough to pass all pagination on the same line */
+@media (min-width: 960px) {
+    .page-icon {
+        font-size: larger; 
+        margin-top: -0.15rem;
+    }
+}
+
+@media (max-width: 1268px) {
+    /* .pagination-meta {
+        margin-top: 0rem;
+    } */
+}
+
+/* desktop size adjustments layout */
 @media (min-width: 1268px) {
-    nav {
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    .pagination-btns {
-        gap: 2px;
-    }
-
-    .page-item a {
-        padding: 0.25rem 0.5rem;
-    }
-
-    .pagin-info {
-        padding-left: 1rem;
-    }
-
-
 }
