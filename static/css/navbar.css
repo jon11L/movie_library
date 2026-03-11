@@ -31,7 +31,6 @@
 }
 
 
-
 /* =========== Media links on Navbar =========== */
 .link-btn:hover, .link-btn:active {
     color: antiquewhite;
@@ -118,7 +117,6 @@
     }
 }
 
-
 /* Mobile screen: navbar is collapsed */
 /* Max to md/medium screen */
 @media (max-width: 991px) {
@@ -128,22 +126,24 @@
 
     /* layout of the Left drop down menu */
     .navbar-collapse {
-        background-color: rgb(90, 87, 87);
-        border: solid 1px whitesmoke;
+        /* background-color: rgb(90, 87, 87); */
+        background-color: rgba(22, 22, 22);
+        border: solid 2px rgb(64, 62, 62);
         border-radius: 0.5em;
     }
 
     .nav-item {
         margin-left: 0.75rem;
+        padding: 0.5rem 0;
     }
-    .nav-link {
-        padding: 0.25rem 0rem;
+    .nav-item .nav-link {
+        padding: 0rem;
         width: fit-content;
     }
 
-    .nav-link h5{
+    .nav-item .nav-link h5, .nav-link a {
         padding: 0rem;
-        border-bottom: solid gray 1px;
+        margin: 0rem;
     }
 
     #mainNavDropMenu {
@@ -151,6 +151,11 @@
         margin-top: 3.25rem;
         top: 0;
         min-width: 220px;
+    }
+
+    .navbar-nav .divider {
+        margin: 0.25rem 0.5rem 0.5rem 0.5rem; 
+        color: antiquewhite;
     }
 }
 
@@ -188,11 +193,11 @@
     }
 }
 
+
 @media (min-width: 1200px) {
     .navbar-layout {
         gap: 2rem;
     }
-
     .navbar-search {
         max-width: 220px;
         margin-left: 1.5rem;

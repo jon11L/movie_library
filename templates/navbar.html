@@ -39,7 +39,7 @@
 		</div>
 
 		<!-- CENTER of the navbar -->
-		<!-- Links of different pages -->
+		<!-- Links of different pages // included in the collapse navbar menu -->
 		<div class="collapse navbar-collapse" id="mainNavDropMenu">
 			<ul class="navbar-nav ms-lg-1 mt-2">
 
@@ -49,15 +49,23 @@
 					</a>
 				</li>
 
+				<hr class="divider">
+
 				{% if request.user.is_authenticated %}
 				<li class="nav-item">
 					<a class="nav-link active me-lg-4 me-xl-4 ms-xl-3" href="{% url 'user_library:watch_list' request.user.pk %}">
-						<h5 class="link-btn">Watchlist</h6>
+						<h5 class="link-btn">Your Watchlist</h5>
+					</a>
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link active me-lg-4 me-xl-4 ms-xl-3" href="#">
+						<h5 class="link-btn" style="color: gray;">Your Watchlist</h5>
 					</a>
 				</li>
 				{% endif %}
 
-				<hr class="divider" style="padding: 0; margin: 0;">
+				<hr class="divider">
 
 				<li class="nav-item">
 					<a class="nav-link active" aria-current="page" href="{% url 'movie:list' %}">
