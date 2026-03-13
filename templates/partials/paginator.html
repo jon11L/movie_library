@@ -18,50 +18,80 @@
                 <ul class="pagination pagination-btns">
                 
                     {% if page_obj.has_previous %}
-                    <li class="page-item direction">
-                        <a href="?{{ query_pagin_url }}&page=1"
-                            hx-get="{{ base_url }}?{{ query_pagin_url }}&page=1"
-                            hx-swap="innerHTML"
-                            hx-target="#media-list" 
-                            hx-push-url="true" 
-                            class="btn btn-outline-info">
-                            <div class="d-flex" style="gap: 0.2rem;"><div class="page-icon">&laquo;</div><div class="d-none d-lg-flex">first </div></div>
+                        <!-- Use class page-mobile and page-desktop to make it better  -->
 
-                        </a>
-                    </li>
-                    <!-- previous page -->
-                    <li class="page-item direction">
-                        <!-- up to sm screen -->
-                        <a class="d-flex d-sm-none btn btn-outline-info"
-                            href="?{{ query_pagin_url }}&page={% if page_obj.number|add:-3 < 1 %}1{% else %}{{ page_obj.number|add:-3 }}{% endif %}" 
-                            hx-get="{{ base_url }}?{{ query_pagin_url }}&page={% if page_obj.number|add:-3 < 1 %}1{% else %}{{ page_obj.number|add:-3 }}{% endif %}" 
-                            hx-swap="innerHTML" 
-                            hx-target="#media-list" 
-                            hx-push-url="true">
-                            <div class="d-flex" style="gap: 0.2rem;">
+                    <div class="page-mobile">
+                        <!-- Design for mobile pages 2 buttons around current page -->
+                        {% if page_obj.number|add:-2 > 1 %}
+                        <li class="page-item direction">
+                            <a href="?{{ query_pagin_url }}&page=1"
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page=1"
+                                hx-swap="innerHTML"
+                                hx-target="#media-list" 
+                                hx-push-url="true" 
+                                class="btn btn-outline-info">
+                                1
+                            </a>
+                        </li>
+
+                        {% if page_obj.number|add:-3 > 1 %}
+                        <!-- previous page -->
+                        <li class="page-item direction">
+                            <a class="btn btn-outline-info"
+                                href="?{{ query_pagin_url }}&page={% if page_obj.number|add:-3 < 1 %}1{% else %}{{ page_obj.number|add:-3 }}{% endif %}" 
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page={% if page_obj.number|add:-3 < 1 %}1{% else %}{{ page_obj.number|add:-3 }}{% endif %}" 
+                                hx-swap="innerHTML" 
+                                hx-target="#media-list" 
+                                hx-push-url="true">
                                 <div class="page-icon">&lsaquo;</div>
-                                <div class="d-none d-lg-flex"> Prev</div>
-                            </div>
-                        </a>
-                    
-                    <!-- From sm screen -->
-                        <a class="d-none d-sm-flex btn btn-outline-info" 
-                            href="?{{ query_pagin_url }}&page={% if page_obj.number|add:-6 < 1 %}1{% else %}{{ page_obj.number|add:-6 }}{% endif %}" 
-                            hx-get="{{ base_url }}?{{ query_pagin_url }}&page={% if page_obj.number|add:-6 < 1 %}1{% else %}{{ page_obj.number|add:-6 }}{% endif %}" 
-                            hx-swap="innerHTML" 
-                            hx-target="#media-list" 
-                            hx-push-url="true">
-                            <div class="d-flex" style="gap: 0.2rem;">
+                            </a>
+                        </li>
+                        <span class="pagin-spacer">..</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
+
+                    <div class="page-desktop">
+                        <!-- Design for Desktop pages 5 buttons around current page -->
+
+                        {% if page_obj.has_previous and page_obj.number|add:-5 > 1 %}
+
+                        <li class="page-item direction">
+                            <a href="?{{ query_pagin_url }}&page=1"
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page=1"
+                                hx-swap="innerHTML"
+                                hx-target="#media-list" 
+                                hx-push-url="true" 
+                                class="btn btn-outline-info">
+                                1
+                            </a>
+                        </li>
+
+                        {% if page_obj.number|add:-6 > 1 %}
+                        <!-- previous page -->
+                        <li class="page-item direction">
+                            <!-- From sm screen -->
+                            <a class="btn btn-outline-info" 
+                                href="?{{ query_pagin_url }}&page={% if page_obj.number|add:-6 < 1 %}1{% else %}{{ page_obj.number|add:-6 }}{% endif %}" 
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page={% if page_obj.number|add:-6 < 1 %}1{% else %}{{ page_obj.number|add:-6 }}{% endif %}" 
+                                hx-swap="innerHTML" 
+                                hx-target="#media-list" 
+                                hx-push-url="true">
                                 <div class="page-icon">&lsaquo;</div>
-                                <div class="d-none d-lg-flex"> Prev</div>
-                            </div>
-                        </a>
-                    </li>
+                            </a>
+                        </li>
+                        
+                        <span class="pagin-spacer">...</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
                     {% endif %}
-                
+
                     <!-- enumerate pages around current page -->
-                    {% for num in desktop_pages %}
                     <!-- Desktop size 5 pages around current-->
+                    {% for num in desktop_pages %}
                     <li class="page-item page-desktop">
                         {% if num == page_obj.number %}
                         <a href="#" class="btn btn-info page-current">{{ num }}</a>
@@ -76,11 +106,10 @@
                         </a>
                         {% endif %}
                     </li>
-                
                     {% endfor %}
                 
-                    {% for num in mobile_pages %}
                     <!-- Mobile size, 2 pages around current-->
+                    {% for num in mobile_pages %}
                     <li class="page-item page-mobile">
                         {% if num == page_obj.number %}
                         <a href="#" class="btn btn-info page-current">{{ num }}</a>
@@ -93,49 +122,85 @@
                     </li>
                     {% endfor %}
 
+
+
+
                     {% if page_obj.has_next %}
                     <!-- Next page -->
-                    <li class="page-item direction">
-                        <a href="?{{ query_pagin_url }}&page={{ page_obj.number|add:3 }}"
+                    
+                    <div class="page-mobile">
+                        {% if page_obj.number|add:3 < page_obj.paginator.num_pages %}
+
+                        <span class="pagin-spacer">..</span>
+
+                        <li class="page-item direction">
+                            <!-- mobile screen -->
+                            <a href="?{{ query_pagin_url }}&page={{ page_obj.number|add:3 }}"
                             hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.number|add:3 }}"
                             hx-swap="innerHTML" 
                             hx-target="#media-list" 
                             hx-push-url="true" 
-                            class="d-flex d-sm-none btn btn-outline-info">
-                            <div class="d-flex" style="gap: 0.2rem;">
-                                <div class="d-none d-lg-flex">Next </div>
-                                <div class="page-icon">&rsaquo;</div>
-                            </div>
-                        </a>
-                        <a href="?{{ query_pagin_url }}&page={{ page_obj.number|add:6 }}"
-                            hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.number|add:6 }}"
-                            hx-swap="innerHTML" 
-                            hx-target="#media-list" 
-                            hx-push-url="true" 
-                            class="d-none d-sm-flex btn btn-outline-info">
-                            <div class="d-flex" style="gap: 0.2rem;">
-                                <div class="d-none d-lg-flex">Next</div> 
-                                <div class="page-icon">&rsaquo;</div>
-                            </div>
-                        </a>
-                    </li>
-                
-                    <!-- Last page -->
-                    <li class="page-item direction">
-                        <a href="?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages }}"
-                            hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages}}"
-                            hx-swap="innerHTML"
-                            hx-target="#media-list"
-                            hx-push-url="true"
                             class="btn btn-outline-info">
+                            <div class="page-icon">&rsaquo;</div>
 
-                            <div class="d-flex" style="gap: 0.2rem;">
-                                <div class="d-none d-lg-flex">Last </div> 
-                                <div class="page-icon">&raquo;</div>
-                            </div>
+                            </a>
+                        </li>
+                        {% endif %}
 
-                        </a>
-                    </li>
+                        {% if page_obj.number|add:2 < page_obj.paginator.num_pages %}
+
+                        <!-- ---- Last page ---- -->
+                        <li class="page-item direction">
+                            <a href="?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages }}"
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages}}"
+                                hx-swap="innerHTML"
+                                hx-target="#media-list"
+                                hx-push-url="true"
+                                class="btn btn-outline-info page-surround">
+                                {{ page_obj.paginator.num_pages }}
+                            </a>
+                        </li>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="page-desktop">
+                        <!-- Design for Desktop pages 5 buttons around current page -->
+                        {% if page_obj.number|add:6 < page_obj.paginator.num_pages %}
+
+                        <span class="pagin-spacer">...</span>
+
+                        <li class="page-item direction">
+                            <!-- Desktop screen -->
+                            <a href="?{{ query_pagin_url }}&page={{ page_obj.number|add:6 }}"
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.number|add:6 }}"
+                                hx-swap="innerHTML" 
+                                hx-target="#media-list" 
+                                hx-push-url="true" 
+                                class="btn btn-outline-info">
+                                <div class="page-icon">&rsaquo;</div>
+                            </a>
+                        </li>
+
+                        {% endif %}
+                        {% if page_obj.number|add:5 < page_obj.paginator.num_pages %}
+
+                        <!-- ---- Last page ---- -->
+                        <li class="page-item direction">
+                            <a href="?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages }}"
+                                hx-get="{{ base_url }}?{{ query_pagin_url }}&page={{ page_obj.paginator.num_pages}}"
+                                hx-swap="innerHTML"
+                                hx-target="#media-list"
+                                hx-push-url="true"
+                                class="btn btn-outline-info page-surround">
+                                {{ page_obj.paginator.num_pages }}
+                            </a>
+                        </li>
+
+                        {% endif %}
+                    </div>
+
                     {% endif %}
 
                 </ul>
