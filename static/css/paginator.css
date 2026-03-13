@@ -26,6 +26,7 @@ nav {
     flex-wrap:nowrap;
     gap: 1px;
     margin: 0;
+    width: fit-content;
 }
 
 .pagination-meta {
@@ -39,7 +40,7 @@ nav {
 
 /* Default: mobile-behavior */
 .page-mobile {
-    display: inline-block;
+    display: flex;
     margin: 0px;
 }
 
@@ -71,32 +72,52 @@ nav {
 .page-item a {
     padding: 0.5rem 0.4rem;
     border: none;
-    margin-bottom: 0.5rem;
+    height: min-content;
+    /* margin-bottom: 0.5rem; */
+    /* align-content: center; */
 }
 
-.page-item .direction {
+/* .page-item .direction {
     padding: 0.5rem 0.5rem;
     min-width: 1.5rem;
-}
-.page-surround, .page-current {
+} */
+/* 
+.direction a{
+    border-radius: 5em;
+} */
+
+/* .page-surround, .page-current {
     min-width: 2rem;
+} */
+
+.pagin-spacer {
+    padding: 0.55rem 0rem 0 0; 
+    color: darkgray;
 }
+
+
+.page-icon {
+    font-size: x-large; 
+    margin: -0.5rem 0.1rem 0 0.1rem;
+}
+
 
 /* --- Mobile size adjustments layout --- */
-@media (max-width: 568px) {
+@media (max-width: 370px) {
     .page-item a {
-        padding: 0.5rem 0.4rem;
-        font-size: 0.9rem;
+        padding: 0.5rem 0.1rem;
     }
-
 }
 
-/* Pass into desktop, shows 5 btns around current page*/
-@media (max-width: 768px) {
-    .page-icon {
-        font-size: x-large; 
-        margin-top: -0.5rem;
+@media (max-width: 568px) {
+    .page-item a {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.9rem;
     }
+}
+
+
+@media (max-width: 768px) {
 }
 
 @media (min-width: 768px) {
@@ -104,15 +125,25 @@ nav {
         display: none;
     }
     .page-desktop {
-        display: inline-block;
+        display: flex;
     }
+    /* .page-item a {
+        padding: 0.5rem 0.5rem;
+    } */
 }
 
 /* desktop size adjustments layout */
-@media (min-width: 960px) {
+/* @media (min-width: 960px) {
     .page-icon {
         font-size: larger; 
         margin-top: -0.15rem;
+    }
+} */
+
+
+@media (min-width: 960px) {
+    .page-item a {
+        min-width: 2rem;
     }
 }
 
