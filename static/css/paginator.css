@@ -5,20 +5,15 @@
     padding: 1rem 0 0rem 0;
 }
 
-
 .pagination-wrapper {
     display: flex;
-    /* justify-content: center; */
-    /* padding-bottom: 2rem; */
 }
 
 nav {
     display: flex;
     flex-direction: row;
-    /* align-items: center; */
     justify-content: center;
     flex-wrap: wrap;
-    /* margin: auto; */
 }
 
 .pagination-btns {
@@ -32,7 +27,6 @@ nav {
 .pagination-meta {
     display: flex;
     justify-content: center;
-    /* align-items: center; */
     gap: 0.5rem;
     flex-wrap: wrap;
     margin-top: 0.25rem;
@@ -49,9 +43,37 @@ nav {
     margin: 0px;
 }
 
+.pagin-info {
+    padding-left: 0.5rem;
+}
+
+/* All buttons pagination (page + navig) */
+.page-item .page-current, .page-item .page-surround {
+    padding: 0.5rem 0.4rem;
+    border: none;
+    height: min-content;
+    min-width: 1.75rem;
+}
+
+.direction a {
+    border: none;
+    height: min-content;
+    min-width: 1.35rem;
+}
+
+.pagin-spacer {
+    padding: 0.55rem 0rem 0 0; 
+    color: darkgray;
+}
+
+.page-icon {
+    font-size: x-large; 
+    margin: -0.5rem 0rem 0 0rem;
+    height: 1.85rem;
+}
+
 /* Scroll down page option selector */
 .pagination-jump {
-    /* padding-right: 1.5rem; */
     margin-left: 0.5rem;
 }
 
@@ -62,60 +84,19 @@ nav {
 
 #page-jump {
     padding-right: 1.5rem;
-    /* margin-left: 0.5rem; */
 }
-
-.pagin-info {
-    padding-left: 0.5rem;
-}
-
-.page-item a {
-    padding: 0.5rem 0.4rem;
-    border: none;
-    height: min-content;
-    /* margin-bottom: 0.5rem; */
-    /* align-content: center; */
-}
-
-/* .page-item .direction {
-    padding: 0.5rem 0.5rem;
-    min-width: 1.5rem;
-} */
-/* 
-.direction a{
-    border-radius: 5em;
-} */
-
-/* .page-surround, .page-current {
-    min-width: 2rem;
-} */
-
-.pagin-spacer {
-    padding: 0.55rem 0rem 0 0; 
-    color: darkgray;
-}
-
-
-.page-icon {
-    font-size: x-large; 
-    margin: -0.5rem 0.1rem 0 0.1rem;
-}
-
 
 /* --- Mobile size adjustments layout --- */
-@media (max-width: 370px) {
-    .page-item a {
-        padding: 0.5rem 0.1rem;
-    }
-}
-
 @media (max-width: 568px) {
-    .page-item a {
+    .page-item .page-current, .page-item .page-surround {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.9rem;
+    }
+    .direction a {
         padding: 0.5rem 0.35rem;
         font-size: 0.9rem;
     }
 }
-
 
 @media (max-width: 768px) {
 }
@@ -127,20 +108,12 @@ nav {
     .page-desktop {
         display: flex;
     }
-    /* .page-item a {
-        padding: 0.5rem 0.5rem;
-    } */
+    .page-icon {
+        height: 2rem;
+    }
 }
 
 /* desktop size adjustments layout */
-/* @media (min-width: 960px) {
-    .page-icon {
-        font-size: larger; 
-        margin-top: -0.15rem;
-    }
-} */
-
-
 @media (min-width: 960px) {
     .page-item a {
         min-width: 2rem;
@@ -148,9 +121,6 @@ nav {
 }
 
 @media (max-width: 1268px) {
-    /* .pagination-meta {
-        margin-top: 0rem;
-    } */
 }
 
 /* desktop size adjustments layout */
