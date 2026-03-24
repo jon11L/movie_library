@@ -410,9 +410,19 @@ Need to reorganize the name or call a parent custom class
 
 .season-btn {
     display: flex; 
-    flex-wrap: wrap; 
-    padding-left: 7%;
+    flex-wrap: nowrap; 
+    /* width: 97%; */
+    max-width: 800px;
+    overflow-x: auto;
+    overflow-wrap: normal;
+    gap: 0.25rem;
+    padding: 0 3% 1.5rem 2%;
 }
+
+.season-container {
+    padding-left: 5%;
+}
+
 
 .episodes{
     padding-top: 2rem;
@@ -559,18 +569,22 @@ Need to reorganize the name or call a parent custom class
 .season-toggle {
     background-color: rgb(61, 8, 20);
     color: bisque;
-    padding: 8px;
+    padding: 0.5rem 1rem;
     cursor: pointer;
     margin-top: 5px;
-    width: 100%;
+    /* width: 100%; */
     text-align: left;
-    font-weight: 500;
+    font-weight: 550;
     border-radius: 0.75em;
+    /* make a 3d depth effect when clicked */
+
 }
 
 .season-toggle.active {
-    background-color:rgb(198, 179, 142);
+    background-color: rgb(252, 246, 217);
     color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
 }
 
 /* ----  display for the seasons and episodes ----- */
