@@ -11,8 +11,9 @@ movievenv
 /venv/
 .venv/
 venv
-.movenv/
 .env
+.movenv/
+.test_env/
 
 # ========== IDE files ==========
 .vscode/
