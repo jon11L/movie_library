@@ -1,26 +1,23 @@
-
-
-
 <!-- display the Trailer and episodes when user click on the season -->
 <hr>
 
-<div class="row" style="padding-top: 0.5rem; margin: auto; width: fit-content;">
+<div class="row" style="padding-top: 0.25rem; margin: auto; width: fit-content;">
     <div class="col-7 col-lg-6" style="text-align: center; margin: auto; max-height: 220px; overflow-y: auto;">
-            {{ season.overview }}
-        </div>
-
-        <div class="col-5" id="season-poster">
-            {% if season.render_poster %}
-            <img src="{{ season.render_poster }}" class="img-fluid rounded"
-            alt="{{ season }}">
-            {% endif %}
-        </div>
-        
+        {{ season.overview }}
     </div>
-    
-    
-    <section id="trailers">
 
+    <div class="col-5" id="season-poster">
+        {% if season.render_poster %}
+        <img src="{{ season.render_poster }}" class="img-fluid rounded" alt="{{ season }}">
+        {% endif %}
+    </div>
+
+</div>
+
+
+<section id="trailers">
+
+    {% if season.trailers %}
 
     <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
         <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
@@ -29,7 +26,6 @@
     <div class="outer-trailer">
 
         <div class="display-trailer">
-            {% if season.trailers %}
 
             {% for trailer in season.trailers|slice:"0:4" %}
             <div class="trailer-wrapper" data-video-id="{{ trailer.key }}">
@@ -41,12 +37,9 @@
             </div>
             {% endfor %}
 
-            {% else %}
-            <div style="padding-top: 12.5rem;"></div>
-            {% endif %}
         </div>
     </div>
-    
+    {% endif %}
 
 </section>
 
@@ -58,8 +51,8 @@
 
             <div class="d-block d-sm-flex " style="flex-wrap: wrap; width: 100%;">
                 <p class="episode-header"><strong>
-                    {{ episode.number }} - {{ episode.title }} 
-                </strong></p>
+                        {{ episode.number }} - {{ episode.title }}
+                    </strong></p>
                 <ul>
                     <li style="margin-left: -0.5rem;">
                         <small>{{ episode.length }} -- (released on {{episode.release_date}})</small>
@@ -71,7 +64,7 @@
                 <!-- Banner image -->
                 {% if episode.banner %}
                 <div class="col-12 col-md-4 col-xl-4 col-xxl-3" style="text-align: center;">
-                    <img  src="{{ episode.banner }}" class="img-fluid rounded episode-img" alt="Banner">
+                    <img src="{{ episode.banner }}" class="img-fluid rounded episode-img" alt="Banner">
                 </div>
                 {% endif %}
                 <!-- episode overview -->
@@ -85,6 +78,3 @@
         {% endfor %}
     </div>
 </section>
-
-
-

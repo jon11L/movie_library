@@ -32,7 +32,7 @@
                 
                 {% if serie %}
                 <!-- Main card for Serie - contains Season and Episode data -->
-                <div class="card col-12 col-sm-12" style="margin: auto; border-radius: 0.5em;">
+                <div class="card col-12 col-sm-12 col-md-10" style="margin: auto; border-radius: 0.5em;">
                     
                     <section id="serie-detail-section">
 
@@ -97,7 +97,7 @@
                                     <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
                                         <p class="card-text"><strong>Overview:</strong></p>
                                         {% if serie.overview %}
-                                        <p style="min-height: 100px; max-height: 200px; overflow-y: auto; padding: 0 0.5rem;">{{ serie.overview }}</p>
+                                        <p style="min-height: 100px; max-height: 200px; overflow-y: auto; padding: 0 0.5rem; scrollbar-width: thin;">{{ serie.overview }}</p>
                                         {% else %}
                                         <p>No description available.</p>
                                         {% endif %}
@@ -134,7 +134,7 @@
                                             <li class="list-group-item casting">
                                                 <p><strong>Casting:</strong></p>
                                                 {% if main_cast %}
-                                                <div style="max-height: 200px; overflow-y: auto;">
+                                                <div style="max-height: 200px; overflow-y: auto; scrollbar-width: thin;">
                                                     {% for cast in main_cast %}
                                                         {% if not cast.role %}
                                                         <p style="margin: auto;">{{ cast.name }}</p>
@@ -191,37 +191,47 @@
                         
                     </section>
 
-                
+
                     <!-- ============ Display the seasons here and episodes =============== -->
-                    <section class="season-episode-content" style="width: 93%;">
+                    <section class="season-episode-content" style="width: 100%;">
 
                         <div class="season-container">
-                            <div style="padding: 1rem 0 0 6%;">
-                                <h5 style="color: inherit;">Seasons:</h5>
+                            <div style="padding: 1rem 0 0 5%;">
+                                <h5 style="color: inherit; font-weight: 600; margin: 0;">Seasons:</h5>
                             </div>
                         
-                            <div class="season-btn">
-                                <!-- try to not display season if no episode are present -->
-                                <!-- Button trigger htmx to get the season&episode's data. Render then in #season-content -->
-                                {% for season in seasons %}
-                                {% if season.episodes != None %}
-                                <div style="margin-left: 0rem; min-width: fit-content;">
+                            <div class="season-scroll-wrapper d-flex">
+                                <button class="season-arrow season-arrow-left" onclick="previousSeasons(this.nextElementSibling, 100)" aria-label="Scroll left">
+                                    &#8249;
+                                </button>
+
+                                <div class="season-btns">
+                                    <!-- try to not display season if no episode are present -->
+                                    <!-- Button trigger htmx to get the season&episode's data. Render then in #season-content -->
+                                    {% for season in seasons %}
+                                    {% if season.episodes != None %}
+                                    <!-- <div style="margin-left: 0rem; min-width: fit-content;"> -->
+                                        
+                                        <button class="season-toggle" 
+                                        data-season-id="{{ season.id }}" 
+                                        hx-get="{% url 'serie:season_data' season.id %}"
+                                        hx-swap="innerHTML"
+                                        hx-target="#season-content">
+                                            {{ season }}
+                                        </button>
+                                    <!-- </div> -->
                                     
-                                    <button class="season-toggle" 
-                                    data-season-id="{{ season.id }}" 
-                                    hx-get="{% url 'serie:season_data' season.id %}"
-                                    hx-swap="innerHTML"
-                                    hx-target="#season-content">
-                                        {{ season }}
-                                    </button>
+                                    {% endif %}
+                                    {% endfor %}
                                 </div>
-                                
-                                {% endif %}
-                                {% endfor %}
+            
+                                <button class="season-arrow season-arrow-right" onclick="nextSeasons(this.previousElementSibling, 100)" aria-label="Scroll right">
+                                    &#8250;
+                                </button>
                             </div>
 
                         </div>
-                        <br>
+                        <!-- <br> -->
                         
                         <!-- Empty container for htmx -->
                         <div id="season-content">
@@ -280,6 +290,56 @@
 
 
 <script>
+    // Create arrow button to scroll for the overflow on seasons buttons.
+
+    // const seasonButtonsList = document.querySelectorAll('.season-btns');
+    function nextSeasons(container, scrollDistance){
+        container.scrollBy({ left: scrollDistance, behavior: "smooth"})
+    }
+
+    function previousSeasons(container, scrollDistance){
+        container.scrollBy({ left: -scrollDistance, behavior: "smooth"})
+    }
+
+    function updateSeasonArrows(wrapper) {
+        const scroller = wrapper.querySelector('.season-btns');
+        const leftBtn  = wrapper.querySelector('.season-arrow-left');
+        const rightBtn = wrapper.querySelector('.season-arrow-right');
+
+        const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
+
+        if (!hasOverflow) {
+            leftBtn.classList.add('season-arrow-hidden');
+            rightBtn.classList.add('season-arrow-hidden');
+            return;
+        }
+
+        // +/- 1px tolerance for subpixel rounding
+        const atStart = scroller.scrollLeft <= 1;
+        const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+
+        leftBtn.classList.toggle('season-arrow-hidden', atStart);
+        rightBtn.classList.toggle('season-arrow-hidden', atEnd);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.querySelector('.season-scroll-wrapper');
+        if (!wrapper) return;
+    
+        const scroller = wrapper.querySelector('.season-btns');
+    
+        // Initial state
+        updateSeasonArrows(wrapper);
+    
+        // Update on scroll
+        scroller.addEventListener('scroll', () => updateSeasonArrows(wrapper));
+    
+        // Update on resize (e.g. screen resize, responsive breakpoint changes)
+        const ro = new ResizeObserver(() => updateSeasonArrows(wrapper));
+        ro.observe(scroller);
+    });
+
+
     // ------------- Display the seasons Trailers and episodes when clicked --------------
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains('season-toggle')) {
@@ -293,7 +353,6 @@
                 });
         }
     });
-
 
 </script>
 
