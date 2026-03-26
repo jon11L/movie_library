@@ -216,9 +216,6 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-
-
-
 /* ================== Home page  ====================*/
 
 /* === Banderol on homepage ==== */
@@ -369,7 +366,6 @@ Need to reorganize the name or call a parent custom class
     align-items: center;
     gap: 0.25rem;
     padding: 0rem 0;
-    align-items: center;
     /* justify-content: space-between; */
 }
 
@@ -392,40 +388,52 @@ Need to reorganize the name or call a parent custom class
     /* position: relative;
     z-index: 2; */
     transition: background-color 0.2s ease;
+    opacity: 75%;
+
 }
 
-.season-arrow:hover {
+.season-arrow:hover  {
     background-color: rgb(48, 46, 46);
     color: rgb(224, 185, 57);
     border: solid 1px rgb(224, 185, 57);
     transition: background-color 0.2s ease-in;
+    transform: scale(1.25);
+    opacity: 95%;
 }
 
-.season-arrow-hidden {
-    opacity: 35%;
+.season-arrow--hidden {
+    opacity: 0%;
     pointer-events: none; /* prevents clicking through an invisible button */
 }
 
-.season-arrow-left {
+.season-arrow--left {
     padding-left: 4px;
+    position: relative;
+    z-index: 5;
+    left: 20px;
+    /* opacity: 75%; */
 }
-.season-arrow-right {
+.season-arrow--right {
     padding-right: 4px;
+    position: relative;
+    z-index: 5;
+    right: 20px;
+    /* opacity: 75%; */
 }
 
 .season-btns {
     display: flex; 
     flex-wrap: nowrap; 
     /* width: 97%; */
-    max-width: 800px;
+    max-width: 600px;
     padding: 0.5rem 0 1.5rem 0;
     overflow-x: auto;
     overflow-wrap: normal;
     gap: 0.25rem;
     scroll-snap-type: x mandatory;
     /* scrollbar-width: none; */
-    /* z-index: 1;
-    position: relative; */
+    z-index: 1;
+    position: relative;
     /* border: saddlebrown solid 1px; */
 }
 
@@ -447,14 +455,11 @@ Need to reorganize the name or call a parent custom class
     /* make a 3d depth effect when clicked */
 }
 
-
 .season-toggle.active {
     background-color: rgb(252, 246, 217);
     color: black;
     transition: background-color 0.3s ease, color 0.3s ease;
-
 }
-
 
 #season-poster img {
     text-align: left;
@@ -606,8 +611,6 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-
-
 /* ----  display for the seasons and episodes ----- */
 
 .trailer-episode-data {
@@ -734,27 +737,40 @@ Need to reorganize the name or call a parent custom class
 }
 
 
+/* ============== list media card -- That displays rows of Movie/Ser  ============ */
+/* Only for lists pages. Different from sample like home page.  */
+
+.media-grid {
+    justify-content: center;
+    border: solid 2px;
+    border-radius: 2em;
+    padding: 1% 1.5%;
+}
 
 /* == list media cards ==  */
 .media-card{
     margin: 5% 0% 5% 0;
+    border-radius: 0.25em;
+    transition: transform 0.5s ease-out;
 }
 
 .media-card:hover{
     /* box-shadow: 0.25rem 0.25rem 0.25rem rgba(4, 100, 100, 0.2), -0.25rem -0.25rem 0.25rem wheat; */
-    border-radius: 0.5em;
-    transform: scale(1.1);
-    transition: transform 0.5s ease-out;
+    transform: translateY(2%) scale(1.125);
+    /* transform: translateY(3%); */
 }
 
+/* .media-card:hover > .media-grid{
+    padding: 20% 5%;    
+} */
 
 /* ==== vote and users buttons on Media list ==== */
 .vote-button-list {
     display: flex;
     justify-content: space-between;
     background-color:  rgba(37, 36, 36, 0.500); 
-    border-top-left-radius: 0.5em; 
-    border-top-right-radius: 0.5em;
+    border-top-left-radius: 0.25em; 
+    border-top-right-radius: 0.25em;
     align-items: center;
     z-index: 0;
 }
@@ -820,7 +836,6 @@ Need to reorganize the name or call a parent custom class
     animation: pulse 0.8s ease;
 }
 
-
 /* ============ Watchlist button ======================== */
 /*  Before hovering over the watch button make it appear slightly below and hidden  */
 /* behind the poster image */
@@ -845,7 +860,6 @@ Need to reorganize the name or call a parent custom class
     background-color: lightgray;
     border-radius: 0.75em;
 }
-
 
 /* ============== For images in movie/serie list =========================== */
 /* ---------- Images size settings ------------- */
@@ -872,54 +886,60 @@ Need to reorganize the name or call a parent custom class
     z-index: 5;
 }
 
-.poster-wrapper:hover{
-    box-shadow: 0.3rem 0.3rem 0.5rem rgba(4, 100, 100, 0.2), -0.3rem -0.3rem 0.3rem wheat;
-    /* border-radius: 0.5em; */
-    /* transform: scale(1.1); */
-    /* transition: transform 0.5s ease-out; */
+.media-card:hover .poster-wrapper{
+    box-shadow: 0.3rem 0.3rem 0.4rem rgba(4, 100, 100, 0.4), -0.3rem -0.3rem 0.3rem wheat;
 }
 
-
-/* ============== list media card -- That displays rows of Movie/Ser  ============ */
-/* Only for lists pages. Different from sample like home page.  */
-.media-grid {
-    justify-content: center;
-    border: solid 2px;
-    border-radius: 2em;
-    padding: 1% 1.5%;
-}
 
 /* Title on media grid card /list */
 .list-media-title {
-    margin-top: 0.2rem;
-    padding-left: 0.2rem;
+    /* margin-top: 0.2rem; */
+    /* padding-top: 0.2rem; */
+    padding: 0.5% 0 0 0.2rem;
     position: relative;
     z-index: 0;
-    /* margin-top:-1.2rem;  */
-    /* background-color: rgba(10, 10, 10, 0.8); */
-    /* border-bottom-left-radius: 0.25em; */
-    /* border-bottom-right-radius: 0.25em; */
-    /* overflow-inline:auto; */
-    /* overflow-wrap:break-word;  */
-    /* height: 2rem; */
-}
-
-/* Move the title up into the bottom of the poster when hovering over */
-.list-media-title:hover {
-    /* transform: translateY(-115%); */
-    transition: transform 0.75s ease-out;
-    background-color: rgba(10, 10, 10, 0.8);
-    /* border-radius: 0.25em; */
-}
-
-
-.list-media-title h6 {
-    /* color: rgb(192, 190, 99); */
-    color: rgb(224, 185, 57);
+    white-space: nowrap;
+    overflow: hidden;
+    height: 1.5rem;
+    transition: transform 0.40s ease-out ;
     width: 100%;
 }
 
+/* Move the title up into the bottom of the poster when hovering over */
+.media-card:hover .list-media-title {
+    transform: translateY(-100%);
+    background-color: rgba(10, 10, 10, 0.8);
+    /* transition: background-color 0.4s ease-in-out; */
+    border-radius: 0.35em;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0 0.3rem 0.2rem;
+    /* margin: 0.3rem 0rem; */
+}
 
+.list-media-title h6 {
+    color: rgb(224, 185, 57);
+    display: flex;
+    align-items: center;
+}
+
+.media-card:hover .list-media-title h6 {
+    font-weight: 550;
+    font-size: 95%;
+}
+
+@media (max-width: 425px) {
+    .media-card:hover .list-media-title h6 {
+        font-weight: 550;
+        font-size: 90%;
+    }
+}
+
+@media (min-width: 992px) {
+    .list-media-title {
+        height: 1.75rem;
+    }
+}
 
 
 /* ================= REGISTER // LOGIN PAGES =============== */
