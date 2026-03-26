@@ -115,16 +115,13 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="" style="width: fit-content;">
-                                            <a href="{% url 'movie:detail' slug=movie.slug %}"
-                                                style="text-decoration: none;">
+                                        <div class="list-media-title">
+                                            <a href="{% url 'movie:detail' slug=movie.slug %}" style="text-decoration: none;">
                                                 <!-- How to fix title to one line only. and use 3dots if title longer? -->
-                                                <div class="list-media-title">
-                                                    <h6>{{movie.title|slice:"0:28" }}</h6>
-                                                </div>
+                                                <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
-
+                                                
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -181,12 +178,10 @@
                                         </div>
 
 
-                                        <div class="" style="width: fit-content;">
+                                        <div class="list-media-title">
                                             <a href="{% url 'serie:detail' slug=serie.slug %}"
                                                 style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{serie.title|slice:"0:28" }}</h6>
-                                                </div>
+                                                <h6>{{serie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
 
@@ -272,21 +267,14 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="" style="width: fit-content;">
+                                        <div class="list-media-title">
                                             {% if item.type == 'movie' %}
-                                            <a href="{% url 'movie:detail' slug=item.object.slug %}"
-                                                style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{item.object.title|slice:"0:28" }}</h6>
-                                                </div>
+                                            <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none;">
+                                                <h6>{{item.object.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% else %}
-                                            <a href="{% url 'serie:detail' slug=item.object.slug %}"
-                                                style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{item.object.title|slice:"0:28" }}</h6>
-                                                </div>
-
+                                            <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
+                                                <h6>{{item.object.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% endif %}
                                         </div>
@@ -354,12 +342,10 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="" style="width: fit-content;">
+                                        <div class="list-media-title">
                                             <a href="{% url 'movie:detail' slug=movie.slug %}"
                                                 style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{movie.title|slice:"0:28" }}</h6>
-                                                </div>
+                                                <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
 
@@ -419,12 +405,9 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="" style="width: fit-content;">
-                                            <a href="{% url 'serie:detail' slug=serie.slug %}"
-                                                style="text-decoration: none;">
-                                                <div class="list-media-title">
+                                        <div class="list-media-title">
+                                            <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
                                                     <h6>{{serie.title|slice:"0:28" }}</h6>
-                                                </div>
                                             </a>
                                         </div>
 
@@ -479,8 +462,8 @@
                                                         class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                                 </button>
                                             </div>
-
                                         </div>
+
                                         <div class="poster-wrapper" title="{{ movie.render_genre}}">
                                             {% if movie.render_poster %}
                                             <img src="{{ movie.render_poster }}" alt="{{ movie.title }} poster"
@@ -492,12 +475,10 @@
                                         </div>
 
 
-                                        <div class="" style="width: fit-content;">
+                                        <div class="list-media-title">
                                             <a href="{% url 'movie:detail' slug=movie.slug %}"
                                                 style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{movie.title|slice:"0:28" }}</h6>
-                                                </div>
+                                                <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
 
@@ -542,8 +523,8 @@
                                                         class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
                                                 </button>
                                             </div>
-
                                         </div>
+
                                         <div class="poster-wrapper" title="{{ movie.render_genre}}">
                                             {% if serie.render_poster %}
                                             <img src="{{ serie.render_poster }}" alt="{{ serie.title }} poster"
@@ -554,12 +535,9 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="" style="width: fit-content;">
-                                            <a href="{% url 'serie:detail' slug=serie.slug %}"
-                                                style="text-decoration: none;">
-                                                <div class="list-media-title">
-                                                    <h6>{{serie.title|slice:"0:28" }}</h6>
-                                                </div>
+                                        <div class="list-media-title">
+                                            <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
+                                                <h6>{{serie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
 
@@ -573,7 +551,7 @@
                         {% endif %}
 
 
-                        {% if not movies_count or not series_count %}
+                        {% if not movies_count and not series_count %}
                         <div class="mt-5" style="text-align: center; color: antiquewhite;">
                             <h2>No Media or database found!</h2>
                         </div>

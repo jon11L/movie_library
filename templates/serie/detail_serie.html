@@ -32,7 +32,7 @@
                 
                 {% if serie %}
                 <!-- Main card for Serie - contains Season and Episode data -->
-                <div class="card col-12 col-sm-12 col-md-10" style="margin: auto; border-radius: 0.5em;">
+                <div class="card col-12 col-sm-12 col-lg-11 col-xl-10" style="margin: auto; border-radius: 0.5em;">
                     
                     <section id="serie-detail-section">
 
@@ -196,12 +196,12 @@
                     <section class="season-episode-content" style="width: 100%;">
 
                         <div class="season-container">
-                            <div style="padding: 1rem 0 0 5%;">
+                            <div style="padding: 1rem 0 0 3%;">
                                 <h5 style="color: inherit; font-weight: 600; margin: 0;">Seasons:</h5>
                             </div>
                         
                             <div class="season-scroll-wrapper d-flex">
-                                <button class="season-arrow season-arrow-left" onclick="previousSeasons(this.nextElementSibling, 100)" aria-label="Scroll left">
+                                <button class="season-arrow season-arrow--left" onclick="previousSeasons(this.nextElementSibling, 200)" aria-label="Scroll left">
                                     &#8249;
                                 </button>
 
@@ -225,13 +225,12 @@
                                     {% endfor %}
                                 </div>
             
-                                <button class="season-arrow season-arrow-right" onclick="nextSeasons(this.previousElementSibling, 100)" aria-label="Scroll right">
+                                <button class="season-arrow season-arrow--right" onclick="nextSeasons(this.previousElementSibling, 200)" aria-label="Scroll right">
                                     &#8250;
                                 </button>
                             </div>
 
                         </div>
-                        <!-- <br> -->
                         
                         <!-- Empty container for htmx -->
                         <div id="season-content">
@@ -303,14 +302,17 @@
 
     function updateSeasonArrows(wrapper) {
         const scroller = wrapper.querySelector('.season-btns');
-        const leftBtn  = wrapper.querySelector('.season-arrow-left');
-        const rightBtn = wrapper.querySelector('.season-arrow-right');
+        const leftBtn  = wrapper.querySelector('.season-arrow--left');
+        const rightBtn = wrapper.querySelector('.season-arrow--right');
+
+        // explaination of the logic: if there is no overflow, hide both arrows.
+        //  If there is overflow, hide left arrow if at start, hide right arrow if at end, show both otherwise.
 
         const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
 
         if (!hasOverflow) {
-            leftBtn.classList.add('season-arrow-hidden');
-            rightBtn.classList.add('season-arrow-hidden');
+            leftBtn.classList.add('season-arrow--hidden');
+            rightBtn.classList.add('season-arrow--hidden');
             return;
         }
 
@@ -318,8 +320,8 @@
         const atStart = scroller.scrollLeft <= 1;
         const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
 
-        leftBtn.classList.toggle('season-arrow-hidden', atStart);
-        rightBtn.classList.toggle('season-arrow-hidden', atEnd);
+        leftBtn.classList.toggle('season-arrow--hidden', atStart);
+        rightBtn.classList.toggle('season-arrow--hidden', atEnd);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
