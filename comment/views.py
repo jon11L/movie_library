@@ -20,7 +20,7 @@ def create_comment(request):
     This will be handle with Fetch api from Js between the front and back-end
     to display the new post without page reload.
     '''
-        # if user is Not logged in, it a message will pop up
+    # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:
         print(f"\n* Unauthorised acces: User {request.user} tried to access the comment creation page *\n")
         return JsonResponse({
@@ -44,7 +44,10 @@ def create_comment(request):
                 comment.user = request.user
                 print(f"form contains:")
                 comment.save() # save the comment to the database
-                print(f"{comment.body}\n-contentType: '{comment.kind}' -- title: '{comment.content_object}''")
+                print(
+                    f"form contains: {comment.body}\n"
+                    f"-On media: ({comment.kind})-- {comment.content_object}"
+                )
 
                 context = {
                     'comment': comment,
@@ -54,7 +57,7 @@ def create_comment(request):
                 comment_html = render_to_string('comment/block_comment.html',
                                                 context=context, request=request
                                                 )
-                
+
                 # message = f"Comment posted successfully!"
                 print(f"comment: {comment.body} was suscessfully posted by {request.user}!")
                 return JsonResponse({
@@ -66,13 +69,13 @@ def create_comment(request):
             else:
                 print(f"An error occured trying to save the comment")
                 print(f"form.errors: {form.errors}")
-                
+
                 # When an error occured, dispaly the error message.
                 message = f'Form submitted Invalid!'
                 return JsonResponse({'success': False,
                                     'error': message
                                     })
-            
+
         except Exception as e:
             print(f"**An error occured. Error**: \n{e}")
 

@@ -621,16 +621,49 @@ Need to reorganize the name or call a parent custom class
 }
 
 
+
+
 /* =================== Comment form ============================= */
+.comment-post-section {
+    width: 95%;
+    max-width: 1000px;
+    margin: auto;
+}
+
 .comment-form {
     background-color: black;
     color: white;
     border: 1px solid #ccc;
     padding: 10px;
-    width: 100%;
-    border-radius: 5px;
+    /* width: 100%; */
+    border-radius: 0.5em;
 }
 
+.comment-block {
+    width: 100%;
+    max-width: 800px;
+    margin: auto; 
+    margin-bottom: 1em;
+    border: solid 4px rgb(21, 49, 49); 
+    border-radius: 1em; 
+}
+
+.comment-buttons{
+    margin-top: auto; 
+    margin-left: auto; 
+    border: solid 1px lightgrey;
+    border-radius: 0.2em;
+    border-bottom: none; 
+    border-right: none;
+}
+
+.comment-buttons i {
+    color: lightgray;
+}
+
+.comment-buttons i:hover {
+    transform: scale(1.2);
+}
 
 /* ================== SEARCH PAGE ======================== */
 /* ------ SEARCH filter form / Page ----- */

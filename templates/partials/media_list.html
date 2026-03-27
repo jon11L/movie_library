@@ -80,7 +80,7 @@
                 </a>
                 {% elif item.type == 'serie' %}
                 <a href="{% url 'serie:detail' slug=item.slug %}" style="text-decoration: none;">
-                    <h6 class="" style="">{{ item.title|slice:":35" }}</h6>
+                    <h6 class="">{{ item.title|slice:":35" }}</h6>
                 </a>
                 {% endif %}
             </div>

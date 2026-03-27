@@ -9,7 +9,7 @@
 <form action="" id="comment-form" method="POST" style="margin-top: 10px;" label="">
     {% csrf_token %}
     
-    <div class="row" style="width: 80%; margin: auto; ">
+    <div class="row" style="margin: auto; ">
         {{ form.body }}
         <button type="submit"
             id="submit_new_comment"
