@@ -222,10 +222,9 @@ Need to reorganize the name or call a parent custom class
 .banderol {
     /* background-color: rgb(56, 9, 16); */
     background-color: rgb(40, 2, 7);
-
     text-align: center;
     padding: 0.75rem;
-    margin: 2.5% 0 1% 0;
+    margin: 1rem 0;
     border-radius: 2em;
 }
 
@@ -279,6 +278,8 @@ Need to reorganize the name or call a parent custom class
     .media-info-row-1 .casting {
         margin: 0.5rem 0.25rem 0.5rem 0.5rem;
     }
+
+
 }
 
 .detail-vote-avg-count {
@@ -777,12 +778,12 @@ Need to reorganize the name or call a parent custom class
     justify-content: center;
     border: solid 2px;
     border-radius: 2em;
-    padding: 1% 1.5%;
+    padding: 1.25rem 1.5% 0 1.5%;
 }
 
 /* == list media cards ==  */
 .media-card{
-    margin: 5% 0% 5% 0;
+    margin: 0.75rem 0% 1rem 0;
     border-radius: 0.25em;
     transition: transform 0.5s ease-out;
 }
@@ -905,8 +906,6 @@ Need to reorganize the name or call a parent custom class
     border-radius: 0.5em; 
     align-items: center;
     justify-content: center;
-    /* overflow: hidden; */
-  /* background-color: #111; fallback bg */
 }
 
 .poster-wrapper img {
@@ -923,37 +922,41 @@ Need to reorganize the name or call a parent custom class
     box-shadow: 0.3rem 0.3rem 0.4rem rgba(4, 100, 100, 0.4), -0.3rem -0.3rem 0.3rem wheat;
 }
 
-
 /* Title on media grid card /list */
 .list-media-title {
     /* margin-top: 0.2rem; */
     /* padding-top: 0.2rem; */
-    padding: 0.5% 0 0 0.2rem;
+    /* padding: 0.5% 0 0 0.2rem; */
+    width: 100%;
+    height: 1.5rem;
+    padding: 0.3rem 0 0.3rem 0.2rem;
+    border-radius: 0.35em;
+    background-color: rgba(10, 10, 10, 0.4);
     position: relative;
     z-index: 0;
     white-space: nowrap;
     overflow: hidden;
-    height: 1.5rem;
-    transition: transform 0.40s ease-out ;
-    width: 100%;
+    /* transform: translateY(-100%); */
+    margin-top: -1.5rem;
+    transition: transform 0.40s ease-out;
+    transition: background-color 0.6s ease-out ;
+    align-items: center;
+    /* justify-content: center; */
 }
 
 /* Move the title up into the bottom of the poster when hovering over */
 .media-card:hover .list-media-title {
-    transform: translateY(-100%);
-    background-color: rgba(10, 10, 10, 0.8);
-    /* transition: background-color 0.4s ease-in-out; */
-    border-radius: 0.35em;
-    justify-content: center;
-    align-items: center;
-    padding: 0.3rem 0 0.3rem 0.2rem;
-    /* margin: 0.3rem 0rem; */
+    /* transform: translateY(-100%); */
+    background-color: rgba(10, 10, 10, 0.85);
+    /* transition: background-color 0.40s ease-out ; */
 }
 
 .list-media-title h6 {
     color: rgb(224, 185, 57);
     display: flex;
     align-items: center;
+    transition:  font-weight 0.6s ease-out;
+    transition: font-size 0.60s ease-out;
 }
 
 .media-card:hover .list-media-title h6 {
@@ -964,14 +967,14 @@ Need to reorganize the name or call a parent custom class
 @media (max-width: 425px) {
     .media-card:hover .list-media-title h6 {
         font-weight: 550;
-        font-size: 90%;
+        font-size: 91%;
     }
 }
 
 @media (min-width: 992px) {
-    .list-media-title {
+    /* .list-media-title {
         height: 1.75rem;
-    }
+    } */
 }
 
 
