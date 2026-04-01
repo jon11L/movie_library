@@ -29,17 +29,10 @@ function createComment() {
             // If the content_type is movie assign the value objectID to a new 'movie' variable ,and serie as None
             // create a new key/value pair in the formData object to send it to the backend
             // grab the data from the button and and pass it in the form
-            if (contentType === 'movie') {
-                formData.append('movie', objectId);
-                // formData.append('serie', '');
-                console.log(`It's a movie comment, movie id: ${objectId}`);
-            }
-            // If the content_type is serie assign the value objectID to a new 'serie' variable ,and movie as None
-            else if (contentType === 'serie') {
-                formData.append('serie', objectId);
-                // formData.append('movie', '');
-                console.log(`It's a serie comment, serie id: ${objectId}`);
-            }
+
+
+            console.log(`commend made on a ${contentType}, id: ${objectId}`);
+            formData.append(contentType, objectId);
             
             console.log(`datas stored in 'formData' sending the request by POST`);
             // send Ajax request with Fetch api
@@ -76,11 +69,11 @@ function createComment() {
                     const messageContainer = document.getElementById('comment-form');
                     const alert = document.createElement('div');
                     alert.className = 'alert alert-success alert-dismissible fade show';
-                    // alert.style = 'width: fit-content; margin: auto; z-index: 101; position: relative;';
                     alert.style = 'width: fit-content; margin: auto;';
                     alert.innerHTML = `
                         Comment posted!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
                     `;
                     // messageContainer.appendChild(alert);
                     messageContainer.insertAdjacentElement('beforeend', alert);

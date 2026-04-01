@@ -6,7 +6,7 @@ function editComment() {
     function closeAllEdits() {
         // Prevent from opening several edit comment form, Ensure one Edit form at a time 
         document.querySelectorAll('.edit-comment-block').forEach(div => div.style.display = 'none');
-        document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'block');
+        document.querySelectorAll('.comment-buttons').forEach(div => div.style.display = 'flex');
         document.querySelectorAll('.comment-body').forEach(div => div.style.display = 'block');
     }
     

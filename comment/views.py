@@ -59,6 +59,7 @@ def create_comment(request):
                                                 )
 
                 # message = f"Comment posted successfully!"
+                # Comment pop succes message handle on the frontend.
                 print(f"comment: {comment.body} was suscessfully posted by {request.user}!")
                 return JsonResponse({
                     'success': True,
@@ -99,16 +100,28 @@ def delete_comment(request, pk):
             if request.method == "DELETE":
                 print(f"request.user: {request.user}")
                 print(f"request.method: {request.method}")
-                
+
                 print(f"comment to delete: {comment}")
                 comment.delete()
                 # messages.success(request, "Comment deleted successfully")
-                return JsonResponse({'success': True, 'message': f'Comment of {request.user} was deleted.'}, status=200)
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "message": f"Your comment was succesfully deleted.",
+                    },
+                    status=200,
+                )
 
         except Exception as e:
             print(f"Error in trying to delete a comment\n Error: {e}")
             # messages.error(request, "The comment does not exist or you are not the owner")
-            return JsonResponse({'success': False, 'message': f'Comment of {request.user} could not be deleted.'}, status=404)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": f"an error occured, your comment could not be deleted.",
+                },
+                status=404,
+            )
 
 
 @timer
