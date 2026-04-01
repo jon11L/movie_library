@@ -32,7 +32,7 @@
             <main class="custom-col-9 main-wrapper">
 
                 {% if movie %}
-                <div class="card col-12 col-sm-12 col-lg-11 col-xl-10" style="margin: auto; border-radius: 0.5em;">
+                <div class="card col-12" style="margin: auto; border-radius: 0.5em; max-width: 1200px;">
 
                     <section id="movie-detail-section">
 
@@ -241,11 +241,11 @@
                 <!------- Comment Post form -------->
                 <section class="comment-post-section">
                     {% include "comment/comment_form.html" %}
-                <!-- </section> -->
+                </section>
                 <br>
 
                 <!--------- Comment Objects Section here -------->
-                <!-- <section  class="comment-list-section"> -->
+                <section class="comment-list-section">
                     {% if comments %}
 
                     {% for comment in comments %}

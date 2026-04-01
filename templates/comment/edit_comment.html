@@ -1,12 +1,12 @@
 {% load static %}
 
 
-<div class="edit-comment-block" style="display: none; padding-left: 12px; width: 90%;">
+<div class="edit-comment-block" style="display: none; margin: auto; width: 90%;">
     
     <form action=""  method="PUT" id="edit-comment-form" style="margin-top: 10px;" label="">
         {% csrf_token %}
         
-        <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; resize: none; padding-bottom: 30px;">
+        <textarea name="body" style="background-color: black; color: whitesmoke; width: 100%; padding-left: 1rem; resize: none; padding-bottom: 1rem;">
             {{ comment.body|escapejs }}
         </textarea>
         

@@ -624,36 +624,46 @@ Need to reorganize the name or call a parent custom class
 
 
 
-/* =================== Comment form ============================= */
-.comment-post-section {
-    width: 95%;
-    max-width: 1000px;
+/* =================== Comment form / block entries ============================= */
+.comment-post-section, .comment-list-section {
+    width: 96%;
+    max-width: 900px;
     margin: auto;
 }
 
 .comment-form {
     background-color: black;
     color: white;
-    border: 1px solid #ccc;
+    border: 1px solid darkgray;
     padding: 10px;
-    /* width: 100%; */
-    border-radius: 0.5em;
+    border-radius: 0.75em;
 }
 
 .comment-block {
     width: 100%;
-    max-width: 800px;
-    margin: auto; 
-    margin-bottom: 1em;
+    max-width: 700px;
+    margin: 0 auto 1em auto;
     border: solid 4px rgb(21, 49, 49); 
-    border-radius: 1em; 
+    border-radius: 0.5em; 
+}
+
+.comment-body {
+    width: 94%; 
+    margin: auto;
+    text-align: left; 
+    padding-left: 0.25rem; 
+    color: antiquewhite;
 }
 
 .comment-buttons{
+    display: flex;
     margin-top: auto; 
+    padding-top: 0.15rem;
     margin-left: auto; 
+    min-width: 3.5rem;
+    justify-content: right;
     border: solid 1px lightgrey;
-    border-radius: 0.2em;
+    border-radius: 0.25em;
     border-bottom: none; 
     border-right: none;
 }
@@ -665,6 +675,21 @@ Need to reorganize the name or call a parent custom class
 .comment-buttons i:hover {
     transform: scale(1.2);
 }
+
+
+@media (max-width:475px) {
+    .comment-block .created-at p {
+        font-size: 94%;
+    }
+}
+
+@media (min-width:475px) {
+    .comment-body {
+        width: 90%; 
+        padding-left: 1rem; 
+    }
+}
+
 
 /* ================== SEARCH PAGE ======================== */
 /* ------ SEARCH filter form / Page ----- */
@@ -778,7 +803,7 @@ Need to reorganize the name or call a parent custom class
     justify-content: center;
     border: solid 2px;
     border-radius: 2em;
-    padding: 1.25rem 1.5% 0 1.5%;
+    padding: 1.25rem 1.5% 1rem 1.5%;
 }
 
 /* == list media cards ==  */
@@ -915,7 +940,6 @@ Need to reorganize the name or call a parent custom class
     aspect-ratio: 2/3;
     object-fit: cover;
     position: relative;
-    z-index: 5;
 }
 
 .media-card:hover .poster-wrapper{
