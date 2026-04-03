@@ -1,4 +1,3 @@
-
 function deleteComment() {
 
     const deleteButtons = document.querySelectorAll('.delete-comment-btn');
@@ -70,10 +69,6 @@ function deleteComment() {
         });
     }
 
-    function checkCheck() {
-        console.log(`Just som tries!!!`)
-    }
-
 
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
     deleteButtons.forEach(button => {
@@ -93,21 +88,21 @@ function deleteComment() {
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
     const confirmButton = document.getElementById('confirmDeleteBtn')
     confirmButton.addEventListener('click', function (e) {
-            e.preventDefault(); // preventDefault allow to not recharge the page
+        e.preventDefault(); // preventDefault allow to not recharge the page
 
-            if (!commentId) {
-                console.log(`Operation stopped! No comment id provided or found.`)
-                return;
-            }
+        if (!commentId) {
+            console.log(`Operation stopped! No comment id provided or found.`)
+            return;
+        }
 
-            console.log(`Confirm delete button clicked! Comment will be deleted.`);
-            performDelete(commentId);
-            // select the current modal element and closes it.
-            bootstrap.Modal.getInstance(document.getElementById('deleteCommentModal')).hide();
+        console.log(`Confirm delete button clicked! Comment will be deleted.`);
+        performDelete(commentId);
+        // select the current modal element and closes it.
+        bootstrap.Modal.getInstance(document.getElementById('deleteCommentModal')).hide();
 
-            // reset the commentId for safety
-            commentId = null;
-        });
+        // reset the commentId for safety
+        commentId = null;
+    });
 
 }
 
