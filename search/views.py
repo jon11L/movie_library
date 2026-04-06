@@ -11,6 +11,22 @@ from user_library.models import Like, WatchList
 
 
 
+
+def initialize_search(request):
+    """
+    View function to handle the initial search page load.
+    Renders the search page with the filter form and no results.
+    """
+    # Initialize the filter form without any queryset applied
+    Media_filter = SharedMediaFilter()
+
+    context = {'filter': Media_filter}
+
+    return render(request, 'search/search.html', context=context)
+
+
+
+
 @timer
 @num_queries
 def search(request):
@@ -46,11 +62,11 @@ def search(request):
             # Means some filtering value were passed other than default request value
             has_filter_values = True
             # can surely remove the if below as already checked above
-            if value.strip() == "":
-                has_filter_values = False
+            # if value.strip() == "":
+            #     has_filter_values = False
             break
 
-    print(f"- has_filter_values: {has_filter_values} --")
+    print(f"\n- has_filter_values: {has_filter_values} --")
     print(f"- items from the get request: {request.GET.items()}")
 
     # Render/Initialize the filter form (without queryset applied)
@@ -94,7 +110,7 @@ def search(request):
             filtered_movies = movie_filter.qs
             # print(f"Filtered movies: {len(filtered_movies)}")
 
-            if title_value:
+            if title_value and len(title_value.strip()) >= 2:
                 # Create a relevance system by Title: exact->startwith->remaining.
                 filtered_movies = filtered_movies.annotate(
                     relevance=Case(
@@ -145,8 +161,8 @@ def search(request):
             ('Z-a title', '-title'),
             ('first added', 'id'),
             ('last added', '-id'),
-            # ('newest first', '-release_date'), # release_date issue as serie is first_air_date
-            # ('oldest first', 'release_date'),
+            ('newest first', '-release_date'), # release_date issue as serie is first_air_date
+            ('oldest first', 'release_date'),
             ('least popular', 'popularity'),
             ('most popular', '-popularity'),
             ('least voted', 'vote_count'),
