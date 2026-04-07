@@ -908,6 +908,7 @@ Need to reorganize the name or call a parent custom class
     transition: transform 0.5s;
     /* transform:translateY(25%) */
 }
+
 .watchlist-button:hover {
     cursor: pointer;
     /* transition: transform 0.75s ease-out; */
@@ -916,12 +917,21 @@ Need to reorganize the name or call a parent custom class
 }
 
 /* Prepare the Watchlist form as a popover/modal */
-#watchlist-form {
+/* #watchlist-form {
     position: absolute;
     position-anchor: --my-watchlist-btn;
     position-area: bottom right;
     background-color: lightgray;
     border-radius: 0.75em;
+} */
+
+
+.watchlist-note-form {
+    background-color: black;
+    color: white;
+    border: 1px solid darkgray;
+    border-radius: 0.75em;
+    width: 100%;
 }
 
 /* ============== For images in movie/serie list =========================== */

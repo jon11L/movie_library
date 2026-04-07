@@ -13,8 +13,9 @@ from core.tools.paginator import page_window # Temporary placement for paginator
 from core.tools.wrappers import timer, num_queries
 from movie.models import Movie
 from serie.models import Serie
-from user_library.models import Like, WatchList
 from user.models import User
+from user_library.models import Like, WatchList
+from user_library.forms import WatchListForm
 
 
 # def admin_check(user):
@@ -126,20 +127,31 @@ def home(request):
         # and select only needed fields from foreign key on serie and movie
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
-                :3
+                :8
             ]
             # list to hold the user ids already processed
         else:
             # list to hold any watchlist instances
-            discover_list = WatchList.objects.all().order_by("?")[:3]
+            discover_list = WatchList.objects.all().order_by("?")[:8]
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
-            if item.movie:
-                discover_media.append({"object": item.movie, "type": item.kind})
-                # print(f"movie: {movie}\n") #debug print
-            elif item.serie:
-                discover_media.append({"object": item.serie, "type": item.kind})
+            media_obj = item.content_object
+            # if item.movie:
+            discover_media.append({
+                # "object": item.movie, "type": item.kind
+                "title": media_obj.title, 
+                "id": media_obj.pk, 
+                "genre": media_obj.render_genre(), 
+                "vote_avg": media_obj.render_vote_average(), 
+                "vote_count": media_obj.vote_count, 
+                "poster": media_obj.render_poster(),
+                "slug": media_obj.slug,
+                "type": item.kind
+                })
+            # print(f"movie: {movie}\n") #debug print
+            # elif item.serie:
+            #     discover_media.append({"object": item.serie, "type": item.kind})
 
         print(f"discover_media: {discover_media}\n")  # debug print
 
@@ -165,6 +177,9 @@ def home(request):
 
         # print(f"others_like: {others_like}\n") # debug print
 
+        # present the watchlist form in the modal When user click 
+        watchlist_form = WatchListForm() 
+
         context = {
             "recent_movies": recent_movies,
             "movies_coming_soon": upcoming_movies,
@@ -176,6 +191,7 @@ def home(request):
             "movies_count": movies_count,
             "series_count": series_count,
             # 'others_like': others_like,
+            'watchlist_form': watchlist_form
         }
 
         if request.user.is_authenticated:
@@ -189,12 +205,18 @@ def home(request):
             watchlist_content = []
             # initialize the list watchlist sample
             for item in watchlist.order_by("?")[:6]:
-                # try:
-                if item.movie:
-                    watchlist_content.append({"object": item.movie, "type": item.kind})
-                    # print(f"movie: {movie}\n") #debug print
-                elif item.serie:
-                    watchlist_content.append({"object": item.serie, "type": item.kind})
+                media_obj = item.content_object
+                
+                watchlist_content.append({
+                    "title": media_obj.title, 
+                    "id": media_obj.pk, 
+                    "genre": media_obj.render_genre(), 
+                    "vote_avg": media_obj.render_vote_average(), 
+                    "vote_count": media_obj.vote_count, 
+                    "poster": media_obj.render_poster(),
+                    "slug": media_obj.slug,
+                    "type": item.kind
+                    })
 
             user_watchlist_movies = set(
                 watchlist.filter(movie__isnull=False).values_list("movie_id", flat=True)
@@ -446,6 +468,10 @@ def show_content(request, content):
             ).values_list("serie_id", flat=True)
         )
 
+
+        # present the watchlist form in the modal When user click 
+        watchlist_form = WatchListForm() 
+
         context = {
             "page_obj": page_obj,
             'sort_by': sort_by,
@@ -460,6 +486,7 @@ def show_content(request, content):
             "user_liked_series": user_liked_series,
             "user_watchlist_movies": user_watchlist_movies,
             "user_watchlist_series": user_watchlist_series,
+            'watchlist_form': watchlist_form
         }
 
 

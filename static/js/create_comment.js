@@ -30,7 +30,6 @@ function createComment() {
             // create a new key/value pair in the formData object to send it to the backend
             // grab the data from the button and and pass it in the form
 
-
             console.log(`commend made on a ${contentType}, id: ${objectId}`);
             formData.append(contentType, objectId);
             

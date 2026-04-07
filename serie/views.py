@@ -14,9 +14,10 @@ from core.tools.paginator import page_window # Temporary placement for paginator
 from core.tools.wrappers import timer, num_queries
 
 from .models import Serie, Season, Episode
-from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
+from user_library.models import Like, WatchList
+from user_library.forms import WatchListForm
 
 class SerieListView(generics.ListCreateAPIView):
     # queryset = Movie.objects.all().order_by('-id')
@@ -146,6 +147,10 @@ def serie_list(request):
                 ).values_list("object_id", flat=True)
             )
 
+
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
+
             context = {
                 'page_obj' : page_obj,
                 'sort_by': sort_by,
@@ -156,6 +161,7 @@ def serie_list(request):
                 'list_media' : list_media,
                 'user_liked_series': user_liked_series,
                 'user_watchlist_series': user_watchlist_series,
+                'watchlist_form': watchlist_form
             }
 
             # Temporary placement for paginator design

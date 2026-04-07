@@ -1,0 +1,84 @@
+
+
+
+<div class="modal fade" id="watchlistModal" data-bs-backdrop="static" tabindex="-1"
+    aria-labelledby="WatchlistButtonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content"
+            style="background-color: rgb(30, 30, 30); color: antiquewhite; border: 2px solid rgb(21, 49, 49); width: fit-content;">
+
+            <div class="modal-header" style="border-bottom: 1px solid rgb(57, 56, 55);">
+                <h5 class="modal-title" id="watchlistModalTitle"
+                    style="margin: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; align-items: center;">
+                    <!-- Value being passed on Js -->
+                <button type="button" id="closeW" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <!---- Watchlist Form section ----->
+            <form action="" id="watchlistForm" method="POST" label="">
+                {% csrf_token %}
+
+                <div class="modal-body" style="color: rgb(200, 196, 190); max-width: 450px; margin: auto;">
+                    <div class="" style="">
+                        <div id="personal_note" style="margin-bottom: 0.5rem;">
+                            {{ watchlist_form.personal_note }}
+                        </div>
+
+                        <div id="status" style="width: fit-content;">
+                            <label for="status"><strong>status:</strong></label>
+                            {{ watchlist_form.status }}
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgb(57, 56, 55); gap: 0.5rem;">
+
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
+                        id="cancelWatchlistBtn">
+                        Cancel
+                    </button>
+                    <!-- Hidden by default, shown by JS when entry already exists -->
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="removeWatchlistBtn"
+                        style="display:none;">
+                        <i class="fa fa-trash me-1"></i> Remove
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm" id="confirmWatchlistBtn">
+                        Add to Watchlist
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+        <!-- user not logged in, invite to log or register -->
+
+        <!-- <div class="modal fade" id="Modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="background-color: rgb(30, 30, 30); color: antiquewhite; border: 2px solid rgb(21, 49, 49);">
+    
+                    <div class="modal-header" style="border-bottom: 1px solid rgb(57, 56, 55);">
+                        <h5 class="modal-title" id="deleteCommentModalLabel">
+                            <i class="fa fa-trash" style="color: tomato; margin-right: 0.4rem;"></i>
+                            Watchlist
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+    
+                    <div class="modal-body" style="color: rgb(200, 196, 190);">
+                        To use the wachlist feature, you need to be registered and logged in.
+                        <a href="#">Login Here</a>  <a href="#">Register here</a>
+                    </div>
+    
+                    <div class="modal-footer" style="border-top: 1px solid rgb(57, 56, 55);">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div> -->

@@ -1,12 +1,12 @@
 $(document).ready(function() {
     console.log('Script loaded!');
 
+
     // Get CSRF token for AJAX calls
     function getCSRFToken() {
         return $('[name=csrfmiddlewaretoken]').val();
     }
     
-
     function showMessage(message, type="success") {
         const messageContainer = $('#message-container');
         messageContainer.html(
@@ -22,8 +22,7 @@ $(document).ready(function() {
         setTimeout(() => messageContainer.fadeOut(), 4000);
     }
 
-
-    // Listen for clicks on any element with class 'like-button'
+    // ==== Listen for clicks on any element with class 'like-button' =========
     $('.like-button').click(function(e) {
         console.log('Like button clicked!');
         e.preventDefault(); // Prevent the page from reloading
@@ -39,7 +38,6 @@ $(document).ready(function() {
 
         // Disable button during request to prevent double-clicks
         button.prop('disabled', true);
-
 
         $.ajax({
             url: url,
@@ -103,91 +101,253 @@ $(document).ready(function() {
 
         });
     });
+    //  ======= End of like function part ========
 
-
-//============================= Watchlist feature, in progress =======================================
-
+    // ========================== Watchlist feature, in progress ====================================
     // ------ Listen for clicks on any element with class 'watchlist-button'  -------
+    // Step 1: the watchlist button is clicked, check if in_watchlist True/false, open the modal
+    // Step 2: when user click confirm button in the modal, grab the form data and 
+    // send it with Fetch to the server, then check the response to update the button state and show a message.
+    // Step 3: if user click cancel button, just close the modal and clear forms.
+
+    const modal = new bootstrap.Modal(document.getElementById('watchlistModal'));
+    // const modalTitle = document.getElementById('WatchlistToggleModalLabel');
+    const modalTitle = document.getElementById('watchlistModalTitle');
+    // const cancelButton = document.getElementById('cancelWatchlistBtn');
+    const confirmButton = document.getElementById('confirmWatchlistBtn');
+    const removeWatchlistBtn = document.getElementById('removeWatchlistBtn');
+
+    // allow to share the state and data of the watchlist
+    let pendingWatchlistData = null;
+
+    // User click on the watchlist button / open the modal,
+    // Check if watchlist instance already exist for this content, if exist, populate the form with the existing data and show the update button, if not, show empty form and add button.
     $('.watchlist-button').click(function(e) {
         console.log('Watchlist button clicked!');
         e.preventDefault();
         
-        const button = $(this);
-        const contentType = button.data('type'); // e.g., 'serie'
-        const objectId = button.data('id'); // e.g., '2'
+        const button = $(this); 
+
+        // ✅ Check BEFORE doing anything else
+        if (!USER_IS_AUTHENTICATED) {
+            console.log(`USER_IS_AUTHENTICATED: ${USER_IS_AUTHENTICATED} `)
+            showMessage('You must be logged in to use the Watchlist.', 'warning');
+            return;  // stops here, modal never opens
+        } else {
+            console.log(`USER_IS_AUTHENTICATED: ${USER_IS_AUTHENTICATED} `)
+        }
+
+        const contentType = button.data('type'); // e.g. Model 'serie'
+        const objectId = button.data('id'); // primary key
+        console.log(`getting the Content type: ${contentType} and Object id: ${objectId} `);
+        
+
         const icon = button.find('i');
+        pendingWatchlistData = {contentType, objectId, icon};
+
+
+        if (button.attr('data-bookmarked') === 'true') {
+            // If already in watchlist, fetch the existing data to populate the form
+            // and show the confirm button to update the watchlist instance.
+            //  show the 'remove' button
+
+            modalTitle.innerHTML = `
+                Edit  
+                <span style="color: rgb(180, 160, 130); font-style: italic;">${button.data('title')}</span>
+            `;
+
+            removeWatchlistBtn.style.display = 'block';
+            fetch(`/library/watchlist/${contentType}/${objectId}/`, {
+                method: 'GET',
+            },
+            )
+                .then(r => r.json())
+                .then(data => {
+                    // populateForm(data.watchlist_data);
+                    console.log(`Watchlist data populated in the form: ${data.personal_note}`);
+                    // setRemoveButtonVisible(true);
+                    // If data is null, we're clearing the form for a new entry
+                    document.getElementById('id_personal_note').value = data ? data.personal_note : '';
+                    document.getElementById('id_status').value = data ? data.status : '';
+
+                    confirmButton.textContent = 'Update'; // change the button text to indicate processing
+                });
+
+        } else {
+            modalTitle.innerHTML = `
+                Add to Watchlist 
+                <span style="color: rgb(180, 160, 130); font-style: italic;">${button.data('title')}</span>
+            `;
+
+            confirmButton.textContent = 'Save'; // change the button text to indicate processing
+            // If not in watchlist, show the confirm button and hide the remove button in the modal
+            // confirmButton.style.display = 'block';
+            removeWatchlistBtn.style.display = 'none';
+        }
+        
+        modal.show(); // Show the Bootstrap modal block
+    });
+
+    // Step 2: tracks confirm button and grab the form.
+    // Track clicks on all conffirm buttons
+    confirmButton.addEventListener('click', function (e) {
+        e.preventDefault(); // preventDefault allow to not recharge the page
+
+        if (!pendingWatchlistData) {
+            console.log(`Operation stopped! No comment id provided or found.`)
+            return;
+        }
+
+        const watchlistForm = document.getElementById('watchlistForm');    
+        const formData = new FormData(watchlistForm);
+
+        const { contentType, objectId, icon } = pendingWatchlistData;
+
+        // Append the content type and object id to the form data
+        // So it correctly assigns the foreign key on the right field (Movie or Serie)
+        // formData.append('content_type', contentType);
+        formData.append(contentType, objectId);
+
+        console.log(`Content type: ${contentType}, Object id: ${objectId} appended to form data.`);
+        console.log(`Personal note: ${formData.get('personal_note')}`);
+        console.log(`Status: ${formData.get('status')}`);
+
+        console.log(`Confirm saving watchlist instance!`);
+        // select the current modal element and closes it.
+        bootstrap.Modal.getInstance(document.getElementById('watchlistModal')).hide();
 
         // Construct the URL dynamically
         const url = `/library/watchlist/${contentType}/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
-        // Disable button during request to prevent double-clicks
-        button.prop('disabled', true);
-
-        $.ajax({
-            url: url,
+        // Step 3 send the form with fetch api, and check the result.
+        fetch(url, {
+            // url: url,
             method: 'POST',
+            body: formData,
             headers: {
                 'X-CSRFToken': getCSRFToken() // include CSRF token
             },
-            
-            success: function(response) {
-                console.log('Server responded:', response); // debug console
-                
-                // Toggle button text and icon when the server responds successfully
-            if (response.in_watchlist) {
-                icon.removeClass('far fa-bookmark')
-                    .addClass('fa fa-bookmark');
-                    // button.attr('data-bookmarked', 'true');
-                } else {
-                    icon.removeClass('fa fa-bookmark')
-                    .addClass('far fa-bookmark');
-                    // button.attr('data-bookmarked', 'false');
-                }
-                
-                // Show success message
-                showMessage(response.message, "success");
-                
-                // Add animation effect    ----- seem to work only on the first instance of object, need to debug. ----
-                icon.addClass('pulse');
-                setTimeout(() => button.removeClass('pulse'), 1000);
-            },
-            //------------------- end for watchlist-------------------------
-
-
-            
-            // ---------- Handle errors messages ------------------
-            error: function(xhr) {
-                console.error('Error:', xhr.responseText);
-                
-                // Default error message
-                let errorMessage = "An error occurred.";
-                let errorType = "danger";  // Default to red alert
-                
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                    
-                    // If the error is "Login required / user not authenticated", show a warning instead of danger
-                    if (xhr.status === 401) {
-                        errorType = "warning";  // Yellow alert for login required
-                    }
-                }
-                
-                // Show error message with the correct type
-                showMessage(errorMessage, errorType);
-                
-                // Hide message after 3 seconds
-                setTimeout(() => messageContainer.fadeOut(), 3000);
-            },
-            
-            complete: function() {
-                // Re-enable button after request completes
-                // Should set a little timer to avoid multi clicking too fast
-                button.prop('disabled', false);
-                
+        })
+        
+        .then(response => {
+            if (!response.ok) {  // If response is error (e.g., 400, 500), throw error
+                throw new Error(`Network response was not ok. status: ${response.status}`);
             }
+            return response.json();  // Parse response JSON
+        })
+
+        .then(data => {
+
+            console.log(data)
+            modal.hide()
+    
+            if (data.in_watchlist) {
+                icon.removeClass('far fa-bookmark').addClass('fa fa-bookmark');
+                const button = icon.closest('.watchlist-button');
+                button.attr('data-bookmarked', 'true');
+
+                document.getElementById('confirmWatchlistBtn').textContent = 'Update'; // change the button text to indicate processing
+                removeWatchlistBtn.style.display = 'block';
+
+            } else {
+                icon.removeClass('fa fa-bookmark')
+                    .addClass('far fa-bookmark');
+                // button.attr('data-bookmarked', 'false');
+                confirmButton.textContent = 'Add to Watchlist'; // change the button text to indicate processing
+            }
+    
+            // Show success message
+            showMessage(data.message, "success");
+            // Hide message after 3 seconds
+
+            // setTimeout(() => messageContainer.fadeOut(), 3000);
+            console.log(`Successfully added to watchlist`);
             
+            // Add animation effect    ----- seem to work only on the first instance of object, need to debug. ----
+            icon.addClass('pulse');
+            setTimeout(() => icon.removeClass('pulse'), 1000);
+        })
+
+        .catch(error => {
+            console.error('Error', error);
+            alert('Failed to save the watchlist, please reload the page')
+        })
+
+        .finally(() => {
+            pendingWatchlistData = null
+            // clear the form
+            watchlistForm.reset();
         });
+
+    });
+
+    removeWatchlistBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        if (!pendingWatchlistData) {
+            console.log(`Operation stopped! No content type or object id provided or found.`)
+            return;
+        }
+
+        const { contentType, objectId, icon } = pendingWatchlistData;
+
+        // Construct the URL dynamically
+        const url = `/library/watchlist/${contentType}/${objectId}/`;
+        console.log("AJAX request URL:", url); // Debugging
+
+        // select the current modal element and closes it.
+        bootstrap.Modal.getInstance(document.getElementById('watchlistModal')).hide();
+
+        // Send Ajax request with Fetch api
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCSRFToken() // CSRF for Django
+            }
+        })
+    
+        .then(response => {
+            if (!response.ok) {  // If response is error (e.g., 400, 500), throw error
+                throw new Error(`Network response was not ok. status: ${response.status}`);
+            }
+            return response.json();  // Parse response JSON
+        })
+    
+        .then(data => {
+            if (!data.in_watchlist) {
+                icon.removeClass('fa fa-bookmark').addClass('far fa-bookmark');
+                const button = icon.closest('.watchlist-button');
+                button.attr('data-bookmarked', 'false');
+
+                document.getElementById('confirmWatchlistBtn').textContent = 'Add to Watchlist'; // change the button text to indicate processing
+                removeWatchlistBtn.style.display = 'none';
+
+                // Show success message
+                showMessage(data.message, 'success');
+    
+                console.log(`Successfully removed from watchlist`);
+            } else {
+                console.error('Error removing from watchlist:', data.message);
+            }
+        })
+    
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove from watchlist, please reload the page')
+        })
+
+        .finally(() => {
+            pendingWatchlistData = null;
+            // clear the form
+            document.getElementById('watchlistForm').reset();
+        });
+    });
+
+    // Clear the form and pending data when the modal is closed (either by cancel or close X button)
+    document.getElementById('watchlistModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('watchlistForm').reset();
+        pendingWatchlistData = null;  // wipe post-it too
     });
 
 

@@ -61,10 +61,16 @@
 	<!-- custom js script -->
 	<script src="{% static 'js/main.js' %}"></script>
 
+
+	<script>
+		const USER_IS_AUTHENTICATED = '{{request.user.is_authenticated}}' === 'True';
+	</script>
+	
 	<!-- pop-up message handling / -->
 	<script>
+
 		// Below is only for the message directly coming from django like success login message.
-		// But it seem to create a friction with the message coming from 
+		// But it seem to create a friction with the message coming from JS
 		document.addEventListener('DOMContentLoaded', function() {
 			// Auto dismiss alerts after a few seconds
 			setTimeout(function() {
@@ -79,15 +85,14 @@
 		});
 
 
-
-
 	    // Configure HTMX to include CSRF token in all requests
 		document.addEventListener('DOMContentLoaded', function() {
 			document.body.addEventListener('htmx:configRequest', function(event) {
 				event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
 			});
 		});
+
 	</script>
-		
+
 </body>
 </html>

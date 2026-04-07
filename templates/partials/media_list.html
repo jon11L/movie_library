@@ -17,26 +17,19 @@
                         aria-label="Add {{ movie.title }} to watchlist"
                         data-type="{{ item.type }}"
                         data-id="{{ item.id }}"
+                        data-title="{{ item.title|slice:':50'}}"
                         data-bookmarked="{% if item.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                         <i class="{% if item.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                     </button>
 
-                    <!-- Prepare form for the watchlist // status / pers.note-->
-                    <!-- <div id="watchlist-form">
-                        <p>test test</p>
-                        <form action="">
-                            {{ item.status }}
-                            {{ item.personal_note }}
-                            <p>lorem imsum</p>
-                            <button>Confirm</button>
-                        </form>
-                    </div> -->
+
 
                     <!-- like button feature -->
                     <button class="like-button"
                         id="like_button"
                         data-type="{{ item.type }}"
                         data-id="{{ item.id }}"
+                        data-title="{{ item.title|slice:':35'}}"
                         data-liked="{% if item.id in user_liked_movies %}true{% else %}false{% endif %}">
                         <i
                             class="{% if item.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
@@ -51,6 +44,7 @@
                         aria-label="Add {{ serie.title }} to watchlist" 
                         data-type="{{ item.type }}"
                         data-id="{{ item.id }}"
+                        data-title="{{ item.title|slice:':35'}}"
                         data-bookmarked="{% if item.id in user_watchlist_series %}true{% else %}false{% endif %}">
                         <i class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                     </button>
@@ -75,11 +69,11 @@
 
             <div class="list-media-title">
                 {% if item.type == 'movie' %}
-                <a href="{% url 'movie:detail' slug=item.slug %}" style="text-decoration: none;">
+                <a href="{% url 'movie:detail' slug=item.slug %}">
                     <h6 class="">{{ item.title|slice:":35" }}</h6>
                 </a>
                 {% elif item.type == 'serie' %}
-                <a href="{% url 'serie:detail' slug=item.slug %}" style="text-decoration: none;">
+                <a href="{% url 'serie:detail' slug=item.slug %}">
                     <h6 class="">{{ item.title|slice:":35" }}</h6>
                 </a>
                 {% endif %}
@@ -87,9 +81,18 @@
 
         </div>
     </div>
-
+    
     {% endfor %}
+    
+    
+    <!-- Modal box form for watchlist-->
+    {% if watchlist_form %}
+        {% include "user_library/watchlist_form.html" %}
+    {% endif %}
+
 </div>
 
 <!----- Pagination system ------->
 {% include "partials/paginator.html" %}
+
+

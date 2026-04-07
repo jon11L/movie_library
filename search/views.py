@@ -8,7 +8,7 @@ from .filters import SharedMediaFilter
 from movie.models import Movie
 from serie.models import Serie
 from user_library.models import Like, WatchList
-
+from user_library.forms import WatchListForm
 
 
 
@@ -236,6 +236,10 @@ def search(request):
                 "type": "movie" if isinstance(item, Movie) else "serie"
                 })
 
+        # Display watchlist form in the modal When user click 
+        watchlist_form = WatchListForm() 
+
+
         context = {
             'page_obj': page_obj,
             'sort_by': sort_by,
@@ -247,6 +251,7 @@ def search(request):
             'list_media': list_media, # 
             'query_params': query_params, # to recognize the filters applied // may have to ensure naming & value inside
             'total_found': total_found if total_found > 0 else None,
+            'watchlist_form': watchlist_form,
         }
 
         #  ========== Temporary placement for paginator design ==============

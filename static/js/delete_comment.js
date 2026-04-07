@@ -1,7 +1,8 @@
 function deleteComment() {
+    console.log('Del Comment feature loading...');
 
     const deleteButtons = document.querySelectorAll('.delete-comment-btn');
-    console.log('Del Comment feature loaded');
+    const confirmButton = document.getElementById('confirmDeleteBtn')
 
     let commentId = null;
 
@@ -69,7 +70,6 @@ function deleteComment() {
         });
     }
 
-
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
@@ -86,7 +86,6 @@ function deleteComment() {
 
     
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
-    const confirmButton = document.getElementById('confirmDeleteBtn')
     confirmButton.addEventListener('click', function (e) {
         e.preventDefault(); // preventDefault allow to not recharge the page
 
@@ -106,4 +105,7 @@ function deleteComment() {
 
 }
 
+
+// allow to call the function in the html file after the DOM is loaded
+// or when a new comment is created and inserted in the DOM
 document.addEventListener("DOMContentLoaded", deleteComment);
