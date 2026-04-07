@@ -751,6 +751,7 @@ Need to reorganize the name or call a parent custom class
 }
 
 
+/* ============== list media card -- That displays rows of Movie/Serie  ============ */
 /* Only affect sor-by layout on watchlist page */
 .watchlist-count-sort {
     display: block;
@@ -796,7 +797,6 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ============== list media card -- That displays rows of Movie/Ser  ============ */
 /* Only for lists pages. Different from sample like home page.  */
 
 .media-grid {
@@ -808,7 +808,9 @@ Need to reorganize the name or call a parent custom class
 
 /* == list media cards ==  */
 .media-card{
-    margin: 0.75rem 0% 1rem 0;
+    position: relative;
+    /* overflow: hidden; */
+    margin: 1rem 0% 1rem 0;
     border-radius: 0.25em;
     transition: transform 0.5s ease-out;
 }
@@ -816,7 +818,7 @@ Need to reorganize the name or call a parent custom class
 .media-card:hover{
     /* box-shadow: 0.25rem 0.25rem 0.25rem rgba(4, 100, 100, 0.2), -0.25rem -0.25rem 0.25rem wheat; */
     transform: translateY(2%) scale(1.125);
-    /* transform: translateY(3%); */
+    z-index: 5;
 }
 
 /* .media-card:hover > .media-grid{
@@ -826,17 +828,19 @@ Need to reorganize the name or call a parent custom class
 /* ==== vote and users buttons on Media list ==== */
 .vote-button-list {
     display: flex;
+    width: 100%;
     justify-content: space-between;
-    background-color:  rgba(37, 36, 36, 0.500); 
+    background-color:  rgba(10, 10, 20, 0.400); 
     border-top-left-radius: 0.25em; 
     border-top-right-radius: 0.25em;
     align-items: center;
-    z-index: 0;
+    z-index: 2;
+    position: absolute;
+    transition: background-color 0.4s ease-in-out;
 }
 
-.vote-button-list:hover {
-    background-color:  rgba(37, 36, 36, 0.9);
-    transition: background-color 0.4s ease-in-out;
+.media-card:hover .vote-button-list {
+    background-color:  rgba(10, 10, 20, 0.8);
 }
 
 /* Vote average/vote count on list media cards */
@@ -904,20 +908,30 @@ Need to reorganize the name or call a parent custom class
     transition: transform 0.5s;
     /* transform:translateY(25%) */
 }
+
 .watchlist-button:hover {
     cursor: pointer;
-    transition: transform 0.75s ease-out;
+    /* transition: transform 0.75s ease-out; */
     transform:translateY(-50%) scale(1.1);
     /* padding-bottom: 12px; */
 }
 
 /* Prepare the Watchlist form as a popover/modal */
-#watchlist-form {
+/* #watchlist-form {
     position: absolute;
     position-anchor: --my-watchlist-btn;
     position-area: bottom right;
     background-color: lightgray;
     border-radius: 0.75em;
+} */
+
+
+.watchlist-note-form {
+    background-color: black;
+    color: white;
+    border: 1px solid darkgray;
+    border-radius: 0.75em;
+    width: 100%;
 }
 
 /* ============== For images in movie/serie list =========================== */
@@ -926,7 +940,7 @@ Need to reorganize the name or call a parent custom class
     display: flex;
     position: relative;
     z-index: -1;
-    margin-top:-1.85rem;
+    margin-top:0rem;
     height: max-content;
     border-radius: 0.5em; 
     align-items: center;
@@ -948,49 +962,79 @@ Need to reorganize the name or call a parent custom class
 
 /* Title on media grid card /list */
 .list-media-title {
-    /* margin-top: 0.2rem; */
-    /* padding-top: 0.2rem; */
-    /* padding: 0.5% 0 0 0.2rem; */
     width: 100%;
-    height: 1.5rem;
-    padding: 0.3rem 0 0.3rem 0.2rem;
-    border-radius: 0.35em;
-    background-color: rgba(10, 10, 10, 0.4);
-    position: relative;
-    z-index: 0;
+    height: 25%;
+    bottom: 0;
+    padding: 0;
+    position: absolute;
+    /* z-index: 0; */
     white-space: nowrap;
+    border-radius: 0.25em;
+
+
+    background-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10, 10, 10, 0.30) 40%,
+        rgba(10, 10, 10, 0.40) 50%,
+        rgba(10, 10, 10, 0.50) 60%,
+        rgba(10, 10, 10, 0.60) 70%,
+        rgba(10, 10, 10, 0.70) 80%,
+        rgba(10, 10, 10, 0.85) 100%
+    );
+
     overflow: hidden;
-    /* transform: translateY(-100%); */
-    margin-top: -1.5rem;
     transition: transform 0.40s ease-out;
-    transition: background-color 0.6s ease-out ;
-    align-items: center;
-    /* justify-content: center; */
+    transition: background-image 0.6s ease-out;
+
 }
 
 /* Move the title up into the bottom of the poster when hovering over */
 .media-card:hover .list-media-title {
-    /* transform: translateY(-100%); */
-    background-color: rgba(10, 10, 10, 0.85);
-    /* transition: background-color 0.40s ease-out ; */
+    /* background-color: rgba(10, 10, 10, 0.85); */
+    background-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10, 10, 10, 0.5) 30%,
+        rgba(10, 10, 10, 0.6) 40%,
+        rgba(10, 10, 10, 0.7) 50%,
+        rgba(10, 10, 10, 0.75) 60%,
+        rgba(10, 10, 10, 0.85) 70%,
+        rgba(10, 10, 10, 0.95) 80%,
+        rgba(10, 10, 10, 1) 100%
+    );
+}
+
+.list-media-title a {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
 }
 
 .list-media-title h6 {
+    border-radius: 0.25em;
+    background-color: rgba(10, 10, 10, 0.25);
     color: rgb(224, 185, 57);
     display: flex;
     align-items: center;
+    width: 100%;
+    margin: 0;
     transition:  font-weight 0.6s ease-out;
     transition: font-size 0.60s ease-out;
+    transition: background-color 0.60s ease-out;
+    padding: 0.2rem 0 0.1rem 0.2rem;
 }
 
 .media-card:hover .list-media-title h6 {
     font-weight: 550;
     font-size: 95%;
+    background-color: rgba(10, 10, 10, 0.8);
 }
 
 @media (max-width: 425px) {
     .media-card:hover .list-media-title h6 {
-        font-weight: 550;
         font-size: 91%;
     }
 }

@@ -68,8 +68,7 @@ def create_comment(request):
                 })
 
             else:
-                print(f"An error occured trying to save the comment")
-                print(f"form.errors: {form.errors}")
+                print(f"Form is not valid. Errors: {form.errors}")
 
                 # When an error occured, dispaly the error message.
                 message = f'Form submitted Invalid!'

@@ -92,6 +92,7 @@
                                                 <button class="watchlist-button" 
                                                     data-type="movie"
                                                     data-id="{{ movie.id }}"
+                                                    data-title="{{ movie.title|slice:':45'}}"
                                                     data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                                     <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
@@ -152,6 +153,7 @@
                                                 <!-- Watchlist button feature -->
                                                 <button class="watchlist-button" data-type="serie"
                                                     data-id="{{ serie.id }}"
+                                                    data-title="{{ serie.title|slice:':45'}}"
                                                     data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
@@ -220,15 +222,18 @@
                                             {% if item.type == 'movie' %}
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="{{ item.type }}"
-                                                    data-id="{{ item.object.id }}"
-                                                    data-bookmarked="{% if item.object.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                                                <button class="watchlist-button" 
+                                                    data-type="{{ item.type }}"
+                                                    data-id="{{ item.id }}"
+                                                    data-title="{{ item.title|slice:':45'}}"
+                                                    data-bookmarked="{% if item.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if item.object.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                        class="{% if item.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
                                                 <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="{{ item.type }}"
+                                                <button class="like-button" id="like_button" 
+                                                    data-type="{{ item.type }}"
                                                     data-id="{{ item.object.id }}"
                                                     data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i
@@ -239,11 +244,13 @@
                                             {% elif item.type == 'serie' %}
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="{{ item.content_type }}"
-                                                    data-id="{{ item.object.id }}"
-                                                    data-bookmarked="{% if item.object.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                                <button class="watchlist-button" 
+                                                    data-type="{{ item.type }}"
+                                                    data-id="{{ item.id }}"
+                                                    data-title="{{ item.title|slice:':45'}}"
+                                                    data-bookmarked="{% if item.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if item.object.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                        class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
                                                 <!-- like button feature  -->
@@ -257,10 +264,10 @@
                                             {% endif %}
                                         </div>
 
-                                        <div class="poster-wrapper" title="{{ item.object.render_genre}}">
-                                            {% if item.object.render_poster %}
-                                            <img src="{{ item.object.render_poster }}"
-                                                alt="{{ item.object.title }} poster" class="img-fluid rounded">
+                                        <div class="poster-wrapper" title="{{ item.genre}}">
+                                            {% if item.poster %}
+                                            <img src="{{ item.poster }}"
+                                                alt="{{ item.title }} poster" class="img-fluid rounded">
                                             {% else %}
                                             <img src="{% static 'images/default_media_photo.jpg' %}"
                                                 class="img-fluid rounded" alt="{{ item.object.title }} poster">
@@ -269,12 +276,12 @@
 
                                         <div class="list-media-title">
                                             {% if item.type == 'movie' %}
-                                            <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none;">
-                                                <h6>{{item.object.title|slice:"0:28" }}</h6>
+                                            <a href="{% url 'movie:detail' slug=item.slug %}" style="text-decoration: none;">
+                                                <h6>{{item.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% else %}
-                                            <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none;">
-                                                <h6>{{item.object.title|slice:"0:28" }}</h6>
+                                            <a href="{% url 'serie:detail' slug=item.slug %}" style="text-decoration: none;">
+                                                <h6>{{item.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% endif %}
                                         </div>
@@ -317,6 +324,7 @@
                                                 <!-- Watchlist button feature -->
                                                 <button class="watchlist-button" data-type="movie"
                                                     data-id="{{ movie.id }}"
+                                                    data-title="{{ movie.title|slice:'0:45'}}"
                                                     data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
@@ -377,8 +385,10 @@
 
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="serie"
+                                                <button class="watchlist-button" 
+                                                    data-type="serie"
                                                     data-id="{{ serie.id }}"
+                                                    data-title="{{ serie.title|slice:':45'}}"
                                                     data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
@@ -447,8 +457,10 @@
 
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="movie"
+                                                <button class="watchlist-button" 
+                                                    data-type="movie"
                                                     data-id="{{ movie.id }}"
+                                                    data-title="{{ movie.title|slice:':45'}}"
                                                     data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
@@ -508,7 +520,9 @@
 
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="serie"
+                                                <button class="watchlist-button" 
+                                                    data-type="serie"
+                                                    data-title="{{ serie.title|slice:':45'}}"
                                                     data-id="{{ serie.id }}"
                                                     data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                                     <i
@@ -595,22 +609,16 @@
                     <div style="padding-top: 50%; margin: auto;">
                         <h5 style="color: rgb(224, 185, 57); text-align: center; width: 97%; margin: auto;">Others saved in
                             their watchlist:</h5>
-                        {% for media in discover_media %}
+                        {% for item in discover_media|slice:'0:3' %}
                         <div class="mt-3"
                             style="width: 75%; margin: auto; border: 1px solid rgb(224, 185, 57); border-radius: 0.5em; padding: 1%; background-color: black;">
                             <a
-                                href="{% if media.type == 'movie' %}{% url 'movie:detail' slug=media.object.slug %}{% else %}{% url 'serie:detail' slug=media.object.slug %}{% endif %}">
+                                href="{% if item.type == 'movie' %}{% url 'movie:detail' slug=item.slug %}{% else %}{% url 'serie:detail' slug=item.slug %}{% endif %}">
                                 <div class="d-flex align-items-center">
-                                    {% if media.object.render_poster %}
-                                    <img src="{{ media.object.render_poster }}" alt="{{ media.object.title }} poster"
+                                    <img src="{{ item.poster }}" alt="{{ item.title }} poster"
                                         class="img-fluid rounded" style="width: auto; height: auto; margin-right: 10px;">
-                                    {% else %}
-                                    <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded"
-                                        alt="Profile photo" style="width: 50px; height: auto; margin-right: 10px;">
-                                    {% endif %}
                                 </div>
                             </a>
-
                         </div>
                         {% endfor %}
                     </div>
@@ -619,5 +627,11 @@
         </aside>
 
     </div>
+
+    <!-- Modal box form for watchlist-->
+    {% if watchlist_form %}
+    {% include "user_library/watchlist_form.html" %}
+    {% endif  %}
+    
 
 {% endblock %}

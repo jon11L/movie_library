@@ -1,8 +1,8 @@
-
 function deleteComment() {
+    console.log('Del Comment feature loading...');
 
     const deleteButtons = document.querySelectorAll('.delete-comment-btn');
-    console.log('Del Comment feature loaded');
+    const confirmButton = document.getElementById('confirmDeleteBtn')
 
     let commentId = null;
 
@@ -70,11 +70,6 @@ function deleteComment() {
         });
     }
 
-    function checkCheck() {
-        console.log(`Just som tries!!!`)
-    }
-
-
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
@@ -91,24 +86,26 @@ function deleteComment() {
 
     
     // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
-    const confirmButton = document.getElementById('confirmDeleteBtn')
     confirmButton.addEventListener('click', function (e) {
-            e.preventDefault(); // preventDefault allow to not recharge the page
+        e.preventDefault(); // preventDefault allow to not recharge the page
 
-            if (!commentId) {
-                console.log(`Operation stopped! No comment id provided or found.`)
-                return;
-            }
+        if (!commentId) {
+            console.log(`Operation stopped! No comment id provided or found.`)
+            return;
+        }
 
-            console.log(`Confirm delete button clicked! Comment will be deleted.`);
-            performDelete(commentId);
-            // select the current modal element and closes it.
-            bootstrap.Modal.getInstance(document.getElementById('deleteCommentModal')).hide();
+        console.log(`Confirm delete button clicked! Comment will be deleted.`);
+        performDelete(commentId);
+        // select the current modal element and closes it.
+        bootstrap.Modal.getInstance(document.getElementById('deleteCommentModal')).hide();
 
-            // reset the commentId for safety
-            commentId = null;
-        });
+        // reset the commentId for safety
+        commentId = null;
+    });
 
 }
 
+
+// allow to call the function in the html file after the DOM is loaded
+// or when a new comment is created and inserted in the DOM
 document.addEventListener("DOMContentLoaded", deleteComment);

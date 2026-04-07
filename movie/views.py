@@ -13,9 +13,10 @@ from rest_framework import generics, filters
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 from .serializers import MovieListSerializer, MovieDetailSerializer
 from .models import Movie
-from user_library.models import Like, WatchList
 from comment.models import Comment
 from comment.forms import CommentForm
+from user_library.models import Like, WatchList
+from user_library.forms import WatchListForm
 
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
@@ -143,7 +144,8 @@ def movie_list(request):
             for item in page_obj:
                 list_media.append({
                     "id": item.pk, 
-                    "title": item.title, 
+                    "title": item.title,
+                    # "release_date": item.release_date.year, 
                     "genre": item.render_genre(), 
                     "vote_avg": item.render_vote_average(), 
                     "vote_count": item.vote_count, 
@@ -153,21 +155,8 @@ def movie_list(request):
                     })
             # print(list_media[0:2])
 
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = set(
-                WatchList.objects.filter(
-                    user=request.user.id, 
-                    movie__isnull=False
-                    ).values_list('movie_id', flat=True)
-            )
-
-            # Get the user's like content
-            user_liked_movies = set(
-                Like.objects.filter(
-                    user=request.user.id,
-                    content_type='movie'
-                    ).values_list('object_id', flat=True)
-            )
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
 
             context = {
                 'page_obj' : page_obj,
@@ -177,8 +166,7 @@ def movie_list(request):
                 'current_order': sel_order,
                 'base_url': base_url,
                 'list_media': list_media,
-                'user_liked_movies': user_liked_movies,
-                'user_watchlist_movies': user_watchlist_movies,  
+                'watchlist_form': watchlist_form
 
                 }
 
@@ -194,6 +182,33 @@ def movie_list(request):
                 page_obj.paginator.num_pages,
                 size=2
             )
+
+
+            if request.user.is_authenticated:
+                # Get the user's watchlist content (movies, series)
+                user_watchlist_movies = set(
+                    WatchList.objects.filter(
+                        user=request.user.id, 
+                        movie__isnull=False
+                        ).values_list('movie_id', flat=True)
+                )
+
+                # Get the user's like content
+                user_liked_movies = set(
+                    Like.objects.filter(
+                        user=request.user.id,
+                        content_type='movie'
+                        ).values_list('object_id', flat=True)
+                )
+
+                # watchlist_form = WatchListForm() # present the watchlist block form
+
+                context.update(
+                    {
+                        'user_liked_movies': user_liked_movies,
+                        'user_watchlist_movies': user_watchlist_movies,
+                    }
+                )
 
             # If user select a sort-by or page parameter, create a request with HTMX
             if request.headers.get('HX-request'):
@@ -233,8 +248,8 @@ def movie_detail(request, slug):
 
             context = {
                 'movie': movie,
+                'comments': comments,
                 'form': form,
-                'comments': comments
                 }
 
             # display the Comment form if user is connected

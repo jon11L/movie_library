@@ -1,0 +1,115 @@
+{% load static %}
+
+<section id="search-filter-section" style="padding-top: 1%;">
+    <div class="card search-card">
+        <div class="card-header" style="text-align: center; margin-top: 8px;">
+            <h5 class="card-title">Filter your search here</h5>
+        </div>
+
+        <!------------------ Search Filter  form  ----------------->
+        <div class="card-body mt-1 px-2">
+
+            <form method="get" action="{% url 'search:search' %}">
+                <!-- {% csrf_token %} -->
+                <div class="d-flex col-12 col-xl-10"
+                    style="flex-direction:row; flex-wrap: wrap; justify-content: center; margin: auto;">
+
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <div class="form-group me-3" style="margin-bottom: 1rem; text-align: center;">
+                            <label for="content_type"><strong>Content Type:</strong></label>
+                            {{ filter.form.content_type }}
+                        </div>
+
+                        <div class="form-group me-3" id="genre" style="text-align: center;">
+                            <label for="genre"><strong>Genre:</strong></label>
+                            {{ filter.form.genre }}
+                        </div>
+                    </div>
+
+
+                    <div class="col-6 col-md-5 d-inline-block d-lg-flex">
+                        <div class="form-group mb-2 me-3" id="title"
+                            style="width: 100%; max-width: 220px; text-align: center;">
+                            <label for="title"><strong>Title:</strong></label>
+                            {{ filter.form.title }}
+                        </div>
+
+                        <div class="d-flex d-lg-block mt-3 mt-lg-0 " style="flex-wrap: wrap; align-items: center;">
+                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                <label for="vote_average_from"><strong>Min Rating:</strong></label>
+                                {{ filter.form.vote_average_gte }}
+                            </div>
+                            <div class="form-group mb-2 me-3" style="max-width: 180px; text-align: center;">
+                                <label for="vote_average_to"><strong>Max Rating:</strong></label>
+                                {{ filter.form.vote_average_lte }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Here remove the below div to have Date under -->
+                    <div class="d-flex col-6 col-md-4 col-lg-3 col-xl-2 mt-2 mt-md-0">
+                        <!-- Date fields / option between exact and range filter -->
+                        <div class="form-group" id="dateFieldsContainer" style="padding-right: 2rem;">
+
+                            <div class="form-group" id="exactDateField">
+                                <label for="release_date"><strong>Date:</strong></label>
+                                {{ filter.form.release_date }}
+                            </div>
+
+                            <div id="rangeDateField" style="display: none;">
+                                <div class="form-group mb-2" style="text-align: center;">
+                                    <label for="release_date_from"><strong>year From:</strong></label>
+                                    {{ filter.form.release_date_gte }}
+                                </div>
+                                <div class="form-group" style="text-align: center;">
+                                    <label for="release_date_to"><strong>year To:</strong></label>
+                                    {{ filter.form.release_date_lte }}
+                                </div>
+                            </div>
+
+                            <!-- toggle the release date field between Exact or Range-filter -->
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="toggleDateRange" role="switch">
+                                <label class="form-check-label" for="toggleDateRange">
+                                    <small id="exact-year-actif">range period</small>
+                                    <small id="range-year-actif" style="display: none;">exact year</small>
+                                    <!-- If switch checked then -->
+                                    <!-- <p>Select a specific year instead</p> -->
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-5 col-sm-4 col-md-3 col-lg-3 col-xl-2 my-2 mt-lg-0" id="language"
+                        style="width: fit-content; text-align: center;">
+                        <label for="language"><strong>Language:</strong></label>
+                        {{ filter.form.language }}
+                    </div>
+
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                    <!-- Should find a way to only reset the form // Clear option? -->
+                    <a class="reset-btn" aria-current="page" href="{% url 'search:search' %}">
+                        Reset filters
+                    </a>
+
+                    <button type="submit" class="submit-btn btn">
+                        Apply filters
+                    </button>
+
+                    <!-- <button type="submit" class="submit-btn btn" name="order_by"
+                        hx-get="{{ base_url}}?{{ query_pagin_url }}" hx-trigger="change" hx-swap="innerHTML"
+                        hx-target="#media-list" hx-push-url="true">
+
+                        Apply filters
+                    </button> -->
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</section>

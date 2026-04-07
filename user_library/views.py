@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 
 # Rest api imports
-from rest_framework import generics, filters
+from rest_framework import generics, filters, request
 # from rest_framework import renderers
 from rest_framework.throttling import AnonRateThrottle
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
@@ -19,6 +19,8 @@ from .models import WatchList, Like
 from user.models import User, Profile
 from movie.models import Movie
 from serie.models import Serie
+
+from user_library.forms import WatchListForm
 
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
@@ -90,6 +92,8 @@ class WatchListDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # ------------- Regular template views (List) ---------
+@timer
+@num_queries
 def liked_content_view(request, pk: int):
     '''
     retrieve the user's content liked from the database 
@@ -109,42 +113,70 @@ def liked_content_view(request, pk: int):
 
             likes = Like.objects.filter(user=pk)
 
-            liked_content = [] # intialize the list of liked content 
-            for like in likes:
+            # -- paginate over the results --
+            paginator = Paginator(likes, 24)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+            print(f"List content: {page_obj}")
 
+            list_media = [] # intialize the list of liked content 
+            movie_ids = []
+            serie_ids = []
+
+            for like in page_obj:
                 if like.content_type == "movie":
-                    try:
-                        movie = Movie.objects.get(id=like.object_id)
-                        liked_content.append(
-                            {
-                                "content_type": like.content_type,
-                                "object": movie,
-                                "liked_on": like.created_at.strftime("%d %B %Y"),
-                            }
-                        )
-                        # print(f"movie: {movie}\n") #debug print
-                    except Movie.DoesNotExist:
-                        continue
+                    movie_ids.append(like.object_id)
                 elif like.content_type == "serie":
-                    try:
-                        serie = Serie.objects.get(id=like.object_id)
-                        liked_content.append(
-                            {
-                                "content_type": like.content_type,
-                                "object": serie,
-                                "liked_on": like.created_at.strftime("%d %B %Y"),
-                            }
-                        )
-                        # print(f"serie: {serie}\n") #debug print
-                    except Serie.DoesNotExist:
-                        continue
+                    serie_ids.append(like.object_id)
+
+            movie = Movie.objects.filter(id__in=movie_ids)
+            serie = Movie.objects.filter(id__in=serie_ids)
+            print(f"movies: {movie.count()}")
+            print(f"series: {serie.count()}")
+
+            list_media.append(
+                {
+                    "content_type": like.content_type,
+                    "object": movie,
+                    "liked_on": like.created_at.strftime("%d %B %Y"),
+                }
+            )
+            # print(f"movie: {movie}\n") #debug prin
+            list_media.append(
+                {
+                    "content_type": like.content_type,
+                    "object": serie,
+                    "liked_on": like.created_at.strftime("%d %B %Y"),
+                }
+            )
+            
 
             total_like = likes.count() #count how many items has been liked
 
             context = {
-                'liked_content': liked_content[0:40],
+                'page_obj': page_obj,
+                # 'sort_by': sort_by,
+                # 'query_pagin_url': query_pagin_url,
+                # 'query_sort_url': query_sort_url,
+                # 'current_order': sel_order,
+                # 'base_url': base_url,
+                # 'user': t_user.username,
+                'list_media': list_media,
                 'total_like': total_like,
             }
+
+            # Temporary placement for paginator design
+            context["desktop_pages"] = page_window(
+                page_obj.number, # current page number
+                page_obj.paginator.num_pages, # total amount of pages
+                size=5 # amount of buttons to display around current page
+            )
+
+            context["mobile_pages"] = page_window(
+                page_obj.number,
+                page_obj.paginator.num_pages,
+                size=2
+            )
 
             return render(request, 'user_library/liked_content.html', context=context)
 
@@ -155,6 +187,7 @@ def liked_content_view(request, pk: int):
             pass
 
     else:
+        # Shouldn't happen as the like button/access to the page is through profile page
         messages.error(request, "You must be logged in to view your liked content.")
         return redirect('user:login')
 
@@ -240,12 +273,15 @@ def watch_list_view(request, pk: int):
         messages.error(request, ("Private access, Page not accessible."))
         return redirect(to='user:profile_page', pk=request.user.id)
 
+    # user is authenticated & is either the watchlist's owner or watchlist is set public or user is staff/admin
     elif request.user.is_staff or (
         request.user.is_authenticated and
         (request.user.id == pk or not target_profile.watchlist_private)
     ):
 
         if request.method == "GET":
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
 
             # ========== setting values for sorting-by feature ==========================
             sort_by = (
@@ -384,6 +420,7 @@ def watch_list_view(request, pk: int):
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
                 'total_content': total_content,
+                'watchlist_form': watchlist_form
             }
 
             # Temporary placement for paginator design
@@ -421,6 +458,17 @@ def toggle_watchlist(request, content_type: str, object_id: int):
     if the instance already exists, it will delete the instance.
     With AJAX implemented on the front-end, the updates on the data are made without reloading the page
     '''
+
+    # Need to create a form instead that goes into the modal/popup
+    # if watchlist does not exist. empty form - cancel / save button
+    # if watchlist exit: button toogle, forms filled, with delete, edit/save button
+    # -- In front end i need to place the form. and send the data in js like with createcomment
+    # Do i need to fire different trigger depend if it is create/edit/delete
+    # Maybe use the correct request.METHOD for good practice: POST/PUT/DELETE
+
+    # How do i load the data if exist. Get them when checking if it's already in the watchlist
+
+
     # if user is Not logged in, it a message will pop up
     if not request.user.is_authenticated:
         message = "You must be logged to use the Watchlist"
@@ -430,39 +478,126 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             'message': message
             }, status=401)
     
+    if request.method == "GET":
+        # This part is for the modal form to load the data if the content is already in the watchlist
+        watchlist = WatchList.objects.filter(
+            user=request.user,
+            movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+            serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
+            ).first()
+        
+        print(f" watchlist exist? '{watchlist}' \n")
+        
+        if watchlist:
+
+            data = {
+                'in_watchlist': True,
+                'personal_note': watchlist.personal_note,
+                'status': watchlist.status,
+            }
+        else:
+            data = {'in_watchlist': False}
+
+        return JsonResponse(data)
 
 
     # user clicked the 'like' button
     if request.method == "POST":
-            # check if the object already exists in the watchlist
-            watchlist = WatchList.objects.filter(
-                user=request.user,
-                movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
-                serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
-                ).first()
-            
-            print(f"Content in watchlist: '{watchlist}' \n") # debugging 
 
-            # If the watchlist entry already exists, it will be deleted.
-            if watchlist: 
-                watchlist.delete()
-                print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
-                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
-                return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
-            
-            else: 
-                # the Watchlist instance is created with the user id,
-                # model type and the respective id of this model instance to construct the foreign key
-                watchlist = WatchList.objects.create(
+        # # check if the object already exists in the watchlist
+        # watchlist = WatchList.objects.filter(
+        #     user=request.user,
+        #     movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+        #     serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
+        #     ).first()
+
+        try:
+            form = WatchListForm(request.POST or None)
+            print("Reading the form from the request...")
+            print(f"Form data: {form.data}") # Debug print to check form data
+            for key, value in form.data.items():
+                print(f"Form field: {key}, value: {value}")
+
+            if form.is_valid():
+                # debugging
+                print(f"Form is valid.\n Cleaned data: {form.cleaned_data}") # Debug print to check cleaned data
+                for key, value in form.cleaned_data.items():
+                    print(f"Cleaned data field: {key}, value: {value}")
+
+                # new_watchlist = form.save(commit=False)
+
+                new_watchlist = WatchList(
                     user=request.user,
-                    movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
-                    serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
-                    )
-                #------
-                # Here help pass a form to the frontend for the personal_note and Status.
-                # -----
-                
-                print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist.\n")
-                # messages.success(request, f"{content_type} added to your likes.")
-                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* added to watchlist."
+                    personal_note = form.cleaned_data['personal_note'],
+                    status = form.cleaned_data['status'],
+                    movie_id = object_id if content_type == 'movie' else None,
+                    serie_id = object_id if content_type == 'serie' else None,
+                ) # create an empty instance to fill with the form data and the user/content info
+
+                # new_watchlist.personal_note = form.cleaned_data['personal_note']
+                # new_watchlist.status = form.cleaned_data['status']
+                # new_watchlist.user=request.user
+                # new_watchlist.movie = object_id if content_type == 'movie' else None
+                # new_watchlist.serie = object_id if content_type == 'serie' else None
+
+                new_watchlist.save()
+                # print the data from the form for debugging
+                print(f"Form data: personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}")
+
+                # print(f"*personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}*\n")
+                # message = f"*personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}*"
+                message = f"*{new_watchlist}*"
+                # message = f"* Temp testing the modal box form"
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
+
+            else:
+                print(f"Form is not valid. Errors: {form.errors}")
+                # return JsonResponse({'in_watchlist': False, 'message': "Invalid form data."}, status=400)
+                return JsonResponse({'error': str(form.errors)}, status=400)
+
+        except Exception as e:
+            print(f"**An error occured. Error**: \n{e}")
+            return JsonResponse({'in_watchlist': False, 'message': "An error occurred while processing your request."}, status=500)
+        
+    if request.method == "DELETE":
+        # If the watchlist entry already exists, it will be deleted.
+        watchlist = WatchList.objects.filter(
+            user=request.user,
+            movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+            serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
+            ).first()
+        
+        if watchlist: 
+
+            watchlist.delete()
+            print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
+            message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
+            return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
+
+
+    if request.method == "PUT":
+        # If the watchlist entry already exists, it will be updated with the new data from the form.
+        watchlist = WatchList.objects.filter(
+            user=request.user,
+            movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+            serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
+            ).first()
+        
+        try:
+            form = WatchListForm(request.PUT or None)
+            print(f"Form data: {form.data}") # Debug print to check form data
+            if form.is_valid() and watchlist:
+
+                # Update the existing watchlist entry with new data
+                watchlist.personal_note = form.cleaned_data['personal_note']
+                watchlist.status = form.cleaned_data['status']
+                watchlist.save()
+
+                print(f"Watchlist updated.\n Updated data: personal_note: {watchlist.personal_note}, status: {watchlist.status}") # Debug print to check updated data
+
+                message = f"*{watchlist}* updated in your watchlist."
+                return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
+
+        except Exception as e:
+            print(f"**An error occured. Error**: \n{e}")
+            return JsonResponse({'in_watchlist': True, 'message': "An error occurred while processing your request."}, status=500)
