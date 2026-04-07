@@ -70,6 +70,11 @@ class WatchListToggleEntryTest(TestCase):
             "\n\n ** Loading necessary component for testing watchlist's view with setUpTestDAta **\n\n",
         )
 
+    VALID_FORM_DATA = {
+            'personal_note': 'test note',
+            'status': 'watching',   # must match one of your STATUS_CHOICES values
+        }
+
 
     def test_logged_user_watchlist_add_entry(self):
         '''
@@ -84,9 +89,12 @@ class WatchListToggleEntryTest(TestCase):
         #  Owner can Add an entry via POST on the toggle_watchlist() view
         # Technically by clicking on the bookmark icon button on the front-end
         # This will send the type of content that it is and the pk of the object
-        url = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
+        url = reverse(
+            "user_library:toggle_watchlist", 
+            args=["movie", self.movie.pk]
+            )
 
-        response = self.client.post(url)
+        response = self.client.post(url, data=self.VALID_FORM_DATA)
         self.assertEqual(response.status_code, 200)
         # check that the watchlist entry was created
 
@@ -98,7 +106,7 @@ class WatchListToggleEntryTest(TestCase):
 
         # user add another entry
         url_1 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
-        response_1 = self.client.post(url_1)
+        response_1 = self.client.post(url_1, data=self.VALID_FORM_DATA)
 
         new_data = response_1.json()
         self.assertTrue(new_data["in_watchlist"])
@@ -123,7 +131,7 @@ class WatchListToggleEntryTest(TestCase):
         self.assertTrue(login)
         # Sent Post request
         url = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
-        response = self.client.post(url)
+        response = self.client.post(url, data=self.VALID_FORM_DATA)
         self.assertEqual(response.status_code, 200)
         data = response.json()
 
@@ -137,10 +145,9 @@ class WatchListToggleEntryTest(TestCase):
         self.assertTrue(wlist.exists())
         self.assertEqual(str(wlist.last().movie), "Mad Max")
 
-        # Sent Post request, with the same existing Movie instance
-        # therefore should remove it from DB
+        # Sent Delete request, with the same existing Movie instance
         url_2 = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
-        resp2 = self.client.post(url_2)
+        resp2 = self.client.delete(url_2)
         self.assertEqual(resp2.status_code, 200)
         data2 = resp2.json()
 
@@ -188,7 +195,7 @@ class WatchListToggleEntryTest(TestCase):
         # Adding 1st movie
         url_1 = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
 
-        resp_1 = self.client.post(url_1)
+        resp_1 = self.client.post(url_1, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_1.status_code, 200)
         data_1 = resp_1.json()
         self.assertIn("added", data_1["message"])
@@ -196,7 +203,7 @@ class WatchListToggleEntryTest(TestCase):
         # Adding 1st serie
         url_2 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
 
-        resp_2 = self.client.post(url_2)
+        resp_2 = self.client.post(url_2, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_2.status_code, 200)
         data_2 = resp_2.json()
         self.assertTrue(data_2["in_watchlist"])
@@ -208,7 +215,7 @@ class WatchListToggleEntryTest(TestCase):
         # Adding 1st serie on New user 2 
         url_3 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
 
-        resp_3 = self.client.post(url_3)
+        resp_3 = self.client.post(url_3, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_3.status_code, 200)
         data_3 = resp_3.json()
         self.assertTrue(data_3["in_watchlist"])
