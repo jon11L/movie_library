@@ -227,12 +227,16 @@ def serie_detail(request, slug):
             print(f"number of comments: {len(comments)}")
 
             form = CommentForm()
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
+
             context = {
                 'serie': serie,
                 'seasons': seasons,
                 'form': form,
                 'main_cast': main_cast,
-                'comments': comments
+                'comments': comments,
+                'watchlist_form': watchlist_form
                 }
 
             if request.user.is_authenticated:

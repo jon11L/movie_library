@@ -49,6 +49,7 @@
                                     <button class="watchlist-button"
                                         data-type="serie"
                                         data-id="{{ serie.id }}"
+                                        data-title="{{ serie.title }}"
                                         data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
                                         <i class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
@@ -281,6 +282,14 @@
     </div>
 </div>
 <br/>
+
+
+
+<!-- Modal box form for watchlist-->
+{% if watchlist_form %}
+    {% include "user_library/watchlist_form.html" %}
+{% endif %}
+
 
 
 <script src="{% static 'js/create_comment.js' %}"></script>

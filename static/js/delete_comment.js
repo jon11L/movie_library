@@ -85,7 +85,7 @@ function deleteComment() {
     });
 
     
-    // Track all delete buttons On click: delete the comment with Ajax and remove it from the DOM
+    // Track all confirm buttons On click: delete the comment with Ajax and remove it from the DOM
     confirmButton.addEventListener('click', function (e) {
         e.preventDefault(); // preventDefault allow to not recharge the page
 

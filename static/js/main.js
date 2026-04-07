@@ -141,22 +141,19 @@ $(document).ready(function() {
         const objectId = button.data('id'); // primary key
         console.log(`getting the Content type: ${contentType} and Object id: ${objectId} `);
         
-
         const icon = button.find('i');
         pendingWatchlistData = {contentType, objectId, icon};
-
 
         if (button.attr('data-bookmarked') === 'true') {
             // If already in watchlist, fetch the existing data to populate the form
             // and show the confirm button to update the watchlist instance.
             //  show the 'remove' button
-
+            removeWatchlistBtn.style.display = 'block';
             modalTitle.innerHTML = `
                 Edit  
                 <span style="color: rgb(180, 160, 130); font-style: italic;">${button.data('title')}</span>
             `;
 
-            removeWatchlistBtn.style.display = 'block';
             fetch(`/library/watchlist/${contentType}/${objectId}/`, {
                 method: 'GET',
             },
@@ -206,7 +203,7 @@ $(document).ready(function() {
         // Append the content type and object id to the form data
         // So it correctly assigns the foreign key on the right field (Movie or Serie)
         // formData.append('content_type', contentType);
-        formData.append(contentType, objectId);
+        // formData.append(contentType, objectId);
 
         console.log(`Content type: ${contentType}, Object id: ${objectId} appended to form data.`);
         console.log(`Personal note: ${formData.get('personal_note')}`);

@@ -245,32 +245,33 @@ def movie_detail(request, slug):
             print(f"\nNumber of comments: {len(comments)}")
 
             form = CommentForm() # present the Comment block form
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
 
             context = {
                 'movie': movie,
                 'comments': comments,
                 'form': form,
+                'watchlist_form': watchlist_form,
                 }
 
             # display the Comment form if user is connected
             if request.user.is_authenticated:
                 # Get the user's watchlist content (movies, series)
-                watchlist = set(
-                    WatchList.objects.filter(
+                in_watchlist = WatchList.objects.filter(
                         user=request.user.id,
                         movie=movie
                         ).values_list('movie_id', flat=True)
-                )
-                print(f"\nuser's watchlist :{watchlist}") # debug print
+                
+                print(f"\n Movie In watchlist :{in_watchlist}") # debug print
 
                 # Check if user liked the movie
-                user_liked_movie = set(
-                    Like.objects.filter(
+                user_liked_movie = Like.objects.filter(
                         user=request.user.id,
                         content_type='movie',
                         object_id=movie.pk
                         ).values_list('object_id', flat=True)
-                )
+
                 print(f"user_liked :{user_liked_movie}") # debug print
 
                 form = CommentForm(request.POST or None) # here allow to post a comment.
@@ -279,7 +280,7 @@ def movie_detail(request, slug):
                     {
                         'movie': movie,
                         'user_liked_movie': user_liked_movie,
-                        'watchlist': watchlist,
+                        'watchlist': in_watchlist,
                         'form': form,
                         'comments': comments
                         
