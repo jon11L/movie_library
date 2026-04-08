@@ -117,28 +117,44 @@ $(document).ready(function() {
     // const cancelButton = document.getElementById('cancelWatchlistBtn');
     const confirmButton = document.getElementById('confirmWatchlistBtn');
     const removeWatchlistBtn = document.getElementById('removeWatchlistBtn');
+    
+    let pendingWatchlistData = null; // allow to share the state and data of the watchlist
 
-    // allow to share the state and data of the watchlist
-    let pendingWatchlistData = null;
 
     // User click on the watchlist button / open the modal,
     // Check if watchlist instance already exist for this content, if exist, populate the form with the existing data and show the update button, if not, show empty form and add button.
     $('.watchlist-button').click(function(e) {
         console.log('Watchlist button clicked!');
         e.preventDefault();
-        
-        // Check if user is authenticated before doing anything else
-        console.log(`USER_IS_AUTHENTICATED: ${USER_IS_AUTHENTICATED} `)
-        if (!USER_IS_AUTHENTICATED) {
-            showMessage('You must be logged in to use the Watchlist.', 'warning');
-            return;  // stops here, modal never opens
-        }
-        
+
         const button = $(this); 
         const contentType = button.data('type'); // e.g. Model 'serie'
         const objectId = button.data('id'); // primary key
         const icon = button.find('i');
         const isExisting  = button.data('bookmarked') === true; // check if the instance already exist
+        const title = button.data('title'); // get the content title from the button data attribute to set the modal title
+
+        // set the media title in the modal header
+        // document.getElementById('watchlistModalTitle').textContent = title; 
+        modalTitle.innerHTML = `
+            <span style="color: rgb(180, 160, 130); font-style: italic;">
+            ${title}
+            </span>
+        `;
+
+        // Check if user is authenticated before doing anything else
+        console.log(`USER_IS_AUTHENTICATED: ${USER_IS_AUTHENTICATED} `)
+        if (!USER_IS_AUTHENTICATED) {
+            // showMessage('You must be logged in to use the Watchlist.', 'warning');
+            document.getElementById('watchlistGuestPanel').style.display = 'block';
+            document.getElementById('watchlistFormPanel').style.display  = 'none';
+            modal.show();
+            return;  // stops here, modal never opens
+        }
+        
+        document.getElementById('watchlistGuestPanel').style.display = 'none';
+        document.getElementById('watchlistFormPanel').style.display  = 'block';
+        
 
         console.log(`Getting Media type: ${contentType} and Object id: ${objectId}`);
         pendingWatchlistData = {contentType, objectId, icon, isExisting};
@@ -150,12 +166,6 @@ $(document).ready(function() {
             console.log(`Content already in user's watchlist, fetching existing data to populate the form.`);
 
             removeWatchlistBtn.style.display = 'block';
-            modalTitle.innerHTML = `
-                Edit  
-                <span style="color: rgb(180, 160, 130); font-style: italic;">
-                ${button.data('title')}
-                </span>
-            `;
 
             fetch(`/library/watchlist/${contentType}/${objectId}/`, {
                 method: 'GET',
@@ -173,14 +183,6 @@ $(document).ready(function() {
             });
 
         } else {
-            // If not in watchlist, hide the remove button in the modal
-            modalTitle.innerHTML = `
-                Add to Watchlist 
-                <span style="color: rgb(180, 160, 130); font-style: italic;">
-                ${button.data('title')}
-                </span>
-            `;
-
             confirmButton.textContent = 'Save'; // change the button text to indicate processing
             removeWatchlistBtn.style.display = 'none';
         }
