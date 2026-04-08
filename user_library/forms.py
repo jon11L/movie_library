@@ -16,14 +16,14 @@ class WatchListForm(forms.Form):
                 "class": "watchlist-note-form",
                 "rows": 4,
                 # "cols": 40,
-                "style": "resize: none; padding-left: 0.5rem", 
+                "style": "resize: none; padding-left: 0.5rem; padding-top: 0.5rem;", 
             },
         ),
     )
 
     status = forms.ChoiceField(
         choices=WatchList.Status.choices,
-        initial='',   
+        initial='empty', # to avoid pre-selecting the first choice, and let the user select one.   
         required=False,
         label="status",
         widget=forms.Select(attrs={"class": "form-select",}),
