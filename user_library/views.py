@@ -1,4 +1,6 @@
 import time
+import json
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -336,32 +338,6 @@ def watch_list_view(request, pk: int):
                     reverse= True if '-' in sel_order else False,
                 )
 
-            # Get the user's watchlist content (movies, series)
-            user_watchlist_movies = set(
-                WatchList.objects.filter(
-                    user=request.user.id, movie__isnull=False
-                ).values_list("movie_id", flat=True)
-            )
-
-            user_watchlist_series = set(
-                WatchList.objects.filter(
-                    user=request.user.id, serie__isnull=False
-                ).values_list("serie_id", flat=True)
-            )
-
-            # ----- Get the user's like content (movies, series)  ------
-            user_liked_movies = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type="movie"
-                ).values_list("object_id", flat=True)
-            )
-
-            user_liked_series = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type="serie"
-                ).values_list("object_id", flat=True)
-            )
-
             # -- paginate over the results --
             paginator = Paginator(list_watchlist, 24)
             page_number = request.GET.get('page')
@@ -405,6 +381,32 @@ def watch_list_view(request, pk: int):
                     continue
 
             total_content = watchlist.count()
+
+            # --- Get the user's watchlist content (movies, series) ---
+            user_watchlist_movies = set(
+                WatchList.objects.filter(
+                    user=request.user.id, movie__isnull=False
+                ).values_list("movie_id", flat=True)
+            )
+
+            user_watchlist_series = set(
+                WatchList.objects.filter(
+                    user=request.user.id, serie__isnull=False
+                ).values_list("serie_id", flat=True)
+            )
+
+            # ----- Get the user's like content (movies, series)  ------
+            user_liked_movies = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type="movie"
+                ).values_list("object_id", flat=True)
+            )
+
+            user_liked_series = set(
+                Like.objects.filter(
+                    user=request.user.id, content_type="serie"
+                ).values_list("object_id", flat=True)
+            )
 
             context = {
                 'page_obj': page_obj,
@@ -524,30 +526,19 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 for key, value in form.cleaned_data.items():
                     print(f"Cleaned data field: {key}, value: {value}")
 
-                # new_watchlist = form.save(commit=False)
-
                 new_watchlist = WatchList(
                     user=request.user,
                     personal_note = form.cleaned_data['personal_note'],
                     status = form.cleaned_data['status'],
                     movie_id = object_id if content_type == 'movie' else None,
                     serie_id = object_id if content_type == 'serie' else None,
-                ) # create an empty instance to fill with the form data and the user/content info
-
-                # new_watchlist.personal_note = form.cleaned_data['personal_note']
-                # new_watchlist.status = form.cleaned_data['status']
-                # new_watchlist.user=request.user
-                # new_watchlist.movie = object_id if content_type == 'movie' else None
-                # new_watchlist.serie = object_id if content_type == 'serie' else None
+                ) # create an empty instance to fill with the form data and the user/media info
 
                 new_watchlist.save()
                 # print the data from the form for debugging
                 print(f"Form data: personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}")
 
-                # print(f"*personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}*\n")
-                # message = f"*personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}*"
                 message = f"*{new_watchlist}*"
-                # message = f"* Temp testing the modal box form"
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
 
             else:
@@ -559,21 +550,6 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             print(f"**An error occured. Error**: \n{e}")
             return JsonResponse({'in_watchlist': False, 'message': "An error occurred while processing your request."}, status=500)
         
-    if request.method == "DELETE":
-        # If the watchlist entry already exists, it will be deleted.
-        watchlist = WatchList.objects.filter(
-            user=request.user,
-            movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
-            serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
-            ).first()
-        
-        if watchlist: 
-
-            watchlist.delete()
-            print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
-            message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
-            return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
-
 
     if request.method == "PUT":
         # If the watchlist entry already exists, it will be updated with the new data from the form.
@@ -584,8 +560,11 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             ).first()
         
         try:
-            form = WatchListForm(request.PUT or None)
-            print(f"Form data: {form.data}") # Debug print to check form data
+            data = json.loads(request.body)
+
+            form = WatchListForm(data)
+            print(f"Form data: {form}") # Debug print to check form data
+
             if form.is_valid() and watchlist:
 
                 # Update the existing watchlist entry with new data
@@ -593,10 +572,35 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 watchlist.status = form.cleaned_data['status']
                 watchlist.save()
 
-                print(f"Watchlist updated.\n Updated data: personal_note: {watchlist.personal_note}, status: {watchlist.status}") # Debug print to check updated data
+                print(
+                    f"Watchlist updated.\n"
+                    f" Updated data: personal_note: {watchlist.personal_note},"
+                    f" status: {watchlist.status}"
+                    )
 
-                message = f"*{watchlist}* updated in your watchlist."
+                message = f"*{watchlist.content_object}* watchlist updated."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
+
+        except Exception as e:
+            print(f"**An error occured. Error**: \n{e}")
+            return JsonResponse({'in_watchlist': True, 'message': "An error occurred while processing your request."}, status=500)
+        
+
+    if request.method == "DELETE":
+        try:
+            # If the watchlist entry already exists, it will be deleted.
+            watchlist = WatchList.objects.filter(
+                user=request.user,
+                movie=Movie.objects.get(id=object_id) if content_type == 'movie' else None,
+                serie=Serie.objects.get(id=object_id) if content_type == 'serie' else None
+                ).first()
+        
+            if watchlist: 
+                watchlist.delete()
+                print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
+                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
+
+                return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
 
         except Exception as e:
             print(f"**An error occured. Error**: \n{e}")

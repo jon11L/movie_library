@@ -7,33 +7,50 @@
         <div class="modal-content"
             style="background-color: rgb(30, 30, 30); color: antiquewhite; border: 2px solid rgb(21, 49, 49); width: fit-content;">
 
-            <div class="modal-header" style="border-bottom: 1px solid rgb(57, 56, 55);">
-                <h5 class="modal-title" id="watchlistModalTitle"
-                    style="margin: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; align-items: center;">
-                    <!-- Value being passed on Js -->
-                <button type="button" id="closeW" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-
-            <!---- Watchlist Form section ----->
-            <form action="" id="watchlistForm" method="POST" label="">
-                {% csrf_token %}
-
-                <div class="modal-body" style="color: rgb(200, 196, 190); max-width: 450px; margin: auto;">
-                    <div class="" style="">
-                        <div id="personal_note" style="margin-bottom: 0.5rem;">
-                            {{ watchlist_form.personal_note }}
+            <div class="modal-header" style="display: block; border-bottom: 1px solid rgb(57, 56, 55); margin-bottom: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgb(21,49,49); display: flex; align-items: center; justify-content: center;">
+                            <i class="far fa-bookmark" style="color: rgb(127,207,176); font-size: 14px;"></i>
                         </div>
-
-                        <div id="status" style="width: fit-content;">
-                            <label for="status"><strong>status:</strong></label>
-                            {{ watchlist_form.status }}
-                        </div>
-
+                        <h6 style="color: rgb(218, 211, 199); margin: 0.25rem 0 0 0; line-height: 1.6;">
+                            Save to watchlist
+                        </h6>
                     </div>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid rgb(57, 56, 55); gap: 0.5rem;">
 
+                    <button type="button" id="closeW" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close" style="margin-top: 0rem;"></button>
+                </div>
+                    
+
+                <h5 class="modal-title" id="watchlistModalTitle"
+                    style="margin: 0.5rem auto 0 auto; padding: 0;  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <!-- Value being passed on Js --> </h5>
+                
+            </div>
+            
+            
+            <div id="watchlistFormPanel">
+                <!---- Watchlist Form section ----->
+                <form action="" id="watchlistForm" method="POST" label="">
+                    {% csrf_token %}
+
+                    <div class="modal-body" style="color: rgb(200, 196, 190); max-width: 450px; margin: auto;">
+                        <div class="" style="">
+                            <div id="personal_note" style="margin-bottom: 0.5rem;">
+                                {{ watchlist_form.personal_note }}
+                            </div>
+    
+                            <div id="status" style="width: fit-content;">
+                                <label for="status"><strong>status:</strong></label>
+                                {{ watchlist_form.status }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+    
+                <div class="modal-footer" style="border-top: 1px solid rgb(57, 56, 55); gap: 0.5rem;">
+    
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
                         id="cancelWatchlistBtn">
                         Cancel
@@ -48,7 +65,32 @@
                     </button>
                 </div>
 
-            </form>
+            </div>
+
+            <div id="watchlistGuestPanel">
+                <div style="padding: 1.75rem 1.5rem 1.25rem; text-align: center;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: rgb(21,49,49); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                        <i class="fa fa-user" style="color: rgb(127,207,176); font-size: 22px;"></i>
+                    </div>
+                    <p style="font-size: 16px; font-weight: 500; margin: 0 0 0.5rem;">Join to use the Watchlist</p>
+                    <p style="font-size: 13px; color: rgb(160,155,145); margin: 0 0 1.75rem; line-height: 1.6;">
+                        Track what you want to watch, add personal notes, and manage your viewing status.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="{% url 'user:register' %}"
+                            style="display: block; padding: 0.6rem 1rem; background: rgb(21,49,49); border: 1px solid rgb(31,70,70); border-radius: 0.375rem; color: rgb(127,207,176); font-size: 14px; font-weight: 500; text-decoration: none;">
+                            Create a free account
+                        </a>
+                        <a href="{% url 'user:login' %}"
+                            style="display: block; padding: 0.6rem 1rem; background: transparent; border: 1px solid rgb(57,56,55); border-radius: 0.375rem; color: rgb(180,175,165); font-size: 14px; text-decoration: none;">
+                            Log in
+                        </a>
+                    </div>
+                </div>
+                <div style="padding: 0.75rem 1.5rem 1rem; border-top: 1px solid rgb(57,56,55); text-align: center;">
+                    <small style="color: rgb(120,115,108);">Your watchlist is private and only visible to you.</small>
+                </div>
+            </div>
 
         </div>
     </div>
