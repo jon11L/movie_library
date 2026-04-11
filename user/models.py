@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.templatetags.static import static
 from django.db.models.signals import post_save
+
 from datetime import datetime
 
 # Create a Profile models here that inherit from the django built-in User.
@@ -86,8 +88,26 @@ class Profile(models.Model):
             return "issue with the update"
 
 
+    def render_background_picture(self):
+        """
+        if user has not set up a background pictures.
+        Allow to Fallback to a default static image 
+        """
+        if self.background_picture:
+            return self.background_picture.url
+        return static("images/default_background_profile.jpg")
+
+
 # create Profile when a new User is created
 def create_profile(sender, instance, created, **kwargs):
+    '''
+    Docstring for create_profile
+    
+    :param sender: Description
+    :param instance: Being the user just being created
+    :param created: Description
+    :param kwargs: Description
+    '''
     if created:
         user_profile = Profile(user=instance)
         user_profile.save()

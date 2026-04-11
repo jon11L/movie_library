@@ -9,9 +9,12 @@ from django.contrib.auth.models import User
 
 import time
 
+from core.tools.wrappers import timer, num_queries
+
+
 from .models import Profile
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
-from user_library.models import Like
+from user_library.models import Like, WatchList
 from comment.models import Comment
 from movie.models import Movie
 from serie.models import Serie
@@ -73,6 +76,7 @@ def login_user(request):
             messages.error(request, ("User and password don't match. Please try again"))
             return redirect(to='user:login')
 
+
 # log out function
 @login_required
 def logout_user(request):
@@ -81,26 +85,33 @@ def logout_user(request):
     return redirect(to='/')
 
 
+@timer
+@num_queries
 @login_required(login_url= "user:login")
 def profile_page(request, pk):
     ''' Returns the profile page of the user_id/pk requested
         At the moment users can visit other user's profile, but this may be changed
     '''
-    start_time = time.time()
-
     if request.user.is_authenticated:
         # fetch the profile being requested
-        profile = Profile.objects.get(user=pk)
-        like = Like.objects.filter(user=pk)
-        # print(f"like: {like}") # debug print
+        # retrieve the user and its related Profile in one query
+        # user = User.objects.filter(pk=pk).select_related("profile", "comments", "watchlist") 
+        # user = User.objects.filter(pk=pk).select_related("profile").prefetch_related("comments__movie", "comments__serie", "watchlist__movie", "watchlist__serie").first()
+        user = User.objects.filter(pk=pk).select_related("profile").first()
 
-        total_like = like.count()
+        print(f"\nUser query: {user}\n") # debug print
+
+        # profile = Profile.objects.get(user=pk)
+
+        like = Like.objects.filter(user=pk)
+        like_count = like.count()
 
         # Displaying the comment posted by the user
-        comments = Comment.objects.filter(user=pk).order_by('-created_at')
+        comments = Comment.objects.filter(user=pk).select_related("movie", "serie")[0:3]
 
         # load the last 3 Watchlist added by the user
-        watchlist_items = profile.user.watchlist.all().order_by('-created_at')[:4] 
+        watchlist_items = WatchList.objects.filter(user=pk).select_related("movie", "serie")[0:3]
+        
         print(f"\nwatchlist_items: {watchlist_items}\n\n") # debug print
 
         # get the content (movie/serie) related to each comment.
@@ -109,45 +120,58 @@ def profile_page(request, pk):
         for item in watchlist_items:
             if item.content_object:
                 last_watchlist.append({
-                    'object': item.content_object, # retrieve the whole object through foreign key
+                    # 'object': item.content_object, # retrieve the whole object through foreign key
                     'kind': item.kind,
                     'added_on': item.created_at.strftime("%d %B %Y"),
-                    'poster': item.content_object.render_poster,
+                    'poster': item.content_object.render_poster(),
                     'title': item.content_object.title,
-                    'genre': item.content_object.render_genre,
+                    'genre': item.content_object.render_genre(),
+                    'slug': item.content_object.slug,
                 })
-        print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
+        # print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
 
         # Templates for future fav movies display
-        fav_movies = (1, 2, 3)
+        # fav_movies = (1, 2, 3)
 
         # fetch the movies and series that are commented by the user
-        comment_content = []
+        comment_list = []
         for comment in comments:
 
             if comment.content_object:
-                comment_content.append({
-                    'object': comment.content_object,
-                    'kind': comment.kind,
-                    'created_at': comment.created_at.strftime("%d %B %Y"),
+                comment_list.append({
+                    # 'object': comment.content_object,
+                    'id': comment.pk,
                     'body': comment.body,
-                    'user': comment.user,
+                    # 'user': comment.user.username,  Removed many queries
+                    'created_at': comment.created_at.strftime("%d %B %Y"),
+                    'kind': comment.kind,
+                    'title': comment.content_object.title,
+                    'poster': comment.content_object.render_poster(),
+                    'slug': comment.content_object.slug,
                 })
 
-        print(f"comment_content: {comment_content}\n") #debug print
+        print(f"comment_list: {comment_list[0:3]}\n") # debug print
 
-        context = {
-            'profile': profile,
-            'like': like,
-            'total_like': total_like,
-            'comment_content': comment_content,
-            'last_watchlist': last_watchlist,
-            'fav_movies': fav_movies
+        profile_card = {
+            'user_id': user.profile.user,
+            'age': user.profile.render_age(),
+            'name': user.profile.user.username.capitalize(),
+            'bio': user.profile.bio,
+            'profile_picture': user.profile.profile_picture.url if user.profile.profile_picture else None,
+            'background_picture': user.profile.render_background_picture(),
+            'watchlist_status': user.profile.watchlist_private,
+            'last_update': user.profile.last_update()
         }
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"time: {elapsed_time:.2f} seconds.")
+        context = {
+            'user_id': user.pk,
+            'profile_card':profile_card,
+            'likes': like_count,
+            # 'total_like': total_like,
+            'comment_content': comment_list,
+            'last_watchlist': last_watchlist,
+            # 'fav_movies': fav_movies
+        }
 
         return render(request, 'user/profile_page.html', context=context)
     
@@ -162,13 +186,10 @@ def update_profile(request, pk):
         If someone tries to access another user's profile update page, they will be redirected to their own profile.
         request.user.id must be same as the target profile.user_id OR user.id/pk. 
     '''
-
     if request.user.is_authenticated and request.user.id != pk:
-
         print("\n* Unauthorised acces: user tried to access another User_Profile_update_page *\n")
         messages.error(request, ("You are not authorized to acces this page."))
         return redirect(to='user:profile_page', pk=request.user.id)
-
 
     elif request.user.is_authenticated and request.user.id == pk:
         # fetch the profile being requested
@@ -271,6 +292,7 @@ def update_password(request, pk):
         return redirect(to='user:login')
 
 
+#  Will be implemented in a separate models for account settings/preferences of user
 def toggle_watchlist_privacy(request):
     '''
     This function is called when the user clicks on the button to toggle the watchlist status
