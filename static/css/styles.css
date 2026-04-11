@@ -836,7 +836,7 @@ Need to reorganize the name or call a parent custom class
     align-items: center;
     z-index: 2;
     position: absolute;
-    transition: background-color 0.4s ease-in-out;
+    transition: background-color 0.8s ease-in-out;
 }
 
 .media-card:hover .vote-button-list {
@@ -912,7 +912,7 @@ Need to reorganize the name or call a parent custom class
 .watchlist-button:hover {
     cursor: pointer;
     /* transition: transform 0.75s ease-out; */
-    transform:translateY(-50%) scale(1.1);
+    transform: scale(1.15);
     /* padding-bottom: 12px; */
 }
 
@@ -963,7 +963,7 @@ Need to reorganize the name or call a parent custom class
 /* Title on media grid card /list */
 .list-media-title {
     width: 100%;
-    height: 25%;
+    height: 30%;
     bottom: 0;
     padding: 0;
     position: absolute;
@@ -971,37 +971,25 @@ Need to reorganize the name or call a parent custom class
     white-space: nowrap;
     border-radius: 0.25em;
 
-
-    background-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(10, 10, 10, 0.30) 40%,
-        rgba(10, 10, 10, 0.40) 50%,
-        rgba(10, 10, 10, 0.50) 60%,
-        rgba(10, 10, 10, 0.60) 70%,
-        rgba(10, 10, 10, 0.70) 80%,
-        rgba(10, 10, 10, 0.85) 100%
-    );
-
     overflow: hidden;
     transition: transform 0.40s ease-out;
-    transition: background-image 0.6s ease-out;
+    transition: background-image 0.9s ease-in;
 
 }
 
 /* Move the title up into the bottom of the poster when hovering over */
 .media-card:hover .list-media-title {
-    /* background-color: rgba(10, 10, 10, 0.85); */
     background-image: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(10, 10, 10, 0.5) 30%,
-        rgba(10, 10, 10, 0.6) 40%,
-        rgba(10, 10, 10, 0.7) 50%,
-        rgba(10, 10, 10, 0.75) 60%,
-        rgba(10, 10, 10, 0.85) 70%,
-        rgba(10, 10, 10, 0.95) 80%,
-        rgba(10, 10, 10, 1) 100%
+        rgba(10, 10, 10, 0.15) 20%,
+        rgba(10, 10, 10, 0.2) 30%,
+        rgba(10, 10, 10, 0.3) 40%,
+        rgba(10, 10, 10, 0.4) 50%,
+        rgba(10, 10, 10, 0.5) 60%,
+        rgba(10, 10, 10, 0.6) 70%,
+        rgba(10, 10, 10, 0.8) 80%,
+        rgba(10, 10, 10, 0) 100%
     );
 }
 
@@ -1021,8 +1009,8 @@ Need to reorganize the name or call a parent custom class
     align-items: center;
     width: 100%;
     margin: 0;
-    transition:  font-weight 0.6s ease-out;
-    transition: font-size 0.60s ease-out;
+    transition: font-weight 0.6s ease-in;
+    transition: font-size 0.6s ease-in;
     transition: background-color 0.60s ease-out;
     padding: 0.2rem 0 0.1rem 0.2rem;
 }
@@ -1044,6 +1032,110 @@ Need to reorganize the name or call a parent custom class
         height: 1.75rem;
     } */
 }
+
+
+
+/* ===== Profile page ======= */
+/* #profile-header {
+} */
+
+.user-photo-name {
+    width: fit-content;
+    /* margin-left: auto; */
+    text-align: center;
+    margin: -5.5rem 1rem 0 auto;
+    padding: 1rem 0;
+    z-index: 2;
+}
+
+.profile-pic {
+    /* margin-left: auto; */
+}
+
+.profile-pic img{
+    border: 2px solid whitesmoke;
+    aspect-ratio: 1/1;
+    margin: auto;
+}
+
+.profile-library-links {
+    display: flex;
+    width: 100%;
+    padding: 0.5rem 0;
+    gap: 0.5rem;
+    border-radius: 25%;
+    width: 100%;
+    background-color: lightgray;
+    align-items: center;
+    justify-content: center; 
+    bottom: 0;
+    z-index: 1;
+}
+
+
+.profile-library-links a {
+    background-color: rgb(54, 54, 71);
+    border-color: black;
+}
+
+.profile-bio {
+    text-align: center;  
+    margin-right: 1rem; 
+    padding-top: 0.75rem;
+}
+
+
+@media (max-width: 475px) {
+    .profile-pic{
+    width: 85%;
+    }
+    .profile-library-links a{
+        font-size: 95%;
+        font-weight: 550;
+    }
+    
+    .user-photo-name{
+        margin: -4.5rem auto 0 1.5rem;
+        flex: 1 0 33%;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-photo-name {
+        /* bottom: 0; */
+        /* flex: 1 0 25%; */
+    }
+    .profile-library-links {
+    }
+    
+}
+
+@media (min-width: 768px) {
+    .profile-bio {
+        justify-content:left;
+        width: 50%;
+        margin-right: auto;
+    }
+
+    .user-photo-name {
+
+    }
+
+    .profile-library-links {
+    }
+
+}
+
+
+@media (min-width: 992px) {
+    .profile-bio {
+        justify-content:left;
+        width: 50%;
+        margin-right: auto;
+    }
+    
+}
+
 
 
 /* ================= REGISTER // LOGIN PAGES =============== */
@@ -1223,7 +1315,9 @@ Need to reorganize the name or call a parent custom class
     max-width: 768px;
     background-color: white;
     border: solid darkgrey;
+    border-radius: 0.5rem;
 }
+
 .edit-account-btns {
     display: flex;
     justify-content: center; 

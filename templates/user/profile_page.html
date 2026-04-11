@@ -3,10 +3,7 @@
 {% block content %}
 {% load static %}
 
-<br>
-<br>
 
-<div class="container-fluid my-4">
     <div class="custom-wide">
         <div class="row">
             
@@ -18,204 +15,184 @@
             
             <main class="custom-col-9 main-wrapper">
 
-                <div class="card text-center">
+                <div style="max-width: 1200px; margin: auto;">
 
-                    <div class="card-header" style="display: flex; justify-content: space-between; margin: 0.2rem; padding: 0.4rem;">
-                        <p></p>
-                        <h4 style="margin: 0;">{{ profile.user.username.capitalize }}</h4>
-                        <p style="margin: 0;"><strong>Member since: </strong>{{ profile.created_at|date:"d M Y" }}</p>
-                    </div>
-                
-                    <!-- Main profile part: image, bio, Fav movies. -->
-                    <div class="card-body">
-                        <div class="row">
-                        
-                            <div class="col-2 card-text" style="text-align: left;">
-                                <p style="margin-bottom: 0.4rem;"><strong>age: </strong><small>{{ profile.render_age }}</small></p>
-                                <!-- <p style="margin-bottom: 0.1rem;"><strong>Member since: </strong><small>{{ profile.created_at|date:"d M Y" }}</small></p> -->
-                                <p style="margin-bottom: 0rem;"><strong>Last updated: </strong><small class="text-body-secondary">{{ profile.last_update }}</small></p>
-                            </div>
+                    <section id="profile-header" style="margin: 0; padding: 0;">
 
-                            <!--  profile picture -->
-                            <div class="col-3" style="margin-top: 2px; margin-right: 1rem;">
-                                {% if profile.profile_picture %}
-                                <img src=" {{ profile.profile_picture.url }} " class="img-fluid rounded" style="width: 200px; height: 200px;" alt="Profile photo">
-                                {% else %}
-                                <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded" style="margin: 0px 25px; width: 200px; height: 200px;" alt="Profile photo">
-                                {% endif %}
-                            </div>
-                        
-                            <div class="col-2">
-                                <div style="text-align: left; margin-top: 25px; margin-bottom: 10px;">
-                                    <h6 class="card-title" style="margin-bottom: 25px;">{{ profile.bio }}</h6>
-                                    <!-- <p class="card-text" style="margin-bottom: 25px;">{{ profile.bio }}</p> -->
+                        <div class="card profile"
+                            style=" margin: auto; border-radius: 0.5em; min-height: fit-content; height: auto; background-color: whitesmoke;">
+
+                            <!-- Background image area -->
+                            <div style="position: relative;">
+
+                                <!--  profile picture -->
+                                <!-- <div class="user-background-img img-fluid rounded" style="background-image: url('{{ profile_card.background_picture }}'); object-fit: contain;">                             -->
+                                <div style="margin: auto">
+                                    <img src="{{ profile_card.background_picture }}" alt="" width="1200" height="700"
+                                        style="object-fit:cover; aspect-ratio: 16/9;  z-index: -1; margin: auto;" class="user-background-img img-fluid rounded">
                                 </div>
+                        
+                                <!-- <div style="position: absolute; z-index: 1; top: 0; left: 0%; width: 100%;"> -->
+                                <div class="d-flex" style="gap: 1rem; justify-content: space-around;">
+
+                                    <div class="user-photo-name">
+                                        <!--  profile picture -->
+                                        <div class="profile-pic">
+                                            {% if profile_card.profile_picture %}
+                                            <img src=" {{ profile_card.profile_picture }} " class="img-fluid rounded-circle" alt="Profile photo"
+                                                width="150px" height="150px" style="">
+                                            {% else %}
+                                            <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle"
+                                                width="150px" height="150px" alt="Profile photo">
+                                            {% endif %}
+
+                                            <h4 style="color: rgb(9, 9, 84); font-weight: 600; text-align: center;">{{ profile_card.name }}</h4>
+                                        </div>
+    
+                                        <div>
+                                        </div>
+                                    </div>
+    
+                                    <div class="profile-bio">
+                                        <h6 style="color: inherit; font-weight: 600;">Bio:</h6>
+                                        <p>{{ profile_card.bio }}</p>
+                                    </div>
+
+                                </div>
+
                             </div>
+                                
 
-                            <div class="col-4" style="align-items: center; margin: 0 auto; border-left: solid rgb(107, 105, 105);">
+                                <div class="card-footer d-flex profile-library-links">
+                                        <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary">
+                                            Watchlist
+                                        </a>
+                                        <a href="{% url 'user_library:liked' request.user.id %}" class="btn btn-primary">
+                                            Likes
+                                        </a>
+                                        <a href="#" class="btn btn-primary">
+                                            comment
+                                        </a>
+                                </div>
+                            <!-- </div> -->
+                        </div>
 
-                                <p>My Favorit movies:</p>
+                        <!-- Below the car on SM screens -->
+                        <!-- <div class="card-footer d-flex profile-library-links">
+                                <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary">
+                                    Watchlist
+                                </a>
+                                <a href="{% url 'user_library:liked' request.user.id %}" class="btn btn-primary">
+                                    Likes
+                                </a>
+                                <a href="#" class="btn btn-primary" >
+                                    comment
+                                </a>
+                        </div> -->
+                    
+                    </section>
+                    
 
-                                <div class="row" style="justify-content: center; padding: 0%; width: 100%;">
-                                    <!-- Create and insert top3-10 /favorit Movies of user. -->
-                                    <!-- {% for movie in favorite_movies %} -->
-                                    <!-- {% endfor %} -->
-                                    {% for i in fav_movies %}
-                                    <!-- Temporary until real Top movies exist -->
-                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="height: fit-content; margin-bottom: 1rem;">
-                                        
-                                        <div class="media-card h-100 w-100" style="padding: 0%;">
-                                            <div class="poster-wrapper" title="{{ movie.render_genre}}">
-                                                
-                                                <div>
-                                                    {% if i.render_poster %}
-                                                    <img src="{{ movie.render_poster}}" class="img-fluid rounded" style="" alt="Movie poster">
-                                                    {% else %}
-                                                    <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" style="" alt="Profile photo">
+                    <div style="margin: 1.75rem auto; text-align: center; width: fit-content;">
+                        <h3 style="border-bottom: solid 3px black; padding: 0.25rem 2rem;">Recent activity</h3>
+                    </div>
+
+                    <!--  Last User's activity -->
+                    <div class="d-block d-md-flex" style="width: 100%; margin: auto; gap: 0.5rem; justify-content: center;">
+                    
+                        <!--  Last comments posted-->
+                        <div class="col-12 col-md-6">
+                    
+                            <div style="padding-bottom: 1rem;">
+                                <div style="width: 90%; margin: auto;">
+                    
+                                    {% if comment_content %}
+                                    <h3 style="margin-bottom: 1rem; text-align: center;">Last comments:</h3>
+                    
+                                    {% for item in comment_content|slice:"0:3" %}
+                                    <div class="mb-3">
+                    
+                                        <div class="card text-center" style="border: solid 2px darkslategray; border-radius: 1em;">
+                    
+                                            <div class="card-body d-flex" style="border-radius: 1em;">
+                                                <p class="card-text" style="width: 95%;">{{ item.body }}</p>
+                                            </div>
+                    
+                                            <div class="card-footer text-body-secondary  d-flex"
+                                                style="justify-content: space-between; background-color: black; color: antiquewhite; flex-wrap: nowrap; border-radius: 0.8em; border-top-right-radius: 0; border-top-left-radius: 0;">
+                    
+                                                <div class="d-block d-md-flex" style="gap: 0.5rem; align-items: center; margin: auto;">
+                                                    <p style="color: lightgray; font-size:14px; margin-bottom: 0;">Commented on: {{ item.created_at }}</p>
+                                                    
+                                                    {% if item.kind == 'movie' %}
+                                                    <a href="{% url 'movie:detail' slug=item.slug %}"
+                                                        style="text-decoration: none; color: antiquewhite;">
+                                                        <span style="font-weight: bold;">| {{ item.title|slice:":50" }}</span>
+                                                    </a>
+                                                    {% elif item.kind == 'serie' %}
+                                                    <a href="{% url 'serie:detail' slug=item.slug %}"
+                                                        style="text-decoration: none; color: antiquewhite;">
+                                                        <span style="font-weight: bold;">| {{ item.title|slice:":50" }}</span>
+                                                    </a>
                                                     {% endif %}
                                                 </div>
+                    
+                                                <!-- delete option for Comments if user is owner of comment -->
+                                                <!-- <div style="margin-top: auto;">
+                                                    {% if request.user.pk == user_id %}
+                                                    <a href="{% url 'comment:delete_comment' item.id %}">
+                                                        <i class="fa fa-trash" style="color: gray;"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </div> -->
+                    
                                             </div>
                                         </div>
                                     </div>
                                     {% endfor %}
+
+                                    {% else %}
+                                    <h4 style="text-align: center; color: antiquewhite; margin-top: 2rem;">you have not posted any comments
+                                        yet.</h4>
+                                    {% endif %}
+                    
                                 </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!--  User's data, content such like watch list, liked movies -->
-                    <div class="card-footer text-body-secondary d-flex space-evenly" style="width: 100%;">
-
-                        <div class="d-flex" style="margin-left: 5%; margin-right: 2.5%;">
-                            <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary" style="background-color: rgb(75, 13, 13); padding-top: 0.5rem; padding-bottom: 0rem; border-color: black;">
-                                Watchlist
-                            </a>
-                            <!-- clickable button to trigger if user's watchlist is private or public -->
-                            <div style="margin-left: 2.5rem;">
-                                {% if request.user.profile == profile %}
-                                {% include "user/partials/toggle_privacy_watchlist.html" %}
-                                {% endif %}
                             </div>
                         </div>
                     
-                        <div class="d-flex" style="margin-left: 10%; margin-bottom: 0 ;padding-bottom: 0;">
-                            {% if like %}
-                            <a href="{% url 'user_library:liked_view' request.user.id %}"
-                                class="btn btn-secondary"
-                                style="background-color: rgb(127, 143, 231); padding-top: 0.5rem; padding-bottom: 0rem">
-                                Media Liked
-                            </a>
-                            {% else %}
-                            <a href="#" class="btn btn-secondary" style="background-color: rgb(127, 143, 231);">Media Liked </a>
-                            {% endif %}
-                            <p style="margin: 0.5rem 0 0 0.5rem;">{{ total_like }} likes</p>
+                    
+                    
+                        <!-- Other activities -->
+                        <div class="col-12 col-md-6">
+                            <div style="padding-bottom: 5%;">
+
+                                {% if last_watchlist %}
+                                <h3 style=" margin-bottom: 5%; text-align: center;">
+                                    Last added to {% if request.user.pk == user_id %}your{% else %}their{% endif %} watchlist:
+                                </h3>
+                    
+                                <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
+                                <div class="row" style="width: 100%; margin: auto;">
+                                    {% for item in last_watchlist %}
+                                    <div class="col-4 col-sm-4 col-md-4" style="height: auto; margin: auto; align-items: center;">
+                                        <div>
+                                            <a
+                                                href="{% if item.kind == 'movie' %}{% url 'movie:detail' slug=item.slug %}{% elif item.kind == 'serie' %}{% url 'serie:detail' slug=item.slug %}{% endif %}">
+                                                <img src="{{ item.poster }}" title="({{ item.kind}}) | {{ item.genre}}"
+                                                    alt="watchlist media" class="img-fluid rounded" width="300" height="450">
+                                            </a>
+                    
+                                        </div>
+                    
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                    
+                                {% endif %}
+                            </div>
+                    
                         </div>
                     
-                    </div>
-                </div>
-
-                <!--  Last User's activity -->
-                <div class="row d-block d-md-flex" style="width: 95%; margin: auto;">
-
-                    <!--  Last comments posted-->
-                    <div class="col">
-                        <!-- <div class=""> -->
-                        
-                            <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 10%; padding-bottom: 10%;">
-                            
-                                <h3 style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Last activity:</h3>
-
-                                {% if comment_content %}
-                                {% for item in comment_content|slice:"0:3" %}
-                                <div class="mb-4">
-                                
-                                    <div class="card text-center" style="border: solid 2px darkslategray;">
-
-                                        <div class="card-body d-flex">
-                                            <p class="card-text" style="width: 95%;">{{ item.body }}</p>
-                                        </div>
-                                    
-                                        <div class="card-footer text-body-secondary d-flex" style="justify-content: space-between;">
-                                            <p></p>
-                                            <div>
-                                                <small>Commented on: {{ item.created_at }}</small>
-                                            
-                                                {% if item.kind == 'movie' %}
-                                                <a href="{% url 'movie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
-                                                    <span style="font-weight: bold;">| {{ item.object.title|slice:":50" }}</span>
-                                                </a>
-                                            
-                                                {% elif item.kind == 'serie' %}
-                                                <a href="{% url 'serie:detail' slug=item.object.slug %}" style="text-decoration: none; color: inherit;">
-                                                    <span style="font-weight: bold;">| {{ item.object.title|slice:":50"  }}</span>
-                                                </a>
-                                                {% endif %}
-                                            </div>
-                                        
-                                            <!-- delete option for Comments if user is owner of comment -->
-                                            <div style="margin-top: auto;">
-                                                {% if item.user.pk == request.user.pk %}
-                                                <a href="{% url 'comment:delete_comment' item.user.pk %}">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
-                                                {% endif %}
-                                            </div>
-                                        
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                <br>
-                                <br>
-                                <h4 style="text-align: center; color: antiquewhite;">you have not posted any comments yet.</h4>
-                                {% endif %}
-                            
-                            </div>
-                        <!-- </div> -->
-                    </div>
-
-                    <!-- Other activities -->
-                    <div class="col" style="width: fit-content;">
-                        <div style="border: solid darkgrey; border-bottom: none; border-top-left-radius: 1em; border-top-right-radius: 1em; margin-top: 10%; padding-bottom: 10%;">
-                            {% if request.user.profile == profile %}
-                            <h3 style="margin-top: 2rem; margin-bottom: 5%; text-align: center;">
-                                Last added to your watchlist:
-                            </h3>
-                            {% else %}
-                            <h3 style="margin-top: 2rem; margin-bottom: 5%; text-align: center;"
-                            >Last added to their watchlist:
-                            </h3>
-                            {% endif %}
-                            
-                            <!-- PLace here the last 3 Media liked and Watchlist as 2 boxes and link to these  -->
-                            {% if last_watchlist %}
-                            <div class="row" style="width: 100%; margin: auto;">
-                                {% for item in last_watchlist %}
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3" style="height: 100%; width: auto; margin: auto; align-items: center;">
-                                    <div class="media-card h-100 w-100" style="margin: 5% 0 10% 0;">
-                                        {% if item.kind == 'movie' %}
-                                        <a href="{% url 'movie:detail' slug=item.object.slug %}">
-                                            <img src="{{ item.poster }}" title="{{ item.genre}}" alt="watchlist media" class="img-fluid rounded" style="width: 120px; height: 180px;">
-                                        </a>
-                                        {% elif item.kind == 'serie' %}
-                                        <a href="{% url 'serie:detail' slug=item.object.slug %}">
-                                            <img src="{{ item.poster }}" title="{{ item.genre}}" alt="watchlist media" class="img-fluid rounded" style="width: 120px; height: 180px;">
-                                        </a>
-                                        {% endif  %}
-
-                                    </div>
-                                
-                                </div>
-                                {% endfor %}
-                            </div>
-                            
-                            {% endif %}
-                        </div>
-
-                        <!-- </div> -->
-                    </div>
                 </div>
 
             </main>
@@ -230,4 +207,16 @@
     </div>
 </div>
 
+
+
+
 {% endblock %}
+
+
+
+<!-- {% include "comment/delete_confirm.html" %} -->
+
+<!-- <script src="{% static 'js/delete_comment.js' %}"></script> -->
+
+
+
