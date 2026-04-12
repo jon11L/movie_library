@@ -25,11 +25,6 @@ from user_library.forms import WatchListForm
 def about_page(request):
     return render(request, "main/about.html")
 
-def random_sample(population):
-    # takes a sample of 6 from the population fiven
-    random_selection = random.sample(population, 6)
-    return random_selection
-
 
 @timer
 @num_queries
@@ -74,20 +69,18 @@ def home(request):
         series_count = Serie.objects.count()
         movies_count = Movie.objects.exclude(is_active=False).count()
 
-        # Prepare various content lists (eg: recently released, coming soon, etc.)
+        # --- Prepare various content lists (eg: recently released, coming soon, etc.) ---
         # and return a sample of it / 6 per selections.
-        # if Movie.objects.exists():
-            # recently released movies (in the last 2 weeks)
+
+        # recently released movies (in the last 2 weeks)
         rec_movies = (
             Movie.objects.filter(
                 release_date__range=(fortnight_ago, today), length__gte=45
             )
             .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
             .exclude(is_active=False).exclude(length__range=(1, 45))
-            # .order_by("?")[:6]
+            .order_by("?")[:6]
         )
-
-        recent_movies = random_sample(list(rec_movies))
 
         # retrieve the movies coming out soon.
         upcoming_movies = (
@@ -125,7 +118,6 @@ def home(request):
         random_series = Serie.objects.only(
             "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
         ).order_by("?")[:6] 
-
 
         # ------ add side content , from other user's Watchlist or like movies/series ------
         discover_media = []  # list to hold the media saved in watchlist from other users
