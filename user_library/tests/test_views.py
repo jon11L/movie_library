@@ -176,8 +176,8 @@ class WatchListToggleEntryTest(TestCase):
         self.assertFalse(WatchList.objects.filter(movie=self.movie).exists())
         
         data = response.json()
-        self.assertEqual(data["error"], "Login required")
-        self.assertIn("You must be logged", data["message"])
+        self.assertIn("login required", data["error"])
+        self.assertIn("You must be logged in", data["message"])
 
 
     def test_users_add_same_media_in_watchlist(self):
@@ -199,6 +199,7 @@ class WatchListToggleEntryTest(TestCase):
         self.assertEqual(resp_1.status_code, 200)
         data_1 = resp_1.json()
         self.assertIn("added", data_1["message"])
+        self.assertEqual(data_1["in_watchlist"], True)
 
         # Adding 1st serie
         url_2 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])

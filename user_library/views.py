@@ -470,7 +470,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
 
     # if user is Not logged in, an error message is sent back a login required error response
     if not request.user.is_authenticated:
-        message = "You must be logged to use the Watchlist"
+        message = "You must be logged in to use the Watchlist"
         # messages.error(request, "You must be logged in to like contents.")
         return JsonResponse({
             'error': 'User not authenticated, login required.',
@@ -498,7 +498,6 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             data = {'in_watchlist': False}
 
         return JsonResponse(data)
-
 
     # user clicked the 'like' button
     if request.method == "POST":
@@ -534,7 +533,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 # print the data from the form for debugging
                 print(f"Form data: personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}")
 
-                message = f"*{new_watchlist.content_object}* Added to your watchlist."
+                message = f"*{new_watchlist.content_object}* added to your watchlist."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
 
             else:
