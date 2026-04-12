@@ -1036,28 +1036,34 @@ Need to reorganize the name or call a parent custom class
 
 
 /* ===== Profile page ======= */
-/* #profile-header {
-} */
-
 .user-photo-name {
-    width: fit-content;
-    /* margin-left: auto; */
+    flex: 0 0 33%;
     text-align: center;
-    margin: -5.5rem 1rem 0 auto;
+    margin: -5.5rem 0 0 1.5rem;
     padding: 1rem 0;
     z-index: 2;
 }
 
 .profile-pic {
-    /* margin-left: auto; */
+    margin: auto;
 }
 
 .profile-pic img{
     border: 2px solid whitesmoke;
     aspect-ratio: 1/1;
-    margin: auto;
+    /* margin: auto; */
 }
 
+.profile-bio {
+    /* flex: 0 0 67%; */
+    text-align: center;  
+    margin-right: 1rem; 
+    padding-top: 0.75rem;
+    max-width: 280px;
+    /* width: fit-content; */
+}
+
+/* buttons link to watchlist-likes */
 .profile-library-links {
     display: flex;
     width: 100%;
@@ -1078,64 +1084,44 @@ Need to reorganize the name or call a parent custom class
     border-color: black;
 }
 
-.profile-bio {
-    text-align: center;  
-    margin-right: 1rem; 
-    padding-top: 0.75rem;
-}
-
 
 @media (max-width: 475px) {
     .profile-pic{
-    width: 85%;
+    width: 75%;
+    max-width: 120px;
     }
+    .user-photo-name{
+        margin: -4.5rem 0rem 0 1.5rem;
+    }
+    
     .profile-library-links a{
         font-size: 95%;
         font-weight: 550;
     }
     
-    .user-photo-name{
-        margin: -4.5rem auto 0 1.5rem;
-        flex: 1 0 33%;
-    }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 475px) {
     .user-photo-name {
-        /* bottom: 0; */
-        /* flex: 1 0 25%; */
+        flex: 0 0 29%;
     }
-    .profile-library-links {
-    }
-    
 }
 
 @media (min-width: 768px) {
     .profile-bio {
         justify-content:left;
-        width: 50%;
+        width: 65%;
         margin-right: auto;
     }
-
-    .user-photo-name {
-
-    }
-
-    .profile-library-links {
-    }
-
 }
-
 
 @media (min-width: 992px) {
     .profile-bio {
-        justify-content:left;
         width: 50%;
-        margin-right: auto;
+        max-width: 400px;
     }
     
 }
-
 
 
 /* ================= REGISTER // LOGIN PAGES =============== */

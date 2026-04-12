@@ -32,12 +32,16 @@
                                 {% for field in form %}
                                 <div class="form-group">
                                     <div style="">
-                                        <label for="{{ field.id_for_label }}" style="color: rgb(224, 185, 57);">{{ field.label }}</label>   
+                                        <label for="{{ field.id_for_label }}" style="color: rgb(224, 185, 57);">
+                                            {{ field.label }}
+                                        </label>   
                                     </div>
 
                                     <div class="">{{ field }}</div>
                                     {% if field.help_text %}
-                                        <div class="form-text" style="color:white; margin-bottom: 0.5rem;">{% autoescape off %}{{ field.help_text }}{% endautoescape %}</div>
+                                        <div class="form-text" style="color:white; margin-bottom: 0.5rem;">
+                                            {% autoescape off %}{{ field.help_text }}{% endautoescape %}
+                                        </div>
                                     {% endif %}
                                 </div>
                                 
