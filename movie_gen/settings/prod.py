@@ -13,7 +13,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 ALLOWED_HOSTS = [
     os.environ.get('ALLOWED_HOST', ''),
-    '3.66.157.212',  # Your EC2 public IP
+    '63.176.163.249',  # Your EC2 public IP
     'localhost',
     '127.0.0.1',
 ] # place domain names or IP addresses here, e.g. when deploying to production

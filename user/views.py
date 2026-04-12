@@ -23,6 +23,10 @@ from serie.models import Serie
 def register_user(request):
     '''User registration page'''
     if request.method == 'GET':
+        if request.user.is_authenticated:
+            messages.info(request, "You are already logged in.")
+            return redirect(to='main:home')
+
         form = RegisterForm()  # Create an instance of the form
         return render(request, 'user/register.html', {'form': form})  # Render the form to the user.
 
@@ -57,23 +61,33 @@ def login_user(request):
     '''User login view page'''
 
     if request.method == "GET": # user request to go to the login page url
+        if request.user.is_authenticated:
+            messages.info(request, "You are already logged in.")
+            return redirect(to='main:home')
+        
         return render(request, 'user/login.html', {})
 
     elif request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        try:
+            username = request.POST['username']
+            password = request.POST['password']
 
-        user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            login(request, user)
-            print(f"\n- User '{user.username}' logged in. \n")
-            messages.success(request, (f"logged in! Hello {user.username}."))
-            return redirect(to='main:home')
-        
-        else:
-            print("\n - User not found OR credentials don't match. \n")
-            messages.error(request, ("User and password don't match. Please try again"))
+            if user is not None:
+                login(request, user)
+                print(f"\n- User '{user.username}' logged in. \n")
+                messages.success(request, (f"logged in! Hello {user.username}."))
+                return redirect(to='main:home')
+
+            else:
+                print("\n - User not found OR credentials don't match. \n")
+                messages.error(request, ("User and password don't match. Please try again"))
+                return redirect(to='user:login')
+            
+        except Exception as e:
+            print(f"An error occurred:\n\n {e}")
+            # raise HttpResponse("An error occurred while trying to log in the user.\nPlease refresh the page and try again")
             return redirect(to='user:login')
 
 
@@ -95,16 +109,11 @@ def profile_page(request, pk):
     if request.user.is_authenticated:
         # fetch the profile being requested
         # retrieve the user and its related Profile in one query
-        # user = User.objects.filter(pk=pk).select_related("profile", "comments", "watchlist") 
-        # user = User.objects.filter(pk=pk).select_related("profile").prefetch_related("comments__movie", "comments__serie", "watchlist__movie", "watchlist__serie").first()
         user = User.objects.filter(pk=pk).select_related("profile").first()
 
         print(f"\nUser query: {user}\n") # debug print
 
-        # profile = Profile.objects.get(user=pk)
-
         like = Like.objects.filter(user=pk)
-        like_count = like.count()
 
         # Displaying the comment posted by the user
         comments = Comment.objects.filter(user=pk).select_related("movie", "serie")[0:3]
@@ -166,9 +175,8 @@ def profile_page(request, pk):
         context = {
             'user_id': user.pk,
             'profile_card':profile_card,
-            'likes': like_count,
-            # 'total_like': total_like,
-            'comment_content': comment_list,
+            'likes': like.count(),
+            'comments': comment_list,
             'last_watchlist': last_watchlist,
             # 'fav_movies': fav_movies
         }

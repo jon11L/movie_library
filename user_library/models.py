@@ -58,20 +58,25 @@ class WatchedContent(BaseModel):
 
 class WatchList(BaseModel):
 
-
     class Status(models.TextChoices):
         PLANNED = 'to watch', 'Plan to Watch'
         WATCHING = 'watching', 'Currently Watching'
         FINISHED = 'finished', 'Finished Watching'
         DROPPED = 'dropped', 'Dropped out'
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watchlist')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
-    serie = models.ForeignKey(Serie, on_delete=models.CASCADE, null=True, blank=True, related_name='watchlist')
+    movie = models.ForeignKey(
+        Movie, on_delete=models.CASCADE, null=True, blank=True, related_name="watchlist"
+    )
+    serie = models.ForeignKey(
+        Serie, on_delete=models.CASCADE, null=True, blank=True, related_name="watchlist"
+    )
+
     personal_note = models.TextField(max_length=500, blank=True, null=True)
-    status = models.CharField(choices=Status.choices, max_length=128, default=None, blank=True, null=True)
-
+    status = models.CharField(
+        choices=Status.choices, max_length=128, default=None, blank=True, null=True
+    )
 
     class Meta:
         db_table = 'watch_list'
@@ -100,10 +105,9 @@ class WatchList(BaseModel):
         ]
         unique_together = ('user', 'movie', 'serie')
 
-
     def __str__(self):
         object = self.movie or self.serie
-        return f"{self.user.username} added {object}' to their watchlist."
+        return f"{object} -- ({self.status}) "
 
     @property
     def kind(self) -> str:
@@ -122,9 +126,9 @@ class WatchList(BaseModel):
             raise ValidationError("WatchList must reference 1 model, either Movie or Serie.")
 
 # --------------------------------------------------------------
-    # def save(self, *args, **kwargs):
-        # self.full_clean()
-        # return super().save(*args, **kwargs)
+# def save(self, *args, **kwargs):
+# self.full_clean()
+# return super().save(*args, **kwargs)
 
 # --------------------------------------------------------------
 

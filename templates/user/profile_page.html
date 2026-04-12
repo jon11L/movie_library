@@ -29,11 +29,11 @@
                                 <!-- <div class="user-background-img img-fluid rounded" style="background-image: url('{{ profile_card.background_picture }}'); object-fit: contain;">                             -->
                                 <div style="margin: auto">
                                     <img src="{{ profile_card.background_picture }}" alt="" width="1200" height="700"
-                                        style="object-fit:cover; aspect-ratio: 16/9;  z-index: -1; margin: auto;" class="user-background-img img-fluid rounded">
+                                        style="object-fit:cover; aspect-ratio: 2/1;  z-index: -1; margin: auto;" class="user-background-img img-fluid rounded">
                                 </div>
                         
                                 <!-- <div style="position: absolute; z-index: 1; top: 0; left: 0%; width: 100%;"> -->
-                                <div class="d-flex" style="gap: 1rem; justify-content: space-around;">
+                                <div class="d-flex" style="gap: 1rem; flex-direction: row;">
 
                                     <div class="user-photo-name">
                                         <!--  profile picture -->
@@ -46,11 +46,9 @@
                                                 width="150px" height="150px" alt="Profile photo">
                                             {% endif %}
 
-                                            <h4 style="color: rgb(9, 9, 84); font-weight: 600; text-align: center;">{{ profile_card.name }}</h4>
                                         </div>
-    
-                                        <div>
-                                        </div>
+                                        <h4 style="color: rgb(9, 9, 84); font-weight: 600;">{{ profile_card.name }}</h4>
+
                                     </div>
     
                                     <div class="profile-bio">
@@ -106,10 +104,10 @@
                             <div style="padding-bottom: 1rem;">
                                 <div style="width: 90%; margin: auto;">
                     
-                                    {% if comment_content %}
+                                    {% if comments %}
                                     <h3 style="margin-bottom: 1rem; text-align: center;">Last comments:</h3>
                     
-                                    {% for item in comment_content|slice:"0:3" %}
+                                    {% for item in comments %}
                                     <div class="mb-3">
                     
                                         <div class="card text-center" style="border: solid 2px darkslategray; border-radius: 1em;">
@@ -152,8 +150,9 @@
                                     {% endfor %}
 
                                     {% else %}
-                                    <h4 style="text-align: center; color: antiquewhite; margin-top: 2rem;">you have not posted any comments
-                                        yet.</h4>
+                                    <h4 style="text-align: center; color: antiquewhite; margin-top: 2rem;">
+                                        you have not posted any comments yet.
+                                    </h4>
                                     {% endif %}
                     
                                 </div>
@@ -187,7 +186,11 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                    
+                                {% else %}
+                                    <h4 style="text-align: center; color: antiquewhite; margin-top: 2rem;">
+                                        you have not bookmarked any media yet.
+                                    </h4>
+
                                 {% endif %}
                             </div>
                     

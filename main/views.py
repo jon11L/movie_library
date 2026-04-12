@@ -25,26 +25,35 @@ from user_library.forms import WatchListForm
 def about_page(request):
     return render(request, "main/about.html")
 
+def random_sample(population):
+    # takes a sample of 6 from the population fiven
+    random_selection = random.sample(population, 6)
+    return random_selection
+
+
 @timer
 @num_queries
 def home(request):
     """
-    Home landing page. Display some of latest content
-    (Movies and Series) up to 6 randomly selected each.
+    Home landing page.\n
+    Display some of latest content
+    (Movies and Series) up to 6-8 randomly selected for each.
     - Recently released.
     - coming up soon.
     - Random pick
     - from user Watchlist
     - coming back (Series only)
+    - generally added to watchlist
     """
 
     try:
         # to display movies & series that are coming soon or recently released
         today = datetime.date.today()
         yesterday = today - datetime.timedelta(days=1)  # yesterday
+        tomorrow = today + datetime.timedelta(days=1)  # tomorrow
         week_ago = today - datetime.timedelta(days=7)  # 7 days ago
-        fortnight_ago = today - datetime.timedelta(days=14)  # 2 weeks ago
         week_later = today + datetime.timedelta(days=7)  # 7 days later
+        fortnight_ago = today - datetime.timedelta(days=14)  # 2 weeks ago
         bi_week_later = today + datetime.timedelta(days=14)  # 2 weeks later
         month_ago = today - datetime.timedelta(days=30)  # 30 days ago
         week_start = today - datetime.timedelta(
@@ -61,75 +70,70 @@ def home(request):
         movies_count = None
         series_count = None
 
+        # display the amount of Movies & Series available from the database
+        series_count = Serie.objects.count()
+        movies_count = Movie.objects.exclude(is_active=False).count()
+
         # Prepare various content lists (eg: recently released, coming soon, etc.)
         # and return a sample of it / 6 per selections.
-        if Movie.objects.exists():
+        # if Movie.objects.exists():
             # recently released movies (in the last 2 weeks)
-            recent_movies = (
-                Movie.objects.filter(
-                    release_date__range=(fortnight_ago, yesterday), length__gte=45
-                )
-                .only("id", "title", "genre", "vote_average", "poster_images", "slug")
-                .exclude(is_active=False)
-                .order_by("?")[:6]
+        rec_movies = (
+            Movie.objects.filter(
+                release_date__range=(fortnight_ago, today), length__gte=45
             )
+            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            .exclude(is_active=False).exclude(length__range=(1, 45))
+            # .order_by("?")[:6]
+        )
 
-            # retrieve the movies coming out soon.
-            upcoming_movies = (
-                Movie.objects.filter(
-                    release_date__range=(today, bi_week_later), length__gte=45
-                )
-                .only("id", "title", "genre", "vote_average", "poster_images", "slug")
-                .exclude(is_active=False)
-                .order_by("?")[:6]
+        recent_movies = random_sample(list(rec_movies))
+
+        # retrieve the movies coming out soon.
+        upcoming_movies = (
+            Movie.objects.filter(
+                release_date__range=(tomorrow, bi_week_later), length__gte=45
             )
+            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            .exclude(is_active=False).exclude(length__range=(1, 45))
+            .order_by("?")[:6]
+        )
 
-            random_movies = (
-                Movie.objects.filter(length__gte=45)
-                .only("id", "title", "genre", "vote_average", "poster_images", "slug")
-                .exclude(is_active=False)
-                .order_by("?")[:6]
+        random_movies = (
+            Movie.objects.filter(length__gte=45)
+            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            .exclude(is_active=False)
+            .order_by("?")[:6]
+        )
+
+        # if Serie.objects.exists():
+
+        ongoing_series = (
+            Serie.objects.filter(last_air_date__range=(fortnight_ago, week_later))
+            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            .order_by("?")[:6]
+        )
+
+        new_series = (
+            Serie.objects.filter(
+                first_air_date__range=(fortnight_ago, bi_week_later)
             )
-            print(f"- Random pick movies: {random_movies}")  # debug print
+            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            .order_by("?")[:6]
+        )
 
-            # display the amount of Movies available from the database
-            movies_count = Movie.objects.exclude(is_active=False).count()
+        random_series = Serie.objects.only(
+            "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
+        ).order_by("?")[:6] 
 
-        if Serie.objects.exists():
-
-            ongoing_series = (
-                Serie.objects.filter(last_air_date__range=(fortnight_ago, week_later))
-                .only("id", "title", "genre", "vote_average", "poster_images", "slug")
-                .order_by("?")[:6]
-            )
-
-            new_series = (
-                Serie.objects.filter(
-                    first_air_date__range=(fortnight_ago, bi_week_later)
-                )
-                .only("id", "title", "genre", "vote_average", "poster_images", "slug")
-                .order_by("?")[:6]
-            )
-
-            random_series = Serie.objects.only(
-                "id", "title", "genre", "vote_average", "poster_images", "slug"
-            ).order_by("?")[:6] 
-            # print(f"- Random pick series: {random_series}\n")
-
-            # display the amount of Movies & Series available from the database
-            series_count = Serie.objects.count()
 
         # ------ add side content , from other user's Watchlist or like movies/series ------
-        discover_media = []  # list to hold the content (movies, series)
-        discover_list = None  # list to hold the user ids already processed
-        # TODO:
-        # Perhaps add prefetch related to optimize the queries here.
-        # and select only needed fields from foreign key on serie and movie
+        discover_media = []  # list to hold the media saved in watchlist from other users
+        # discover_list = None  # list to hold the user ids already processed
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
                 :8
-            ]
-            # list to hold the user ids already processed
+            ].select_related("movie", "serie") 
         else:
             # list to hold any watchlist instances
             discover_list = WatchList.objects.all().order_by("?")[:8]
@@ -137,7 +141,6 @@ def home(request):
         # load some item saved in watchlist by different users.
         for item in discover_list:
             media_obj = item.content_object
-            # if item.movie:
             discover_media.append({
                 # "object": item.movie, "type": item.kind
                 "title": media_obj.title, 
@@ -149,9 +152,6 @@ def home(request):
                 "slug": media_obj.slug,
                 "type": item.kind
                 })
-            # print(f"movie: {movie}\n") #debug print
-            # elif item.serie:
-            #     discover_media.append({"object": item.serie, "type": item.kind})
 
         print(f"discover_media: {discover_media}\n")  # debug print
 
@@ -199,14 +199,13 @@ def home(request):
             user = request.user
             print(f"user: {user}\n")  # debug print
 
-            watchlist = WatchList.objects.filter(user=user)
+            watchlist = WatchList.objects.filter(user=user).select_related("movie", "serie")
             print(f"user's Watchlist:\n{watchlist[:3]}...\n")  # debug print
 
             watchlist_content = []
             # initialize the list watchlist sample
             for item in watchlist.order_by("?")[:6]:
                 media_obj = item.content_object
-                
                 watchlist_content.append({
                     "title": media_obj.title, 
                     "id": media_obj.pk, 
@@ -217,6 +216,16 @@ def home(request):
                     "slug": media_obj.slug,
                     "type": item.kind
                     })
+
+            # user_watchlist_movies = set(
+            #     [item.movie_id for item in watchlist if item.movie is not None]
+            # )
+            # print(f"user_watchlist_movies: {user_watchlist_movies}\n")  # debug print
+
+            # user_watchlist_series = set(
+            #     [item.serie_id for item in watchlist if item.serie is not None]
+            # )
+            # print(f"user_watchlist_movies: {user_watchlist_movies}\n")  # debug print
 
             user_watchlist_movies = set(
                 watchlist.filter(movie__isnull=False).values_list("movie_id", flat=True)
@@ -319,7 +328,7 @@ def show_content(request, content):
         elif content == "short-films":
             # Check if they are short Movies under 45 minutes
             movies = (
-                Movie.objects.filter(length__lte=45, length__gt=0)
+                Movie.objects.filter(length__range=(0, 44))
                 .only(
                     "id",
                     "title",
@@ -389,7 +398,6 @@ def show_content(request, content):
             ('most voted', '-vote_count'),
             ('lowest rating', 'vote_average'),
             ('highest rating', '-vote_average'),
-
         )
 
         # Preserve all GET parameters except 'page' for the Paginator system
@@ -468,11 +476,11 @@ def show_content(request, content):
             ).values_list("serie_id", flat=True)
         )
 
-
         # present the watchlist form in the modal When user click 
         watchlist_form = WatchListForm() 
 
         context = {
+            # Url parameters for pagination and sorting
             "page_obj": page_obj,
             'sort_by': sort_by,
             'query_pagin_url': query_pagin_url,
@@ -480,12 +488,14 @@ def show_content(request, content):
             'current_order': sel_order,
             'base_url': base_url,
 
+            # data for the content display
             "list_media" : list_media,
             "content": content.capitalize(),
             "user_liked_movies": user_liked_movies,
             "user_liked_series": user_liked_series,
             "user_watchlist_movies": user_watchlist_movies,
             "user_watchlist_series": user_watchlist_series,
+
             'watchlist_form': watchlist_form
         }
 

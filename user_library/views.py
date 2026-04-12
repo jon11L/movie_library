@@ -465,18 +465,15 @@ def toggle_watchlist(request, content_type: str, object_id: int):
     # if watchlist does not exist. empty form - cancel / save button
     # if watchlist exit: button toogle, forms filled, with delete, edit/save button
     # -- In front end i need to place the form. and send the data in js like with createcomment
-    # Do i need to fire different trigger depend if it is create/edit/delete
-    # Maybe use the correct request.METHOD for good practice: POST/PUT/DELETE
 
-    # How do i load the data if exist. Get them when checking if it's already in the watchlist
+    data = {} # intialize the data to pass in the JsonResponse
 
-
-    # if user is Not logged in, it a message will pop up
+    # if user is Not logged in, an error message is sent back a login required error response
     if not request.user.is_authenticated:
         message = "You must be logged to use the Watchlist"
         # messages.error(request, "You must be logged in to like contents.")
         return JsonResponse({
-            'error': 'Login required',
+            'error': 'User not authenticated, login required.',
             'message': message
             }, status=401)
     
@@ -491,12 +488,12 @@ def toggle_watchlist(request, content_type: str, object_id: int):
         print(f" watchlist exist? '{watchlist}' \n")
         
         if watchlist:
-
             data = {
                 'in_watchlist': True,
                 'personal_note': watchlist.personal_note,
                 'status': watchlist.status,
             }
+
         else:
             data = {'in_watchlist': False}
 
@@ -521,8 +518,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                 print(f"Form field: {key}, value: {value}")
 
             if form.is_valid():
-                # debugging
-                print(f"Form is valid.\n Cleaned data: {form.cleaned_data}") # Debug print to check cleaned data
+                print(f"Form is valid.\n Cleaned data: {form.cleaned_data}")
                 for key, value in form.cleaned_data.items():
                     print(f"Cleaned data field: {key}, value: {value}")
 
@@ -532,13 +528,13 @@ def toggle_watchlist(request, content_type: str, object_id: int):
                     status = form.cleaned_data['status'],
                     movie_id = object_id if content_type == 'movie' else None,
                     serie_id = object_id if content_type == 'serie' else None,
-                ) # create an empty instance to fill with the form data and the user/media info
+                ) # create an new instance that will take the form data and the user/media type & id
 
                 new_watchlist.save()
                 # print the data from the form for debugging
                 print(f"Form data: personal_note: {new_watchlist.personal_note}, status: {new_watchlist.status}")
 
-                message = f"*{new_watchlist}*"
+                message = f"*{new_watchlist.content_object}* Added to your watchlist."
                 return JsonResponse({'in_watchlist': True, 'message': message}) # responding to Ajax on front-end.
 
             else:
@@ -584,7 +580,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
         except Exception as e:
             print(f"**An error occured. Error**: \n{e}")
             return JsonResponse({'in_watchlist': True, 'message': "An error occurred while processing your request."}, status=500)
-        
+
 
     if request.method == "DELETE":
         try:
@@ -598,7 +594,7 @@ def toggle_watchlist(request, content_type: str, object_id: int):
             if watchlist: 
                 watchlist.delete()
                 print(f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from watchlist\n")
-                message = f"*{watchlist.movie if content_type == 'movie' else watchlist.serie}* removed from your watchlist."
+                message = f"*{watchlist.content_object}* removed from your watchlist."
 
                 return JsonResponse({'in_watchlist': False, 'message': message}) # responding to Ajax on front-end.
 
