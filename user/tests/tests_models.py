@@ -122,7 +122,7 @@ class LoginLogoutTest(TestCase):
 
     def test_user_logout(self):
         self.client.login(username="testuser", password="testpass")
-        response = self.client.get("/user/logout")
+        response = self.client.get(reverse("user:logout"))
         self.assertNotEqual(response.status_code, 404)  # Redirect after logout
         self.assertEqual(response.status_code, 302)  # Redirect after logout
         self.assertRedirects(response, "/")
