@@ -1127,11 +1127,11 @@ Need to reorganize the name or call a parent custom class
 /* ================= REGISTER // LOGIN PAGES =============== */
 /* ------ register page / form  ------- */
 .register-card {
-    background-color: rgb(57, 55, 55);
+    background-color: rgb(30, 30, 30);
     width: 95%; 
     max-width: 768px; 
     margin: auto; 
-    border: solid 2px gray; 
+    border: solid 2px rgb(21, 49, 49); 
     border-radius: 1em; 
 }
 .inner-register-card {
