@@ -7,6 +7,37 @@ function initWatchlistForm() {
     // send it with Fetch to the server, then check the response to update the button state and show a message.
     // Step 3: if user click cancel button, just close the modal and clear forms.
 
+    // Get CSRF token for AJAX calls
+    function getCSRFToken() {
+        return $('[name=csrfmiddlewaretoken]').val();
+    }
+    
+    function showMessage(message, type="success") {
+        const messageContainer = $('#message-container');
+        messageContainer.html(
+            `<div class="alert alert-${type} alert-dismissible fade show">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            `
+        );
+        messageContainer.fadeIn();
+        
+        // Hide message after 3,5 seconds
+        setTimeout(() => messageContainer.fadeOut(), 4000);
+    }
+
+
+    // function clearFormAndPendingData() {
+    //     // Clear the form and pending data when the modal is closed (either by cancel or close X button)
+    //     document.getElementById('watchlistModal').addEventListener('hidden.bs.modal', function() {
+    //         document.getElementById('watchlistForm').reset();
+    //         pendingWatchlistData = null;  // wipe post-it too
+    //     });
+    // }
+
+
+
     const modal = new bootstrap.Modal(document.getElementById('watchlistModal'));
     const modalTitle = document.getElementById('watchlistModalTitle');
     // const cancelButton = document.getElementById('cancelWatchlistBtn');
@@ -21,6 +52,7 @@ function initWatchlistForm() {
         console.log('Watchlist button clicked!');
         e.preventDefault();
 
+        
         const button = $(this); 
         const contentType = button.data('type'); // e.g. Model 'serie'
         const objectId = button.data('id'); // primary key

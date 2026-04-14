@@ -111,10 +111,12 @@ def movie_list(request):
             query_pagin_url = query_params.urlencode()
 
             sel_order = '-id' # default selection order / first reach of the list page
+            # if user select a sort-by option, update the selection order for the query
             if 'order_by' in query_params:
                 sel_order = query_params.get('order_by')
             print(f"selected order: {sel_order}")
-            query_sort_url = query_params.urlencode()
+            # send the url parameters for sort-by, to keep the selection when user change page
+            query_sort_url = query_params.urlencode() 
 
             movies = (
                 Movie.objects.only(
@@ -129,8 +131,9 @@ def movie_list(request):
                     "slug",
                 )
                 .exclude(is_active=False).exclude(release_date__isnull=True)
+                .exclude(length__range=(1, 45))
                 .order_by(f"{sel_order}")
-            )  # .exclude(length__lt=45)
+            )
 
             # paginates over the pre loaded query
             paginator = Paginator(movies, 24)
@@ -182,7 +185,6 @@ def movie_list(request):
                 page_obj.paginator.num_pages,
                 size=2
             )
-
 
             if request.user.is_authenticated:
                 # Get the user's watchlist content (movies, series)

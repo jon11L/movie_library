@@ -73,7 +73,7 @@ def home(request):
         # and return a sample of it / 6 per selections.
 
         # recently released movies (in the last 2 weeks)
-        rec_movies = (
+        recent_movies = (
             Movie.objects.filter(
                 release_date__range=(fortnight_ago, today), length__gte=45
             )
