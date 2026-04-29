@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework', # for building APIs
     'rest_framework.authtoken', # for token-based authentication
     'core',
+    'media_library', # Base where Media Movie/Serie are structured and stored
     'main',
     'movie',
     'serie',

@@ -46,6 +46,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls', namespace='main')),
     path('user/', include('user.urls', namespace='user')),
+    path('media_library/', include('media_library.urls', namespace='media_library')),
     path('movie/', include('movie.urls', namespace='movie')),
     path('serie/', include('serie.urls', namespace='serie')),
     path('library/', include('user_library.urls', namespace='user_library')),
