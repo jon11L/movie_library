@@ -42,13 +42,14 @@ INSTALLED_APPS = [
     'rest_framework', # for building APIs
     'rest_framework.authtoken', # for token-based authentication
     'core',
+    'comment',
     'media_library', # Base where Media Movie/Serie are structured and stored
     'main',
-    'movie',
-    'serie',
+    'movie', # Remove once done with migration
+    'serie', # Same a movie
     'user',
+    'watchlist',
     'user_library',
-    'comment',
     'search',
     'import_data',
     'devtools',  # Custom app for development tools// to remove in Production
