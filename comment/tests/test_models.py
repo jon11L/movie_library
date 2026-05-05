@@ -39,7 +39,7 @@ class CommentModelTestCase(TestCase):
         comment.full_clean()
         comment.save()
         self.assertEqual(comment.kind, 'movie')
-        self.assertEqual(comment.content_object, self.movie)
+        self.assertEqual(comment.media, self.movie)
 
     def test_create_comment_on_serie(self):
         ''' Test creating a comment on a serie '''
@@ -51,7 +51,7 @@ class CommentModelTestCase(TestCase):
         comment.full_clean()
         comment.save()
         self.assertEqual(comment.kind, 'serie')
-        self.assertEqual(comment.content_object, self.serie)
+        self.assertEqual(comment.media, self.serie)
 
     def test_create_second_comment_on_movie(self):
         ''' Test creating a comment on a movie '''
@@ -72,7 +72,7 @@ class CommentModelTestCase(TestCase):
         comment_2.save()
 
         self.assertEqual(comment.kind, 'movie')
-        self.assertEqual(comment.content_object, self.movie)
+        self.assertEqual(comment.media, self.movie)
 
         # check that the user posted 2 comments on the same movie
         self.assertEqual(self.user.comments.filter(movie=self.movie).count(), 2)
@@ -104,10 +104,10 @@ class CommentModelTestCase(TestCase):
         comment_serie.save()
 
         self.assertEqual(comment_movie.kind, 'movie')
-        self.assertEqual(comment_movie.content_object, self.movie)
+        self.assertEqual(comment_movie.media, self.movie)
 
         self.assertEqual(comment_serie.kind, 'serie')
-        self.assertEqual(comment_serie.content_object, self.serie)
+        self.assertEqual(comment_serie.media, self.serie)
 
 
     # --- Test Constraints, validation that fails --------
