@@ -9,7 +9,14 @@ from rest_framework.response import Response
 # from rest_framework import viewsets
 from rest_framework import generics, filters
 
-# from .serializers import MovieListSerializer, MovieDetailSerializer
+
+from core.permissions import IsAdminOrIsAuthenticatedReadOnly
+from core.tools.paginator import page_window # Temporary placement for paginator design
+from core.tools.wrappers import timer, num_queries
+from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
+from rest_framework.throttling import AnonRateThrottle
+
+# from .serializers import MediaListSerializer, MediaDetailSerializer
 # models
 from .models import Media, Season
 from comment.models import Comment
@@ -18,12 +25,7 @@ from watchlist.models import WatchList
 # forms
 from comment.forms import CommentForm
 from watchlist.forms import WatchListForm
-
-from core.permissions import IsAdminOrIsAuthenticatedReadOnly
-from core.tools.paginator import page_window # Temporary placement for paginator design
-from core.tools.wrappers import timer, num_queries
-from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
-from rest_framework.throttling import AnonRateThrottle
+from review.forms import ReviewForm
 
 
 # def admin_check(user):
@@ -252,6 +254,7 @@ def media_list(request, media_type):
 
             # present the watchlist form in the modal When user click 
             watchlist_form = WatchListForm() 
+            review_form = ReviewForm() 
 
             context = {
                 'page_obj' : page_obj,
@@ -262,8 +265,8 @@ def media_list(request, media_type):
                 'base_url': base_url,
                 'list_media': list_media,
                 "media_type": media_type.capitalize(),
-                'watchlist_form': watchlist_form
-
+                'watchlist_form': watchlist_form,
+                'review_form': review_form,
                 }
 
             # Temporary placement for paginator design
@@ -287,18 +290,15 @@ def media_list(request, media_type):
                         ).values_list('media_id', flat=True)
                 )
 
-                # Get the user's like content
-                # reviewed_media = set(
-                #     Review.objects.filter(
-                #         user=request.user.id,
-                #         ).values_list('media_id', flat=True)
-                # )
-
-                # watchlist_form = WatchListForm() # present the watchlist block form
+                # -------- Get the user's reviewed media  ----------
+                user_reviews = set(
+                    Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
+                )
+                    # watchlist_form = WatchListForm() # present the watchlist block form
 
                 context.update(
                     {
-                        # 'user_reviews': reviewed_media,
+                        'user_reviews': user_reviews,
                         'user_watchlist': user_watchlist,
                     }
                 )
@@ -311,7 +311,7 @@ def media_list(request, media_type):
             return render(request, 'media_library/list_media.html', context=context)
 
         else:
-            messages.error(request, 'No movies found in the database')
+            messages.error(request, 'Error, or No media found in the database.')
             return redirect('main:home')
 
     except Exception as e:
@@ -340,13 +340,14 @@ def media_detail(request, slug):
             form = CommentForm() # present the Comment block form
             # present the watchlist form in the modal When user click 
             watchlist_form = WatchListForm() 
-
+            review_form = ReviewForm()
 
             context = {
                 'media': media,
                 'comments': comments,
                 'form': form,
                 'watchlist_form': watchlist_form,
+                'review_form': review_form,
                 }
 
             # Prepare part if the media requested is a serie or movie
@@ -382,25 +383,26 @@ def media_detail(request, slug):
                         user=request.user.id, media_id=media.pk
                         ).values_list('media_id', flat=True)
                 
-                print(f"\n Media In watchlist :{in_watchlist}") # debug print
+                print(f"\nMedia In watchlist :{in_watchlist}") # debug print
 
-                # Check if user liked the movie
-                # user_liked_movie = Like.objects.filter(
-                #         user=request.user.id,
-                #         content_type='movie',
-                #         object_id=media.pk
-                #         ).values_list('object_id', flat=True)
+                # -------- Check if the user reviewed the media  ----------
+                user_reviews = Review.objects.filter(
+                        user=request.user.id,
+                        media_id=media.pk
+                        ).values_list('media_id', flat=True)
 
                 # print(f"user_liked :{user_liked_movie}") # debug print
 
                 form = CommentForm(request.POST or None) # here allow to post a comment.
+                # review_form = ReviewForm(request.POST or None) # here allow to post a review.
 
                 context.update(
                     {
                         # 'user_liked_movie': user_liked_movie,
                         'watchlist': in_watchlist,
                         'form': form,
-                        'comments': comments
+                        'comments': comments,
+                        'user_reviews': user_reviews,
                         
                     }
                 )

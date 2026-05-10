@@ -20,16 +20,17 @@
                         <i class="{% if item.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                     </button>
 
-                    <!-- like button feature -->
-                    <!-- <button class="like-button"
-                        id="like_button"
-                        data-type="{{ item.type }}"
+
+                    <!-- reviews button feature -->
+                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;";
                         data-id="{{ item.id }}"
-                        data-title="{{ item.title|slice:':35'}}"
-                        data-liked="{% if item.id in user_liked_movies %}true{% else %}false{% endif %}">
-                        <i
-                            class="{% if item.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                    </button> -->
+                        data-title="{{ item.title|slice:':45'}}"
+                        data-reviewed="{% if item.id in user_reviews %}true{% else %}false{% endif %}">
+                        <i class="{% if item.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
+                            aria-hidden="true"
+                            style="color: rgb(51, 98, 99);">
+                        </i>
+                    </button>
 
                 </div>
                 

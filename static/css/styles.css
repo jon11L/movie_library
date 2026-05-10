@@ -851,7 +851,7 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ============ Like & watchlist buttons ================== */
+/* ============ Like buttons on comment ================== */
 .like-button {
     background: transparent;
     border: none;
@@ -938,7 +938,8 @@ Need to reorganize the name or call a parent custom class
 } */
 
 
-.watchlist-note-form {
+/* design the input form for Review and pers_note on Watchlist */
+.watchlist-note-form, .review-input-form {
     background-color: black;
     color: white;
     border: 1px solid darkgray;

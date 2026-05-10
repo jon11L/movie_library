@@ -19,12 +19,12 @@ from core.permissions import IsAdminOrOwner
 
 # Models import
 from .models import WatchList
-from user_library.models import Like
+from review.models import Review
 from user.models import User, Profile
-from movie.models import Movie
-from serie.models import Serie
+from user_library.models import Like
 
 from watchlist.forms import WatchListForm
+from review.forms import ReviewForm
 
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
@@ -102,7 +102,6 @@ def list_view(request, user_pk: int):
         retrieve the user's watchlist from the database and display them in the template
     '''
 
-    print(" I Am in the new view \n")
     base_url = f"/watchlist/list/{user_pk}"
     sort_by = None
     list_media = [] # list to hold the content (movies, series)
@@ -140,6 +139,7 @@ def list_view(request, user_pk: int):
         if request.method == "GET":
             # present the watchlist form in the modal When user click 
             watchlist_form = WatchListForm() 
+            review_form = ReviewForm()
 
             # ========== setting values for sorting-by feature ==========================
             sort_by = (
@@ -226,18 +226,16 @@ def list_view(request, user_pk: int):
                 ).values_list("media_id", flat=True)
             )
 
-            # ----- Get the user's like content (movies, series)  ------
-            user_liked_movies = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type="movie"
-                ).values_list("object_id", flat=True)
+            # -------- Get the user's reviewed media  ----------
+            user_reviews = set(
+                Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
             )
 
-            user_liked_series = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type="serie"
-                ).values_list("object_id", flat=True)
-            )
+            # user_liked_series = set(
+            #     Like.objects.filter(
+            #         user=request.user.id, content_type="serie"
+            #     ).values_list("object_id", flat=True)
+            # )
 
             context = {
                 'page_obj': page_obj,
@@ -252,7 +250,9 @@ def list_view(request, user_pk: int):
                 'user_liked_movies': user_liked_movies,
                 'user_liked_series': user_liked_series,
                 'total_content': total_content,
-                'watchlist_form': watchlist_form
+                'watchlist_form': watchlist_form,
+                'review_form': review_form,
+                'user_reviews': user_reviews,
             }
 
             # Temporary placement for paginator design
@@ -273,7 +273,7 @@ def list_view(request, user_pk: int):
                 print("\n -- HTMX request detected - returning partial list --")
                 return render(request, 'partials/media_grid.html', context=context)
 
-            return render(request, 'user_library/watch_list.html', context=context)
+            return render(request, 'watchlist/watch_list.html', context=context)
 
     else:
         # user is not authenticated. No access to Watchlist, private or public. Must be registered

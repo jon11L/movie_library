@@ -62,10 +62,16 @@
                                         <i class="{% if media.id in watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
                             
-                                    <!-- like button feature -->
-                                    <button class="like-button" data-type="movie" data-id="{{ movie.id }}"
-                                        data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
-                                        <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+
+                                    <!-- reviews button feature -->
+                                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;";
+                                        data-id="{{ media.id }}"
+                                        data-title="{{ media.title|slice:':45'}}"
+                                        data-reviewed="{% if media.id in user_reviews %}true{% else %}false{% endif %}">
+                                        <i class="{% if media.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
+                                            aria-hidden="true"
+                                            style="color: rgb(51, 98, 99);">
+                                        </i>
                                     </button>
                                 </div>
                             

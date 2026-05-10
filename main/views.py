@@ -12,9 +12,11 @@ from core.tools.wrappers import timer, num_queries
 
 from media_library.models import Media
 from user.models import User
+from review.models import Review
 from user_library.models import Like
 from watchlist.models import WatchList
 from watchlist.forms import WatchListForm
+from review.forms import ReviewForm
 
 
 # def admin_check(user):
@@ -189,6 +191,7 @@ def home(request):
 
         # Display the watchlist form in the modal When user click
         watchlist_form = WatchListForm() 
+        review_form = ReviewForm() 
 
         context = {
             "recent_movies": recent_movies,
@@ -201,7 +204,9 @@ def home(request):
             "movies_count": movies_count,
             "series_count": series_count,
             # 'others_like': others_like,
-            'watchlist_form': watchlist_form
+            'watchlist_form': watchlist_form,
+            'review_form': review_form
+
         }
 
         if request.user.is_authenticated:
@@ -233,25 +238,14 @@ def home(request):
                 watchlist.filter(user=request.user.id).values_list("media_id", flat=True)
             )
 
-            # -------- Get the user's like content (movies, series)  ----------
-            user_liked_movies = set(
-                Like.objects.filter(user=user, content_type="movie").values_list(
-                    "object_id", flat=True
-                )
-            )
-
-            user_liked_series = set(
-                Like.objects.filter(user=user, content_type="serie").values_list(
-                    "object_id", flat=True
-                )
+            # -------- Get the user's reviewed media  ----------
+            user_reviews = set(
+                Review.objects.filter(user=user).values_list("media_id", flat=True)
             )
 
             context.update(
                 {
-                    "user_liked_movies": user_liked_movies,
-                    "user_liked_series": user_liked_series,
-                    # "user_watchlist_movies": user_watchlist_movies,
-                    # "user_watchlist_series": user_watchlist_series,
+                    "user_reviews": user_reviews,
                     "user_watchlist": user_watchlist,
                     "watchlist_content": watchlist_content,
                 }

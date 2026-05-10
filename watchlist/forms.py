@@ -3,7 +3,7 @@ from .models import WatchList
 
 class WatchListForm(forms.Form):
     """
-    Form to add a movie or serie to the watchlist.
+    Form to add a media to the watchlist.
     """
 
     personal_note = forms.CharField(
@@ -26,8 +26,11 @@ class WatchListForm(forms.Form):
         initial='empty', # to avoid pre-selecting the first choice, and let the user select one.   
         required=False,
         label="status",
-        widget=forms.Select(attrs={"class": "form-select",}),
-    )
+        widget=forms.Select(attrs={
+            "class": "form-select",
+            "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver;",
+        }),
+            )
 
     class Meta:
 

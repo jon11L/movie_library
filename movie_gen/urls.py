@@ -50,6 +50,7 @@ urlpatterns = [
     path('movie/', include('movie.urls', namespace='movie')),
     path('serie/', include('serie.urls', namespace='serie')),
     path('library/', include('user_library.urls', namespace='user_library')),
+    path('review/', include('review.urls', namespace='review')),
     path('watchlist/', include('watchlist.urls', namespace='watchlist')),
     path('search/', include('search.urls', namespace='search')),
     path('comment/', include('comment.urls', namespace='comment')),
