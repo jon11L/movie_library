@@ -42,7 +42,7 @@
                         <!-- that will handle from Navbar search and filtered queries -->
                         {% if list_media %}
                         <div id="media-list">
-                            {% include "partials/media_list.html" %}
+                            {% include "partials/media_grid.html" %}
                         </div>
                         {% endif %}
                         
@@ -81,7 +81,8 @@
             exactYearActif.style.display = 'none';
             RangeYearActif.style.display = 'inline-block';
           // Clear the exact date field to avoid conflicting filters
-          document.querySelector('#exactDateField input').value = '';
+            document.querySelector('#exactDateField input').value = '';
+            
         } else {
             exactDateField.style.display = 'inline-block';
             rangeDateField.style.display = 'none';

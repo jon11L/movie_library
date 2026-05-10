@@ -35,14 +35,10 @@ class WatchList(BaseModel):
         return f"{self.media} -- ({self.status}) "
 
     # @property
-    # def kind(self) -> str:
-    #     return 'movie' if self.movie != None else 'serie'
-
-    @property
-    def content_object(self):
-        """Allow access to the movie or serie directly."""
-        # return self.movie or self.serie
-        return self.media
+    # def media(self):
+    #     """Allow access to the movie or serie directly."""
+    #     # return self.movie or self.serie
+    #     return self.media
 
     # def clean(self):
     #     super().clean()

@@ -10,28 +10,18 @@ function createComment() {
             e.preventDefault(); // preventDefault allow to not recharge the page
             
             // get the form data object
-            const formData = new FormData(commentForm);
-            // console.log(`FormData contains: ${formData}`);
-            
+            const formData = new FormData(commentForm);            
             // fetch the info from the data attribute in the button
             const submitButton = commentForm.querySelector('button[type="submit"]');
-            const contentType = submitButton.dataset.contentType;  // 'movie' or 'serie' model
-            const objectId = submitButton.dataset.objectId; // Id of the object.
+            const mediaId = submitButton.dataset.mediaId; // Id of the object.
 
             console.log(`Submit Button contains the following: ${formData}`);
-            console.log(`content type: ${contentType}`);
-            console.log(`object id: ${objectId}`);
-            
             // get the form.body that was passed from html
             const formBodyValue = formData.get('body');
             console.log(`form body: ${formBodyValue}`);
-
-            // If the content_type is movie assign the value objectID to a new 'movie' variable ,and serie as None
-            // create a new key/value pair in the formData object to send it to the backend
-            // grab the data from the button and and pass it in the form
-
-            console.log(`commend made on a ${contentType}, id: ${objectId}`);
-            formData.append(contentType, objectId);
+            
+            console.log(`commend made on media: ${mediaId}`);
+            formData.append('media', mediaId);
             
             console.log(`datas stored in 'formData' sending the request by POST`);
             // send Ajax request with Fetch api
@@ -45,6 +35,7 @@ function createComment() {
 
             .then(response => {
                 if (!response.ok) {  // If response is error (e.g., 400, 500), throw error
+                    console.log(`Network response was not ok. status: ${response.status}`)
                     throw new Error(`Network response was not ok. status: ${response.status}`);
                 }
                 return response.json();  // Parse response JSON

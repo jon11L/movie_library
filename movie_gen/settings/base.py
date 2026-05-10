@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'main',
     'movie', # Remove once done with migration
     'serie', # Same a movie
+    'review', # Review and score system
     'user',
     'watchlist',
     'user_library',

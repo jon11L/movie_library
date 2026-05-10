@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="custom-wide">
+        <div class="row main-row">
+            
+            
+            <!-- Left section of the screen -->
+            <aside class="custom-col-1-5 side-wrapper">
+                <div>
+                    <!-- For dev purpose -->
+                    {% if request.user.is_superuser %}
+                    <div style="color: aliceblue;">
+                        <p style="padding: 0; margin: 0;"><strong>id: {{ movie.pk }}</strong></p>
+
+                        {% if media.created_at|date:"Y-m-d H" == media.updated_at|date:"Y-m-d H" %}
+                        <p><strong>(Not updated)</strong></p>
+                        {% elif media.created_at != media.updated_at %}
+                        <p><strong>(last updated on {{ media.updated_at|date:"d-M-y" }})</strong></p>
+                        {% endif %}
+                        <p>is adult: {{ media.adult }}</p>
+                    </div>
+                    {% endif %}
+                    <!-- End of dev purpose -->
+
+                </div>
+            </aside>
+            
+
+            <main class="custom-col-9 main-wrapper">
+
+                {% if media %}
+                <div class="card col-12" style="margin: auto; border-radius: 0.5em; max-width: 1200px;">
+
+                    <section id="media-detail-section">
+
+                        <div class="background-media-img rounded" style="background-image: url('{{ media.render_banner }}');">
+
+                            <!-- <div class="banner" style="width: fit-content; ">
+                                {% if movie.banner_images %}
+                                <img src="{{ movie.render_banner }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
+                                {% else %}
+                                <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+                                {% endif %}
+                            </div> -->
+                        
+                            <div class="detail-vote-buttons">
+                            
+                                <p class="detail-vote-avg-count">
+                                    {{ media.render_vote_average }}/10 ({{media.vote_count}} votes)
+                                </p>
+                            
+                                <div class="detail-media-user-btns">
+                                    <!-- watchlist button feature -->
+                                    <button class="watchlist-button" 
+                                        data-type="{% if media.media_type == 'movies' %}movie{% else %}serie{% endif %}" 
+                                        data-id="{{ media.id }}" 
+                                        data-title="{{ media.title }}"
+                                        data-bookmarked="{% if media.id in watchlist %}true{% else %}false{% endif %}">
+                                        <i class="{% if media.id in watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                    </button>
+                            
+                                    <!-- like button feature -->
+                                    <button class="like-button" data-type="movie" data-id="{{ movie.id }}"
+                                        data-liked="{% if movie.id in user_liked_movie %}true{% else %}false{% endif %}">
+                                        <i class="{% if movie.id in user_liked_movie %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
+                                    </button>
+                                </div>
+                            
+                            </div>
+
+                            <!-- To give space between the backcground image and the next parts -->
+                            <div class="banner-space"></div>
+
+                            <div class="row">
+                                <!-- ROW 1 = Poster/title/tagline/overview -->
+                                <div class="detail-title-poster col-12 col-sm-12 col-md-5 col-xl-4">
+                                    
+                                    <div class="row row-cols-1 row-cols-md-1 d-md-block pt-md-5">
+
+                                        <div class="detail-poster col-5 col-md-12">
+                                            {% if media.render_poster %}
+                                            <img src=" {{ media.render_poster }} " class="img-fluid rounded" alt="{{ media.title }} photo">
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="detail-title col-7 col-md-12 mt-0 mt-md-3">
+                                            <div style="text-align: center;">
+                                                {% if media.title != media.original_title %}
+                                                <h3 class="card-title">{{ media.title }} ({{ media.original_title }})</h3>
+                                                {% else %}
+                                                <h3 class="card-title">{{ media.title }}</h3>
+                                                {% endif %}
+                                                
+                                                {% if media.tagline %}
+                                                <h6 style="color: black;">({{ media.tagline }})</h6>
+                                                {% endif %}
+                                            </div>   
+                                        </div>
+                                        
+                                    </div>
+                                
+                                    <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
+                                        <p class="card-text"><strong>Overview:</strong></p>
+                                        {% if media.overview %}
+                                        <p style="min-height: 100px; max-height: 200px; overflow-y: auto; padding: 0 0.5rem 0 0.5rem;">{{ media.overview }}</p>
+                                        {% else %}
+                                        <p>No description available.</p>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+
+
+                                <!--  ROW 2 = Release/length/genre/casting -->
+                                <div class="media-info-row-1 col-10 col-sm-6 col-md-7 col-xl-4">
+
+                                    <div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item" style="padding: 0"></li>
+
+                                            <li class="list-group-item px-2 px-sm-4">
+                                                <div class="release-length d-flex">
+                                                    <div class="" style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                                        <strong>Released:</strong> <p style="margin-bottom: 0.5rem;">{{ media.render_release_date }}</p>
+                                                    </div>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                                        {% if movie.length or serie_length  %}
+                                                        <strong>Length:</strong> <p style="margin-bottom: 0.5rem;">{{ movie.render_length }}</p>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item" style="padding: 0.5rem 0.25rem;">
+                                                <p style="margin-bottom: 0.5rem;"><strong>Genre:</strong></p>
+                                                <p style="margin: auto;">{{ media.render_genre }}</p>
+                                            </li>
+
+                                            <li class="list-group-item casting">
+                                                <p><strong>Casting:</strong></p>
+                                                {% if casting %}
+                                                <div style="max-height: 200px; overflow-y: auto;">
+                                                    {% for cast in casting %}
+                                                        {% if not cast.role %}
+                                                        <p style="margin: auto;">{{ cast.name }}</p>
+                                                        {% else  %}
+                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:600;">{{ cast.role }}</i></p>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                            </li>
+                                            
+                                        </ul>
+                                    </div>
+
+                                </div>
+
+                                <!-- ROW 3 = Production/director/writer/country/language -->
+                                <div class="media-info-row-2 col-10 col-sm-6 col-md-12 col-xl-4">
+
+                                    <div>
+                                        <ul class="list-group list-group-flush d-block d-md-flex d-lg-block">
+                                            <li class="list-group-item" style="padding: 0">
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <div class="d-flex" style="justify-content: space-around;">
+
+                                                    <div>
+                                                        <strong>Origin country:</strong>
+                                                        <p>{{ media.render_origin_country }}</p>
+                                                    </div>
+                                                    <div >
+                                                        <strong>Language:</strong>
+                                                        <p>{{ media.render_spoken_languages }}</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Production:</strong></p>
+                                                <p>{{ media.render_production }}</p>
+                                            </li>
+                                            
+                                            <!-- if Media is a Movie -->
+                                            {% if media.media_type == 'movie' %}
+
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>director:</strong></p>
+                                                {% if movie.render_director %}
+                                                <p>{{ movie.render_director }}</p>
+                                                {% endif %}
+                                            </li>
+                                            
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Writer:</strong></p>
+                                                {% if movie.writer %}
+                                                <p>{{ movie.render_writer }}</p>
+                                                {% endif %}
+                                            </li>
+                                            {% endif %}
+                                            
+                                            <!-- if Media is a Serie -->
+                                            {% if media.media_type == 'serie' %}
+                                            
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Created by:</strong></p>
+                                                <p>{{ serie.render_created_by }}</p>
+                                            </li>
+                                            {% endif %}
+
+                                        </ul>
+                                    </div>
+
+                                </div>
+                                <!-- End Row 3 -->
+                            </div>
+                            <!-- End of rows -->
+                            
+                        </div>
+
+                    </section>
+
+                    <section id="trailers">
+                        {% if movie.trailers %}
+
+                        <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
+                            <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
+                        </div>
+                        
+
+                        <div class="outer-trailer">
+
+                            <div class="display-trailer">
+
+    
+                                {% for trailer in movie.trailers|slice:"0:4" %}
+                                
+                                <div class="trailer-wrapper">
+                                    <iframe 
+                                        src="https://www.youtube.com/embed/{{ trailer.key }}"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        referrerpolicy="strict-origin-when-cross-origin"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </section>
+
+
+                    {% if media.media_type == 'serie' %}
+                    <!-- ============ SERIE: Display the seasons here and episodes =============== -->
+                    <section class="season-episode-content" style="width: 100%;">
+
+                        <div class="season-container">
+                            <div style="padding: 1rem 0 0 3%;">
+                                <h5 style="color: inherit; font-weight: 600; margin: 0;">Seasons:</h5>
+                            </div>
+                        
+                            <div class="season-scroll-wrapper d-flex">
+                                <button class="season-arrow season-arrow--left" onclick="previousSeasons(this.nextElementSibling, 200)" aria-label="Scroll left">
+                                    &#8249;
+                                </button>
+
+                                <div class="season-btns">
+                                    <!-- try to not display season if no episode are present -->
+                                    <!-- Button trigger htmx to get the season&episode's data. Render then in #season-content -->
+                                    {% for season in seasons %}
+                                    {% if season.episodes != None %}
+                                    <!-- <div style="margin-left: 0rem; min-width: fit-content;"> -->
+                                        
+                                        <button class="season-toggle" 
+                                        data-season-id="{{ season.id }}" 
+                                        hx-get="{% url 'media_library:season_data' season.id %}"
+                                        hx-swap="innerHTML"
+                                        hx-target="#season-content">
+                                            {{ season }}
+                                        </button>
+                                    <!-- </div> -->
+                                    
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+            
+                                <button class="season-arrow season-arrow--right" onclick="nextSeasons(this.previousElementSibling, 200)" aria-label="Scroll right">
+                                    &#8250;
+                                </button>
+                            </div>
+
+                        </div>
+                        
+                        <!-- Empty container for htmx -->
+                        <div id="season-content">
+                            <!-- display the Trailer and episodes through htmx when user click on the season button -->
+                        </div>
+                    
+                    </section>
+                    {% endif %}
+
+                </div>
+                <br>
+
+                <!------- Comment Post form -------->
+                <section class="comment-post-section">
+                    {% include "comment/comment_form.html" %}
+                </section>
+                <br>
+
+                <!--------- Comment Objects Section here -------->
+                <section class="comment-list-section">
+                    {% if comments %}
+
+                    {% for comment in comments %}
+                    {% include "comment/block_comment.html" %}
+                    {% endfor %}
+
+                    {% else %}
+                    <h4 style="text-align: center; color: antiquewhite;">No comment posted yet...</h4>
+                    {% endif %}
+                </section>
+
+
+                <!-- If movie not present in Database / or error not loaded -->
+                {% else %}
+                    <h4>Movie not found...</h4>
+                    <div style="padding-bottom: 40%;"></div>
+                {% endif %}
+
+            </main>
+
+
+            <!-- Right section of the screen -->
+            <aside class="custom-col-1-5 side-wrapper">
+                <div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+
+
+
+<script src="{% static 'js/create_comment.js' %}"></script>
+<script src="{% static 'js/edit_comment.js' %}"></script>
+<script src="{% static 'js/delete_comment.js' %}"></script>
+
+{% if media.media_type == 'serie' %}
+<script>
+    // Create arrow button to scroll for the overflow on seasons buttons.
+
+    // const seasonButtonsList = document.querySelectorAll('.season-btns');
+    function nextSeasons(container, scrollDistance){
+        container.scrollBy({ left: scrollDistance, behavior: "smooth"})
+    }
+
+    function previousSeasons(container, scrollDistance){
+        container.scrollBy({ left: -scrollDistance, behavior: "smooth"})
+    }
+
+    function updateSeasonArrows(wrapper) {
+        const scroller = wrapper.querySelector('.season-btns');
+        const leftBtn  = wrapper.querySelector('.season-arrow--left');
+        const rightBtn = wrapper.querySelector('.season-arrow--right');
+
+        // explaination of the logic: if there is no overflow, hide both arrows.
+        //  If there is overflow, hide left arrow if at start, hide right arrow if at end, show both otherwise.
+
+        const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
+
+        if (!hasOverflow) {
+            leftBtn.classList.add('season-arrow--hidden');
+            rightBtn.classList.add('season-arrow--hidden');
+            return;
+        }
+
+        // +/- 1px tolerance for subpixel rounding
+        const atStart = scroller.scrollLeft <= 1;
+        const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+
+        leftBtn.classList.toggle('season-arrow--hidden', atStart);
+        rightBtn.classList.toggle('season-arrow--hidden', atEnd);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.querySelector('.season-scroll-wrapper');
+        if (!wrapper) return;
+    
+        const scroller = wrapper.querySelector('.season-btns');
+    
+        // Initial state
+        updateSeasonArrows(wrapper);
+    
+        // Update on scroll
+        scroller.addEventListener('scroll', () => updateSeasonArrows(wrapper));
+    
+        // Update on resize (e.g. screen resize, responsive breakpoint changes)
+        const ro = new ResizeObserver(() => updateSeasonArrows(wrapper));
+        ro.observe(scroller);
+    });
+
+
+    // ------------- Display the seasons Trailers and episodes when clicked --------------
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains('season-toggle')) {
+
+            const seasonButtons = document.querySelectorAll('.season-toggle');
+                // Remove 'active' class from all buttons, set to original color
+                seasonButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    console.log(`unactive seasons gets original btn color`);
+                    event.target.classList.add('active')
+                });
+        }
+    });
+
+</script>
+{% endif %}
+
+
+{% endblock %}

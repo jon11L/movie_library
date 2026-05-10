@@ -103,7 +103,6 @@ class Media(BaseModel):
             return origin_country
         return "N/a"
 
-
     def render_spoken_languages(self):
         """
         return the Movie.spoken_languages with a comma-separated string
@@ -156,7 +155,6 @@ class Media(BaseModel):
         return "N/a"
 
 
-
 class Movie(Media):
     
     # Cast and Prod
@@ -205,6 +203,28 @@ class Movie(Media):
         return "N/a"
 
 
+    def render_director(self):
+        """
+        return the Movie.director attribute in without quotes and [],
+        only comma-separated string.
+        """
+        if self.director:
+            director = ", ".join(self.director)
+            return director
+        return "N/a"
+
+
+    def render_writer(self):
+        """
+        return the Movie.writer attribute in without quotes and [],
+        only comma-separated string.
+        """
+        if self.writer:
+            writer = ", ".join(self.writer)
+            return writer
+        return "N/a"
+
+
 class Serie(Media):
     first_air_date = models.DateField(blank=True, null=True)  # ["first_air_date"]
     last_air_date = models.DateField(blank=True, null=True)  # ["last_air_date"]
@@ -228,8 +248,17 @@ class Serie(Media):
     def __str__(self):
         return self.title
 
-# Maybe point Season to Media instead of serie
+    def render_created_by(self):
+        """return the Serie.production attribute in without quotes and [],
+        only comma-separated string.
+        """
+        if self.created_by:
+            created_by = ", ".join(self.created_by)
+            return created_by
+        return "N/a"
 
+
+# Maybe point Season to Media instead of serie
 class Season(BaseModel):
 
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name="seasons")

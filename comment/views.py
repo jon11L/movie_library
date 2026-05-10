@@ -9,8 +9,7 @@ from django.utils import timezone
 from core.tools.wrappers import timer, num_queries
 from comment.forms import CommentForm
 from .models import Comment
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Media
 
 @timer
 @num_queries
@@ -37,23 +36,20 @@ def create_comment(request):
             print("reached here after req.method=POST, before checking form isvalid.")
             if form.is_valid():
                 comment = form.save(commit=False)
-
                 comment.body = form.cleaned_data['body']
-                # comment.movie = form.cleaned_data['movie']
-                # comment.serie = form.cleaned_data['serie']
                 comment.user = request.user
-                print(f"form contains:")
                 comment.save() # save the comment to the database
                 print(
                     f"form contains: {comment.body}\n"
-                    f"-On media: ({comment.kind})-- {comment.content_object}"
+                    f"-On media: ({comment.media})"
                 )
 
                 context = {
                     'comment': comment,
                 }
-                # Render the comment block to be returned as HTML to be insterted with Js/AJAX on the current page
-                # This will be used to display the new comment without reloading the page
+
+                # The render_to_string allows the new comment object to be forwarded on the front end.
+                # and to be insterted with Js/AJAX on the current page without reloading.
                 comment_html = render_to_string('comment/block_comment.html',
                                                 context=context, request=request
                                                 )
@@ -69,7 +65,6 @@ def create_comment(request):
 
             else:
                 print(f"Form is not valid. Errors: {form.errors}")
-
                 # When an error occured, dispaly the error message.
                 message = f'Form submitted Invalid!'
                 return JsonResponse({'success': False,
@@ -137,40 +132,51 @@ def edit_comment(request, pk):
 
     except Comment.DoesNotExist:
         print(f"Comment with id {pk} does not exist.")
-        return JsonResponse({'success': False, 'message': f'Comment with id {pk} does not exist.'}, status=404)
+        return JsonResponse(
+            {"success": False, "message": f"Comment with id {pk} does not exist."},
+            status=404,
+        )
 
-    # print(f"request.user: {request.user}")
-    print(f"comment to edit: {comment}")
-
-    if not request.user.is_authenticated or request.user.is_authenticated and comment.user != request.user:
-        print(f"\n* Unauthorised acces: User {request.user} tried to access the editing  Comment belonging to another user *\n")
+    if (
+        not request.user.is_authenticated
+        or request.user.is_authenticated and comment.user != request.user
+    ):
+        print(
+            f"\n* Unauthorised acces: "
+            f"User {request.user} tried to access the editing Comment belonging to another user *\n"
+        )
         messages.error(request, ("You are not authorized to acces this page."))
-        return redirect(to='main:home')
-    
+        return redirect(to="main:home")
+
     # if user somehow tries to edit a comment that was already edited, redirect to the detail page of the movie or serie that the comment belongs to
     elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") != comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
-        print(f"\n* Unauthorised acces: User {request.user} tried to edit a  Comment more than once. Forbidden *\n")
-        messages.error(request, ("You are not authorized to access this page. This comment was already edited."))
-        if comment.movie:
-            movie = Movie.objects.get(pk=comment.movie.pk)
-            return redirect('movie:detail', slug=movie.slug)
-        elif comment.serie:
-            serie = Serie.objects.get(pk=comment.serie.pk)
-            return redirect('serie:detail', slug=serie.slug)
+        print(f"\n* Unauthorised acces: "
+              f"User {request.user} Comment already edited. Forbidden *\n"
+        )
 
-    elif request.user.is_authenticated and comment.user == request.user and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S") == comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S"):
+        messages.error(
+            request,
+            (
+                "You are not authorized to access this page. This comment was already edited."
+            ),
+        )
+        return redirect("media_library:detail", slug=comment.media.slug)
+
+    elif (
+        request.user.is_authenticated
+        and comment.user == request.user
+        and comment.created_at.strftime("%d/%m/%Y, %H:%M:%S")
+        == comment.updated_at.strftime("%d/%m/%Y, %H:%M:%S")
+    ):
+
         try:
             print(f"comment to edit: {comment}")
-            # create a comment form  with the existing comment body instance
-            # form = CommentForm(request.POST or None, instance=comment)
-
-            #  -----TRIAL/ Updating the function to use Fetch API
+            # create a comment form  with the existing instance' body value
+            #  Updating the function using Fetch API
             if request.method == "PUT":
-                print(f"request.user: {request.user}, request.method: {request.method}")
-                print(f"request.POST: {request}")
-                # print(f"request.body: {request.body}")
+                print(f"request.method: {request.method}, request.POST: {request}")
+                print(f"user: {request.user} -- request.body: {request.body}")
                 try:
-                    print(f"request.body: {request.body}")
                     data = json.loads(request.body)
                     print(f"data: {data}")
 
@@ -187,17 +193,16 @@ def edit_comment(request, pk):
 
                 except Exception as e:
                     print(f"Error in trying to edit a comment\n Error: {e}")
-                    return JsonResponse({'success': False, 'message': f'Comment of {request.user} could not be edited.'}, status=404)
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": f"Comment of {request.user} could not be edited.",
+                        },
+                        status=404,
+                    )
 
         except Exception as e:
             print(traceback.format_exc())
             print(f"Error in trying to edit a comment\n Error: {e}")
             messages.error(request, "The comment either does not exist, you are not the owner or an internal error occurred")
-            if comment.movie:
-                movie = Movie.objects.get(pk=comment.movie.pk)
-                slug = movie.slug
-                return redirect('movie:detail', slug=slug)
-            elif comment.serie:
-                serie = Serie.objects.get(pk=comment.serie.pk)
-                slug = serie.slug
-                return redirect('serie:detail', slug=slug)
+            return redirect('media_library:detail', slug=comment.media.slug)

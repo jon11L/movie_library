@@ -90,19 +90,18 @@
                                             <div>
                                                 <!-- Watchlist button feature -->
                                                 <button class="watchlist-button" 
-                                                    data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-title="{{ movie.title|slice:':45'}}"
-                                                    data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                                    <i class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    data-bookmarked="{% if movie.id in user_watchlist %}true{% else %}false{% endif %}">
+                                                    <i class="{% if movie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
                                                 <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="movie"
+                                                <!-- <button class="like-button" id="like_button" data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
                                         </div>
 
@@ -117,7 +116,7 @@
                                         </div>
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'movie:detail' slug=movie.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=movie.slug %}" style="text-decoration: none;">
                                                 <!-- How to fix title to one line only. and use 3dots if title longer? -->
                                                 <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
@@ -151,21 +150,20 @@
 
                                             <div>
                                                 <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" data-type="serie"
+                                                <button class="watchlist-button"
                                                     data-id="{{ serie.id }}"
                                                     data-title="{{ serie.title|slice:':45'}}"
-                                                    data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    data-bookmarked="{% if serie.id in user_watchlist %}true{% else %}false{% endif %}">
+                                                    <i class="{% if serie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
                                                 <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="serie"
+                                                <!-- <button class="like-button" id="like_button" data-type="serie"
                                                     data-id="{{ serie.id }}"
                                                     data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
                                         </div>
 
@@ -181,7 +179,7 @@
 
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'serie:detail' slug=serie.slug %}"
+                                            <a href="{% url 'media_library:detail' slug=serie.slug %}"
                                                 style="text-decoration: none;">
                                                 <h6>{{serie.title|slice:"0:28" }}</h6>
                                             </a>
@@ -216,49 +214,28 @@
                                         <div class="vote-button-list">
                                             <small class="vote-average">{{ item.render_vote_average }}/10</small>
 
-                                            {% if item.type == 'movie' %}
                                             <div>
                                                 <!-- Watchlist button feature -->
                                                 <button class="watchlist-button" 
+                                                    aria-label="{% if item.id in user_watchlist %}Add{% else %}remove{% endif %} {{ item.type }} - {{ item.title }} to watchlist"
                                                     data-type="{{ item.type }}"
                                                     data-id="{{ item.id }}"
                                                     data-title="{{ item.title|slice:':45'}}"
-                                                    data-bookmarked="{% if item.id in user_watchlist_movies %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if item.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    data-bookmarked="{% if item.id in user_watchlist %}true{% else %}false{% endif %}">
+                                                    <i class="{% if item.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" 
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" 
                                                     data-type="{{ item.type }}"
                                                     data-id="{{ item.object.id }}"
                                                     data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
-                                            </div>
+                                                </button> -->
 
-                                            {% elif item.type == 'serie' %}
-                                            <div>
-                                                <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" 
-                                                    data-type="{{ item.type }}"
-                                                    data-id="{{ item.id }}"
-                                                    data-title="{{ item.title|slice:':45'}}"
-                                                    data-bookmarked="{% if item.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                                </button>
 
-                                                <!-- like button feature  -->
-                                                <button class="like-button" id="like_button"
-                                                    data-type="{{ item.content_type }}" data-id="{{ item.object.id }}"
-                                                    data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
                                             </div>
-                                            {% endif %}
                                         </div>
 
                                         <div class="poster-wrapper" title="{{ item.genre}}">
@@ -273,11 +250,11 @@
 
                                         <div class="list-media-title">
                                             {% if item.type == 'movie' %}
-                                            <a href="{% url 'movie:detail' slug=item.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=item.slug %}" style="text-decoration: none;">
                                                 <h6>{{item.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% else %}
-                                            <a href="{% url 'serie:detail' slug=item.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=item.slug %}" style="text-decoration: none;">
                                                 <h6>{{item.title|slice:"0:28" }}</h6>
                                             </a>
                                             {% endif %}
@@ -316,49 +293,27 @@
                                         <div class="vote-button-list">
                                             <small class="vote-average">{{ item.vote_avg }}/10</small>
 
-                                            {% if item.type == 'movie' %}
                                             <div>
                                                 <!-- Watchlist button feature -->
                                                 <button class="watchlist-button" 
                                                     data-type="{{ item.type }}"
                                                     data-id="{{ item.id }}"
                                                     data-title="{{ item.title|slice:':45'}}"
-                                                    data-bookmarked="{% if item.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                                                    data-bookmarked="{% if item.id in user_watchlist %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if item.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    class="{% if item.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" 
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" 
                                                     data-type="{{ item.type }}"
                                                     data-id="{{ item.object.id }}"
                                                     data-liked="{% if item.object.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if item.object.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
+                                                
                                             </div>
-
-                                            {% elif item.type == 'serie' %}
-                                            <div>
-                                                <!-- Watchlist button feature -->
-                                                <button class="watchlist-button" 
-                                                    data-type="{{ item.type }}"
-                                                    data-id="{{ item.id }}"
-                                                    data-title="{{ item.title|slice:':45'}}"
-                                                    data-bookmarked="{% if item.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if item.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                                </button>
-
-                                                <!-- like button feature  -->
-                                                <button class="like-button" id="like_button"
-                                                    data-type="{{ item.content_type }}" data-id="{{ item.object.id }}"
-                                                    data-liked="{% if item.object.id in user_liked_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if item.object.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
-                                            </div>
-                                            {% endif %}
                                         </div>
 
                                         <div class="poster-wrapper" title="{{ item.genre}}">
@@ -372,15 +327,10 @@
                                         </div>
 
                                         <div class="list-media-title">
-                                            {% if item.type == 'movie' %}
-                                            <a href="{% url 'movie:detail' slug=item.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=item.slug %}" style="text-decoration: none;">
                                                 <h6>{{item.title|slice:"0:28" }}</h6>
                                             </a>
-                                            {% else %}
-                                            <a href="{% url 'serie:detail' slug=item.slug %}" style="text-decoration: none;">
-                                                <h6>{{item.title|slice:"0:28" }}</h6>
-                                            </a>
-                                            {% endif %}
+
                                         </div>
 
                                     </div>
@@ -422,18 +372,18 @@
                                                 <button class="watchlist-button" data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-title="{{ movie.title|slice:'0:45'}}"
-                                                    data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                                                    data-bookmarked="{% if movie.id in user_watchlist %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                        class="{% if movie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="movie"
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
 
                                         </div>
@@ -448,7 +398,7 @@
                                         </div>
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'movie:detail' slug=movie.slug %}"
+                                            <a href="{% url 'media_library:detail' slug=movie.slug %}"
                                                 style="text-decoration: none;">
                                                 <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
@@ -486,18 +436,18 @@
                                                     data-type="serie"
                                                     data-id="{{ serie.id }}"
                                                     data-title="{{ serie.title|slice:':45'}}"
-                                                    data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
+                                                    data-bookmarked="{% if serie.id in user_watchlist %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                        class="{% if serie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="serie"
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" data-type="serie"
                                                     data-id="{{ serie.id }}"
                                                     data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
 
                                         </div>
@@ -513,7 +463,7 @@
                                         </div>
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=serie.slug %}" style="text-decoration: none;">
                                                     <h6>{{serie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
@@ -558,18 +508,18 @@
                                                     data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-title="{{ movie.title|slice:':45'}}"
-                                                    data-bookmarked="{% if movie.id in user_watchlist_movies %}true{% else %}false{% endif %}">
+                                                    data-bookmarked="{% if movie.id in user_watchlist %}true{% else %}false{% endif %}">
                                                     <i
-                                                        class="{% if movie.id in user_watchlist_movies %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                        class="{% if movie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="movie"
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" data-type="movie"
                                                     data-id="{{ movie.id }}"
                                                     data-liked="{% if movie.id in user_liked_movies %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if movie.id in user_liked_movies %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
                                         </div>
 
@@ -585,7 +535,7 @@
 
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'movie:detail' slug=movie.slug %}"
+                                            <a href="{% url 'media_library:detail' slug=movie.slug %}"
                                                 style="text-decoration: none;">
                                                 <h6>{{movie.title|slice:"0:28" }}</h6>
                                             </a>
@@ -621,22 +571,21 @@
                                                     data-type="serie"
                                                     data-title="{{ serie.title|slice:':45'}}"
                                                     data-id="{{ serie.id }}"
-                                                    data-bookmarked="{% if serie.id in user_watchlist_series %}true{% else %}false{% endif %}">
-                                                    <i
-                                                        class="{% if serie.id in user_watchlist_series %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                                    data-bookmarked="{% if serie.id in user_watchlist %}true{% else %}false{% endif %}">
+                                                    <i class="{% if serie.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                                 </button>
 
-                                                <!-- like button feature -->
-                                                <button class="like-button" id="like_button" data-type="serie"
+                                                <!-- reviews button feature -->
+                                                <!-- <button class="like-button" id="like_button" data-type="serie"
                                                     data-id="{{ serie.id }}"
                                                     data-liked="{% if serie.id in user_liked_series %}true{% else %}false{% endif %}">
                                                     <i
                                                         class="{% if serie.id in user_liked_series %}fa fa-heart liked{% else %}far fa-heart{% endif %}"></i>
-                                                </button>
+                                                </button> -->
                                             </div>
                                         </div>
 
-                                        <div class="poster-wrapper" title="{{ movie.render_genre}}">
+                                        <div class="poster-wrapper" title="{{ movie.render_genre }}">
                                             {% if serie.render_poster %}
                                             <img src="{{ serie.render_poster }}" alt="{{ serie.title }} poster"
                                                 class="img-fluid rounded">
@@ -647,7 +596,7 @@
                                         </div>
 
                                         <div class="list-media-title">
-                                            <a href="{% url 'serie:detail' slug=serie.slug %}" style="text-decoration: none;">
+                                            <a href="{% url 'media_library:detail' slug=serie.slug %}" style="text-decoration: none;">
                                                 <h6>{{serie.title|slice:"0:28" }}</h6>
                                             </a>
                                         </div>
@@ -707,7 +656,7 @@
                         <h5 style="color: rgb(224, 185, 57); text-align: center; width: 97%; margin: auto;">
                             Others saved in their watchlist:</h5>
                         {% for item in discover_media|slice:'0:3' %}
-                        <div class="mt-3"
+                        <div class="mt-3" title="{{ item.title }}"
                             style="width: 75%; margin: auto; border: 1px solid rgb(224, 185, 57); border-radius: 0.5em; padding: 1%; background-color: black;">
                             <a href="{% if item.type == 'movie' %}{% url 'movie:detail' slug=item.slug %}{% else %}{% url 'serie:detail' slug=item.slug %}{% endif %}">
                                 <div class="d-flex align-items-center">

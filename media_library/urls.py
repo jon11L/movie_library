@@ -21,7 +21,14 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-    # path('list/', views.movie_list, name='list'),
-    # path('detail/<slug:slug>', views.movie_detail, name='detail'),
+    # path('list/<str:media_type>', views.media_list, name='list'),
+    path('movies', views.media_list, {'media_type':'movies'} ,name='movies'),
+    path('series', views.media_list, {'media_type':'series'} ,name='series'),
+    path('documentaries', views.media_list, {'media_type':'documentaries'} ,name='documentaries'),
+    path('short-films', views.media_list, {'media_type': 'short-films'}, name='short-films'),
+    path('animes', views.media_list, {'media_type': 'animes'}, name='animes'),
+    
+    path('detail/<slug:slug>', views.media_detail, name='detail'),
+    path('season/<int:season_id>', views.load_season_data, name='season_data'),
 
 ]

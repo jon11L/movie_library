@@ -10,14 +10,11 @@ from django.contrib.auth.models import User
 import time
 
 from core.tools.wrappers import timer, num_queries
-
-
+from comment.models import Comment
+from user_library.models import Like
+from watchlist.models import WatchList
 from .models import Profile
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
-from user_library.models import Like, WatchList
-from comment.models import Comment
-from movie.models import Movie
-from serie.models import Serie
 
 
 def register_user(request):
@@ -114,12 +111,10 @@ def profile_page(request, pk):
         print(f"\nUser query: {user}\n") # debug print
 
         like = Like.objects.filter(user=pk)
-
         # Displaying the comment posted by the user
-        comments = Comment.objects.filter(user=pk).select_related("movie", "serie")[0:3]
-
+        comments = Comment.objects.filter(user=pk).select_related("media")[0:3]
         # load the last 3 Watchlist added by the user
-        watchlist_items = WatchList.objects.filter(user=pk).select_related("movie", "serie")[0:3]
+        watchlist_items = WatchList.objects.filter(user=pk).select_related("media")[0:3]
         
         print(f"\nwatchlist_items: {watchlist_items}\n\n") # debug print
 
@@ -127,15 +122,15 @@ def profile_page(request, pk):
         #  Only poster_image, title and genre needed
         last_watchlist = []
         for item in watchlist_items:
-            if item.content_object:
+            if item.media:
                 last_watchlist.append({
                     # 'object': item.content_object, # retrieve the whole object through foreign key
-                    'kind': item.kind,
                     'added_on': item.created_at.strftime("%d %B %Y"),
-                    'poster': item.content_object.render_poster(),
-                    'title': item.content_object.title,
-                    'genre': item.content_object.render_genre(),
-                    'slug': item.content_object.slug,
+                    'type': item.media.media_type,
+                    'poster': item.media.render_poster(),
+                    'title': item.media.title,
+                    'genre': item.media.render_genre(),
+                    'slug': item.media.slug,
                 })
         # print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
 
@@ -145,18 +140,17 @@ def profile_page(request, pk):
         # fetch the movies and series that are commented by the user
         comment_list = []
         for comment in comments:
-
-            if comment.content_object:
+            if comment.media:
                 comment_list.append({
                     # 'object': comment.content_object,
                     'id': comment.pk,
                     'body': comment.body,
                     # 'user': comment.user.username,  Removed many queries
                     'created_at': comment.created_at.strftime("%d %B %Y"),
-                    'kind': comment.kind,
-                    'title': comment.content_object.title,
-                    'poster': comment.content_object.render_poster(),
-                    'slug': comment.content_object.slug,
+                    'kind': comment.media.media_type,
+                    'title': comment.media.title,
+                    'poster': comment.media.render_poster(),
+                    'slug': comment.media.slug,
                 })
 
         print(f"comment_list: {comment_list[0:3]}\n") # debug print
