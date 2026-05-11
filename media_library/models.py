@@ -190,7 +190,7 @@ class Movie(Media):
         return the Movie.length with a formatted string
         (e.g., 1h 30m)
         """
-        if self.length:
+        if self.length and self.length > 0:
             minutes = self.length % 60
             hours = self.length // 60
             if hours == 0:
@@ -308,6 +308,29 @@ class Season(BaseModel):
         return static(
             "images/default_poster_photo.jpg"
         )  # default banner image if None set.
+
+
+    def render_avg_episode_length(self):
+        """return the average episode length of the season with a formatted string
+        (e.g., 1h 30m)
+        """
+        episodes = self.episodes.all()
+        if episodes.exists():
+            total_length = sum(e.length for e in episodes if e.length)
+            avg_length = total_length // episodes.count()
+            minutes = avg_length % 60
+            hours = avg_length // 60
+            if total_length == 0:
+                return "N/a"
+
+            if hours == 0:
+                return f"{minutes}min"
+
+            elif hours > 0 and minutes <= 9:
+                return f"{hours}h0{minutes}"
+            else:
+                return f"{hours}h{minutes}"
+        return "N/a"
 
 
 class Episode(BaseModel):

@@ -17,7 +17,7 @@ class ReviewForm(forms.Form):
         widget=forms.Select(attrs={
             "class": "form-select",
             # "style": "width: 180px;",
-            "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver;",
+            "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver; max-width: fit-content;",
             }),
     )
 

@@ -133,9 +133,8 @@
                                                         <strong>Released:</strong> <p style="margin-bottom: 0.5rem;">{{ media.render_release_date }}</p>
                                                     </div>
                                                     <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
-                                                        {% if movie.length or serie_length  %}
-                                                        <strong>Length:</strong> <p style="margin-bottom: 0.5rem;">{{ movie.render_length }}</p>
-                                                        {% endif %}
+
+                                                        <strong>Length:</strong> <p style="margin-bottom: 0.5rem;">{{ length }}</p>
                                                     </div>
                                                 </div>
                                             </li>
@@ -196,16 +195,12 @@
 
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="margin: 0;"><strong>director:</strong></p>
-                                                {% if movie.render_director %}
-                                                <p>{{ movie.render_director }}</p>
-                                                {% endif %}
+                                                <p>{{ director }}</p>
                                             </li>
                                             
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="margin: 0;"><strong>Writer:</strong></p>
-                                                {% if movie.writer %}
-                                                <p>{{ movie.render_writer }}</p>
-                                                {% endif %}
+                                                <p>{{ writer }}</p>
                                             </li>
                                             {% endif %}
                                             
@@ -214,7 +209,7 @@
                                             
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="margin: 0;"><strong>Created by:</strong></p>
-                                                <p>{{ serie.render_created_by }}</p>
+                                                <p>{{ created_by }}</p>
                                             </li>
                                             {% endif %}
 
