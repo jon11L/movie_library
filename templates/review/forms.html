@@ -6,11 +6,11 @@
 
             <div class="modal-header" style="display: block; border-bottom: 1px solid rgb(57, 56, 55); margin-bottom: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;">
                 <div style="display: flex; justify-content: space-between;">
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; flex-wrap: no-wrap; gap: 0.5rem;">
                         <div style="width: 32px; height: 32px; border-radius: 50%; background: rgb(21,49,49); display: flex; align-items: center; justify-content: center;">
                             <i class="far fa-star" style="color: rgb(127,207,176); font-size: 14px;"></i>
                         </div>
-                        <h6 style="color: rgb(218, 211, 199); margin: 0.25rem 0 0 0; line-height: 1.6;">
+                        <h6 style="color: rgb(218, 211, 199); margin: 0.25rem 0 0 0; line-height: 1.6; overflow-wrap: break-word; text-align: center;">
                             Mark as watched, Rate & Review 
                         </h6>
                     </div>
@@ -33,27 +33,27 @@
                     {% csrf_token %}
 
                     <div class="modal-body" style="color: rgb(200, 196, 190); max-width: 450px; margin: auto;">
-                        <div class="" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; width: fit-content;">
-                            <div id="status" style="margin-bottom: 0.5rem;">
-                                <label for="status"><strong>status:</strong></label>
+                        <div class="" style="display: flex; flex-wrap: wrap; gap: 1rem; width: fit-content;">
+                            <div id="status" >
+                                <label for="status" style="margin-left: 0.25rem;"><strong>status:</strong></label>
                                 {{ review_form.status }}
                             </div>
 
-                            <div id="rewatch" style="margin-bottom: 0.5rem;">
-                                <label for="rewatch"><strong>Would you rewatch?</strong></label>
+                            <div id="rewatch">
+                                <label for="rewatch" style="margin-left: 0.25rem;"><strong>Would you rewatch?</strong></label>
                                 {{ review_form.rewatch }}
                             </div>
     
                             <div id="score">
-                                <label for="score"><strong>score:</strong></label>
+                                <label for="score" style="margin-left: 0.25rem;"><strong>score:</strong></label>
                                 {{ review_form.score }}
                             </div>
 
-                            <div id="review" style="margin-bottom: 0.5rem;">
-                                <label for="review"><strong>review:</strong></label>
+                        </div>
+                            <div id="review" style="margin-top: 0.75rem;">
+                                <label for="review" style="margin-left: 0.25rem;"><strong>review:</strong></label>
                                 {{ review_form.review }}
                             </div>
-                        </div>
                     </div>
                 </form>
     

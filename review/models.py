@@ -24,7 +24,7 @@ class Review(BaseModel):
 
     class RewatchChoice(models.TextChoices):
         '''Would you personally recommend or rewatch this media.'''
-        NO = "no", "Once was enough."
+        NO = "no", "No."
         MAYBE = "maybe", "Maybe."
         YES = "yes", "Yes, worth it."
 
