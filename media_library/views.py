@@ -354,16 +354,18 @@ def media_detail(request, slug):
             # load different content
             if media.media_type == 'movie':
                 print("type is Movie")
-                context['movie'] = media.movie
+                # context['movie'] = media.movie
+                context['length'] = media.movie.render_length()
                 context['casting'] = media.movie.casting
-                context['director'] = media.movie.director
+                context['director'] = media.movie.render_director()
+                context['writer'] = media.movie.render_writer()
                 # fetch the data from media.movie
 
             # if it is a serie - preload the season data and episode
             elif media.media_type == 'serie':
                 print("type is Serie")
                 context['serie'] = media.serie
-                # context['created_by'] = media.serie.created_by
+                context['created_by'] = media.serie.render_created_by()
 
                 # load the seasons
                 seasons = media.serie.seasons.all()
@@ -372,9 +374,12 @@ def media_detail(request, slug):
                 for season in seasons:
                     if season.season_number == 1:
                         main_cast = season.casting
+                        # avg length create a new query, maybe can optimize
+                        avg_episode_length = season.render_avg_episode_length()
                         break
                 context['casting'] = main_cast
                 context['seasons'] = seasons
+                context['length'] = avg_episode_length
 
             # display the Comment form if user is connected
             if request.user.is_authenticated:
