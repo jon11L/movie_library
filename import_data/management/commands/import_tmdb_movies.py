@@ -6,7 +6,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from movie.models import Movie
+from media_library.models import Movie
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_movies import save_or_update_movie
 from import_data.tools.media_update_check import check_update_since

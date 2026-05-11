@@ -8,11 +8,10 @@ from django.utils.text import slugify
 from django.db import IntegrityError
 
 from import_data.tools.check_media_validity import check_serie_validity
-
-
 # from import_data.api_clients.TMDB.fetch_series import get_serie_data, get_season_data
 from import_data.api_clients.TMDB.fetch_data import get_api_data
-from serie.models import Serie, Season, Episode
+
+from media_library.models import Serie, Season, Episode
 
 
 def save_or_update_series(tmdb_id):

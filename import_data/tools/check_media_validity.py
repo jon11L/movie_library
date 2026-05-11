@@ -1,8 +1,8 @@
 import datetime
 import traceback
 
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Movie
+from media_library.models import Serie
 
 def check_movie_validity(movie_data, processed_data: dict):
     '''
