@@ -2,13 +2,12 @@ import django_filters
 from django.db.models import Q
 from django import forms
 
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Media
 
 import datetime
 
 class SharedMediaFilter(django_filters.FilterSet):
-    '''Filter through both Movies and Series'''
+    '''Filter through both Media model'''
     CONTENT_CHOICES = (
             ('all', 'All Content'),
             ('movie', 'Movies Only'),
@@ -57,6 +56,7 @@ class SharedMediaFilter(django_filters.FilterSet):
 
     # Filter between Movie and/or Serie
     content_type = django_filters.ChoiceFilter(
+        field_name='media_type', # Maybe no mention to not 
         choices=CONTENT_CHOICES,
         empty_label=None,   
         method='filter_content_type',
@@ -192,9 +192,17 @@ class SharedMediaFilter(django_filters.FilterSet):
 
     def filter_content_type(self, queryset, name, value):
         ''' This is a placeholder - actual filtering happens in the view '''
+        print(f"value: {value}")
         if self.data != None:
             print(f"self.data.get('content_type') is: {self.data.get('content_type')}")
-        return queryset
+
+            if self.data.get('content_type') == 'all':
+                print(f"queryset is: {queryset[0:3]}...\n")
+                return queryset
+            else: # value is movie or serie
+                queryset = queryset.filter(media_type=value)
+                print(f"queryset is: {queryset[0:3]}...\n")
+                return queryset.filter(media_type=value)
 
 
     def check_release_date(self, queryset, name, value: int):
@@ -208,7 +216,6 @@ class SharedMediaFilter(django_filters.FilterSet):
         # print(f"self.data is: {queryset[0:3]}...")
 
         print(f"queryset_model is: {queryset.model}\n")
-
 
         if hasattr(queryset.model, 'release_date'):
             if 'gte' in name:
@@ -231,23 +238,22 @@ class SharedMediaFilter(django_filters.FilterSet):
             Custom filter method for JSONField 'genre'
             This will filter content that have the specified genre in their genre list
             """
-            print(f"queryset_model: {queryset.model}")
             print(f"Filtering by genre: {value}")
-            # print(f"query_set: {queryset[0:3]}... ")
             filtered_queryset = queryset
             
             # For each selected genre, filter the queryset
             # to include only those that contain the genre in their genre list
             for genre in value:
-                print(f"Filtering for genre: {genre}")
+                print(f"Filtering for genre: '{genre}'")
                 # check content_type Movie or Serie , and change Sci-Fi to Science Fiction if model is Movie
-                if genre == "sci-fi" and queryset.model.__name__ == "Movie":
-                    genre = "science fiction"
+                if genre == "sci-fi":
+                    genre = "sci" # fit for both movie and serie type
                     print(f"value sci-fi changed to: '{genre}'\n.")
                 
                 # Return only media containing the genre data
                 filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
             return filtered_queryset
+
 
     def filter_title(self, queryset, name, value):
         """Custom filter method for title
@@ -277,5 +283,5 @@ class SharedMediaFilter(django_filters.FilterSet):
 
 
     class Meta:
-        model = Movie  # Default model, will be overridden when creating filter instances in views.py
-        fields = ['vote_average', 'genre', 'release_date', 'original_language', 'title']
+        model = Media  # Default model, will be overridden when creating filter instances in views.py
+        fields = ['media_type', 'vote_average', 'genre', 'release_date', 'original_language', 'title']

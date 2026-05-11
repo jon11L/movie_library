@@ -1,0 +1,67 @@
+{% load static %}
+
+<div class="row media-grid">
+
+    {% for item in list_media %}
+
+    <div class="col-6 col-sm-4 col-md-3 col-lg-3 col-xl-2 col-xxl-2" style="height: 100%; padding: 0 0.25rem;">
+        <div class="media-card h-100 w-100">
+
+            <div class="vote-button-list">
+                <small class="vote-average" title="{{ item.vote_count }} votes">{{ item.vote_avg}}/10</small>
+                
+                <div>
+                    <!-- Watchlist button feature -->
+                    <button class="watchlist-button"
+                        aria-label="{% if item.id in user_watchlist %}Add{% else %}remove{% endif %} {{ item.type }} - {{ item.title }} to watchlist"
+                        data-id="{{ item.id }}"
+                        data-title="{{ item.title|slice:':50'}}"
+                        data-bookmarked="{% if item.id in user_watchlist %}true{% else %}false{% endif %}">
+                        <i class="{% if item.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                    </button>
+
+
+                    <!-- reviews button feature -->
+                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;";
+                        data-id="{{ item.id }}"
+                        data-title="{{ item.title|slice:':45'}}"
+                        data-reviewed="{% if item.id in user_reviews %}true{% else %}false{% endif %}">
+                        <i class="{% if item.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
+                            aria-hidden="true"
+                            style="color: rgb(51, 98, 99);">
+                        </i>
+                    </button>
+
+                </div>
+                
+            </div>
+
+            <div class="poster-wrapper" title="({{ item.type|title }}) {{ item.genre }}">
+                {% if item.poster %}
+                <img src="{{ item.poster }}" alt="{{ item.title }} poster" class="img-fluid rounded" width="300" height="450">
+                {% else %}
+                <img src="{% static 'images/default_poster_photo.jpg' %}" class="img-fluid rounded" alt="default Poster photo">
+                {% endif %}
+            </div>
+
+
+            <div class="list-media-title">
+                <a href="{% url 'media_library:detail' slug=item.slug %}">
+                    <h6 class="">{{ item.title|slice:":35" }}</h6>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+    
+    {% endfor %}
+
+
+</div>
+
+<!----- Pagination system ------->
+<!-- Allow the pagination -->
+{% include "partials/paginator.html" %}
+
+

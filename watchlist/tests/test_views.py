@@ -6,10 +6,10 @@ from django.urls import reverse
 
 import datetime
 
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Media, Movie, Serie
+
 from user.models import User
-from user_library.models import WatchList
+from watchlist.models import WatchList
 
 
 # what test needed.
@@ -90,8 +90,8 @@ class WatchListToggleEntryTest(TestCase):
         # Technically by clicking on the bookmark icon button on the front-end
         # This will send the type of content that it is and the pk of the object
         url = reverse(
-            "user_library:toggle_watchlist", 
-            args=["movie", self.movie.pk]
+            "watchlist:toggle_watchlist", 
+            args=[self.movie.pk]
             )
 
         response = self.client.post(url, data=self.VALID_FORM_DATA)
@@ -104,8 +104,8 @@ class WatchListToggleEntryTest(TestCase):
         self.assertTrue(data["in_watchlist"])
         self.assertIn("added", data["message"])
 
-        # user add another entry
-        url_1 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
+        # user add another entry (different movie)
+        url_1 = reverse("watchlist:toggle_watchlist", args=[self.movie_2.pk])
         response_1 = self.client.post(url_1, data=self.VALID_FORM_DATA)
 
         new_data = response_1.json()
@@ -114,12 +114,12 @@ class WatchListToggleEntryTest(TestCase):
         wlist = WatchList.objects.filter(user=self.user)
 
         self.assertTrue(wlist.exists())
-        self.assertEqual(str(wlist.last().movie), "Mad Max")
-
-        self.assertTrue(wlist.first().serie)
-        self.assertEqual(str(wlist.first().serie), "Test serie")
-        self.assertEqual(wlist.first().serie.overview, "some desert story..")
-        self.assertEqual(user.watchlist.count(), 2) # User has 2 entries
+        self.assertEqual(wlist.count(), 2)  # Should have 2 entries now
+        
+        # Verify both movies are in watchlist
+        media_titles = {str(w.media) for w in wlist}
+        self.assertIn("Mad Max", media_titles)
+        self.assertIn("Test movie", media_titles)
 
     def test_logged_user_watchlist_remove_entry(self):
         '''
@@ -130,7 +130,7 @@ class WatchListToggleEntryTest(TestCase):
         login = self.client.login(username="new_user", password="testpass")
         self.assertTrue(login)
         # Sent Post request
-        url = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
+        url = reverse("watchlist:toggle_watchlist", args=[self.movie.pk])
         response = self.client.post(url, data=self.VALID_FORM_DATA)
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -143,10 +143,10 @@ class WatchListToggleEntryTest(TestCase):
         wlist = WatchList.objects.filter(user=self.user)
 
         self.assertTrue(wlist.exists())
-        self.assertEqual(str(wlist.last().movie), "Mad Max")
+        self.assertEqual(str(wlist.last().media), "Mad Max")
 
         # Sent Delete request, with the same existing Movie instance
-        url_2 = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
+        url_2 = reverse("watchlist:toggle_watchlist", args=[self.movie.pk])
         resp2 = self.client.delete(url_2)
         self.assertEqual(resp2.status_code, 200)
         data2 = resp2.json()
@@ -168,12 +168,12 @@ class WatchListToggleEntryTest(TestCase):
         The attempt should fail and Throw an error
         '''
         # No user being logged in doing a POST request
-        url = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
+        url = reverse("watchlist:toggle_watchlist", args=[self.movie.pk])
 
         response = self.client.post(url)
         self.assertNotEqual(response.status_code, 200)
         self.assertEqual(response.status_code, 401) # Should throw Error
-        self.assertFalse(WatchList.objects.filter(movie=self.movie).exists())
+        self.assertFalse(WatchList.objects.filter(media=self.movie).exists())
         
         data = response.json()
         self.assertIn("login required", data["error"])
@@ -193,7 +193,7 @@ class WatchListToggleEntryTest(TestCase):
         self.client.force_login(user_1)
         
         # Adding 1st movie
-        url_1 = reverse("user_library:toggle_watchlist", args=["movie", self.movie.pk])
+        url_1 = reverse("watchlist:toggle_watchlist", args=[self.movie.pk])
 
         resp_1 = self.client.post(url_1, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_1.status_code, 200)
@@ -202,7 +202,7 @@ class WatchListToggleEntryTest(TestCase):
         self.assertEqual(data_1["in_watchlist"], True)
 
         # Adding 1st serie
-        url_2 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
+        url_2 = reverse("watchlist:toggle_watchlist", args=[self.serie.pk])
 
         resp_2 = self.client.post(url_2, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_2.status_code, 200)
@@ -214,7 +214,7 @@ class WatchListToggleEntryTest(TestCase):
         self.client.force_login(user_2)
 
         # Adding 1st serie on New user 2 
-        url_3 = reverse("user_library:toggle_watchlist", args=["serie", self.serie.pk])
+        url_3 = reverse("watchlist:toggle_watchlist", args=[self.serie.pk])
 
         resp_3 = self.client.post(url_3, data=self.VALID_FORM_DATA)
         self.assertEqual(resp_3.status_code, 200)
@@ -222,8 +222,8 @@ class WatchListToggleEntryTest(TestCase):
         self.assertTrue(data_3["in_watchlist"])
         self.assertIn("added", data_3["message"])
         
-        wlist_user_1 = user_1.watchlist.all().count()
-        wlist_user_2 = user_2.watchlist.all().count()
+        wlist_user_1 = user_1.new_watchlist.all().count()
+        wlist_user_2 = user_2.new_watchlist.all().count()
 
         self.assertEqual(wlist_user_1, 2)# 2 entries with user_1
         self.assertEqual(wlist_user_2, 1)# 1 entry with user_2
@@ -281,8 +281,7 @@ class WatchListViewAccessTest(TestCase):
 
         cls.wlist = WatchList(
             user=cls.user,
-            movie=cls.movie,
-            serie=None,
+            media=cls.movie,
             personal_note="Note to remember to watch",
             status="watching",
         )
@@ -292,8 +291,7 @@ class WatchListViewAccessTest(TestCase):
         
         cls.wlist_2 = WatchList.objects.create(
             user=cls.user,
-            movie=cls.movie_2,
-            serie=None,
+            media=cls.movie_2,
             personal_note="to watch",
             status="finished",
         )
@@ -302,8 +300,7 @@ class WatchListViewAccessTest(TestCase):
 
         cls.wlist_3 = WatchList.objects.create(
             user=cls.user,
-            movie=None,
-            serie=cls.serie,
+            media=cls.serie,
             personal_note="Note to remember",
             status="dropped",
         )
@@ -317,11 +314,11 @@ class WatchListViewAccessTest(TestCase):
         '''
         login = self.client.login(username="user01", password="testpass")
         self.assertTrue(login)
-        url = reverse("user_library:watch_list", args=[self.user.pk])
+        url = reverse("watchlist:list_view", args=[self.user.pk])
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "user_library/watch_list.html")
+        self.assertTemplateUsed(response, "watchlist/watch_list.html")
 
     def test_user_canont_access_other_private_watchlist_(self):
         '''
@@ -332,7 +329,7 @@ class WatchListViewAccessTest(TestCase):
         login = self.client.login(username="user02", password="someword")
         self.assertTrue(login)
 
-        url = reverse("user_library:watch_list", args=[self.user.pk])
+        url = reverse("watchlist:list_view", args=[self.user.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302) # Redirect 
         # self.assertTemplateUsed(response, "user/profile_page.html")

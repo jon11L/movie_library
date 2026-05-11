@@ -668,11 +668,11 @@ Need to reorganize the name or call a parent custom class
     border-right: none;
 }
 
-.comment-buttons i {
+.edit-comment-button i, .delete-comment-btn i {
     color: lightgray;
 }
 
-.comment-buttons i:hover {
+.edit-comment-button i:hover, .delete-comment-btn i:hover {
     transform: scale(1.2);
 }
 
@@ -834,7 +834,7 @@ Need to reorganize the name or call a parent custom class
     border-top-left-radius: 0.25em; 
     border-top-right-radius: 0.25em;
     align-items: center;
-    z-index: 2;
+    z-index: 0;
     position: absolute;
     transition: background-color 0.8s ease-in-out;
 }
@@ -851,7 +851,7 @@ Need to reorganize the name or call a parent custom class
 }
 
 
-/* ============ Like & watchlist buttons ================== */
+/* ============ Like buttons on comment ================== */
 .like-button {
     background: transparent;
     border: none;
@@ -905,15 +905,27 @@ Need to reorganize the name or call a parent custom class
 .watchlist-button {
     anchor-name: --my-watchlist-btn;
     cursor: pointer;
-    transition: transform 0.5s;
+    transition: transform 0.5s, background-color 1s;
+    border-radius: 0.25em;
     /* transform:translateY(25%) */
+}
+
+.media-card .watchlist-button {
+    /* z-index: -5; */
+    /* position: relative; */
+    background-color: rgba(239, 233, 233, 0.1);
 }
 
 .watchlist-button:hover {
     cursor: pointer;
     /* transition: transform 0.75s ease-out; */
-    transform: scale(1.15);
-    /* padding-bottom: 12px; */
+    transform: scale(1.15);   
+}
+
+.media-card:hover .watchlist-button {
+    opacity: 1;
+    /* z-index: 5; */
+    background-color: whitesmoke;
 }
 
 /* Prepare the Watchlist form as a popover/modal */
@@ -926,7 +938,8 @@ Need to reorganize the name or call a parent custom class
 } */
 
 
-.watchlist-note-form {
+/* design the input form for Review and pers_note on Watchlist */
+.watchlist-note-form, .review-input-form {
     background-color: black;
     color: white;
     border: 1px solid darkgray;
@@ -970,11 +983,9 @@ Need to reorganize the name or call a parent custom class
     /* z-index: 0; */
     white-space: nowrap;
     border-radius: 0.25em;
-
     overflow: hidden;
     transition: transform 0.40s ease-out;
     transition: background-image 0.9s ease-in;
-
 }
 
 /* Move the title up into the bottom of the poster when hovering over */
@@ -989,7 +1000,8 @@ Need to reorganize the name or call a parent custom class
         rgba(10, 10, 10, 0.5) 60%,
         rgba(10, 10, 10, 0.6) 70%,
         rgba(10, 10, 10, 0.8) 80%,
-        rgba(10, 10, 10, 0) 100%
+        rgba(10, 10, 10, 0.5) 95%,
+        rgba(10, 10, 10, 0.85) 100%
     );
 }
 
@@ -1028,9 +1040,9 @@ Need to reorganize the name or call a parent custom class
 }
 
 @media (min-width: 992px) {
-    /* .list-media-title {
-        height: 1.75rem;
-    } */
+    .list-media-title {
+        height: 25%;
+    }
 }
 
 

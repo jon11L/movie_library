@@ -2,8 +2,9 @@ function initWatchlistForm() {
     console.log(`Initializing watchlist modal feature...`);
     // ========================== Watchlist feature, in progress ====================================
     // ------ Listen for clicks on any element with class 'watchlist-button'  -------
-    // Step 1: the watchlist button is clicked, check if in_watchlist True/false, open the modal
-    // Step 2: when user click confirm button in the modal, grab the form data and 
+    // Step 1: the watchlist-button is clicked, check if in_watchlist is True/false, 
+    // open the modal and populate the form with existing data if exist, or show empty form if not exist.
+    // Step 2: when user click confirm button in the modal, grab the form's data and 
     // send it with Fetch to the server, then check the response to update the button state and show a message.
     // Step 3: if user click cancel button, just close the modal and clear forms.
 
@@ -37,7 +38,6 @@ function initWatchlistForm() {
     // }
 
 
-
     const modal = new bootstrap.Modal(document.getElementById('watchlistModal'));
     const modalTitle = document.getElementById('watchlistModalTitle');
     // const cancelButton = document.getElementById('cancelWatchlistBtn');
@@ -52,9 +52,8 @@ function initWatchlistForm() {
         console.log('Watchlist button clicked!');
         e.preventDefault();
 
-        
         const button = $(this); 
-        const contentType = button.data('type'); // e.g. Model 'serie'
+        // const contentType = button.data('type'); // e.g. Model 'serie'
         const objectId = button.data('id'); // primary key
         const icon = button.find('i');
         const isExisting  = button.data('bookmarked') === true; // check if the instance already exist
@@ -81,9 +80,8 @@ function initWatchlistForm() {
         document.getElementById('watchlistGuestPanel').style.display = 'none';
         document.getElementById('watchlistFormPanel').style.display  = 'block';
         
-
-        console.log(`Getting Media type: ${contentType} and Object id: ${objectId}`);
-        pendingWatchlistData = {contentType, objectId, icon, isExisting};
+        console.log(`Getting Media Object id: ${objectId}`);
+        pendingWatchlistData = {objectId, icon, isExisting};
 
         if (isExisting) {
             // If already in watchlist, fetch the existing data to populate the form
@@ -93,14 +91,17 @@ function initWatchlistForm() {
 
             removeWatchlistBtn.style.display = 'block';
 
-            fetch(`/library/watchlist/${contentType}/${objectId}/`, {
+            fetch(`/watchlist/toggle/${objectId}/`, {
                 method: 'GET',
             })
             
             .then(r => r.json())
             .then(data => {
                 // populateForm(data.watchlist_data);
-                console.log(`Watchlist data populated in the form: ${data.personal_note}`);
+                console.log(
+                    `Watchlist data populated in the form.`,
+                    `\n-note: ${data.personal_note}\n-status: ${data.status}`
+                );
                 // setRemoveButtonVisible(true);
                 // If data is null, we're clearing the form for a new entry
                 document.getElementById('id_personal_note').value = data ? data.personal_note : '';
@@ -143,7 +144,7 @@ function initWatchlistForm() {
         bootstrap.Modal.getInstance(document.getElementById('watchlistModal')).hide();
 
         // Construct the URL dynamically
-        const url = `/library/watchlist/${contentType}/${objectId}/`;
+        const url = `/watchlist/toggle/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
         // Implement POST/PUT request depending on if the instance already exist or not,
@@ -219,6 +220,8 @@ function initWatchlistForm() {
 
     });
 
+    // When user click the remove button, 
+    // send a DELETE request to the server to remove the instance from the watchlist,
     removeWatchlistBtn.addEventListener('click', function(e) {
         e.preventDefault();
 
@@ -230,7 +233,7 @@ function initWatchlistForm() {
         const { contentType, objectId, icon, isExisting } = pendingWatchlistData;
 
         // Construct the URL dynamically
-        const url = `/library/watchlist/${contentType}/${objectId}/`;
+        const url = `/watchlist/toggle/${objectId}/`;
         console.log("AJAX request URL:", url); // Debugging
 
         // select the current modal element and closes it.

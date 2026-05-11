@@ -3,6 +3,7 @@ from .base import *
 DEBUG = False
 
 import secrets
+# generate a secret django key on Ci/Cd
 SECRET_KEY = secrets.token_urlsafe(50)
 
 

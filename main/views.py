@@ -1,21 +1,22 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import JsonResponse
-from django.core.paginator import Paginator
+# from django.http import JsonResponse
 
 # from django.contrib.auth.decorators import user_passes_test
 import datetime
-import time
-import random
+# import time
+# import random
 import traceback
 
-from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
-from movie.models import Movie
-from serie.models import Serie
+
+from media_library.models import Media
 from user.models import User
-from user_library.models import Like, WatchList
-from user_library.forms import WatchListForm
+from review.models import Review
+from user_library.models import Like
+from watchlist.models import WatchList
+from watchlist.forms import WatchListForm
+from review.forms import ReviewForm
 
 
 # def admin_check(user):
@@ -66,35 +67,64 @@ def home(request):
         series_count = None
 
         # display the amount of Movies & Series available from the database
-        series_count = Serie.objects.count()
-        movies_count = Movie.objects.exclude(is_active=False).count()
+        series_count = Media.objects.filter(media_type='serie').count()
+        movies_count = Media.objects.filter(media_type='movie').count()
+        # movies_count = Movie.objects.exclude(is_active=False).count()
 
         # --- Prepare various content lists (eg: recently released, coming soon, etc.) ---
         # and return a sample of it / 6 per selections.
 
         # recently released movies (in the last 2 weeks)
         recent_movies = (
-            Movie.objects.filter(
-                release_date__range=(fortnight_ago, today), length__gte=45
+            Media.objects.filter(
+                media_type="movie",
+                release_date__range=(fortnight_ago, today),
+                movie__length__gte=45,
             )
-            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
-            .exclude(is_active=False).exclude(length__range=(1, 45))
+            .only(
+                "id",
+                "title",
+                "genre",
+                "vote_average",
+                "vote_count",
+                "poster_images",
+                "slug",
+            )
+            .exclude(adult=True)
             .order_by("?")[:6]
         )
 
         # retrieve the movies coming out soon.
         upcoming_movies = (
-            Movie.objects.filter(
-                release_date__range=(tomorrow, bi_week_later), length__gte=45
+            Media.objects.filter(
+                media_type="movie",
+                release_date__range=(tomorrow, bi_week_later),
+                movie__length__gte=45,
             )
-            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
-            .exclude(is_active=False).exclude(length__range=(1, 45))
+            .only(
+                "id",
+                "title",
+                "genre",
+                "vote_average",
+                "vote_count",
+                "poster_images",
+                "slug",
+            )
+            .exclude(adult=True)
             .order_by("?")[:6]
         )
 
         random_movies = (
-            Movie.objects.filter(length__gte=45)
-            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            Media.objects.filter(media_type="movie", movie__length__gte=45)
+            .only(
+                "id",
+                "title",
+                "genre",
+                "vote_average",
+                "vote_count",
+                "poster_images",
+                "slug",
+            )
             .exclude(is_active=False)
             .order_by("?")[:6]
         )
@@ -102,20 +132,32 @@ def home(request):
         # if Serie.objects.exists():
 
         ongoing_series = (
-            Serie.objects.filter(last_air_date__range=(fortnight_ago, week_later))
-            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
+            Media.objects.filter(
+                media_type="serie", release_date__range=(fortnight_ago, week_later)
+            )
+            .only(
+                "id",
+                "title",
+                "genre",
+                "vote_average",
+                "vote_count",
+                "poster_images",
+                "slug",
+            )
             .order_by("?")[:6]
         )
 
         new_series = (
-            Serie.objects.filter(
-                first_air_date__range=(fortnight_ago, bi_week_later)
+            Media.objects.filter(
+                media_type='serie',
+                release_date__range=(fortnight_ago, bi_week_later)
             )
             .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
             .order_by("?")[:6]
         )
 
-        random_series = Serie.objects.only(
+        # Perhaps remove later and create a one Random pick media sample
+        random_series = Media.objects.filter(media_type='serie').only(
             "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
         ).order_by("?")[:6] 
 
@@ -125,52 +167,31 @@ def home(request):
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
                 :8
-            ].select_related("movie", "serie") 
+            ].select_related("media") 
         else:
             # list to hold any watchlist instances
-            discover_list = WatchList.objects.all().order_by("?")[:8]
+            discover_list = WatchList.objects.all().order_by("?")[:8].select_related("media")
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
-            media_obj = item.content_object
-            discover_media.append({
-                # "object": item.movie, "type": item.kind
-                "title": media_obj.title, 
-                "id": media_obj.pk, 
-                "genre": media_obj.render_genre(), 
-                "vote_avg": media_obj.render_vote_average(), 
-                "vote_count": media_obj.vote_count, 
-                "poster": media_obj.render_poster(),
-                "slug": media_obj.slug,
-                "type": item.kind
-                })
+            media_obj = item.media
+            if media_obj:
+                discover_media.append({
+                    "title": media_obj.title, 
+                    "id": media_obj.pk, 
+                    "genre": media_obj.render_genre(), 
+                    "vote_avg": media_obj.render_vote_average(), 
+                    "vote_count": media_obj.vote_count, 
+                    "poster": media_obj.render_poster(),
+                    "slug": media_obj.slug,
+                    "type": media_obj.media_type,
+                    })
 
-        print(f"discover_media: {discover_media}\n")  # debug print
+        # print(f"discover_media: {discover_media[0:2]}\n") # debug print
 
-        # others_like = [] # list to hold the content (movies, series)
-        # discover_like = None # list to hold the user ids already processed
-        # if request.user.is_authenticated:
-        #     discover_like = Like.objects.exclude(user=request.user).order_by("?")[:3] # list to hold the user ids already processed
-        # else:
-        #     discover_like = Like.objects.all().order_by("?")[:3] # list to hold the user ids already processed
-
-        # for item in discover_like:
-        #     if item.movie:
-        #         others_like.append({
-        #             'object': item.movie,
-        #             'type': item.kind
-        #             })
-        #         # print(f"movie: {movie}\n") #debug print
-        #     elif item.serie:
-        #         others_like.append({
-        #             'object': item.serie,
-        #             'type': item.kind
-        #             })
-
-        # print(f"others_like: {others_like}\n") # debug print
-
-        # present the watchlist form in the modal When user click 
+        # Display the watchlist form in the modal When user click
         watchlist_form = WatchListForm() 
+        review_form = ReviewForm() 
 
         context = {
             "recent_movies": recent_movies,
@@ -183,7 +204,9 @@ def home(request):
             "movies_count": movies_count,
             "series_count": series_count,
             # 'others_like': others_like,
-            'watchlist_form': watchlist_form
+            'watchlist_form': watchlist_form,
+            'review_form': review_form
+
         }
 
         if request.user.is_authenticated:
@@ -191,61 +214,39 @@ def home(request):
             user = request.user
             print(f"user: {user}\n")  # debug print
 
-            watchlist = WatchList.objects.filter(user=user).select_related("movie", "serie")
+            watchlist = WatchList.objects.filter(user=user).select_related("media")
             print(f"user's Watchlist:\n{watchlist[:3]}...\n")  # debug print
 
             watchlist_content = []
             # initialize the list watchlist sample
             for item in watchlist.order_by("?")[:6]:
-                media_obj = item.content_object
-                watchlist_content.append({
-                    "title": media_obj.title, 
-                    "id": media_obj.pk, 
-                    "genre": media_obj.render_genre(), 
-                    "vote_avg": media_obj.render_vote_average(), 
-                    "vote_count": media_obj.vote_count, 
-                    "poster": media_obj.render_poster(),
-                    "slug": media_obj.slug,
-                    "type": item.kind
-                    })
+                media_obj = item.media
+                if media_obj:
+                    watchlist_content.append({
+                        "title": media_obj.title, 
+                        "id": media_obj.pk, 
+                        "genre": media_obj.render_genre(), 
+                        "vote_avg": media_obj.render_vote_average(), 
+                        "vote_count": media_obj.vote_count, 
+                        "poster": media_obj.render_poster(),
+                        "slug": media_obj.slug,
+                        "type": media_obj.media_type,
+                        })
 
-            # user_watchlist_movies = set(
-            #     [item.movie_id for item in watchlist if item.movie is not None]
-            # )
-            # print(f"user_watchlist_movies: {user_watchlist_movies}\n")  # debug print
-
-            # user_watchlist_series = set(
-            #     [item.serie_id for item in watchlist if item.serie is not None]
-            # )
-            # print(f"user_watchlist_movies: {user_watchlist_movies}\n")  # debug print
-
-            user_watchlist_movies = set(
-                watchlist.filter(movie__isnull=False).values_list("movie_id", flat=True)
+            # Get a set of the watchlist media_id to check if media list items exist. 
+            user_watchlist = set(
+                watchlist.filter(user=request.user.id).values_list("media_id", flat=True)
             )
 
-            user_watchlist_series = set(
-                watchlist.filter(serie__isnull=False).values_list("serie_id", flat=True)
-            )
-
-            # -------- Get the user's like content (movies, series)  ----------
-            user_liked_movies = set(
-                Like.objects.filter(user=user, content_type="movie").values_list(
-                    "object_id", flat=True
-                )
-            )
-
-            user_liked_series = set(
-                Like.objects.filter(user=user, content_type="serie").values_list(
-                    "object_id", flat=True
-                )
+            # -------- Get the user's reviewed media  ----------
+            user_reviews = set(
+                Review.objects.filter(user=user).values_list("media_id", flat=True)
             )
 
             context.update(
                 {
-                    "user_liked_movies": user_liked_movies,
-                    "user_liked_series": user_liked_series,
-                    "user_watchlist_movies": user_watchlist_movies,
-                    "user_watchlist_series": user_watchlist_series,
+                    "user_reviews": user_reviews,
+                    "user_watchlist": user_watchlist,
                     "watchlist_content": watchlist_content,
                 }
             )
@@ -259,260 +260,3 @@ def home(request):
         print(f"An error occurred while loading the homepage: {e}\n")
         messages.error(request, "An error occurred while loading the page.")
         return redirect(to="user:login")
-
-
-@timer
-@num_queries
-def show_content(request, content):
-    """
-    Display the content media available in the database per style:
-    - Documentaries
-    - Short Films
-    - Anime
-    """
-    sort_by = None
-    combined = []
-    list_media = [] # list to hold the content (movies, series)
-    base_url = content
-
-    user_liked_movies = set()
-    user_watchlist_movies = set()
-    user_liked_series = set()
-    user_watchlist_series = set()
-
-    try:
-
-        if content == "documentaries":
-            # Check in Movies&Series if genre contains 'documentary' then load them for templating
-            movies = (
-                Movie.objects.filter(genre__icontains="documentary")
-                .only(
-                    "id",
-                    "title",
-                    "genre",
-                    'release_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                )
-                .exclude(is_active=False)
-                .order_by("-vote_count")
-            )
-
-            series = (
-                Serie.objects.filter(genre__icontains="documentary")
-                .only(
-                    "id",
-                    "title",
-                    "genre",
-                    'first_air_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                )
-                .order_by("-vote_count")
-            )
-
-        elif content == "short-films":
-            # Check if they are short Movies under 45 minutes
-            movies = (
-                Movie.objects.filter(length__range=(0, 44))
-                .only(
-                    "id",
-                    "title",
-                    "genre",
-                    'release_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                )
-                .exclude(is_active=False)
-                .order_by("-vote_count")
-            )  # length between 0 and 45 minutes
-
-            series = Serie.objects.none()  # No series for short content
-
-        elif content == "anime":
-            # Check if they are Anime Movies and Series
-            movies = (
-                Movie.objects.filter(genre__icontains="Animation")
-                .only(
-                    "id",
-                    "title",
-                    "genre",
-                    'release_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                )
-                .exclude(is_active=False)
-                .order_by("-vote_count")
-            )
-            
-            series = (
-                Serie.objects.filter(genre__icontains="Animation")
-                .only(
-                    "id",
-                    "title",
-                    "genre",
-                    'first_air_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                )
-                .order_by("-vote_count")
-            )
-
-        print(f"\n{content} has:\n{len(movies)} Movies\n{len(series)} Series:\n")
-
-        # ========== setting values for sorting-by feature ==========================
-        sort_by = (
-            # ('display name', 'django field')
-            ('first added', 'id'),
-            ('last added', '-id'),
-            ('A-z title', 'title'), 
-            ('Z-a title', '-title'),
-            # ('newest first', '-release_date'), # release_date issue as not same variable naming
-            # ('oldest first', 'release_date'),
-            ('least popular', 'popularity'),
-            ('most popular', '-popularity'),
-            ('least voted', 'vote_count'),
-            ('most voted', '-vote_count'),
-            ('lowest rating', 'vote_average'),
-            ('highest rating', '-vote_average'),
-        )
-
-        # Preserve all GET parameters except 'page' for the Paginator system
-        query_params = request.GET.copy()
-        print(f"-- Query params: {query_params}\n")  # Debug print
-
-        # Remove the 'page' parameter to avoid pagination issues
-        if 'page' in query_params:
-            query_params.pop('page')
-        query_pagin_url = query_params.urlencode()
-        # Allow to keep the query parameter in the url for pagination
-
-        sel_order = '-id'
-        if 'order_by' in query_params:
-            sel_order = query_params.get('order_by')
-        query_sort_url = query_params.urlencode()
-
-        print(f"selected order: {sel_order}")
-
-        # Combine both queries into one for sorting
-        # even if evaluation done before paginating/limiting and normalizing
-        combined = (list(movies) + list(series))
-        # print(combined[0:10])
-
-        combined = sorted(
-            combined,
-            key=lambda x: getattr(x, sel_order.strip('-')),
-            reverse=True if '-' in sel_order else False,
-        )
-
-        # -- paginate over the results, limit to 24per page --
-        paginator = Paginator(combined, 24)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-        print(f"Number of pages: {page_obj}")
-
-        # create a standardized data stack to pass in templates.
-        # Avoiding any extra hidden queries on the frontend
-        for item in page_obj:
-            # print(item)
-            list_media.append({
-                "title": item.title, 
-                "id": item.pk, 
-                "genre": item.render_genre(), 
-                "vote_avg": item.render_vote_average(), 
-                "vote_count": item.vote_count, 
-                "poster": item.render_poster(),
-                "slug": item.slug,
-                "type": "movie" if isinstance(item, Movie) else "serie"
-                })
-        print("\n", list_media[0:2], "\n")
-
-        # Get the user's like content (movies, series)
-        user_liked_movies = set(
-            Like.objects.filter(user=request.user.id, content_type="movie").values_list(
-                "object_id", flat=True
-            )
-        )
-
-        user_liked_series = set(
-            Like.objects.filter(user=request.user.id, content_type="serie").values_list(
-                "object_id", flat=True
-            )
-        )
-
-        # Get the user's watchlist content (movies, series)
-        user_watchlist_movies = set(
-            WatchList.objects.filter(
-                user=request.user.id, movie__isnull=False
-            ).values_list("movie_id", flat=True)
-        )
-
-        user_watchlist_series = set(
-            WatchList.objects.filter(
-                user=request.user.id, serie__isnull=False
-            ).values_list("serie_id", flat=True)
-        )
-
-        # present the watchlist form in the modal When user click 
-        watchlist_form = WatchListForm() 
-
-        context = {
-            # Url parameters for pagination and sorting
-            "page_obj": page_obj,
-            'sort_by': sort_by,
-            'query_pagin_url': query_pagin_url,
-            'query_sort_url': query_sort_url,
-            'current_order': sel_order,
-            'base_url': base_url,
-
-            # data for the content display
-            "list_media" : list_media,
-            "content": content.capitalize(),
-            "user_liked_movies": user_liked_movies,
-            "user_liked_series": user_liked_series,
-            "user_watchlist_movies": user_watchlist_movies,
-            "user_watchlist_series": user_watchlist_series,
-
-            'watchlist_form': watchlist_form
-        }
-
-
-        # ========== Temporary placement for paginator design ============
-        context["desktop_pages"] = page_window(
-            page_obj.number, # current page number
-            page_obj.paginator.num_pages, # total amount of pages
-            size=5 # amount of buttons to display around current page
-        )
-
-        context["mobile_pages"] = page_window(
-            page_obj.number,
-            page_obj.paginator.num_pages,
-            size=2
-        )
-
-        # If user select a sort-by or page parameter, create a request with HTMX
-        if request.headers.get('HX-request'):
-            print("\n -- HTMX request detected - returning partial list --")
-            return render(request, 'partials/media_list.html', context=context)
-
-        return render(request, "main/short_doc_anime.html", context=context)
-
-    except Exception as e:
-        print(f"An error occurred while loading the {content} page:\n{e}\n")
-        messages.error(request, f"An error occurred while loading the page.\n{e}")
-        return redirect(to="main:home")

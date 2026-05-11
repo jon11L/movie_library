@@ -4,8 +4,7 @@ from django.core.exceptions import ValidationError
 
 from comment.models import Comment
 from user.models import User
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Media, Movie, Serie
 
 
 class CommentModelTestCase(TestCase):
@@ -33,31 +32,31 @@ class CommentModelTestCase(TestCase):
         ''' Test creating a comment on a movie '''
         comment = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
+            media=self.movie,
             body='This is a comment on a movie.'
         )
         comment.full_clean()
         comment.save()
-        self.assertEqual(comment.kind, 'movie')
-        self.assertEqual(comment.content_object, self.movie)
+        self.assertEqual(comment.media.media_type, 'movie')
+        self.assertEqual(comment.media, self.movie)
 
     def test_create_comment_on_serie(self):
         ''' Test creating a comment on a serie '''
         comment = Comment.objects.create(
             user=self.user,
-            serie=self.serie,
-            body='This is a comment on a movie.'
+            media=self.serie,
+            body='This is a comment on a media serie.'
         )
         comment.full_clean()
         comment.save()
-        self.assertEqual(comment.kind, 'serie')
-        self.assertEqual(comment.content_object, self.serie)
+        self.assertEqual(comment.media.media_type, 'serie')
+        self.assertEqual(comment.media, self.serie)
 
     def test_create_second_comment_on_movie(self):
         ''' Test creating a comment on a movie '''
         comment = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
+            media=self.movie,
             body='This is a comment on a movie.'
         )
         comment.full_clean()
@@ -65,23 +64,23 @@ class CommentModelTestCase(TestCase):
 
         comment_2 = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
+            media=self.movie,
             body='This is the second comment.'
         )
         comment_2.full_clean()
         comment_2.save()
 
-        self.assertEqual(comment.kind, 'movie')
-        self.assertEqual(comment.content_object, self.movie)
+        self.assertEqual(comment.media.media_type, 'movie')
+        self.assertEqual(comment.media, self.movie)
 
         # check that the user posted 2 comments on the same movie
-        self.assertEqual(self.user.comments.filter(movie=self.movie).count(), 2)
+        self.assertEqual(self.user.comments.filter(media=self.movie).count(), 2)
 
     def test_create_several_comments_on_different_content_types(self):
         ''' Test creating several comments on different content types '''
         comment_movie = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
+            media=self.movie,
             body='This is a comment on a movie.'
         )
         comment_movie.full_clean()
@@ -89,7 +88,7 @@ class CommentModelTestCase(TestCase):
 
         comment_2_movie = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
+            media=self.movie,
             body='This is a comment on a movie.'
         )
         comment_2_movie.full_clean()
@@ -97,17 +96,17 @@ class CommentModelTestCase(TestCase):
 
         comment_serie = Comment.objects.create(
             user=self.user,
-            serie=self.serie,
+            media=self.serie,
             body='This is a comment on a serie.'
         )
         comment_serie.full_clean()
         comment_serie.save()
 
-        self.assertEqual(comment_movie.kind, 'movie')
-        self.assertEqual(comment_movie.content_object, self.movie)
+        self.assertEqual(comment_movie.media.media_type, 'movie')
+        self.assertEqual(comment_movie.media, self.movie)
 
-        self.assertEqual(comment_serie.kind, 'serie')
-        self.assertEqual(comment_serie.content_object, self.serie)
+        self.assertEqual(comment_serie.media.media_type, 'serie')
+        self.assertEqual(comment_serie.media, self.serie)
 
 
     # --- Test Constraints, validation that fails --------
@@ -115,18 +114,8 @@ class CommentModelTestCase(TestCase):
         ''' Test that creating a comment without a user raises an IntegrityError '''
         with self.assertRaises(IntegrityError):
             Comment.objects.create(
-                movie=self.movie,
+                media=self.movie,
                 body='This comment without a user should fail.'
-            )
-
-    def test_create_comment_with_both_movie_and_serie_raises_error(self):
-        ''' Test that creating a comment with both a movie and serie raises an IntegrityError '''
-        with self.assertRaises(IntegrityError):
-            Comment.objects.create(
-                user=self.user,
-                movie=self.movie,
-                serie=self.serie,
-                body='This comment with a movie and a serie should fail.'
             )
 
     def test_create_comment_with_neither_movie_nor_serie_raises_error(self):
@@ -140,11 +129,11 @@ class CommentModelTestCase(TestCase):
     def test_str_representation(self):
         comment = Comment.objects.create(
             user=self.user,
-            movie=self.movie,
-            body='This is a comment on a movie.'
+            media=self.movie,
+            body='This is a comment on a media.'
         )
         expected_str = (
-            f"{self.user.username} commented on {comment.kind} ({self.movie}) "
+            f"{self.user.username} commented on ({comment.media}) "
             f"at {comment.created_at:%Y-%m-%d %H%M}:"
             f"'{comment.body[:50]}'..."
         )

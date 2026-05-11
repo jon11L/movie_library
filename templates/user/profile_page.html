@@ -40,7 +40,7 @@
                                         <div class="profile-pic">
                                             {% if profile_card.profile_picture %}
                                             <img src=" {{ profile_card.profile_picture }} " class="img-fluid rounded-circle" alt="Profile photo"
-                                                width="150px" height="150px" style="">
+                                                width="150px" height="150px">
                                             {% else %}
                                             <img src="{% static 'images/default_user_pic.png' %}" class="img-fluid rounded-circle"
                                                 width="150px" height="150px" alt="Profile photo">
@@ -62,15 +62,15 @@
                                 
 
                                 <div class="card-footer d-flex profile-library-links">
-                                        <a href="{% url 'user_library:watch_list' request.user.id %}" class="btn btn-primary">
+                                        <a href="{% url 'watchlist:list_view' request.user.id %}" class="btn btn-primary">
                                             Watchlist
                                         </a>
-                                        <a href="{% url 'user_library:liked' request.user.id %}" class="btn btn-primary">
-                                            Likes
-                                        </a>
                                         <a href="#" class="btn btn-primary">
-                                            comment
+                                            Reviewed
                                         </a>
+                                        <!-- <a href="#" class="btn btn-primary">
+                                            comment
+                                        </a> -->
                                 </div>
                             <!-- </div> -->
                         </div>
@@ -122,17 +122,11 @@
                                                 <div class="d-block d-md-flex" style="gap: 0.5rem; align-items: center; margin: auto;">
                                                     <p style="color: lightgray; font-size:14px; margin-bottom: 0;">Commented on: {{ item.created_at }}</p>
                                                     
-                                                    {% if item.kind == 'movie' %}
-                                                    <a href="{% url 'movie:detail' slug=item.slug %}"
+                                                    <a href="{% url 'media_library:detail' slug=item.slug %}"
                                                         style="text-decoration: none; color: antiquewhite;">
                                                         <span style="font-weight: bold;">| {{ item.title|slice:":50" }}</span>
                                                     </a>
-                                                    {% elif item.kind == 'serie' %}
-                                                    <a href="{% url 'serie:detail' slug=item.slug %}"
-                                                        style="text-decoration: none; color: antiquewhite;">
-                                                        <span style="font-weight: bold;">| {{ item.title|slice:":50" }}</span>
-                                                    </a>
-                                                    {% endif %}
+
                                                 </div>
                     
                                                 <!-- delete option for Comments if user is owner of comment -->
@@ -176,8 +170,8 @@
                                     <div class="col-4 col-sm-4 col-md-4" style="height: auto; margin: auto; align-items: center;">
                                         <div>
                                             <a
-                                                href="{% if item.kind == 'movie' %}{% url 'movie:detail' slug=item.slug %}{% elif item.kind == 'serie' %}{% url 'serie:detail' slug=item.slug %}{% endif %}">
-                                                <img src="{{ item.poster }}" title="({{ item.kind}}) | {{ item.genre}}"
+                                                href="{% url 'media_library:detail' slug=item.slug %}">
+                                                <img src="{{ item.poster }}" title="({{ item.type}}) | {{ item.genre}}"
                                                     alt="watchlist media" class="img-fluid rounded" width="300" height="450">
                                             </a>
                     

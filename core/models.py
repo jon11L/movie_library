@@ -25,13 +25,17 @@ class BaseModel(models.Model):
 
 
     def save(self, *args, **kwargs):
-        
+        ''' 
+        Override the save medthod to incorporate the slug field at creation.\n
+        Ensure the Slug is unique across the Media
+        '''
         self.save_slug()
-
         super().save(*args, **kwargs)
+
 
     def save_slug(self):
         '''
+        :param self: instance's model being created (eg. Movie/Media)
         1. Create a generic structure for the slug based on their own models
         2. Check that the slugified version contains something (title-release_date)
         3. Check over in the model for slugs uniqueness excluding itself if exist
@@ -62,7 +66,7 @@ class BaseModel(models.Model):
 
 
             # For Movie or Serie objects
-            elif self.__class__.__name__ in ['Movie', 'Serie'] and hasattr(self, 'title'):
+            elif self.__class__.__name__ in ['Movie', 'Serie', 'Media'] and hasattr(self, 'title'):
                 # check if the new object has a release_date(Movie) or first_air_date(Serie) field
                 year = None
 

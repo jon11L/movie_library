@@ -5,24 +5,26 @@ from django.db.models import Case, When, Value, IntegerField
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
 from .filters import SharedMediaFilter
-from movie.models import Movie
-from serie.models import Serie
-from user_library.models import Like, WatchList
-from user_library.forms import WatchListForm
+from media_library.models import Media
+# from movie.models import Movie
+# from serie.models import Serie
+from user_library.models import Like
+from watchlist.models import WatchList
+from watchlist.forms import WatchListForm
 
 
 
-def initialize_search(request):
-    """
-    View function to handle the initial search page load.
-    Renders the search page with the filter form and no results.
-    """
-    # Initialize the filter form without any queryset applied
-    Media_filter = SharedMediaFilter()
+# def initialize_search(request):
+#     """
+#     View function to handle the initial search page load.
+#     Renders the search page with the filter form and no results.
+#     """
+#     # Initialize the filter form without any queryset applied
+#     Media_filter = SharedMediaFilter()
 
-    context = {'filter': Media_filter}
+#     context = {'filter': Media_filter}
 
-    return render(request, 'search/search.html', context=context)
+#     return render(request, 'search/search.html', context=context)
 
 
 
@@ -41,17 +43,16 @@ def search(request):
     total_found = 0
     sort_by = None
     base_url = "/search/"
-    Media_filter = None
+    media_filter = None
     list_media = [] # list to hold the medias content (movies, series)
 
     user_liked_movies = set()
     user_liked_series = set()
-    user_watchlist_movies = set()
-    user_watchlist_series = set()
-    results = [] # Will hold the mixed list query (Movie+Serie)
+    user_watchlist = set()
+    # results = [] # Will hold the mixed list query (Movie+Serie)
     
     # Determine which content type to display, Default to 'all'
-    content_type = request.GET.get('content_type', 'all')
+    # content_type = request.GET.get('content_type', 'all')
 
     # Check if any filter parameters have values
     has_filter_values = False
@@ -61,23 +62,21 @@ def search(request):
         if value and key not in ['page', 'csrfmiddlewaretoken', 'content_type'] and value.strip() != "":
             # Means some filtering value were passed other than default request value
             has_filter_values = True
-            # can surely remove the if below as already checked above
-            # if value.strip() == "":
-            #     has_filter_values = False
             break
 
     print(f"\n- has_filter_values: {has_filter_values} --")
     print(f"- items from the get request: {request.GET.items()}")
 
     # Render/Initialize the filter form (without queryset applied)
-    Media_filter = SharedMediaFilter(request.GET)
-    print(f"-- content_filter: {Media_filter}\n")
+    media_filter = SharedMediaFilter(request.GET)
+    print(f"-- content_filter: {media_filter}\n")
 
     # --- Initial search page load, no filter applied / returns only the filter form ---
     if request.method == 'GET' and has_filter_values == False:
-        print("\n-- going to search page // no filters given // clicked on navbar search btn --")
-        print(f"Returns only the filter form.")
-        context = {'filter': Media_filter}
+        print(
+            "\n--clicked on navbar search btn  // going to search page // no filters values given"
+            f"// -- Returns only the filter form.")
+        context = {'filter': media_filter}
 
         return render(request, 'search/search.html', context=context)
 
@@ -86,74 +85,6 @@ def search(request):
     elif request.method == 'GET' and request.GET:
         print("\n-- User submit a filtered search // filter values applied --")
 
-        filtered_movies = []
-        filtered_series = []
-
-        title_value = request.GET.get("title", "").strip()
-
-        # Apply the filters to the Movie and Serie models if 'all' selected or specific content type
-        if content_type in ['movie', 'all']:
-            movie_filter = SharedMediaFilter(
-                request.GET,
-                queryset=Movie.objects.only(
-                    "id",
-                    "title",
-                    "genre",
-                    'release_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                ),
-            )
-            filtered_movies = movie_filter.qs
-            # print(f"Filtered movies: {len(filtered_movies)}")
-
-            if title_value and len(title_value.strip()) >= 2:
-                # Create a relevance system by Title: exact->startwith->remaining.
-                filtered_movies = filtered_movies.annotate(
-                    relevance=Case(
-                        When(title__iexact=title_value, then=Value(1)), # exact match
-                        When(title__istartswith=title_value, then=Value(2)), # title startswith
-                        default=Value(3), # title in (already filtered)
-                        output_field=IntegerField(),
-                    )
-                ).order_by("-relevance", "title")
-
-        if content_type in ['serie', 'all']:
-            serie_filter = SharedMediaFilter(
-                request.GET,
-                queryset=Serie.objects.only(
-                    "id",
-                    "title",
-                    "genre",
-                    'first_air_date',
-                    'popularity',
-                    "poster_images",
-                    "vote_average",
-                    "vote_count",
-                    "slug",
-                ),
-            )
-            filtered_series = serie_filter.qs
-            # print(f"Filtered series: {len(filtered_series)}")
-
-            if title_value:
-                # Same process for the series
-                filtered_series = filtered_series.annotate(
-                    relevance=Case(
-                        When(title__iexact=title_value, then=Value(1)),
-                        When(title__istartswith=title_value, then=Value(2)),
-                        default=Value(3),
-                        output_field=IntegerField(),
-                    )
-                ).order_by("-relevance", "title")
-
-        # Combine both queries into one for sorting
-        # even if evaluation done before paginating/limiting and normalizing
-        combined = (list(filtered_movies) + list(filtered_series))
-
         # === setting values for sorting-by feature ===
         sort_by = (
             # ('display name', 'django field')
@@ -161,8 +92,8 @@ def search(request):
             ('Z-a title', '-title'),
             ('first added', 'id'),
             ('last added', '-id'),
-            ('newest first', '-release_date'), # release_date issue as serie is first_air_date
             ('oldest first', 'release_date'),
+            ('newest first', '-release_date'), # release_date issue as serie is first_air_date
             ('least popular', 'popularity'),
             ('most popular', '-popularity'),
             ('least voted', 'vote_count'),
@@ -170,6 +101,56 @@ def search(request):
             ('lowest rating', 'vote_average'),
             ('highest rating', '-vote_average'),
         )
+
+        filtered_media = None
+        title_value = str(request.GET.get("title", "").strip())
+
+        # Apply the filters to the Movie and Serie models if 'all' selected or specific content type
+        # if content_type in ['movie', 'all']:
+        filter = SharedMediaFilter(
+            request.GET,
+            queryset=Media.objects.only(
+                "id",
+                "media_type",
+                "title",
+                "genre",
+                'release_date',
+                'popularity',
+                "poster_images",
+                "vote_average",
+                "vote_count",
+                "slug",
+            ),
+        )
+        filtered_media = filter.qs
+        # better way to calculate reducing a query?
+        movie_count = filtered_media.filter(media_type='movie').count()
+        serie_count = filtered_media.filter(media_type='serie').count()
+        total_found = movie_count + serie_count
+        # filter media_type by movie and serie if wanting to know how many
+        print(
+            f"Filtered media: {total_found}\n"
+            f"-Movies: {movie_count}\n"
+            f"-Series : {serie_count}"
+            )
+
+        if title_value and len(title_value) >= 2:
+            # Create a relevance system by Title: exact->startwith->remaining.
+            results = filtered_media.annotate(
+                relevance=Case(
+                    When(title__iexact=title_value, then=Value(1)), # exact match
+                    When(title__istartswith=title_value, then=Value(2)), # title startswith
+                    default=Value(3), # title in (already filtered)
+                    output_field=IntegerField(),
+                )
+            ).order_by("relevance", "title")
+
+            sel_order = 'title' # default to title when no sort-by given
+
+        else:
+            # if search given by other than title value
+            results = filtered_media
+            sel_order = '-id'
 
         # create two query_urls parameters holder
         # one for the sort-by: without page and no order_by parameters
@@ -185,36 +166,19 @@ def search(request):
         # Allow to keep the query parameter in the url for pagination
         query_pagin_url = query_params.urlencode()
 
-        sel_order = 'title' # default to title when no sort-by given
         if 'order_by' in query_params:
             sel_order = query_params.get('order_by')
             print(f"selected order: {sel_order}")
             query_params.pop('order_by')
+            results = filtered_media.order_by(sel_order)
+        
         query_sort_url = query_params.urlencode()
 
-        # Sort the media found by relevance to group Movie and Serie.
-        #  Won't no longer need when creating a common Media model. Neither 'combined'
-        if title_value and sel_order == 'title':
-            results = sorted(
-                combined,
-                key=lambda x: (getattr(x, "relevance", 0), getattr(x, "title", "")),
-                reverse=False,
-            )
-
-        else:
-            # Meaning a filter search based on other filtering value than title.
-            results = sorted(
-                combined,
-                # key=lambda x: x.title,
-                key=lambda x: getattr(x, sel_order.strip('-')),
-                reverse=True if '-' in sel_order else False,
-            )
-
-        print(f"\n--Results: {results[0:3]}...\n")
-        total_found = len(results)
+        # print(f"\n--Results: {results[0:3]}...\n")
         print(
             f"-- Total found {total_found}: "
-            f"{len(filtered_movies)} movies -- {len(filtered_series)} series --\n" 
+            # f"{len(filtered_media)} movies -- {len(filtered_series)} series --\n" 
+            # Update necessary so that i can get how many movies and how many series
         )
 
         # -- paginate over the results --
@@ -233,17 +197,16 @@ def search(request):
                 "vote_count": item.vote_count, 
                 "poster": item.render_poster(),
                 "slug": item.slug,
-                "type": "movie" if isinstance(item, Movie) else "serie"
+                "type": item.media_type,
                 })
 
         # Display watchlist form in the modal When user click 
         watchlist_form = WatchListForm() 
 
-
         context = {
             'page_obj': page_obj,
             'sort_by': sort_by,
-            'filter': Media_filter,
+            'filter': media_filter,
             'query_pagin_url': query_pagin_url,
             'query_sort_url': query_sort_url,
             'current_order': sel_order,
@@ -268,44 +231,36 @@ def search(request):
         )
 
         if request.user.is_authenticated:
-            # Get the user's watchlist and like content (movies, series)
-
-            user_watchlist_movies = set(
+            # Get the user's watchlist and like media's ID.
+            user_watchlist = set(
                 WatchList.objects.filter(
-                    user=request.user.id, movie__isnull=False
-                    ).values_list('movie_id', flat=True)
-            )
-
-            user_watchlist_series = set(
-                WatchList.objects.filter(
-                    user=request.user.id, serie__isnull=False
-                ).values_list('serie_id', flat=True)
+                    user=request.user.id
+                    ).values_list('media_id', flat=True)
             )
 
             # Get the user's liked content (movies, series)
-            user_liked_movies = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type='movie'
-                ).values_list('object_id', flat=True)
-            )
+            # user_liked_movies = set(
+            #     Like.objects.filter(
+            #         user=request.user.id, content_type='movie'
+            #     ).values_list('object_id', flat=True)
+            # )
 
-            user_liked_series = set(
-                Like.objects.filter(
-                    user=request.user.id, content_type='serie'
-                    ).values_list('object_id', flat=True)
-            )
+            # user_liked_series = set(
+            #     Like.objects.filter(
+            #         user=request.user.id, content_type='serie'
+            #         ).values_list('object_id', flat=True)
+            # )
 
             context.update(
                 {
-                'user_liked_movies': user_liked_movies,
-                'user_liked_series': user_liked_series,
-                'user_watchlist_movies': user_watchlist_movies, 
-                'user_watchlist_series': user_watchlist_series, 
+                # 'user_liked_movies': user_liked_movies,
+                # 'user_liked_series': user_liked_series,
+                'user_watchlist': user_watchlist, 
                 }
             )
     # If user select a sort-by or page parameter, create a request with HTMX
     if request.headers.get('HX-request'):
         print("\n -- HTMX request detected - returning partial list --")
-        return render(request, 'partials/media_list.html', context=context)
+        return render(request, 'partials/media_grid.html', context=context)
 
     return render(request, 'search/search.html', context=context)
