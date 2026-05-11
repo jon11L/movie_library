@@ -6,7 +6,7 @@ import random
 import os
 
 from django.core.management.base import BaseCommand
-from serie.models import Serie
+from media_library.models import Serie
 
 
 from import_data.api_clients.TMDB.fetch_data import get_api_data

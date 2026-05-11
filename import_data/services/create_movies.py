@@ -4,7 +4,7 @@ import random
 
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.tools.check_media_validity import check_movie_validity
-from movie.models import Movie
+from media_library.models import Movie
 
 
 def save_or_update_movie(tmdb_id: int):

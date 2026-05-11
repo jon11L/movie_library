@@ -6,7 +6,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from serie.models import Serie
+from media_library.models import Serie
 # from import_data.api_clients.TMDB.fetch_series import get_serie_data
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.services.create_series import save_or_update_series

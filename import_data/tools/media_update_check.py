@@ -1,6 +1,6 @@
 import datetime
 
-from serie.models import Episode
+from media_library.models import Episode
 
 
 def check_update_since(media: object, media_type: str):
