@@ -1,19 +1,18 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
-import time
-
+# tooling
 from core.tools.wrappers import timer, num_queries
+# models
 from comment.models import Comment
-from user_library.models import Like
-from watchlist.models import WatchList
 from .models import Profile
+from watchlist.models import WatchList
+# forms
 from .forms import RegisterForm, EditProfileForm, UpdateUserForm
 
 
@@ -110,7 +109,7 @@ def profile_page(request, pk):
 
         print(f"\nUser query: {user}\n") # debug print
 
-        like = Like.objects.filter(user=pk)
+        # like = Like.objects.filter(user=pk)
         # Displaying the comment posted by the user
         comments = Comment.objects.filter(user=pk).select_related("media")[0:3]
         # load the last 3 Watchlist added by the user
@@ -169,7 +168,7 @@ def profile_page(request, pk):
         context = {
             'user_id': user.pk,
             'profile_card':profile_card,
-            'likes': like.count(),
+            # 'likes': like.count(),
             'comments': comment_list,
             'last_watchlist': last_watchlist,
             # 'fav_movies': fav_movies

@@ -222,8 +222,8 @@ class WatchListToggleEntryTest(TestCase):
         self.assertTrue(data_3["in_watchlist"])
         self.assertIn("added", data_3["message"])
         
-        wlist_user_1 = user_1.new_watchlist.all().count()
-        wlist_user_2 = user_2.new_watchlist.all().count()
+        wlist_user_1 = user_1.watchlist.all().count()
+        wlist_user_2 = user_2.watchlist.all().count()
 
         self.assertEqual(wlist_user_1, 2)# 2 entries with user_1
         self.assertEqual(wlist_user_2, 1)# 1 entry with user_2
@@ -320,7 +320,7 @@ class WatchListViewAccessTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "watchlist/watch_list.html")
 
-    def test_user_canont_access_other_private_watchlist_(self):
+    def test_user_cannot_access_other_private_watchlist_(self):
         '''
         Test that a logged in user can not access another user watchlist view if set to private
         '''

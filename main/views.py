@@ -1,22 +1,19 @@
+import datetime
+import traceback
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 # from django.http import JsonResponse
-
 # from django.contrib.auth.decorators import user_passes_test
-import datetime
-# import time
-# import random
-import traceback
 
 from core.tools.wrappers import timer, num_queries
-
+# models
 from media_library.models import Media
-from user.models import User
 from review.models import Review
-from user_library.models import Like
 from watchlist.models import WatchList
-from watchlist.forms import WatchListForm
+# tooling
 from review.forms import ReviewForm
+from watchlist.forms import WatchListForm
 
 
 # def admin_check(user):
@@ -203,7 +200,6 @@ def home(request):
             "discover_media": discover_media,
             "movies_count": movies_count,
             "series_count": series_count,
-            # 'others_like': others_like,
             'watchlist_form': watchlist_form,
             'review_form': review_form
 

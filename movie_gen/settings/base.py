@@ -26,9 +26,7 @@ from pathlib import Path
 # BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = Path(__file__).resolve().parent.parent.parent # extra .parent as base in /settings directory
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,12 +43,12 @@ INSTALLED_APPS = [
     'comment',
     'media_library', # Base where Media Movie/Serie are structured and stored
     'main',
-    'movie', # Remove once done with migration
-    'serie', # Same a movie
+    # 'movie', # Remove once done with migration
+    # 'serie', # Same a movie
     'review', # Review and score system
     'user',
     'watchlist',
-    'user_library',
+    # 'user_library',
     'search',
     'import_data',
     'devtools',  # Custom app for development tools// to remove in Production

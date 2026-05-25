@@ -1,9 +1,9 @@
+import random
+
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.templatetags.static import static
-
-import random
 
 from core.models import BaseModel
 
@@ -79,7 +79,7 @@ class Media(BaseModel):
 
     def render_production(self):
         """
-        return the Movie.production attribute in without quotes and [],
+        return the Media.production attribute in without quotes and [],
         only comma-separated string.
         """
         if self.production:
@@ -88,7 +88,7 @@ class Media(BaseModel):
         return "N/a"
 
     def render_vote_average(self):
-        """return the Movie.vote_average with a rounded number"""
+        """return the Media.vote_average with a rounded number"""
         if self.vote_average:
             return round(self.vote_average, 1)
         else:
@@ -96,7 +96,7 @@ class Media(BaseModel):
 
     def render_origin_country(self):
         """
-        return the Movie.origin_country with a comma-separated string
+        return the Media.origin_country with a comma-separated string
         """
         if self.origin_country:
             origin_country = ", ".join(self.origin_country)
@@ -105,7 +105,7 @@ class Media(BaseModel):
 
     def render_spoken_languages(self):
         """
-        return the Movie.spoken_languages with a comma-separated string
+        return the Media.spoken_languages with a comma-separated string
         """
         if self.spoken_languages:
             spoken_languages = ", ".join(self.spoken_languages)
@@ -114,7 +114,7 @@ class Media(BaseModel):
 
     def render_banner(self):
         """
-        append prefix 'https://image.tmdb.org/t/p/w1280' to the Movie.banner_images url\n
+        append prefix 'https://image.tmdb.org/t/p/w1280' to the Media.banner_images url\n
         in order to be a valid url to display it.\n
         Fallback to a default static image if no banners are available
         """
@@ -133,7 +133,7 @@ class Media(BaseModel):
 
     def render_poster(self):
         """
-        append prefix 'https://image.tmdb.org/t/p/w500' to the Movie.poster_images url\n
+        append prefix 'https://image.tmdb.org/t/p/w500' to the Media.poster_images url\n
         in order to build a valid url to fetch.\n
         Fallback to a default static image if no posters are available
         """
@@ -314,9 +314,9 @@ class Season(BaseModel):
         """return the average episode length of the season with a formatted string
         (e.g., 1h 30m)
         """
-        episodes = self.episodes.all()
-        if episodes.exists():
-            total_length = sum(e.length for e in episodes if e.length)
+        episodes = self.episodes.all().values_list("length", flat=True)
+        if episodes and episodes.count() > 0:
+            total_length = sum(ep for ep in episodes if ep is not None)
             avg_length = total_length // episodes.count()
             minutes = avg_length % 60
             hours = avg_length // 60
@@ -435,23 +435,23 @@ class Episode(BaseModel):
         )  # default banner image if None set.
 
 
-class MediaTransferMap(models.Model):
-    """
-    Temporary mapping table.
-    Stores old pk → new media pk for every Movie and Serie row transferred.
-    Deleted once all dependent models (watchlist, comments etc) are migrated.
-    """
-    MOVIE = "movie"
-    SERIE = "serie"
-    MEDIA_TYPE_CHOICES = [(MOVIE, "Movie"), (SERIE, "Serie")]
+# class MediaTransferMap(models.Model):
+#     """
+#     Temporary mapping table.
+#     Stores old pk → new media pk for every Movie and Serie row transferred.
+#     Deleted once all dependent models (watchlist, comments etc) are migrated.
+#     """
+#     MOVIE = "movie"
+#     SERIE = "serie"
+#     MEDIA_TYPE_CHOICES = [(MOVIE, "Movie"), (SERIE, "Serie")]
 
-    media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES)
-    old_pk = models.IntegerField()          # pk from old movie/serie/season app
-    new_media_pk = models.IntegerField()    # media_ptr_id in new catalog app
+#     media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES)
+#     old_pk = models.IntegerField()          # pk from old movie/serie/season app
+#     new_media_pk = models.IntegerField()    # media_ptr_id in new catalog app
 
-    class Meta:
-        db_table = "media_library_transfer_map"
-        unique_together = [("media_type", "old_pk")]
+#     class Meta:
+#         db_table = "media_library_transfer_map"
+#         unique_together = [("media_type", "old_pk")]
 
-    def __str__(self):
-        return f"{self.media_type} {self.old_pk} → {self.new_media_pk}"
+#     def __str__(self):
+#         return f"{self.media_type} {self.old_pk} → {self.new_media_pk}"

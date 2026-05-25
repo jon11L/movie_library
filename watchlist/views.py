@@ -21,7 +21,7 @@ from core.permissions import IsAdminOrOwner
 from .models import WatchList
 from review.models import Review
 from user.models import User, Profile
-from user_library.models import Like
+# from user_library.models import Like
 
 from watchlist.forms import WatchListForm
 from review.forms import ReviewForm

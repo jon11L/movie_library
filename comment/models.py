@@ -11,7 +11,7 @@ from media_library.models import Media
 class Comment(BaseModel):
     '''Comment model to store comments made by users on Media'''
     # if user deleted -> DO_NOTHING. Then need to set 'user-deleted' as name instead?
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='comments')
     media = models.ForeignKey(Media, on_delete=models.CASCADE, null=False, blank=False, related_name='comments')
     body = models.TextField(blank=False, null=False)
 
@@ -23,9 +23,9 @@ class Comment(BaseModel):
 
     def __str__(self):
         return (
-            f"{self.user.username} commented on ({self.media}) "
+            f"{self.user.username if self.user else 'Deleted-User'} commented on ({self.media}) "
             f"at {self.created_at:%Y-%m-%d %H%M}:"
-            f"'{self.body[:50]}'..."
+            f" '{self.body[:50]}'..."
             )
 
 

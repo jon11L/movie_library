@@ -68,7 +68,7 @@ class Review(BaseModel):
         ]
 
     def __str__(self):
-        return f"{self.user.username}: {self.media} -({self.status}) - '{self.score}/10'"
+        return f"{self.user.username}: {self.media} - ({self.status}) - '{self.score}/10'"
 
 
     # @classmethod
