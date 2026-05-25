@@ -5,10 +5,10 @@ from django.core.exceptions import ValidationError
 
 import datetime
 
-from movie.models import Movie
-from serie.models import Serie
+from media_library.models import Media, Movie, Serie
+
 from user.models import User
-from user_library.models import WatchList
+from watchlist.models import WatchList
 
 
 # what test needed.
@@ -57,8 +57,7 @@ class WatchlistModelTest(TestCase):
 
         cls.wlist = WatchList.objects.create(
             user=cls.user,
-            movie=cls.movie,
-            serie=None,
+            media=cls.movie,
             personal_note="Note to remember to watch",
             status="watching",
         )
@@ -69,9 +68,9 @@ class WatchlistModelTest(TestCase):
     def test_check_watchlist_instance_correctly_saved(self):
         ''''''
         self.assertEqual(self.wlist.user.username, "new_user")
-        self.assertIsNone(self.wlist.serie)
-        self.assertIsNotNone(self.wlist.movie)
-        self.assertEqual(str(self.wlist.movie), "Mad Max")
+        # self.assertIsNone(self.wlist.serie)
+        self.assertIsNotNone(self.wlist.media)
+        self.assertEqual(str(self.wlist.media), "Mad Max")
 
         self.assertEqual(type(self.wlist.personal_note), str)
         self.assertIn("Note to remember", self.wlist.personal_note)
@@ -85,14 +84,13 @@ class WatchlistModelTest(TestCase):
         # to check with current user 
         w = WatchList.objects.create(
             user=self.user,
-            movie=self.movie_test,
-            serie=None,
+            media=self.movie_test,
             personal_note="to delete",
             status="to watch",
         )
         w.full_clean()
         w.save()
-        self.assertEqual(w.movie.title, "Test movie")
+        self.assertEqual(w.media.title, "Test movie")
         self.assertEqual(w.user.username, "new_user")
 
         w.delete()
@@ -115,8 +113,7 @@ class WatchlistModelTest(TestCase):
 
         wlist = WatchList.objects.create(
             user=self.user,
-            movie=movie,
-            serie=None,
+            media=movie,
             personal_note="test status choice field",
             status="to watch",
         )
@@ -148,8 +145,7 @@ class WatchlistModelTest(TestCase):
         user_1.save()
         wlist_null = WatchList.objects.create(
             user=user_1,
-            movie=movie,
-            serie=None,
+            media=movie,
             personal_note="",
             status=None,
         )
@@ -187,8 +183,7 @@ class WatchlistModelTest(TestCase):
 
         wlist_1 = WatchList(
             user=new_user,
-            movie=None,
-            serie=serie,
+            media=serie,
             personal_note="",
             status="to watch",
         )
@@ -197,8 +192,7 @@ class WatchlistModelTest(TestCase):
 
         wlist_2= WatchList(
             user=new_user,
-            movie=movie,
-            serie=None,
+            media=movie,
             personal_note="duplicate",
             status="watching",
         )
@@ -207,8 +201,7 @@ class WatchlistModelTest(TestCase):
 
         wlist_3 = WatchList(
             user=new_user,
-            movie=self.movie, # "Mad Max. in setUpData"
-            serie=None,
+            media=self.movie, # "Mad Max. in setUpData"
             personal_note="duplicate...",
             status="to watch",
         )
@@ -218,11 +211,10 @@ class WatchlistModelTest(TestCase):
         # ordered by is -id therefore last() for 1st entry
         # 3 object created in wathclist with ths user
         self.assertEqual(new_user.watchlist.count(), 3) 
-        self.assertEqual(new_user.watchlist.last().kind, "serie")
-        self.assertEqual(str(new_user.watchlist.last().serie), "Some Serie")
-        self.assertIsNone(new_user.watchlist.last().movie)
-        self.assertEqual(str(new_user.watchlist.first().movie), "Mad Max")
-        self.assertIsNone(new_user.watchlist.first().serie)
+        self.assertEqual(str(new_user.watchlist.last().media), "Some Serie")
+        # self.assertIsNone(new_user.watchlist.last().movie)
+        self.assertEqual(str(new_user.watchlist.first().media), "Mad Max")
+        # self.assertIsNone(new_user.watchlist.first().serie)
 
     def test_media_accessible_from_watchlist(self):
         """
@@ -230,9 +222,8 @@ class WatchlistModelTest(TestCase):
         and are then accessible from Watchlist object with foreign relationship
         """
         # movie entry (already present in setUpTestData as self.wlist)
-        self.assertIsNotNone(self.wlist.movie)
-        self.assertIsNone(self.wlist.serie)
-        self.assertEqual(str(self.wlist.movie), "Mad Max")
+        self.assertIsNotNone(self.wlist.media)
+        self.assertEqual(str(self.wlist.media), "Mad Max")
 
         # serie entry
         serie = Serie.objects.create(
@@ -245,18 +236,16 @@ class WatchlistModelTest(TestCase):
 
         w_list = WatchList.objects.create(
             user=self.user,
-            movie=None,
-            serie=serie,
+            media=serie,
             personal_note="serie note",
             status="to watch",
         )
         w_list.full_clean()
         w_list.save()
 
-        self.assertIsNone(w_list.movie)
-        self.assertIsNotNone(w_list.serie)
-        self.assertEqual(str(w_list.serie), "Some Serie")
-        self.assertEqual(w_list.serie.first_air_date, datetime.date(2001, 2, 3))
+        self.assertIsNotNone(w_list.media)
+        self.assertEqual(str(w_list.media), "Some Serie")
+        self.assertEqual(w_list.media.release_date, datetime.date(2001, 2, 3))
 
 
 
@@ -277,8 +266,7 @@ class WatchlistModelTest(TestCase):
         # status random string, not in Status.choices. - Should fail
         wlist = WatchList.objects.create(
             user=user_2,
-            movie=self.movie,
-            serie=None,
+            media=self.movie,
             personal_note="",
             status="not in status Choice",
         )
@@ -292,8 +280,7 @@ class WatchlistModelTest(TestCase):
         # status empty string -- Should fail
         wlist_2 = WatchList.objects.create(
             user=self.user,
-            movie=self.movie_test,
-            serie=None,
+            media=self.movie_test,
             personal_note="",
             status="",
         )
@@ -303,46 +290,14 @@ class WatchlistModelTest(TestCase):
         self.assertIsNotNone(wlist_2.status)
         self.assertEqual(wlist_2.status, "")
 
-    def test_with_both_movie_and_serie_raises_validation_error(self):
-        """
-        A watchlist entry must not reference both a movie and a serie.\n
-        Creating one with both should fail test validation.
-        """
-        # create a minimal serie for linking
-        movie = Movie.objects.create(
-            title="Test Movie",
-            overview="overview",
-        )
-        movie.full_clean()
-        movie.save()
-
-        serie = Serie.objects.create(
-            title="Test Serie",
-            overview="overview",
-        )
-        serie.full_clean()
-        serie.save()
-
-        w = WatchList(
-            user=self.user,
-            movie=movie,
-            serie=serie,
-            personal_note="both media",
-            status="to watch",
-        )
-        with self.assertRaises(ValidationError):
-            w.full_clean()
-            w.save()
-
-    def test_movie_and_serie_null_raise_validation_error(self):
+    def test_media_null_raise_validation_error(self):
         '''
-        A watchlist entry must reference at least a Movie or a Serie instance.\n
-        Test without neither should raise a validation error
+        A watchlist entry must reference a Media instance.\n
+        Test without reference should raise a validation error
         '''
         duplicate = WatchList(
             user=self.user,
-            movie=None,
-            serie=None,
+            media=None,
             personal_note="duplicate",
             status="to watch",
         )
@@ -357,8 +312,7 @@ class WatchlistModelTest(TestCase):
         """
         # prepare the object instance without a user
         wlist = WatchList(
-            movie=self.movie_test,
-            serie=None,
+            media=self.movie_test,
             personal_note="no user",
             status="to watch",
         )
@@ -377,8 +331,7 @@ class WatchlistModelTest(TestCase):
         # prepare the object instance 
         duplicate = WatchList(
             user=self.user,
-            movie=self.movie,
-            serie=None,
+            media=self.movie,
             personal_note="duplicate",
             status="to watch",
         )

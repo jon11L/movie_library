@@ -3,281 +3,283 @@
 from django.db import migrations, transaction
 import time
 
-CHUNK_SIZE = 500
+# CHUNK_SIZE = 500
 
 def forwards(apps, schema_editor):
+    pass
 
-    total_time = time.time()
+    # total_time = time.time()
 
-    # --- Old models (source) ---
-    old_movie_mod = apps.get_model("movie", "Movie")
-    old_serie_mod = apps.get_model("serie", "Serie")
-    old_season_mod = apps.get_model("serie", "Season") 
-    old_episode_mod = apps.get_model("serie", "Episode")
+    # # --- Old models (source) ---
+    # old_movie_mod = apps.get_model("movie", "Movie")
+    # old_serie_mod = apps.get_model("serie", "Serie")
+    # old_season_mod = apps.get_model("serie", "Season") 
+    # old_episode_mod = apps.get_model("serie", "Episode")
 
-    # --- New models ---
-    new_movie_mod = apps.get_model("media_library", "Movie")
-    new_serie_mod = apps.get_model("media_library", "Serie")
-    new_season_mod = apps.get_model("media_library", "Season")
-    new_episode_mod = apps.get_model("media_library", "Episode")
-    media_transfer_map = apps.get_model("media_library", "MediaTransferMap")
+    # # --- New models ---
+    # new_movie_mod = apps.get_model("media_library", "Movie")
+    # new_serie_mod = apps.get_model("media_library", "Serie")
+    # new_season_mod = apps.get_model("media_library", "Season")
+    # new_episode_mod = apps.get_model("media_library", "Episode")
+    # media_transfer_map = apps.get_model("media_library", "MediaTransferMap")
 
-    with transaction.atomic():
+    # with transaction.atomic():
 
-        start = time.time()
-        # Transfert Movies into Media and Movie tables
-        for old in old_movie_mod.objects.order_by('id').iterator(chunk_size=CHUNK_SIZE):
-            movie = new_movie_mod.objects.create(
-                # Media model
-                media_type="movie",
-                original_title=old.original_title,
-                title=old.title,
-                overview=old.overview,
-                tagline=old.tagline,
-                genre=old.genre,
-                release_date=old.release_date,
-                origin_country=old.origin_country,
-                original_language=old.original_language,
-                spoken_languages=old.spoken_languages,
-                production=old.production,
-                vote_average=old.vote_average,
-                vote_count=old.vote_count,
-                popularity=old.popularity,
-                banner_images=old.banner_images,
-                poster_images=old.poster_images,
-                status=old.status,
+    #     start = time.time()
+    #     # Transfert Movies into Media and Movie tables
+    #     for old in old_movie_mod.objects.order_by('id').iterator(chunk_size=CHUNK_SIZE):
+    #         movie = new_movie_mod.objects.create(
+    #             # Media model
+    #             media_type="movie",
+    #             original_title=old.original_title,
+    #             title=old.title,
+    #             overview=old.overview,
+    #             tagline=old.tagline,
+    #             genre=old.genre,
+    #             release_date=old.release_date,
+    #             origin_country=old.origin_country,
+    #             original_language=old.original_language,
+    #             spoken_languages=old.spoken_languages,
+    #             production=old.production,
+    #             vote_average=old.vote_average,
+    #             vote_count=old.vote_count,
+    #             popularity=old.popularity,
+    #             banner_images=old.banner_images,
+    #             poster_images=old.poster_images,
+    #             status=old.status,
 
-                created_at=old.created_at,
-                updated_at=old.updated_at,
-                is_active=old.is_active,
-                adult=False if old.is_active else True,
-                slug = old.slug,
+    #             created_at=old.created_at,
+    #             updated_at=old.updated_at,
+    #             is_active=old.is_active,
+    #             adult=False if old.is_active else True,
+    #             slug = old.slug,
 
-                # Movie-specific fields
-                director=old.director,
-                writer=old.writer,
-                casting=old.casting,
-                length=old.length,
-                trailers=old.trailers,
-                budget=old.budget,
-                revenue=old.revenue,
-                tmdb_id=old.tmdb_id,
-                imdb_id=old.imdb_id,
-            )
-
-
-            # Bypass auto_now by updating directly on the queryset
-            new_movie_mod.objects.filter(pk=movie.pk).update(
-                created_at=old.created_at,
-                updated_at=old.updated_at,
-            )
+    #             # Movie-specific fields
+    #             director=old.director,
+    #             writer=old.writer,
+    #             casting=old.casting,
+    #             length=old.length,
+    #             trailers=old.trailers,
+    #             budget=old.budget,
+    #             revenue=old.revenue,
+    #             tmdb_id=old.tmdb_id,
+    #             imdb_id=old.imdb_id,
+    #         )
 
 
-            # Keep record old_pk -> new_pk for futur refactoring on Watchlist etc..
-            media_transfer_map.objects.create(
-                media_type="movie",
-                old_pk=old.id,
-                new_media_pk=movie.id
-            )
-
-        print(f"Movies done: {time.time() - start:.2f}s")
-
-        start = time.time()
-        # Transfert Series into Media and Serie tables
-        for old in old_serie_mod.objects.order_by('id').iterator(chunk_size=CHUNK_SIZE):
-            serie = new_serie_mod.objects.create(
-                # Media model
-                media_type="serie",
-                title=old.title,
-                original_title=old.original_title,
-                overview=old.overview,
-                tagline=old.tagline,
-                genre=old.genre,
-                release_date=old.first_air_date,
-                origin_country=old.origin_country,
-                original_language=old.original_language,
-                spoken_languages=old.spoken_languages,
-                production=old.production,
-                vote_average=old.vote_average,
-                vote_count=old.vote_count,
-                popularity=old.popularity,
-                banner_images=old.banner_images,
-                poster_images=old.poster_images,
-                status=old.status,
-                # created_at=old.created_at,
-                # updated_at=old.updated_at,
-                is_active=old.is_active,
-                adult=False if old.is_active else True,
-                slug = old.slug,
-
-                # Serie-specific fields
-                first_air_date=old.first_air_date,
-                last_air_date=old.last_air_date,
-                created_by=old.created_by,
-                tmdb_id=old.tmdb_id,
-                imdb_id=old.imdb_id,
-            )
-
-            # Bypass auto_now by updating directly on the queryset
-            new_serie_mod.objects.filter(pk=serie.pk).update(
-                created_at=old.created_at,
-                updated_at=old.updated_at,
-            )
+    #         # Bypass auto_now by updating directly on the queryset
+    #         new_movie_mod.objects.filter(pk=movie.pk).update(
+    #             created_at=old.created_at,
+    #             updated_at=old.updated_at,
+    #         )
 
 
-            # Keep record old serie.pk -> new serie.pk for futur refactoring on Watchlist etc..
-            media_transfer_map.objects.create(
-                media_type="serie",
-                old_pk=old.id,
-                new_media_pk=serie.id
-            )
+    #         # Keep record old_pk -> new_pk for futur refactoring on Watchlist etc..
+    #         media_transfer_map.objects.create(
+    #             media_type="movie",
+    #             old_pk=old.id,
+    #             new_media_pk=movie.id
+    #         )
 
-        print(f"Series done: {time.time() - start:.2f}s")
+    #     print(f"Movies done: {time.time() - start:.2f}s")
 
-        start = time.time()
-        # --- Copy Seasons (FK to old Serie → FK to new Serie via map) ---
-        serie_mapping_id = dict(
-            media_transfer_map.objects.filter(media_type="serie").values_list(
-                "old_pk", "new_media_pk"
-            )
-        )
+    #     start = time.time()
+    #     # Transfert Series into Media and Serie tables
+    #     for old in old_serie_mod.objects.order_by('id').iterator(chunk_size=CHUNK_SIZE):
+    #         serie = new_serie_mod.objects.create(
+    #             # Media model
+    #             media_type="serie",
+    #             title=old.title,
+    #             original_title=old.original_title,
+    #             overview=old.overview,
+    #             tagline=old.tagline,
+    #             genre=old.genre,
+    #             release_date=old.first_air_date,
+    #             origin_country=old.origin_country,
+    #             original_language=old.original_language,
+    #             spoken_languages=old.spoken_languages,
+    #             production=old.production,
+    #             vote_average=old.vote_average,
+    #             vote_count=old.vote_count,
+    #             popularity=old.popularity,
+    #             banner_images=old.banner_images,
+    #             poster_images=old.poster_images,
+    #             status=old.status,
+    #             # created_at=old.created_at,
+    #             # updated_at=old.updated_at,
+    #             is_active=old.is_active,
+    #             adult=False if old.is_active else True,
+    #             slug = old.slug,
 
-        bulk_list_new_season = [] # store a bulk of seasons to create for more efficient insert
-        old_season_mapping_keys = [] # list to Store the old_id, season_number and old_serie_pk
-        season_map_id = {} # store old seasons id to new season id for episode transfer
+    #             # Serie-specific fields
+    #             first_air_date=old.first_air_date,
+    #             last_air_date=old.last_air_date,
+    #             created_by=old.created_by,
+    #             tmdb_id=old.tmdb_id,
+    #             imdb_id=old.imdb_id,
+    #         )
 
-        # Steps for attaching episodes to correct new season's Pk.
-        # 1: old_season_mapping_keys: list to Store the old_id, season_number and old_serie_pk
-        # 2. serie_mapping_id holds old_serie_pk & new_serie_pk already exist
-        # 3 After looping through the season and created, create a list of dict key: new_serie_pk, new_season_num   value: new_season_pk
-        # 4 : Store old_season_pk , new_season_pk in season_mapping_id
-        # by using the old_season_keys:
-        # get the new_serie_pk with using the old_serie_pk in the serie_mapping_id/
-        # get the new_season_pk with using the new_serie_pk and season_num KEYS to get new_season_pk values
-        # store the old_season_pk as key and new_season_pk value in season_mapping_id
+    #         # Bypass auto_now by updating directly on the queryset
+    #         new_serie_mod.objects.filter(pk=serie.pk).update(
+    #             created_at=old.created_at,
+    #             updated_at=old.updated_at,
+    #         )
 
-        for season in old_season_mod.objects.iterator(chunk_size=CHUNK_SIZE):
-            # fetch the corresponding new serie id from the map using old season's serie_id
-            new_serie_pk = serie_mapping_id.get(season.serie_id)
-            if not new_serie_pk:
-                print(f"WARNING: serie not found for season pk={season.pk} -{season.name}")
-                continue
 
-            # create new season with FK to new serie
-            bulk_list_new_season.append(
-                new_season_mod(
-                    serie_id=new_serie_pk,  # points to new catalog Serie
-                    name=season.name,
-                    season_number=season.season_number,
-                    overview=season.overview,
-                    producer=season.producer,
-                    casting=season.casting,
-                    poster_images=season.poster_images,
-                    trailers=season.trailers,
-                    tmdb_id=season.tmdb_id,
-                    slug = season.slug,
-                    created_at=season.created_at,
-                    updated_at=season.updated_at,
-                    is_active=season.is_active,
-                )
-            )
+    #         # Keep record old serie.pk -> new serie.pk for futur refactoring on Watchlist etc..
+    #         media_transfer_map.objects.create(
+    #             media_type="serie",
+    #             old_pk=old.id,
+    #             new_media_pk=serie.id
+    #         )
 
-            # Store tuple of the old season Pk,season number
-            old_season_mapping_keys.append((season.pk, season.season_number, season.serie_id))
+    #     print(f"Series done: {time.time() - start:.2f}s")
 
-            # Bulk_create per chunk.
-            if len(bulk_list_new_season) >= CHUNK_SIZE:
-                new_season_mod.objects.bulk_create(bulk_list_new_season)
-                #  Free up memory when list grows over Chunk_size
-                bulk_list_new_season = [] 
+    #     start = time.time()
+    #     # --- Copy Seasons (FK to old Serie → FK to new Serie via map) ---
+    #     serie_mapping_id = dict(
+    #         media_transfer_map.objects.filter(media_type="serie").values_list(
+    #             "old_pk", "new_media_pk"
+    #         )
+    #     )
 
-        # Sends the remaining season bulk_list chunck to bulk_create.
-        if bulk_list_new_season:
-            new_season_mod.objects.bulk_create(bulk_list_new_season)
-        del bulk_list_new_season  # release
-        print(f"Seasons done: {time.time() - start:.2f}s")
+    #     bulk_list_new_season = [] # store a bulk of seasons to create for more efficient insert
+    #     old_season_mapping_keys = [] # list to Store the old_id, season_number and old_serie_pk
+    #     season_map_id = {} # store old seasons id to new season id for episode transfer
 
-        start = time.time()
-        # create a mapping with dual key: (serie_id & season_number) --> value: new season_pk
-        new_season_lookup = {}
+    #     # Steps for attaching episodes to correct new season's Pk.
+    #     # 1: old_season_mapping_keys: list to Store the old_id, season_number and old_serie_pk
+    #     # 2. serie_mapping_id holds old_serie_pk & new_serie_pk already exist
+    #     # 3 After looping through the season and created, create a list of dict key: new_serie_pk, new_season_num   value: new_season_pk
+    #     # 4 : Store old_season_pk , new_season_pk in season_mapping_id
+    #     # by using the old_season_keys:
+    #     # get the new_serie_pk with using the old_serie_pk in the serie_mapping_id/
+    #     # get the new_season_pk with using the new_serie_pk and season_num KEYS to get new_season_pk values
+    #     # store the old_season_pk as key and new_season_pk value in season_mapping_id
 
-        for serie_id, season_num, pk in new_season_mod.objects.values_list(
-            "serie_id", "season_number", "pk"
-        ):
-            new_season_lookup[(serie_id, season_num)] = pk
+    #     for season in old_season_mod.objects.iterator(chunk_size=CHUNK_SIZE):
+    #         # fetch the corresponding new serie id from the map using old season's serie_id
+    #         new_serie_pk = serie_mapping_id.get(season.serie_id)
+    #         if not new_serie_pk:
+    #             print(f"WARNING: serie not found for season pk={season.pk} -{season.name}")
+    #             continue
 
-        for  old_pk, old_season_num, old_serie_id in old_season_mapping_keys:
-            new_serie_pk = serie_mapping_id.get(old_serie_id)
-            new_season_pk = new_season_lookup.get((new_serie_pk, old_season_num))
-            if new_season_pk:
-                season_map_id[old_pk] = new_season_pk
+    #         # create new season with FK to new serie
+    #         bulk_list_new_season.append(
+    #             new_season_mod(
+    #                 serie_id=new_serie_pk,  # points to new catalog Serie
+    #                 name=season.name,
+    #                 season_number=season.season_number,
+    #                 overview=season.overview,
+    #                 producer=season.producer,
+    #                 casting=season.casting,
+    #                 poster_images=season.poster_images,
+    #                 trailers=season.trailers,
+    #                 tmdb_id=season.tmdb_id,
+    #                 slug = season.slug,
+    #                 created_at=season.created_at,
+    #                 updated_at=season.updated_at,
+    #                 is_active=season.is_active,
+    #             )
+    #         )
 
-        del serie_mapping_id #Free up space
-        del new_season_lookup # Free up space
+    #         # Store tuple of the old season Pk,season number
+    #         old_season_mapping_keys.append((season.pk, season.season_number, season.serie_id))
 
-        bulk_list_episode = []
-        for old_ep in old_episode_mod.objects.iterator(chunk_size=CHUNK_SIZE):
+    #         # Bulk_create per chunk.
+    #         if len(bulk_list_new_season) >= CHUNK_SIZE:
+    #             new_season_mod.objects.bulk_create(bulk_list_new_season)
+    #             #  Free up memory when list grows over Chunk_size
+    #             bulk_list_new_season = [] 
 
-            # set the new season's Pk looking up the map season old_pk: new_pk
-            new_season_pk = season_map_id.get(old_ep.season_id)
+    #     # Sends the remaining season bulk_list chunck to bulk_create.
+    #     if bulk_list_new_season:
+    #         new_season_mod.objects.bulk_create(bulk_list_new_season)
+    #     del bulk_list_new_season  # release
+    #     print(f"Seasons done: {time.time() - start:.2f}s")
 
-            if not new_season_pk:
-                print(f"WARNING: no season mapping found for episode {old_ep.pk}, season_id={old_ep.season_id}")
-                continue
+    #     start = time.time()
+    #     # create a mapping with dual key: (serie_id & season_number) --> value: new season_pk
+    #     new_season_lookup = {}
 
-            bulk_list_episode.append(
-                new_episode_mod(
-                    season_id=new_season_pk,
-                    episode_number=old_ep.episode_number,
-                    title=old_ep.title,
-                    overview=old_ep.overview,
-                    length=old_ep.length,
-                    release_date=old_ep.release_date,
-                    guest_star=old_ep.guest_star,
-                    director=old_ep.director,
-                    writer=old_ep.writer,
-                    banner_images=old_ep.banner_images,
-                    tmdb_id=old_ep.tmdb_id,
-                    slug = old_ep.slug,
-                    created_at=old_ep.created_at,
-                    updated_at=old_ep.updated_at,
-                    is_active=old_ep.is_active,
-                )
-            )   
+    #     for serie_id, season_num, pk in new_season_mod.objects.values_list(
+    #         "serie_id", "season_number", "pk"
+    #     ):
+    #         new_season_lookup[(serie_id, season_num)] = pk
 
-            # Flush chunk to avoid holding 700k objects in memory at once
-            if len(bulk_list_episode) >= CHUNK_SIZE:
-                new_episode_mod.objects.bulk_create(bulk_list_episode)
-                bulk_list_episode = []
+    #     for  old_pk, old_season_num, old_serie_id in old_season_mapping_keys:
+    #         new_serie_pk = serie_mapping_id.get(old_serie_id)
+    #         new_season_pk = new_season_lookup.get((new_serie_pk, old_season_num))
+    #         if new_season_pk:
+    #             season_map_id[old_pk] = new_season_pk
 
-        # Finish over the remaining of the batch
-        if bulk_list_episode:
-            new_episode_mod.objects.bulk_create(bulk_list_episode)
-        print(f"Episode done: {time.time() - start:.2f}s")
+    #     del serie_mapping_id #Free up space
+    #     del new_season_lookup # Free up space
 
-    end_time = time.time()
-    elapsed_time = end_time - total_time
-    print("Migration process Values inserted in new models done")
-    print(f"total time: {elapsed_time:.2f} seconds.")
+    #     bulk_list_episode = []
+    #     for old_ep in old_episode_mod.objects.iterator(chunk_size=CHUNK_SIZE):
+
+    #         # set the new season's Pk looking up the map season old_pk: new_pk
+    #         new_season_pk = season_map_id.get(old_ep.season_id)
+
+    #         if not new_season_pk:
+    #             print(f"WARNING: no season mapping found for episode {old_ep.pk}, season_id={old_ep.season_id}")
+    #             continue
+
+    #         bulk_list_episode.append(
+    #             new_episode_mod(
+    #                 season_id=new_season_pk,
+    #                 episode_number=old_ep.episode_number,
+    #                 title=old_ep.title,
+    #                 overview=old_ep.overview,
+    #                 length=old_ep.length,
+    #                 release_date=old_ep.release_date,
+    #                 guest_star=old_ep.guest_star,
+    #                 director=old_ep.director,
+    #                 writer=old_ep.writer,
+    #                 banner_images=old_ep.banner_images,
+    #                 tmdb_id=old_ep.tmdb_id,
+    #                 slug = old_ep.slug,
+    #                 created_at=old_ep.created_at,
+    #                 updated_at=old_ep.updated_at,
+    #                 is_active=old_ep.is_active,
+    #             )
+    #         )   
+
+    #         # Flush chunk to avoid holding 700k objects in memory at once
+    #         if len(bulk_list_episode) >= CHUNK_SIZE:
+    #             new_episode_mod.objects.bulk_create(bulk_list_episode)
+    #             bulk_list_episode = []
+
+    #     # Finish over the remaining of the batch
+    #     if bulk_list_episode:
+    #         new_episode_mod.objects.bulk_create(bulk_list_episode)
+    #     print(f"Episode done: {time.time() - start:.2f}s")
+
+    # end_time = time.time()
+    # elapsed_time = end_time - total_time
+    # print("Migration process Values inserted in new models done")
+    # print(f"total time: {elapsed_time:.2f} seconds.")
 
 
 def backwards(apps, schema_editor):
     # Wipe everything created in catalog — restores to empty tables
-    with transaction.atomic():
-        apps.get_model("media_library", "Episode").objects.all().delete()
-        apps.get_model("media_library", "Season").objects.all().delete()
-        apps.get_model("media_library", "Serie").objects.all().delete()
-        apps.get_model("media_library", "Movie").objects.all().delete()
-        apps.get_model("media_library", "MediaTransferMap").objects.all().delete()
-        apps.get_model("media_library", "Media").objects.all().delete()
+    # with transaction.atomic():
+        # apps.get_model("media_library", "Episode").objects.all().delete()
+        # apps.get_model("media_library", "Season").objects.all().delete()
+        # apps.get_model("media_library", "Serie").objects.all().delete()
+        # apps.get_model("media_library", "Movie").objects.all().delete()
+        # apps.get_model("media_library", "MediaTransferMap").objects.all().delete()
+        # apps.get_model("media_library", "Media").objects.all().delete()
+    pass
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('media_library', '0001_initial'),
-        ('movie', '0025_alter_movie_options'), # Remove later when all data/structure transfered
-        ('serie', '0027_alter_serie_options')
+        # ('movie', '0025_alter_movie_options'), # Remove later when all data/structure transfered
+        # ('serie', '0027_alter_serie_options')
     ]
 
     operations = [

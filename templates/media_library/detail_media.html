@@ -12,14 +12,17 @@
                 <div>
                     <!-- For dev purpose -->
                     {% if request.user.is_superuser %}
-                    <div style="color: aliceblue;">
-                        <p style="padding: 0; margin: 0;"><strong>id: {{ movie.pk }}</strong></p>
-
+                    <div style=" color: aliceblue;">
+                        
+                        <p style="padding: 0; margin: 0.25rem 0;"><strong>id: {{ media.pk }}</strong></p>
+                        <p style="padding: 0; margin: 0.25rem 0;">created: {{ media.created_at|date:"d-m-Y H:i" }}</p>
+                        
                         {% if media.created_at|date:"Y-m-d H" == media.updated_at|date:"Y-m-d H" %}
                         <p><strong>(Not updated)</strong></p>
                         {% elif media.created_at != media.updated_at %}
                         <p><strong>(last updated on {{ media.updated_at|date:"d-M-y" }})</strong></p>
                         {% endif %}
+
                         <p>is adult: {{ media.adult }}</p>
                     </div>
                     {% endif %}

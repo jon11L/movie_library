@@ -24,7 +24,7 @@
                     <!-- reviews button feature -->
                     <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;";
                         data-id="{{ item.id }}"
-                        data-title="{{ item.title|slice:':45'}}"
+                        data-title="{{ item.title|slice:':55'}}"
                         data-reviewed="{% if item.id in user_reviews %}true{% else %}false{% endif %}">
                         <i class="{% if item.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
                             aria-hidden="true"
