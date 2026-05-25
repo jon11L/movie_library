@@ -8,19 +8,27 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('comment', '0004_comment_is_active_comment_slug_and_more'),
-        ('movie', '0024_remove_movie_released'),
-        ('serie', '0026_alter_serie_imdb_id_alter_serie_vote_average'),
+        # ('movie', '0024_remove_movie_released'),
+        # ('serie', '0026_alter_serie_imdb_id_alter_serie_vote_average'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='comment',
-            name='movie',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='movie.movie'),
+        migrations.RunPython(
+            migrations.RunPython.noop,  # was: AddField movie FK
+            migrations.RunPython.noop,
         ),
-        migrations.AddField(
-            model_name='comment',
-            name='serie',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='serie.serie'),
+        migrations.RunPython(
+            migrations.RunPython.noop,  # was: AddField serie FK
+            migrations.RunPython.noop,
         ),
+        # migrations.AddField(
+        #     model_name='comment',
+        #     name='movie',
+        #     field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='movie.movie'),
+        # ),
+        # migrations.AddField(
+        #     model_name='comment',
+        #     name='serie',
+        #     field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='serie.serie'),
+        # ),
     ]

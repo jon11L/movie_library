@@ -21,7 +21,7 @@
                     
 
                 <h5 class="modal-title" id="reviewModalTitle"
-                    style="margin: 0.5rem auto 0 auto; padding: 0;  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                    style="margin: 0.5rem auto 0 auto; padding: 0; text-align: center; align-items: center;">
                 <!-- Value being passed on Js --> </h5>
                 
             </div>
@@ -33,7 +33,7 @@
                     {% csrf_token %}
 
                     <div class="modal-body" style="color: rgb(200, 196, 190); max-width: 450px; margin: auto;">
-                        <div class="" style="display: flex; flex-wrap: wrap; gap: 1rem; width: fit-content;">
+                        <div class="" style="display: flex; flex-wrap: wrap; gap: 0.8rem; width: fit-content;">
                             <div id="status" >
                                 <label for="status" style="margin-left: 0.25rem;"><strong>status:</strong></label>
                                 {{ review_form.status }}

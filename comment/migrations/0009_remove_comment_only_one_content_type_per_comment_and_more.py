@@ -8,22 +8,23 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('comment', '0008_populate_media_field'),
-        ('media_library', '0002_migrate_movie_serie_to_media'),
+        # ('media_library', '0002_migrate_movie_serie_to_media'),
+        ('media_library', '0001_squashed_0002_migrate_movie_serie_to_media'),
     ]
 
     operations = [
-        migrations.RemoveConstraint(
-            model_name='comment',
-            name='only_one_content_type_per_comment',
-        ),
-        migrations.RemoveField(
-            model_name='comment',
-            name='movie',
-        ),
-        migrations.RemoveField(
-            model_name='comment',
-            name='serie',
-        ),
+        # migrations.RemoveConstraint(
+        #     model_name='comment',
+        #     name='only_one_content_type_per_comment',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='comment',
+        #     name='movie',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='comment',
+        #     name='serie',
+        # ),
         migrations.AlterField(
             model_name='comment',
             name='media',

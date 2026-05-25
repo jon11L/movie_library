@@ -8,8 +8,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('comment', '0005_comment_movie_comment_serie'),
-        ('movie', '0024_remove_movie_released'),
-        ('serie', '0026_alter_serie_imdb_id_alter_serie_vote_average'),
+        # ('movie', '0024_remove_movie_released'),
+        # ('serie', '0026_alter_serie_imdb_id_alter_serie_vote_average'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -22,8 +22,12 @@ class Migration(migrations.Migration):
             model_name='comment',
             name='object_id',
         ),
-        migrations.AddConstraint(
-            model_name='comment',
-            constraint=models.CheckConstraint(condition=models.Q(models.Q(('movie__isnull', False), ('serie__isnull', True)), models.Q(('movie__isnull', True), ('serie__isnull', False)), _connector='OR'), name='only_one_content_type_per_comment'),
+        # migrations.AddConstraint(
+        #     model_name='comment',
+        #     constraint=models.CheckConstraint(condition=models.Q(models.Q(('movie__isnull', False), ('serie__isnull', True)), models.Q(('movie__isnull', True), ('serie__isnull', False)), _connector='OR'), name='only_one_content_type_per_comment'),
+        # ),
+        migrations.RunPython(
+            migrations.RunPython.noop,  # was: AddConstraint referencing movie/serie fields
+            migrations.RunPython.noop,
         ),
     ]

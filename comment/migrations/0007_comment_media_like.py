@@ -9,7 +9,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('comment', '0006_remove_comment_content_type_remove_comment_object_id_and_more'),
-        ('media_library', '0002_migrate_movie_serie_to_media'),
+        # ('media_library', '0002_migrate_movie_serie_to_media'),
+        ('media_library', '0001_squashed_0002_migrate_movie_serie_to_media'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
