@@ -13,10 +13,10 @@ class WatchList(BaseModel):
         FINISHED = 'finished', 'Finished Watching'
         DROPPED = 'dropped', 'Dropped out'
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="new_watchlist")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
 
     media = models.ForeignKey(
-        Media, on_delete=models.CASCADE, null=True, blank=True, related_name="watchlisted_by"
+        Media, on_delete=models.CASCADE, related_name="watchlisted_by"
     )
 
     personal_note = models.TextField(max_length=500, blank=True, null=True)

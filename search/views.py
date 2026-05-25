@@ -2,16 +2,18 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Case, When, Value, IntegerField
 
+# tooling
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
-from .filters import SharedMediaFilter
+# models
 from media_library.models import Media
-# from movie.models import Movie
-# from serie.models import Serie
-from user_library.models import Like
 from watchlist.models import WatchList
-from watchlist.forms import WatchListForm
+from review.models import Review
 
+# forms and filters
+from watchlist.forms import WatchListForm
+from review.forms import ReviewForm
+from .filters import SharedMediaFilter
 
 
 # def initialize_search(request):
@@ -25,7 +27,6 @@ from watchlist.forms import WatchListForm
 #     context = {'filter': Media_filter}
 
 #     return render(request, 'search/search.html', context=context)
-
 
 
 
@@ -202,6 +203,7 @@ def search(request):
 
         # Display watchlist form in the modal When user click 
         watchlist_form = WatchListForm() 
+        review_form = ReviewForm() 
 
         context = {
             'page_obj': page_obj,
@@ -215,6 +217,7 @@ def search(request):
             'query_params': query_params, # to recognize the filters applied // may have to ensure naming & value inside
             'total_found': total_found if total_found > 0 else None,
             'watchlist_form': watchlist_form,
+            'review_form': review_form,
         }
 
         #  ========== Temporary placement for paginator design ==============
@@ -238,27 +241,19 @@ def search(request):
                     ).values_list('media_id', flat=True)
             )
 
-            # Get the user's liked content (movies, series)
-            # user_liked_movies = set(
-            #     Like.objects.filter(
-            #         user=request.user.id, content_type='movie'
-            #     ).values_list('object_id', flat=True)
-            # )
-
-            # user_liked_series = set(
-            #     Like.objects.filter(
-            #         user=request.user.id, content_type='serie'
-            #         ).values_list('object_id', flat=True)
-            # )
+            # -------- Get the user's reviewed media  ----------
+            user_reviews = set(
+                Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
+            )
 
             context.update(
                 {
-                # 'user_liked_movies': user_liked_movies,
-                # 'user_liked_series': user_liked_series,
+                'user_reviews': user_reviews,
                 'user_watchlist': user_watchlist, 
                 }
             )
-    # If user select a sort-by or page parameter, create a request with HTMX
+
+    # If user select a sort-by or page parameter, create a request with HTMX to update only the media list without reloading the page
     if request.headers.get('HX-request'):
         print("\n -- HTMX request detected - returning partial list --")
         return render(request, 'partials/media_grid.html', context=context)

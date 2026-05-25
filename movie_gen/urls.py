@@ -33,12 +33,12 @@ def api_root(request, format=None):
         # "register": reverse("register", request=request, format=format),
         "token-auth": reverse("token_auth", request=request, format=format),
         # "api-auth": reverse("api_auth", request=request, format=format),
-        "movie-list": reverse("api_movie:list", request=request, format=format),
-        "movie-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
-        "serie-list": reverse("api_serie:list", request=request, format=format),
-        "serie-detail": reverse("api_serie:detail", kwargs={"pk": 50}, request=request, format=format),
-        "watchlist-list": reverse("api_watchlist:list", request=request, format=format),
-        "watchlist-detail": reverse("api_watchlist:detail", kwargs={"pk": 80}, request=request, format=format),
+        # "movie-list": reverse("api_movie:list", request=request, format=format),
+        # "movie-detail": reverse("api_movie:detail", kwargs={"pk": 50}, request=request, format=format),
+        # "serie-list": reverse("api_serie:list", request=request, format=format),
+        # "serie-detail": reverse("api_serie:detail", kwargs={"pk": 50}, request=request, format=format),
+        # "watchlist-list": reverse("api_watchlist:list", request=request, format=format),
+        # "watchlist-detail": reverse("api_watchlist:detail", kwargs={"pk": 80}, request=request, format=format),
     })
 
 
@@ -47,9 +47,9 @@ urlpatterns = [
     path('', include('main.urls', namespace='main')),
     path('user/', include('user.urls', namespace='user')),
     path('media_library/', include('media_library.urls', namespace='media_library')),
-    path('movie/', include('movie.urls', namespace='movie')),
-    path('serie/', include('serie.urls', namespace='serie')),
-    path('library/', include('user_library.urls', namespace='user_library')),
+    # path('movie/', include('movie.urls', namespace='movie')),
+    # path('serie/', include('serie.urls', namespace='serie')),
+    # path('library/', include('user_library.urls', namespace='user_library')),
     path('review/', include('review.urls', namespace='review')),
     path('watchlist/', include('watchlist.urls', namespace='watchlist')),
     path('search/', include('search.urls', namespace='search')),
@@ -59,9 +59,9 @@ urlpatterns = [
     path('api/', api_root, name='api_root'),
     path('api-auth/', include('rest_framework.urls'), name="api_auth"), #/login or  for the browsable API /logout
     path('api-token-auth/', obtain_auth_token, name='token_auth'), #create a token for users when posting their cred. to this url. POST {username, password}
-    path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
-    path('api/v1/serie/', include('serie.api_urls', namespace='api_serie')),
-    path('api/v1/user_library/', include('user_library.api_urls', namespace='api_watchlist')),
+    # path('api/v1/movie/', include('movie.api_urls', namespace='api_movie')),
+    # path('api/v1/serie/', include('serie.api_urls', namespace='api_serie')),
+    # path('api/v1/user_library/', include('user_library.api_urls', namespace='api_watchlist')),
 ]
 
 if settings.DEBUG:

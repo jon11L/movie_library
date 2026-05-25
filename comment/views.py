@@ -1,15 +1,18 @@
+import traceback
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-import traceback
-import json
 from django.utils import timezone
 
+# tooling
 from core.tools.wrappers import timer, num_queries
-from comment.forms import CommentForm
-from .models import Comment
+# models and forms
+from .models import Comment, Like
 from media_library.models import Media
+from comment.forms import CommentForm
 
 @timer
 @num_queries
@@ -206,3 +209,51 @@ def edit_comment(request, pk):
             print(f"Error in trying to edit a comment\n Error: {e}")
             messages.error(request, "The comment either does not exist, you are not the owner or an internal error occurred")
             return redirect('media_library:detail', slug=comment.media.slug)
+
+
+
+def toggle_like(request, content_type: str, object_id: int):
+    '''When triggered or called in pair with AJAX on the front-end, 
+    this function will check in the 'Like' models data
+    - if an instance of Like exist between user/content_type (movie or serie)/object_id (id of that object) exist or not 
+    - if it does not, it will then create a new instance in the database,
+    - if the instance already exists, it will delete the instance.
+    - With AJAX implemented on the front-end, the updates on the data are made without reloading the page
+    '''
+
+    # if user is Not logged in, it a message will pop up
+    if not request.user.is_authenticated:
+        # messages.error(request, "You must be logged in to like contents.")
+        return JsonResponse({
+            'error': 'Login required',
+            'message': "You must be logged-in to like content. LINK to log here"
+            }, status=401)
+
+    # User clicked the 'like' button.
+    if request.method == "POST":
+
+            # check if the Like already exists
+            like = Like.objects.filter(
+                user=request.user,
+                content_type=content_type,
+                object_id=object_id
+                ).first()
+            print(f"\n like exist?: {like}\n") # debugging 
+
+            if like: # If the like already exists, it will be removed.
+                like.delete()
+                print(f"'{like}' Unliked")
+                message = f"*{content_type}-{object_id} Unliked*"
+                return JsonResponse({'liked': False, 'message': message}) # responding to Ajax on front-end.
+            
+            else: # the Like is created with the user id, model type and the respective id of this model
+                like = Like.objects.create(
+                    user=request.user,
+                    content_type=content_type,
+                    object_id=object_id
+                    )
+                
+                print(f"**Liked**.\n{like}\n")
+                # messages.success(request, f"{content_type} added to your likes.")
+                message = f"*{content_type}-{object_id} Liked*"
+                return JsonResponse({'liked': True, 'message': message}) # responding to Ajax on front-end.

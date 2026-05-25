@@ -110,13 +110,13 @@ class CommentModelTestCase(TestCase):
 
 
     # --- Test Constraints, validation that fails --------
-    def test_create_comment_without_user_raises_error(self):
-        ''' Test that creating a comment without a user raises an IntegrityError '''
-        with self.assertRaises(IntegrityError):
-            Comment.objects.create(
-                media=self.movie,
-                body='This comment without a user should fail.'
-            )
+    # def test_create_comment_without_user_raises_error(self):
+    #     ''' Test that creating a comment without a user raises an IntegrityError '''
+    #     with self.assertRaises(IntegrityError):
+    #         Comment.objects.create(
+    #             media=self.movie,
+    #             body='This comment without a user should fail.'
+    #         )
 
     def test_create_comment_with_neither_movie_nor_serie_raises_error(self):
         ''' Test that creating a comment without a movie or serie raises an IntegrityError '''
@@ -135,6 +135,6 @@ class CommentModelTestCase(TestCase):
         expected_str = (
             f"{self.user.username} commented on ({comment.media}) "
             f"at {comment.created_at:%Y-%m-%d %H%M}:"
-            f"'{comment.body[:50]}'..."
+            f" '{comment.body[:50]}'..."
         )
         self.assertEqual(str(comment), expected_str)

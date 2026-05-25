@@ -43,7 +43,7 @@ from review.forms import ReviewForm
 # =============== API views ===================
 # class MovieListView(generics.ListCreateAPIView):
 #     # queryset = Movie.objects.all().order_by('-id')
-#     queryset = Movie.objects.select_related().prefetch_related() 
+#     queryset = Movie.objects.select_related().prefetch_related()
 
 #     serializer_class = MovieListSerializer
 #     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
@@ -83,11 +83,11 @@ def media_list(request, media_type):
     user_watchlist = None
     list_media = [] # list to hold the content (movies, series)
     sort_by = None
-    
+
     try:
         if Media:
 
-            # ========== setting values for sorting-by feature ==========================
+            # ========== setting values for the sorting-by feature ==========================
             sort_by = (
                 # ('display name', 'django field')
                 ('first added', 'id'),
@@ -130,12 +130,14 @@ def media_list(request, media_type):
             #             "vote_count",
             #             "poster_images",
             #             "slug",
+            #             "media_type",
             #             ]
 
             if media_type == 'movies':
 
                 media = (
-                    Media.objects.filter(media_type='movie').only(
+                    Media.objects.filter(media_type="movie")
+                    .only(
                         "id",
                         "title",
                         "genre",
@@ -145,10 +147,14 @@ def media_list(request, media_type):
                         "vote_count",
                         "poster_images",
                         "slug",
+                        "media_type",
                     )
-                    .exclude(is_active=False).exclude(release_date__isnull=True)
-                    .exclude(movie__length__range=(1, 45)) # how to remove them with media as they are in the child model Movie
-                    .order_by(f"{sel_order}")
+                    .exclude(is_active=False)
+                    .exclude(release_date__isnull=True)
+                    .exclude(
+                        movie__length__range=(1, 45)
+                    )  # how to remove them with media as they are in the child model Movie
+                    # .order_by(f"{sel_order}")
                 )
 
             elif media_type == 'series':
@@ -164,14 +170,17 @@ def media_list(request, media_type):
                         "vote_count",
                         "poster_images",
                         "slug",
+                        "media_type",
+
                     )
-                    .exclude(is_active=False).exclude(release_date__isnull=True)
+                    .exclude(is_active=False)
+                    .exclude(release_date__isnull=True)
                     # .exclude(movie__length__range=(1, 45)) # how to remove them with media as they are in the child model Movie
-                    .order_by(f"{sel_order}")
+                    # .order_by(f"{sel_order}")
                 )
 
             elif media_type == "documentaries":
-                # Check in Movies&Series if genre contains 'documentary' then load them for templating
+                # Check in Media if genre contains 'documentary' then load them for templating
                 media = (
                     Media.objects.filter(genre__icontains="documentary")
                     .only(
@@ -184,6 +193,7 @@ def media_list(request, media_type):
                         "vote_count",
                         "poster_images",
                         "slug",
+                        "media_type",
                     )
                     .exclude(is_active=False)
                     # .order_by("-vote_count")
@@ -203,6 +213,7 @@ def media_list(request, media_type):
                         "vote_average",
                         "vote_count",
                         "slug",
+                        "media_type",
                     )
                     .exclude(is_active=False)
                     .order_by("-vote_count")
@@ -222,6 +233,7 @@ def media_list(request, media_type):
                         "vote_average",
                         "vote_count",
                         "slug",
+                        "media_type",
                     )
                     .exclude(is_active=False)
                     # .order_by("-vote_count")
@@ -250,9 +262,10 @@ def media_list(request, media_type):
                     "slug": item.slug,
                     "type": item.media_type,
                     })
-            # print(list_media[0:2])
+            # print(list_media[0:2], '\n')
 
-            # present the watchlist form in the modal When user click 
+            # present the watchlist and review form in the modal,
+            #  when not logged in, will display a message to invite user to register/log in
             watchlist_form = WatchListForm() 
             review_form = ReviewForm() 
 
@@ -283,7 +296,7 @@ def media_list(request, media_type):
             )
 
             if request.user.is_authenticated:
-                # Get the user's watchlist media's ID.
+                # Get the user's watchlist media's IDs.
                 user_watchlist = set(
                     WatchList.objects.filter(
                         user=request.user.id, 
@@ -292,9 +305,10 @@ def media_list(request, media_type):
 
                 # -------- Get the user's reviewed media  ----------
                 user_reviews = set(
-                    Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
+                    Review.objects.filter(user=request.user.id).values_list(
+                        "media_id", flat=True
+                    )
                 )
-                    # watchlist_form = WatchListForm() # present the watchlist block form
 
                 context.update(
                     {
@@ -426,7 +440,6 @@ def media_detail(request, slug):
         )
         print(f" error :{e}")
         return redirect('main:home')
-
 
 
 @timer
