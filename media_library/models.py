@@ -173,7 +173,7 @@ class Movie(Media):
     imdb_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
 
     class Meta:
-        db_table = "media_lirary_movie"
+        db_table = "movie"
         verbose_name = "Movie"
         verbose_name_plural = "Movies"
         ordering = ["-id"]
@@ -234,7 +234,7 @@ class Serie(Media):
     imdb_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
 
     class Meta:
-        db_table = "media_lirary_serie"
+        db_table = "serie"
         verbose_name = "Serie"
         verbose_name_plural = "Series"
         ordering = ["-id"]
@@ -278,7 +278,7 @@ class Season(BaseModel):
     # add imdb_id for future references eg. ratings, availability, extra info
 
     class Meta:
-        db_table = "media_lirary_season"
+        db_table = "season"
         unique_together = ("serie", "season_number")
         verbose_name = "Season"
         verbose_name_plural = "Seasons"
@@ -368,7 +368,7 @@ class Episode(BaseModel):
 
     class Meta:
 
-        db_table = "media_lirary_episode"
+        db_table = "episode"
         unique_together = ("season", "episode_number")
         verbose_name = "Episode"
         verbose_name_plural = "Episodes"
@@ -433,25 +433,3 @@ class Episode(BaseModel):
         return static(
             "images/default_banner_photo.jpg"
         )  # default banner image if None set.
-
-
-# class MediaTransferMap(models.Model):
-#     """
-#     Temporary mapping table.
-#     Stores old pk → new media pk for every Movie and Serie row transferred.
-#     Deleted once all dependent models (watchlist, comments etc) are migrated.
-#     """
-#     MOVIE = "movie"
-#     SERIE = "serie"
-#     MEDIA_TYPE_CHOICES = [(MOVIE, "Movie"), (SERIE, "Serie")]
-
-#     media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES)
-#     old_pk = models.IntegerField()          # pk from old movie/serie/season app
-#     new_media_pk = models.IntegerField()    # media_ptr_id in new catalog app
-
-#     class Meta:
-#         db_table = "media_library_transfer_map"
-#         unique_together = [("media_type", "old_pk")]
-
-#     def __str__(self):
-#         return f"{self.media_type} {self.old_pk} → {self.new_media_pk}"
