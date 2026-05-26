@@ -88,7 +88,7 @@ def home(request):
                 "slug",
             )
             .exclude(adult=True)
-            .order_by("?")[:6]
+            .order_by("?")[:12]
         )
 
         # retrieve the movies coming out soon.
@@ -123,7 +123,7 @@ def home(request):
                 "slug",
             )
             .exclude(is_active=False)
-            .order_by("?")[:6]
+            .order_by("?")[:12]
         )
 
         # if Serie.objects.exists():
@@ -156,14 +156,14 @@ def home(request):
         # Perhaps remove later and create a one Random pick media sample
         random_series = Media.objects.filter(media_type='serie').only(
             "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-        ).order_by("?")[:6] 
+        ).order_by("?")[:12] 
 
         # ------ add side content , from other user's Watchlist or like movies/series ------
         discover_media = []  # list to hold the media saved in watchlist from other users
         # discover_list = None  # list to hold the user ids already processed
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
-                :8
+                :12
             ].select_related("media") 
         else:
             # list to hold any watchlist instances
@@ -177,9 +177,9 @@ def home(request):
                     "title": media_obj.title, 
                     "id": media_obj.pk, 
                     "genre": media_obj.render_genre(), 
-                    "vote_avg": media_obj.render_vote_average(), 
+                    "render_vote_average": media_obj.render_vote_average(), 
                     "vote_count": media_obj.vote_count, 
-                    "poster": media_obj.render_poster(),
+                    "render_poster": media_obj.render_poster(),
                     "slug": media_obj.slug,
                     "type": media_obj.media_type,
                     })
@@ -215,16 +215,16 @@ def home(request):
 
             watchlist_content = []
             # initialize the list watchlist sample
-            for item in watchlist.order_by("?")[:6]:
+            for item in watchlist.order_by("?")[:12]:
                 media_obj = item.media
                 if media_obj:
                     watchlist_content.append({
                         "title": media_obj.title, 
                         "id": media_obj.pk, 
                         "genre": media_obj.render_genre(), 
-                        "vote_avg": media_obj.render_vote_average(), 
+                        "render_vote_average": media_obj.render_vote_average(), 
                         "vote_count": media_obj.vote_count, 
-                        "poster": media_obj.render_poster(),
+                        "render_poster": media_obj.render_poster(),
                         "slug": media_obj.slug,
                         "type": media_obj.media_type,
                         })
