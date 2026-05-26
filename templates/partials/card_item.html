@@ -1,0 +1,46 @@
+{% load static %}
+
+<div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-2 col-xxl-2" style="height: 100%; padding: 0 0.25rem;">
+
+    <div class="media-card">
+
+        <div class="vote-button-list">
+            <small class="vote-average" title="{{ item.vote_count }} votes">{{ item.render_vote_average }}/10</small>
+
+            <div>
+                <!-- Watchlist button feature -->
+                <button class="watchlist-button" data-id="{{ item.id }}" data-title="{{ item.title|slice:':45'}}"
+                    data-bookmarked="{% if item.id in user_watchlist %}true{% else %}false{% endif %}">
+                    <i class="{% if item.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"
+                        aria-hidden="true"></i>
+                </button>
+
+                <!-- reviews button feature -->
+                <button class="review-button"
+                    style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;" ;
+                    data-id="{{ item.id }}" data-title="{{ item.title|slice:':45'}}"
+                    data-reviewed="{% if item.id in user_reviews %}true{% else %}false{% endif %}">
+                    <i class="{% if item.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}"
+                        aria-hidden="true" style="color: rgb(51, 98, 99);">
+                    </i>
+                </button>
+            </div>
+        </div>
+
+        <div class="poster-wrapper" title="{{ item.render_genre}}">
+            {% if item.render_poster %}
+            <img src="{{ item.render_poster }}" alt="{{ item.title }} poster" class="img-fluid rounded">
+            {% else %}
+            <img src="{% static 'images/default_media_photo.jpg' %}" class="img-fluid rounded" alt="Profile photo">
+            {% endif %}
+        </div>
+
+        <div class="list-media-title">
+            <a href="{% url 'media_library:detail' slug=item.slug %}" style="text-decoration: none;">
+                <!-- How to fix title to one line only. and use 3dots if title longer? -->
+                <h6>{{item.title|slice:"0:28" }}</h6>
+            </a>
+        </div>
+
+    </div>
+</div>

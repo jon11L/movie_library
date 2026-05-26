@@ -236,6 +236,90 @@ Need to reorganize the name or call a parent custom class
 }
 
 
+
+/*  Carousel for sample media display */
+
+.carousel-scroll-wrapper {
+    display: flex; 
+    align-items: center;
+    /* gap: 0.25rem; */
+    padding: 0rem 0;
+    margin: 0;
+    position: relative;
+    /* justify-content: space-between; */
+}
+
+
+.carousel-card {
+    display: flex; 
+    flex-wrap: nowrap; 
+    padding: 0 0;
+    overflow-x: auto;
+    overflow-wrap: normal;
+    /* gap: 0.25rem; */
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* z-index: 1;
+    position: relative; */
+    /* border: saddlebrown solid 1px; */
+}
+
+
+.carousel-arrow {
+    flex-shrink: 0;
+    background-color: rgb(89, 85, 85);
+    color: bisque;
+    border: none;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    font-size: xx-large;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.75rem;
+    /* position: relative;
+    z-index: 2; */
+    transition: background-color 0.2s ease;
+    opacity: 75%;
+
+}
+
+.carousel-arrow:hover  {
+    background-color: rgb(48, 46, 46);
+    color: rgb(224, 185, 57);
+    border: solid 1px rgb(224, 185, 57);
+    transition: background-color 0.2s ease-in;
+    transform: scale(1.25);
+    opacity: 95%;
+}
+
+.carousel-arrow--hidden {
+    opacity: 0%;
+    pointer-events: none; /* prevents clicking through an invisible button */
+}
+
+.carousel-arrow--left {
+    padding-left: 4px;
+    position: absolute;
+    z-index: 5;
+    left: 0px;
+    /* opacity: 75%; */
+}
+.carousel-arrow--right {
+    padding-right: 4px;
+    position: absolute;
+    z-index: 5;
+    right: 0px;
+    /* opacity: 75%; */
+}
+
+
+
 /* =============== Detail movie / Serie pages ================= */
 .media-info-row-1 {
     /* margin-top: 5%; */
