@@ -209,10 +209,10 @@ def list_view(request, user_pk: int):
                     "title": item.media.title, 
                     "genre": item.media.render_genre(), 
                     "release_date": item.media.release_date,
-                    "vote_avg": item.media.render_vote_average(), 
+                    "render_vote_average": item.media.render_vote_average(), 
                     "vote_count": item.media.vote_count, 
                     "popularity": item.media.popularity,
-                    "poster": item.media.render_poster(),
+                    "render_poster": item.media.render_poster(),
                     "slug": item.media.slug,
                     "type": item.media.media_type,
                     })
@@ -230,12 +230,6 @@ def list_view(request, user_pk: int):
             user_reviews = set(
                 Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
             )
-
-            # user_liked_series = set(
-            #     Like.objects.filter(
-            #         user=request.user.id, content_type="serie"
-            #     ).values_list("object_id", flat=True)
-            # )
 
             context = {
                 'page_obj': page_obj,
