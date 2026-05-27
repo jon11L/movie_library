@@ -76,9 +76,10 @@
                             </div>
 
                             <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
-                            <div class="row" style="width: 100%; padding: 0% 2%;">
+                            <!-- <div class="row" style="width: 100%; padding: 0% 0%;"> -->
 
                                 <div class="carousel-scroll-wrapper">
+                                    <!-- This should be the same distance as the card width -->
                                     <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
@@ -94,7 +95,7 @@
                                     </button>
                                 </div>
 
-                            </div>
+                            <!-- </div> -->
                         </div>
                         {% endif %}
 
@@ -106,7 +107,7 @@
                             <div class="banderol">
                                 <h3>Ongoing TV Shows:</h3>
                             </div>
-                            <div class="row" style="padding: 0 1.5%;">
+                            <!-- <div class="row" style="padding: 0 1.5%;"> -->
 
                                 <div class="carousel-scroll-wrapper">
 
@@ -125,7 +126,7 @@
                                     </button>
                                 </div>
 
-                            </div>
+                            <!-- </div> -->
                         </div>
                         {% endif %}
 
@@ -168,7 +169,7 @@
                                 </h3>
                             </div>
 
-                            <div class="row" style="padding: 0 1.5%;">
+                            <!-- <div class="row" style="padding: 0 1.5%;"> -->
 
                                 <div class="carousel-scroll-wrapper">
 
@@ -187,7 +188,7 @@
                                     </button>
                                 </div>
 
-                            </div>
+                            <!-- </div> -->
                         </div>
                         {% endif %}
 
@@ -200,7 +201,7 @@
                             </div>
 
                             {% if movies_coming_soon %}
-                            <div class="row" style="padding: 0 1.5%;">
+                            <!-- <div class="row" style="padding: 0 1.5%;"> -->
                                 
                                 <div style="margin-bottom: 1.25rem; text-align: center;">
                                     <h4 style="margin: 0;">Movies</h4>
@@ -221,19 +222,18 @@
                                             {% endfor %}
                                         </div>
                                 
-                                
                                     <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
 
-                            </div>
+                            <!-- </div> -->
                             {% endif %}
 
 
                             <!-- displaying Series being released soon -->
                             {% if new_series %}
-                            <div class="row" style="padding: 0 1.5%;">
+                            <!-- <div class="row" style="padding: 0 1.5%;"> -->
                                 <div style="margin-bottom: 1.25rem; text-align: center;">
                                     <h4 style="margin: 0;">Series</h4>
                                     <div style="width: 80%; margin: auto;">
@@ -253,7 +253,7 @@
                                         &#8250;
                                     </button>
                                 </div>
-                            </div>
+                            <!-- </div> -->
                             {% endif %}
 
                         </div>
@@ -274,6 +274,7 @@
                                     <hr style="color: gray; margin: 0;">
                                 </div>
                             </div>
+
                             <div class="carousel-scroll-wrapper">
                                 <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
                                     &#8249;
@@ -297,6 +298,7 @@
                                     <hr style="color: gray; margin: 0;">
                                 </div>
                             </div>
+                            
                             <div class="carousel-scroll-wrapper">
                                 <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
                                     &#8249;
@@ -435,18 +437,18 @@
 
 
     // ------------- Display the seasons Trailers and episodes when clicked --------------
-    // document.addEventListener("click", function (event) {
-    //     if (event.target.classList.contains('carousel-toggle')) {
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains('.media-card')) {
 
-    //         const seasonButtons = document.querySelectorAll('.carousel-toggle');
-    //             // Remove 'active' class from all buttons, set to original color
-    //             seasonButtons.forEach(btn => {
-    //                 btn.classList.remove('active');
-    //                 console.log(`unactive seasons gets original btn color`);
-    //                 event.target.classList.add('active')
-    //             });
-    //     }
-    // });
+            const mediaCard = document.querySelectorAll('.media-card');
+                // Remove 'active' class from all buttons, set to original color
+                mediaCard.forEach(btn => {
+                    btn.classList.remove('active');
+                    console.log(`unactive seasons gets original btn color`);
+                    event.target.classList.add('active')
+                });
+        }
+    });
 
 </script>
 
