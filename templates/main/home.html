@@ -79,6 +79,7 @@
                             <!-- <div class="row" style="width: 100%; padding: 0% 0%;"> -->
 
                                 <div class="carousel-scroll-wrapper">
+                                    <!-- This should be the same distance as the card width -->
                                     <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
@@ -436,18 +437,18 @@
 
 
     // ------------- Display the seasons Trailers and episodes when clicked --------------
-    // document.addEventListener("click", function (event) {
-    //     if (event.target.classList.contains('carousel-toggle')) {
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains('.media-card')) {
 
-    //         const seasonButtons = document.querySelectorAll('.carousel-toggle');
-    //             // Remove 'active' class from all buttons, set to original color
-    //             seasonButtons.forEach(btn => {
-    //                 btn.classList.remove('active');
-    //                 console.log(`unactive seasons gets original btn color`);
-    //                 event.target.classList.add('active')
-    //             });
-    //     }
-    // });
+            const mediaCard = document.querySelectorAll('.media-card');
+                // Remove 'active' class from all buttons, set to original color
+                mediaCard.forEach(btn => {
+                    btn.classList.remove('active');
+                    console.log(`unactive seasons gets original btn color`);
+                    event.target.classList.add('active')
+                });
+        }
+    });
 
 </script>
 

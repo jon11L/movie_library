@@ -265,8 +265,13 @@ Need to reorganize the name or call a parent custom class
     /* z-index: 1;
     position: relative; */
     /* border: saddlebrown solid 1px; */
+    /* scroll-behavior handled by JS scrollTo for smooth */
 }
 
+
+.carousel-card::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for WebKit browsers */
+}
 
 .carousel-arrow {
     flex-shrink: 0;
@@ -289,11 +294,17 @@ Need to reorganize the name or call a parent custom class
     /* transition: background-color 0.3s ease; */
     transition: transform 0.5s ease-out;
     opacity: 65%;
+    backdrop-filter: blur(4px);
     
 }
 
+.carousel-arrow--hidden {
+    opacity: 0%;
+    pointer-events: none; /* prevents clicking through an invisible button */
+}
+
 .carousel-arrow:hover  {
-    background-color: rgb(48, 46, 46);
+    background-color: rgb(85, 82, 82);
     color: rgb(224, 185, 57);
     border: solid 1px rgb(224, 185, 57);
     transition: background-color 0.2s ease-in;
