@@ -108,7 +108,7 @@ def home(request):
                 "slug",
             )
             .exclude(adult=True)
-            .order_by("?")[:6]
+            .order_by("?")[:12]
         )
 
         random_movies = (
@@ -141,7 +141,7 @@ def home(request):
                 "poster_images",
                 "slug",
             )
-            .order_by("?")[:6]
+            .order_by("?")[:12]
         )
 
         new_series = (
@@ -150,7 +150,7 @@ def home(request):
                 release_date__range=(fortnight_ago, bi_week_later)
             )
             .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
-            .order_by("?")[:6]
+            .order_by("?")[:12]
         )
 
         # Perhaps remove later and create a one Random pick media sample
@@ -167,7 +167,7 @@ def home(request):
             ].select_related("media") 
         else:
             # list to hold any watchlist instances
-            discover_list = WatchList.objects.all().order_by("?")[:8].select_related("media")
+            discover_list = WatchList.objects.all().order_by("?")[:12].select_related("media")
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
