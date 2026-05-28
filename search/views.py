@@ -194,9 +194,9 @@ def search(request):
                 "title": item.title, 
                 "id": item.pk, 
                 "genre": item.render_genre(), 
-                "vote_avg": item.render_vote_average(), 
+                "render_vote_average": item.render_vote_average(), 
                 "vote_count": item.vote_count, 
-                "poster": item.render_poster(),
+                "render_poster": item.render_poster(),
                 "slug": item.slug,
                 "type": item.media_type,
                 })
