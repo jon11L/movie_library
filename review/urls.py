@@ -22,5 +22,6 @@ from . import views
 
 urlpatterns = [
     path('toggle/<int:object_id>/', views.toggle_review, name='toggle_review'),
+    path('list/<int:user_pk>/', views.list_view, name='list_view'),
 
 ]

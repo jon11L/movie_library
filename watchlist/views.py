@@ -105,8 +105,8 @@ def list_view(request, user_pk: int):
     base_url = f"/watchlist/list/{user_pk}"
     sort_by = None
     list_media = [] # list to hold the content (movies, series)
-    user_liked_movies = set()
-    user_liked_series = set()
+    # user_liked_movies = set()
+    # user_liked_series = set()
     user_watchlist = set()
 
     # retrieve the profile being requested
@@ -192,8 +192,6 @@ def list_view(request, user_pk: int):
             else:
                 list_watchlist = watchlist.order_by(F(field_name).asc(nulls_last=True))
 
-
-
             # -- paginate over the results --
             paginator = Paginator(list_watchlist, 24)
             page_number = request.GET.get('page')
@@ -241,8 +239,8 @@ def list_view(request, user_pk: int):
                 'list_media' : list_media,
                 'user': t_user.username,
                 "user_watchlist": user_watchlist,
-                'user_liked_movies': user_liked_movies,
-                'user_liked_series': user_liked_series,
+                # 'user_liked_movies': user_liked_movies,
+                # 'user_liked_series': user_liked_series,
                 'total_content': total_content,
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
