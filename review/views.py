@@ -1,15 +1,26 @@
+import time
 import json
 
 from django.shortcuts import render, redirect
 
-# Create your views here.
 from django.http import JsonResponse
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import F
 
+# Models import
 from .models import Review
-from .forms import ReviewForm
-
+from watchlist.models import WatchList
 from user.models import User, Profile
+
+from .forms import ReviewForm
+from watchlist.forms import WatchListForm
+
+# Temporary placement for paginator design
+from core.tools.paginator import page_window
+from core.tools.wrappers import timer, num_queries
+
+# Create your views here.
 
 
 def toggle_review(request, object_id: int):
@@ -176,3 +187,187 @@ def toggle_review(request, object_id: int):
     #             },
     #             status=500,
     #         )
+
+
+
+
+
+
+@timer
+@num_queries
+def list_view(request, user_pk: int):
+    '''
+        retrieve the user's watchlist from the database and display them in the template
+    '''
+
+    base_url = f"/review/list/{user_pk}"
+    sort_by = None
+    list_media = [] # list to hold the content (movies, series)
+
+    user_watchlist = set()
+
+    # retrieve the profile being requested
+    try:
+        t_user = User.objects.get(pk=user_pk)
+        target_profile = t_user.profile
+    except (User.DoesNotExist, Profile.DoesNotExist):
+        messages.error(request, "The user or profile's reviews you are trying to access does not exist.")
+        return redirect('main:home')
+
+    # Need to add a check that only current user can visit their own Like page.
+    if (
+        request.user.is_authenticated
+        and request.user.id != user_pk
+        and target_profile.watchlist_private
+        and not request.user.is_staff
+    ):
+        print(
+            "\n** Unauthorised acces: user tried to access a private user's reviews page **\n"
+        )
+        messages.error(request, ("Private access, Page not accessible."))
+        return redirect(to='user:profile_page', pk=request.user.id)
+
+    # user is authenticated & is either the watchlist's owner or watchlist is set public or user is staff/admin
+    elif request.user.is_staff or (
+        request.user.is_authenticated and
+        (request.user.id == user_pk or not target_profile.watchlist_private)
+    ):
+
+        if request.method == "GET":
+            # present the watchlist form in the modal When user click 
+            watchlist_form = WatchListForm() 
+            review_form = ReviewForm()
+
+            # ========== setting values for sorting-by feature ==========================
+            sort_by = (
+                # ('display name', 'django field')
+                ('first added', 'id'),
+                ('last added', '-id'),
+                ('A-z title', 'title'), 
+                ('Z-a title', '-title'),
+                ('newest first', '-release_date'), # Release_date & filter_date variable name issue
+                ('oldest first', 'release_date'),
+                ('least popular', 'popularity'),
+                ('most popular', '-popularity'),
+                ('least voted', 'vote_count'),
+                ('most voted', '-vote_count'),
+                ('lowest rating', 'vote_average'),
+                ('highest rating', '-vote_average'),
+            )
+
+            query_params = request.GET.copy()
+            print(f"-- Query params: {query_params}\n")  # Debug print
+
+            # Remove the 'page' parameter to avoid pagination issues
+            if 'page' in query_params:
+                query_params.pop('page')
+            query_pagin_url = query_params.urlencode()
+
+            # query_string_url = query_params.urlencode()
+            select_order = '-id' # default selection order / first reach of the list page
+            if 'order_by' in query_params:
+                # need to grab the Media attribute for sorting-by
+                select_order = query_params.get('order_by')
+
+            print(f"selected order: {select_order}")
+            query_sort_url = query_params.urlencode()
+
+            reviews = Review.objects.filter(user=user_pk).select_related("media")
+
+            list_review = []
+            
+            is_desc_order = '-' if '-' in select_order else ''
+            # Need to specify the field name for sorting 
+            # when select_order is not based on the Review model's field but on the related Media model's field.
+            field_name = f'media__{select_order.strip('-')}'
+
+            # Do the sorting of the watchlist depending on the sel_order
+            if 'id' in select_order:
+                list_review = reviews.order_by(select_order)
+
+            # sort by the select_related media_field 
+            elif is_desc_order:
+                list_review = reviews.order_by(F(field_name).desc(nulls_last=True))
+            else:
+                list_review = reviews.order_by(F(field_name).asc(nulls_last=True))
+
+            # -- paginate over the results --
+            paginator = Paginator(list_review, 24)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+            print(f"List content: {page_obj}")
+
+            # create a standardized data stack to pass in templates.
+            # Avoiding any extra hidden queries on the frontend
+            for item in page_obj:
+                # try:
+                list_media.append({
+                    "id": item.media.pk, 
+                    "title": item.media.title, 
+                    "genre": item.media.render_genre(), 
+                    "release_date": item.media.release_date,
+                    "render_vote_average": item.media.render_vote_average(), 
+                    "vote_count": item.media.vote_count, 
+                    "popularity": item.media.popularity,
+                    "render_poster": item.media.render_poster(),
+                    "slug": item.media.slug,
+                    "type": item.media.media_type,
+                    })
+
+            total_content = reviews.count()
+
+            # --- Get the user's watchlist content (movies, series) ---
+            user_reviews = set(
+                Review.objects.filter(
+                    user=request.user.id
+                ).values_list("media_id", flat=True)
+            )
+
+            # -------- Get the user's reviewed media  ----------
+            user_watchlist = set(
+                WatchList.objects.filter(user=request.user.id).values_list("media_id", flat=True)
+            )
+
+            context = {
+                'page_obj': page_obj,
+                'sort_by': sort_by,
+                'query_pagin_url': query_pagin_url,
+                'query_sort_url': query_sort_url,
+                'current_order': select_order,
+                'base_url': base_url,
+                'list_media' : list_media,
+                'user': t_user.username,
+                'total_content': total_content,
+                "user_watchlist": user_watchlist,
+                'user_reviews': user_reviews,
+                # 'user_liked_movies': user_liked_movies,
+                # 'user_liked_series': user_liked_series,
+                'watchlist_form': watchlist_form,
+                'review_form': review_form,
+            }
+
+            # Temporary placement for paginator design
+            context["desktop_pages"] = page_window(
+                page_obj.number, # current page number
+                page_obj.paginator.num_pages, # total amount of pages
+                size=5 # amount of buttons to display around current page
+            )
+
+            context["mobile_pages"] = page_window(
+                page_obj.number,
+                page_obj.paginator.num_pages,
+                size=2
+            )
+
+            # If user select a sort-by or page parameter, create a request with HTMX
+            if request.headers.get('HX-request'):
+                print("\n -- HTMX request detected - returning partial list --")
+                return render(request, 'partials/media_grid.html', context=context)
+
+            return render(request, 'review/reviews_list.html', context=context)
+
+    else:
+        # user is not authenticated. No access to Watchlist, private or public. Must be registered
+        messages.error(request, "You must be logged in to view watchlist .")
+        return redirect('user:login')
+
