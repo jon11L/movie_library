@@ -104,8 +104,9 @@ function initWatchlistForm() {
                 );
                 // setRemoveButtonVisible(true);
                 // If data is null, we're clearing the form for a new entry
-                document.getElementById('id_personal_note').value = data ? data.personal_note : '';
-                document.getElementById('id_status').value = data ? data.status : '';
+                
+                document.getElementById('id_watchlist_personal_note').value = data ? data.personal_note : '';
+                document.getElementById('id_watchlist_status').value = data ? data.status : '';
                 confirmButton.textContent = 'Update'; // change the button text to indicate processing
             });
 
@@ -133,9 +134,9 @@ function initWatchlistForm() {
         const watchlistForm = document.getElementById('watchlistForm');    
         const formData = new FormData(watchlistForm);
 
-        const { contentType, objectId, icon, isExisting } = pendingWatchlistData;
+        const {objectId, icon, isExisting } = pendingWatchlistData;
 
-        console.log(`Content type: ${contentType}, Object id: ${objectId} appended to form data.`);
+        console.log(`Object id: ${objectId} appended to form data.`);
         console.log(`Personal note: ${formData.get('personal_note')}`);
         console.log(`Status: ${formData.get('status')}`);
 
@@ -230,7 +231,7 @@ function initWatchlistForm() {
             return;
         }
 
-        const { contentType, objectId, icon, isExisting } = pendingWatchlistData;
+        const {objectId, icon, isExisting } = pendingWatchlistData;
 
         // Construct the URL dynamically
         const url = `/watchlist/toggle/${objectId}/`;

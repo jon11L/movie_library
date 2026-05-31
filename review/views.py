@@ -12,7 +12,7 @@ from django.db.models import F
 from .models import Review
 from watchlist.models import WatchList
 from user.models import User, Profile
-
+# forms
 from .forms import ReviewForm
 from watchlist.forms import WatchListForm
 
@@ -64,6 +64,7 @@ def toggle_review(request, object_id: int):
                 'rewatch': review.rewatch,
                 'score': review.score,
             }
+            print(f"data:{data}")
 
         else:
             print(f"Review entry Does not exist.\n")
@@ -197,7 +198,7 @@ def toggle_review(request, object_id: int):
 @num_queries
 def list_view(request, user_pk: int):
     '''
-        retrieve the user's watchlist from the database and display them in the template
+        retrieve the user's reviewed items from the database and display them in the template
     '''
 
     base_url = f"/review/list/{user_pk}"

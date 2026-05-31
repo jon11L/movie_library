@@ -96,18 +96,30 @@ function initReviewForm() {
             })
             
             .then(r => r.json())
+            // `data` here is the object returned by the Django GET view
             .then(data => {
                 // populateForm(data.review);
                 console.log(
                     `Review data populated in the form.`,
-                    `\n-note: ${data.review}\n-status: ${data.status}`
+                    `\n-note: ${data.review}\n-status: ${data.status}\n-score: ${data.score}`
                 );
                 // setRemoveButtonVisible(true);
                 // If data is null, we're clearing the form for a new entry
-                document.getElementById('id_status').value = data ? data.status : '';
-                document.getElementById('id_review').value = data ? data.review : '';
-                document.getElementById('id_rewatch').value = data ? data.rewatch : '';
-                document.getElementById('id_score').value = data ? data.score : '';
+
+
+                // Populate each form field with the existing review values.
+                // `data ? data.field : ''` is a safety fallback — if data is null/undefined, set empty string.
+                //
+                // ID naming breakdown:
+                //   `status`            → the Python/Django field name in ReviewForm and the Review model
+                //   `id_review_status`  → the HTML id on the <select> element, manually set in forms.py
+                //                         widget attrs to avoid collision with the WatchList form's `id_status`
+                //   `data.status`       → the value coming back from Django's JsonResponse (e.g. 'completed')
+                //
+                document.getElementById('id_review_status').value = data ? data.status : '';
+                document.getElementById('id_review_review').value = data ? data.review : '';
+                document.getElementById('id_review_rewatch').value = data ? data.rewatch : '';
+                document.getElementById('id_review_score').value = data ? data.score : '';
                 confirmButton.textContent = 'Update'; // change the button text to indicate processing
             });
 
@@ -136,9 +148,9 @@ function initReviewForm() {
         const reviewForm = document.getElementById('reviewForm');    
         const formData = new FormData(reviewForm);
 
-        const { contentType, objectId, icon, isExisting } = pendingReviewData;
+        const {objectId, icon, isExisting } = pendingReviewData;
 
-        console.log(`Content type: ${contentType}, Object id: ${objectId} appended to form data.`);
+        console.log(`Object id: ${objectId} appended to form data.`);
         console.log(`Status: ${formData.get('status')}`);
         console.log(`Review: ${formData.get('review')}`);
         console.log(`Rewatch: ${formData.get('rewatch')}`);
