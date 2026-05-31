@@ -351,7 +351,7 @@ def media_detail(request, slug):
             comments = media.comments.all().order_by('-created_at')
             print(f"\nNumber of comments: {(comments.count())}")
 
-            form = CommentForm() # present the Comment block form
+            comment_form = CommentForm() # present the Comment block form
             # present the watchlist form in the modal When user click 
             watchlist_form = WatchListForm() 
             review_form = ReviewForm()
@@ -359,7 +359,7 @@ def media_detail(request, slug):
             context = {
                 'media': media,
                 'comments': comments,
-                'form': form,
+                'form': comment_form,
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
                 }
@@ -412,14 +412,14 @@ def media_detail(request, slug):
 
                 # print(f"user_liked :{user_liked_movie}") # debug print
 
-                form = CommentForm(request.POST or None) # here allow to post a comment.
+                comment_form = CommentForm(request.POST or None) # here allow to post a comment.
                 # review_form = ReviewForm(request.POST or None) # here allow to post a review.
 
                 context.update(
                     {
                         # 'user_liked_movie': user_liked_movie,
                         'watchlist': in_watchlist,
-                        'form': form,
+                        'form': comment_form,
                         'comments': comments,
                         'user_reviews': user_reviews,
                         

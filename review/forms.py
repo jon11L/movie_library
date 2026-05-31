@@ -16,6 +16,7 @@ class ReviewForm(forms.Form):
         label="status",
         widget=forms.Select(attrs={
             "class": "form-select",
+            "id": "id_review_status", # This is where from Js takes the data
             # "style": "width: 180px;",
             "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver; max-width: fit-content;",
             }),
@@ -29,6 +30,7 @@ class ReviewForm(forms.Form):
             attrs={
                 "placeholder": "Write a review..",
                 "class": "review-input-form",
+                "id": "id_review_review",
                 "rows": 4,
                 # "cols": 40,
                 "style": "resize: none; padding-left: 0.5rem; padding-top: 0.5rem;", 
@@ -43,11 +45,13 @@ class ReviewForm(forms.Form):
         label="status",
         widget=forms.Select(attrs={
             "class": "form-select",
+            "id": "id_review_rewatch",
             "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver;",
             }),
     )
 
-    score = forms.IntegerField(
+    # score = forms.IntegerField(
+    score = forms.FloatField(
         min_value=1,
         max_value=10,
         required=False,
@@ -56,7 +60,8 @@ class ReviewForm(forms.Form):
             attrs={
                 "placeholder": "1 - 10",
                 "class": "form-control",
-                "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver;",
+                "id": "id_review_score",
+                "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver; width: 70px;",
             },
         ),
     )
