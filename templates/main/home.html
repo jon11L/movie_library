@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'css/media_card.css' %}">
+{% endblock %}
+
+
 {% block content %}
 
     <div class="row main-row">
@@ -69,7 +74,7 @@
 
                         <!------ Displaying the movies recently released ------->
                         {% if recent_movies %}
-                        <div class="media-sample-row" style="position: relative;">
+                        <div class="row-media-sample" style="position: relative;">
 
                             <div class="banderol">
                                 <h3>Movies recently released</h3>
@@ -84,11 +89,15 @@
                                         &#8249;
                                     </button>
 
-                                        <div class="carousel-card">
-                                            {% for item in recent_movies %}
-                                            {% include "partials/card_item.html" %}
-                                            {% endfor %}
-                                        </div>
+                                    <!-- <div class="carousel-progress">
+                                        <div class="carousel-progress__bar"></div>
+                                    </div> -->
+                                
+                                    <div class="carousel-card">
+                                        {% for item in recent_movies %}
+                                        {% include "partials/card_item.html" %}
+                                        {% endfor %}
+                                    </div>
                                 
                                     <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
                                         &#8250;
@@ -108,18 +117,17 @@
                                 <h3>Ongoing TV Shows:</h3>
                             </div>
                             <!-- <div class="row" style="padding: 0 1.5%;"> -->
-
                                 <div class="carousel-scroll-wrapper">
 
                                     <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
 
-                                        <div class="carousel-card">
-                                            {% for item in returning_series %}
-                                            {% include "partials/card_item.html" %}
-                                            {% endfor %}
-                                        </div>
+                                    <div class="carousel-card">
+                                        {% for item in returning_series %}
+                                        {% include "partials/card_item.html" %}
+                                        {% endfor %}
+                                    </div>
                                 
                                     <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
                                         &#8250;
@@ -383,9 +391,11 @@
 
 
 <script>
-    // Create arrow button to scroll for the overflow on seasons buttons.
+    // Create scrollable carousel for the media samples. How to make it responsive and adapt the scroll distance to the screen size?
+    // How to assume the size one card and use it as the scroll distance?
 
     // const seasonButtonsList = document.querySelectorAll('.season-btns');
+
     function nextItems(container, scrollDistance){
         container.scrollBy({ left: scrollDistance, behavior: "smooth"})
     }
@@ -395,13 +405,12 @@
     }
 
     function updateItemsArrows(wrapper) {
-        const scroller = wrapper.querySelector('.carousel-btns');
+        const scroller = wrapper.querySelector('.carousel-card');
         const leftBtn  = wrapper.querySelector('.carousel-arrow--left');
         const rightBtn = wrapper.querySelector('.carousel-arrow--right');
 
         // explaination of the logic: if there is no overflow, hide both arrows.
         //  If there is overflow, hide left arrow if at start, hide right arrow if at end, show both otherwise.
-
         const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
 
         if (!hasOverflow) {
@@ -414,9 +423,10 @@
         const atStart = scroller.scrollLeft <= 1;
         const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
 
-        leftBtn.classList.toggle('carousel-arrow--hidden', atStart);
-        rightBtn.classList.toggle('carousel-arrow--hidden', atEnd);
+        // leftBtn.classList.toggle('carousel-arrow--hidden', atStart);
+        // rightBtn.classList.toggle('carousel-arrow--hidden', atEnd);
     }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.querySelector('.carousel-scroll-wrapper');
@@ -434,6 +444,8 @@
         const ro = new ResizeObserver(() => updateItemsArrows(wrapper));
         ro.observe(scroller);
     });
+
+
 
 
     // ------------- Display the seasons Trailers and episodes when clicked --------------
