@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'css/media_card.css' %}">
+{% endblock %}
+
+
 {% block content %}
 
     <div class="row main-row">
@@ -69,7 +74,9 @@
 
                         <!------ Displaying the movies recently released ------->
                         {% if recent_movies %}
-                        <div class="media-sample-row" style="position: relative;">
+                        <div class="carousel-media-sample" style="position: relative;">
+                            <!-- <section class="carousel-section" id="carousel-trending">
+                                <h2 class="carousel-section__title">Trending Now</h2> -->
 
                             <div class="banderol">
                                 <h3>Movies recently released</h3>
@@ -78,22 +85,29 @@
                             <!-- <div style="display: flex; flex-wrap: wrap; margin: 30px 0px 30px 80px;"> -->
                             <!-- <div class="row" style="width: 100%; padding: 0% 0%;"> -->
 
-                                <div class="carousel-scroll-wrapper">
-                                    <!-- This should be the same distance as the card width -->
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
-                                        &#8249;
-                                    </button>
-
-                                        <div class="carousel-card">
-                                            {% for item in recent_movies %}
-                                            {% include "partials/card_item.html" %}
-                                            {% endfor %}
-                                        </div>
-                                
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
-                                        &#8250;
-                                    </button>
+                            <div class="carousel-scroll-wrapper">
+                                <!-- This should be the same distance as the card width -->
+                                <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 400)" aria-label="Scroll left">
+                                    &#8249;
+                                </button>
+                                <!-- <div class="carousel-progress">
+                                    <div class="carousel-progress__bar"></div>
+                                </div> -->
+                            
+                                <div class="carousel-card">
+                                    {% for item in recent_movies %}
+                                    {% include "partials/card_item.html" %}
+                                    {% endfor %}
                                 </div>
+                            
+                                <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 400)" aria-label="Scroll right">
+                                    &#8250;
+                                </button>
+                            </div>
+                            
+                            <!-- Dots to track where in the carousel -->
+                            <!-- <div class="carousel-dots"></div> -->
+
 
                             <!-- </div> -->
                         </div>
@@ -108,20 +122,19 @@
                                 <h3>Ongoing TV Shows:</h3>
                             </div>
                             <!-- <div class="row" style="padding: 0 1.5%;"> -->
-
                                 <div class="carousel-scroll-wrapper">
 
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
 
-                                        <div class="carousel-card">
-                                            {% for item in returning_series %}
-                                            {% include "partials/card_item.html" %}
-                                            {% endfor %}
-                                        </div>
+                                    <div class="carousel-card">
+                                        {% for item in returning_series %}
+                                        {% include "partials/card_item.html" %}
+                                        {% endfor %}
+                                    </div>
                                 
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
@@ -140,7 +153,7 @@
                                     </h3>
                                 </div>
                                 <div class="carousel-scroll-wrapper">
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
                                     <div class="carousel-card">
@@ -148,7 +161,7 @@
                                             {% include "partials/card_item.html" %}
                                         {% endfor %}
                                     </div>
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
@@ -173,7 +186,7 @@
 
                                 <div class="carousel-scroll-wrapper">
 
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
 
@@ -183,7 +196,7 @@
                                             {% endfor %}
                                         </div>
                                 
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
@@ -212,7 +225,7 @@
 
                                 <div class="carousel-scroll-wrapper">
 
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
 
@@ -222,7 +235,7 @@
                                             {% endfor %}
                                         </div>
                                 
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
@@ -241,7 +254,7 @@
                                     </div>
                                 </div>
                                 <div class="carousel-scroll-wrapper">
-                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                    <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                         &#8249;
                                     </button>
                                     <div class="carousel-card">
@@ -249,7 +262,7 @@
                                             {% include "partials/card_item.html" %}
                                         {% endfor %}
                                     </div>
-                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                    <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                         &#8250;
                                     </button>
                                 </div>
@@ -276,7 +289,7 @@
                             </div>
 
                             <div class="carousel-scroll-wrapper">
-                                <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                     &#8249;
                                 </button>
                                 <div class="carousel-card">
@@ -284,7 +297,7 @@
                                         {% include "partials/card_item.html" %}
                                     {% endfor %}
                                 </div>
-                                <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                     &#8250;
                                 </button>
                             </div>
@@ -300,7 +313,7 @@
                             </div>
                             
                             <div class="carousel-scroll-wrapper">
-                                <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 215)" aria-label="Scroll left">
+                                <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 420)" aria-label="Scroll left">
                                     &#8249;
                                 </button>
                                 <div class="carousel-card">
@@ -308,7 +321,7 @@
                                         {% include "partials/card_item.html" %}
                                     {% endfor %}
                                 </div>
-                                <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 215)" aria-label="Scroll right">
+                                <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 420)" aria-label="Scroll right">
                                     &#8250;
                                 </button>
                             </div>
@@ -383,9 +396,11 @@
 
 
 <script>
-    // Create arrow button to scroll for the overflow on seasons buttons.
+    // Create scrollable carousel for the media samples. How to make it responsive and adapt the scroll distance to the screen size?
+    // How to assume the size one card and use it as the scroll distance?
 
     // const seasonButtonsList = document.querySelectorAll('.season-btns');
+
     function nextItems(container, scrollDistance){
         container.scrollBy({ left: scrollDistance, behavior: "smooth"})
     }
@@ -395,13 +410,12 @@
     }
 
     function updateItemsArrows(wrapper) {
-        const scroller = wrapper.querySelector('.carousel-btns');
+        const scroller = wrapper.querySelector('.carousel-card');
         const leftBtn  = wrapper.querySelector('.carousel-arrow--left');
         const rightBtn = wrapper.querySelector('.carousel-arrow--right');
 
         // explaination of the logic: if there is no overflow, hide both arrows.
         //  If there is overflow, hide left arrow if at start, hide right arrow if at end, show both otherwise.
-
         const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
 
         if (!hasOverflow) {
@@ -414,9 +428,21 @@
         const atStart = scroller.scrollLeft <= 1;
         const atEnd   = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
 
-        leftBtn.classList.toggle('carousel-arrow--hidden', atStart);
-        rightBtn.classList.toggle('carousel-arrow--hidden', atEnd);
+        // leftBtn.classList.toggle('carousel-arrow--hidden', atStart);
+        // rightBtn.classList.toggle('carousel-arrow--hidden', atEnd);
     }
+
+
+    // ======  TEST ==================
+    // Create the dots links to track where in the carousel the user is. 
+    // totalPages() {
+    // How many full page-widths fit in scrollWidth
+//     return Math.ceil(this.track.scrollWidth / this.pageWidth());
+//    }
+
+
+
+    
 
     document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.querySelector('.carousel-scroll-wrapper');
@@ -435,20 +461,6 @@
         ro.observe(scroller);
     });
 
-
-    // ------------- Display the seasons Trailers and episodes when clicked --------------
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains('.media-card')) {
-
-            const mediaCard = document.querySelectorAll('.media-card');
-                // Remove 'active' class from all buttons, set to original color
-                mediaCard.forEach(btn => {
-                    btn.classList.remove('active');
-                    console.log(`unactive seasons gets original btn color`);
-                    event.target.classList.add('active')
-                });
-        }
-    });
 
 </script>
 

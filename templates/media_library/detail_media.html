@@ -281,13 +281,13 @@
                                     {% if season.episodes != None %}
                                     <!-- <div style="margin-left: 0rem; min-width: fit-content;"> -->
                                         
-                                        <button class="season-toggle" 
-                                        data-season-id="{{ season.id }}" 
-                                        hx-get="{% url 'media_library:season_data' season.id %}"
-                                        hx-swap="innerHTML"
-                                        hx-target="#season-content">
-                                            {{ season }}
-                                        </button>
+                                    <button class="season-toggle" 
+                                    data-season-id="{{ season.id }}" 
+                                    hx-get="{% url 'media_library:season_data' season.id %}"
+                                    hx-swap="innerHTML"
+                                    hx-target="#season-content">
+                                        {{ season }}
+                                    </button>
                                     <!-- </div> -->
                                     
                                     {% endif %}

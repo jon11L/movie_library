@@ -12,7 +12,7 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
 	
 </head>
-<body>
+<body class="dark-mode">
 	{% csrf_token %}
 	
 	<header>
@@ -76,6 +76,7 @@
 
 
 	<script>
+		// Check if the user is authenticated and pass it to JavaScript
 		const USER_IS_AUTHENTICATED = '{{request.user.is_authenticated}}' === 'True';
 	</script>
 	
