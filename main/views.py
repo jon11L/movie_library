@@ -3,6 +3,7 @@ import traceback
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.core.cache import cache
 # from django.http import JsonResponse
 # from django.contrib.auth.decorators import user_passes_test
 
@@ -39,6 +40,19 @@ def home(request):
     - generally added to watchlist
     """
 
+    MEDIA_FIELDS = [
+        "id",
+        "title",
+        "genre",
+        "release_date",
+        "popularity",
+        "vote_average",
+        "vote_count",
+        "poster_images",
+        "slug",
+        "media_type",
+    ]
+
     # initialize variables
     list_media_ids = set()  # to track the media ids already included in the context, to avoid duplicates.
     user_reviews = set()
@@ -50,8 +64,9 @@ def home(request):
     ongoing_series = None
     new_series = None
     random_series = None
-    movies_count = None
-    series_count = None
+    # movies_count = None
+    # series_count = None
+    discover_media = []  # list to hold the media saved in watchlist from other users
 
     try:
         # to display movies & series that are coming soon or recently released
@@ -68,108 +83,89 @@ def home(request):
         )  # Monday of the current week
         week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
 
+        shared = cache.get("home_samples_media")
+        if shared is None:
+            print("\nNo cache set up yet -- Setting up** \n")
 
+            # --- Prepare various content lists (eg: recently released, coming soon, etc.) ---
+            # and return a sample 12 items per selections.
 
-        # display the amount of Movies & Series available from the database
-        series_count = Media.objects.filter(media_type='serie').count()
-        movies_count = Media.objects.filter(media_type='movie').count()
-        # movies_count = Movie.objects.exclude(is_active=False).count()
-
-        # --- Prepare various content lists (eg: recently released, coming soon, etc.) ---
-        # and return a sample of it / 6 per selections.
-
-        # recently released movies (in the last 2 weeks)
-        recent_movies = (
-            Media.objects.filter(
-                media_type="movie",
-                release_date__range=(fortnight_ago, today),
-                movie__length__gte=45,
+            # recently released movies (in the last 2 weeks)
+            recent_movies = (
+                Media.objects.filter(
+                    media_type="movie",
+                    release_date__range=(fortnight_ago, today),
+                    movie__length__gte=45,
+                )
+                .only(*MEDIA_FIELDS)
+                .exclude(adult=True)
+                .order_by("?")[:12]
             )
-            .only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
+
+            # retrieve the movies coming out soon.
+            upcoming_movies = (
+                Media.objects.filter(
+                    media_type="movie",
+                    release_date__range=(tomorrow, bi_week_later),
+                    movie__length__gte=45,
+                )
+                .only(*MEDIA_FIELDS)
+                .exclude(adult=True)
+                .order_by("?")[:12]
             )
-            .exclude(adult=True)
-            .order_by("?")[:12]
-        )
 
-        # retrieve the movies coming out soon.
-        upcoming_movies = (
-            Media.objects.filter(
-                media_type="movie",
-                release_date__range=(tomorrow, bi_week_later),
-                movie__length__gte=45,
+            random_movies = (
+                Media.objects.filter(media_type="movie", movie__length__gte=45)
+                .only(*MEDIA_FIELDS)
+                .exclude(is_active=False)
+                .order_by("?")[:12]
             )
-            .only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
+
+            ongoing_series = (
+                Media.objects.filter(
+                    media_type="serie", release_date__range=(fortnight_ago, week_later)
+                )
+                .only(*MEDIA_FIELDS)
+                .order_by("?")[:12]
             )
-            .exclude(adult=True)
-            .order_by("?")[:12]
-        )
 
-        random_movies = (
-            Media.objects.filter(media_type="movie", movie__length__gte=45)
-            .only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
+            new_series = (
+                Media.objects.filter(
+                    media_type='serie',
+                    release_date__range=(fortnight_ago, bi_week_later)
+                )
+                .only(*MEDIA_FIELDS)
+                .order_by("?")[:12]
             )
-            .exclude(is_active=False)
-            .order_by("?")[:12]
-        )
 
-
-        ongoing_series = (
-            Media.objects.filter(
-                media_type="serie", release_date__range=(fortnight_ago, week_later)
+            # Perhaps remove later and create a one Random pick media sample
+            random_series = (
+                Media.objects.filter(media_type="serie")
+                .only(*MEDIA_FIELDS)
+                .order_by("?")[:12]
             )
-            .only(
-                "id",
-                "title",
-                "genre",
-                "vote_average",
-                "vote_count",
-                "poster_images",
-                "slug",
-            )
-            .order_by("?")[:12]
-        )
 
+            shared = {
+                # display the amount of Movies & Series available from the database
+                "series_count": Media.objects.filter(media_type='serie').count(),
+                "movies_count": Media.objects.filter(media_type='movie').count(),
+                "recent_movies": recent_movies,
+                "movies_coming_soon": upcoming_movies,
+                "random_movies": random_movies,
+                "returning_series": ongoing_series,
+                "new_series": new_series,
+                "random_series": random_series,
+            }
 
+            # Set further timing when correctly setup
+            cache.set(key='home_samples_media', value=shared, timeout=300)
 
-        new_series = (
-            Media.objects.filter(
-                media_type='serie',
-                release_date__range=(fortnight_ago, bi_week_later)
-            )
-            .only("id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug")
-            .order_by("?")[:12]
-        )
+        else:
+            print('Cache is set up for home samples media.\n')
 
-
-        # Perhaps remove later and create a one Random pick media sample
-        random_series = Media.objects.filter(media_type='serie').only(
-            "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
-        ).order_by("?")[:12] 
-
+        print(f"Cache setup for:\n{[key for key in cache.get('home_samples_media')]}")
 
         # ------ add side content , from other user's Watchlist or like movies/series ------
-        discover_media = []  # list to hold the media saved in watchlist from other users
         # discover_list = None  # list to hold the user ids already processed
         if request.user.is_authenticated:
             discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
@@ -178,7 +174,6 @@ def home(request):
         else:
             # list to hold any watchlist instances
             discover_list = WatchList.objects.all().order_by("?")[:12].select_related("media")
-
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
@@ -203,15 +198,8 @@ def home(request):
         review_form = ReviewForm() 
 
         context = {
-            "recent_movies": recent_movies,
-            "movies_coming_soon": upcoming_movies,
-            "random_movies": random_movies,
-            "returning_series": ongoing_series,
-            "new_series": new_series,
-            "random_series": random_series,
+            **shared,
             "discover_media": discover_media,
-            "movies_count": movies_count,
-            "series_count": series_count,
             'watchlist_form': watchlist_form,
             'review_form': review_form
         }
@@ -241,15 +229,25 @@ def home(request):
                         })
 
             # Collect the media ids to check if user has watchlist or reviews
-            for qs in (recent_movies, upcoming_movies, random_movies, 
-                       ongoing_series, new_series, random_series):
+            list_sample = [
+                cache.get("home_samples_media")['recent_movies'],
+                cache.get("home_samples_media")['movies_coming_soon'],
+                cache.get("home_samples_media")['random_movies'],
+                cache.get("home_samples_media")['returning_series'],
+                cache.get("home_samples_media")['new_series'],
+                cache.get("home_samples_media")['random_series'],
+            ]
+
+            for qs in list_sample:
                 list_media_ids.update(media.pk for media in qs)
+
+            # print(f'recent movies cached:\n{cache.get("home_samples_media")['recent_movies']}')
 
             list_media_ids.update(media["id"] for media in discover_media)
             list_media_ids.update(media["id"] for media in watchlist_media)
             print(f"\n --length media: {len(list_media_ids)}\n")
 
-                # -------- Check if the user media exist in the watchlist/review of current user --------
+            # -------- Check if the user media exist in the watchlist/review of current user --------
             user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)
             user_reviews = get_user_review(request.user.pk, media_ids=list_media_ids)
 
