@@ -61,8 +61,8 @@
                                         data-type="{% if media.media_type == 'movies' %}movie{% else %}serie{% endif %}" 
                                         data-id="{{ media.id }}" 
                                         data-title="{{ media.title }}"
-                                        data-bookmarked="{% if media.id in watchlist %}true{% else %}false{% endif %}">
-                                        <i class="{% if media.id in watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                        data-bookmarked="{% if media.id in user_watchlist %}true{% else %}false{% endif %}">
+                                        <i class="{% if media.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
                                     </button>
                             
 
