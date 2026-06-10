@@ -410,13 +410,13 @@ Need to reorganize the name or call a parent custom class
     transition: opacity 0.8s ease-in, transform 0.8s ease-in-out;
 }
 
-.carousel-card .media-card:hover {
+.carousel-card .media-card.is-hovered {
     transform: translateY(1%) scale(1.05);
     z-index: 4;
 }
 /* Only target all siblings of the media being hovered */
-.carousel-card:has(.media-card:hover) .media-card:not(:hover){
-    opacity: 0.5;    
+.carousel-card:has(.media-card.is-hovered) .media-card:not(.is-hovered){
+    opacity: 0.45;    
 }
 
 /* Only affect media card on list pages. */
@@ -606,7 +606,7 @@ Need to reorganize the name or call a parent custom class
 
 .media-card:hover .poster-wrapper{
     box-shadow: 0.3rem 0.3rem 0.4rem rgba(4, 100, 100, 0.75), -0.3rem -0.3rem 0.3rem wheat;
-    transition: box-shadow 0.4s ease-in;
+    transition: box-shadow 0.3s ease-in;
     transition-delay: 0.1s;
 }
 
