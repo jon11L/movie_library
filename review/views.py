@@ -16,6 +16,8 @@ from user.models import User, Profile
 from .forms import ReviewForm
 from watchlist.forms import WatchListForm
 
+from core.context import get_user_watchlist,  get_user_review
+
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
 from core.tools.wrappers import timer, num_queries
@@ -206,6 +208,8 @@ def list_view(request, user_pk: int):
     list_media = [] # list to hold the content (movies, series)
 
     user_watchlist = set()
+    user_reviews = set()
+    list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
 
     # retrieve the profile being requested
     try:
@@ -314,20 +318,15 @@ def list_view(request, user_pk: int):
                     "slug": item.media.slug,
                     "type": item.media.media_type,
                     })
+                
+                list_media_ids.add(item.media.pk)
 
             total_content = reviews.count()
 
-            # --- Get the user's watchlist content (movies, series) ---
-            user_reviews = set(
-                Review.objects.filter(
-                    user=request.user.id
-                ).values_list("media_id", flat=True)
-            )
+            # Collect the media ids to check if user has watchlist or reviews
+            user_watchlist = get_user_watchlist(request.user, media_ids=list_media_ids)
+            user_reviews = get_user_review(request.user, media_ids=list_media_ids)
 
-            # -------- Get the user's reviewed media  ----------
-            user_watchlist = set(
-                WatchList.objects.filter(user=request.user.id).values_list("media_id", flat=True)
-            )
 
             context = {
                 'page_obj': page_obj,
@@ -341,8 +340,6 @@ def list_view(request, user_pk: int):
                 'total_content': total_content,
                 "user_watchlist": user_watchlist,
                 'user_reviews': user_reviews,
-                # 'user_liked_movies': user_liked_movies,
-                # 'user_liked_series': user_liked_series,
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
             }

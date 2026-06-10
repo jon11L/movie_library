@@ -7,14 +7,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import F
-
 # Rest api imports
 from rest_framework import generics, filters, request
 # from rest_framework import renderers
 from rest_framework.throttling import AnonRateThrottle
+
+
 from core.throttle import AdminRateThrottle, UserBurstThrottle, UserSustainThrottle, UserDayThrottle
 from core.permissions import IsAdminOrOwner
-
 # from .serializers import WatchListSerializer
 
 # Models import
@@ -25,6 +25,8 @@ from user.models import User, Profile
 
 from watchlist.forms import WatchListForm
 from review.forms import ReviewForm
+
+from core.context import get_user_watchlist,  get_user_review
 
 # Temporary placement for paginator design
 from core.tools.paginator import page_window
@@ -105,9 +107,10 @@ def list_view(request, user_pk: int):
     base_url = f"/watchlist/list/{user_pk}"
     sort_by = None
     list_media = [] # list to hold the content (movies, series)
-    # user_liked_movies = set()
-    # user_liked_series = set()
+
     user_watchlist = set()
+    user_reviews = set()
+    list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
 
     # retrieve the profile being requested
     try:
@@ -186,7 +189,7 @@ def list_view(request, user_pk: int):
             if 'id' in select_order:
                 list_watchlist = watchlist.order_by(select_order)
 
-            # sort by the select_related media_field 
+            # sort by the select_related media_field eg. media.release_date
             elif is_desc_order:
                 list_watchlist = watchlist.order_by(F(field_name).desc(nulls_last=True))
             else:
@@ -201,7 +204,6 @@ def list_view(request, user_pk: int):
             # create a standardized data stack to pass in templates.
             # Avoiding any extra hidden queries on the frontend
             for item in page_obj:
-                # try:
                 list_media.append({
                     "id": item.media.pk, 
                     "title": item.media.title, 
@@ -214,20 +216,14 @@ def list_view(request, user_pk: int):
                     "slug": item.media.slug,
                     "type": item.media.media_type,
                     })
+                
+                list_media_ids.add(item.media.pk)
 
             total_content = watchlist.count()
-
-            # --- Get the user's watchlist content (movies, series) ---
-            user_watchlist = set(
-                WatchList.objects.filter(
-                    user=request.user.id
-                ).values_list("media_id", flat=True)
-            )
-
-            # -------- Get the user's reviewed media  ----------
-            user_reviews = set(
-                Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
-            )
+            # Collect the media ids to check if user has watchlist or reviews
+            # -------- Check if the user media exist in the watchlist/review of current user --------
+            user_watchlist = get_user_watchlist(request.user, media_ids=list_media_ids)
+            user_reviews = get_user_review(request.user, media_ids=list_media_ids)
 
             context = {
                 'page_obj': page_obj,
@@ -239,8 +235,6 @@ def list_view(request, user_pk: int):
                 'list_media' : list_media,
                 'user': t_user.username,
                 "user_watchlist": user_watchlist,
-                # 'user_liked_movies': user_liked_movies,
-                # 'user_liked_series': user_liked_series,
                 'total_content': total_content,
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,

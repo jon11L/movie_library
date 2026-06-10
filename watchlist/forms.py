@@ -14,6 +14,7 @@ class WatchListForm(forms.Form):
             attrs={
                 "placeholder": "Add a personal note...",
                 "class": "watchlist-note-form",
+                "id": "id_watchlist_personal_note",
                 "rows": 4,
                 # "cols": 40,
                 "style": "resize: none; padding-left: 0.5rem; padding-top: 0.5rem;", 
@@ -28,6 +29,7 @@ class WatchListForm(forms.Form):
         label="status",
         widget=forms.Select(attrs={
             "class": "form-select",
+            "id": "id_watchlist_status",
             "style": "background-color: black; border: 1px solid #ced4da; border-radius: 0.5em; color: silver;",
         }),
             )

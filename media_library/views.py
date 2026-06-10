@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
-# import time
-
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 # from rest_framework import viewsets
 from rest_framework import generics, filters
 
-
+from core.context import get_user_watchlist,  get_user_review
 from core.permissions import IsAdminOrIsAuthenticatedReadOnly
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
@@ -79,10 +77,12 @@ def media_list(request, media_type):
     page's goal is to display up to 24 content pieces per page
     '''
     base_url = f'/media_library/{media_type}'
-    reviewed_media = None
-    user_watchlist = None
+
     list_media = [] # list to hold the content (movies, series)
     sort_by = None
+    user_watchlist = set()
+    user_reviews = set()
+    list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
 
     try:
         if Media:
@@ -296,19 +296,11 @@ def media_list(request, media_type):
             )
 
             if request.user.is_authenticated:
-                # Get the user's watchlist media's IDs.
-                user_watchlist = set(
-                    WatchList.objects.filter(
-                        user=request.user.id, 
-                        ).values_list('media_id', flat=True)
-                )
+                # Collect the media ids to check if user has watchlist or reviews
+                list_media_ids.update(media["id"] for media in list_media)
 
-                # -------- Get the user's reviewed media  ----------
-                user_reviews = set(
-                    Review.objects.filter(user=request.user.id).values_list(
-                        "media_id", flat=True
-                    )
-                )
+                user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)
+                user_reviews = get_user_review(request.user.pk, media_ids=list_media_ids)
 
                 context.update(
                     {
@@ -398,29 +390,22 @@ def media_detail(request, slug):
             # display the Comment form if user is connected
             if request.user.is_authenticated:
                 # Get the user's watchlist content (movies, series)
-                in_watchlist = WatchList.objects.filter(
-                        user=request.user.id, media_id=media.pk
-                        ).values_list('media_id', flat=True)
-                
-                print(f"\nMedia In watchlist :{in_watchlist}") # debug print
+                media_id = set()
+                media_id.add(media.pk)
 
-                # -------- Check if the user reviewed the media  ----------
-                user_reviews = Review.objects.filter(
-                        user=request.user.id,
-                        media_id=media.pk
-                        ).values_list('media_id', flat=True)
-
-                # print(f"user_liked :{user_liked_movie}") # debug print
+                # -------- Check if the user media exist in the watchlist/review of current user --------
+                user_watchlist = get_user_watchlist(request.user, media_ids=media_id)
+                user_reviews = get_user_review(request.user, media_ids=media_id)
 
                 comment_form = CommentForm(request.POST or None) # here allow to post a comment.
-                # review_form = ReviewForm(request.POST or None) # here allow to post a review.
+
+                print(f"\nMedia In watchlist :{len(user_watchlist)}") # debug print
 
                 context.update(
                     {
-                        # 'user_liked_movie': user_liked_movie,
-                        'watchlist': in_watchlist,
                         'form': comment_form,
                         'comments': comments,
+                        'user_watchlist': user_watchlist,
                         'user_reviews': user_reviews,
                         
                     }
