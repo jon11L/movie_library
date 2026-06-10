@@ -3,6 +3,7 @@
 .pagination-section {
     padding: 1rem 0 0rem 0;
     overflow-x: clip;
+    max-width: 100vw;
 }
 
 .pagination-wrapper {
@@ -64,7 +65,7 @@ nav {
     height: min-content;
     /* min-width: 1.15rem; */
     flex-shrink: 1;
-    padding: 0.5rem clamp(0.1rem, 1.5vw, 0.5rem);
+    padding: 0.5rem clamp(0.1rem, 1.75vw, 0.5rem);
 }
 
 .pagin-spacer {
@@ -74,7 +75,7 @@ nav {
 
 .page-icon {
     font-size: x-large; 
-    margin: -0.5rem 0rem 0 0rem;
+    margin: -0.55rem 0rem 0 0rem;
     height: 1.85rem;
 }
 

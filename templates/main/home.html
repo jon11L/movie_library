@@ -74,7 +74,7 @@
 
                         <!------ Displaying the movies recently released ------->
                         {% if recent_movies %}
-                        <div class="carousel-media-sample" style="position: relative;">
+                        <section class="carousel-media-sample" style="position: relative;" aria-label="recent movies">
                             <!-- <section class="carousel-section" id="carousel-trending">
                                 <h2 class="carousel-section__title">Trending Now</h2> -->
 
@@ -106,17 +106,17 @@
                             </div>
                             
                             <!-- Dots to track where in the carousel -->
-                            <!-- <div class="carousel-dots"></div> -->
+                            <div class="carousel-dots"></div>
 
 
                             <!-- </div> -->
-                        </div>
+                        </section>
                         {% endif %}
 
 
                         <!------ Displaying the new series coming up here -------->
                         {% if returning_series %}
-                        <div class="media-sample-row">
+                        <section class="media-sample-row" aria-label="returning TV-show">
 
                             <div class="banderol">
                                 <h3>Ongoing TV Shows:</h3>
@@ -140,7 +140,7 @@
                                 </div>
 
                             <!-- </div> -->
-                        </div>
+                        </section>
                         {% endif %}
 
 
@@ -170,8 +170,8 @@
 
 
                         <!----- Displaying Some content from the user's watchlist ------->
-                        {% if watchlist_content %}
-                        <div class="media-sample-row">
+                        {% if watchlist_media %}
+                        <section class="media-sample-row" aria-label="My watchlist sample">
 
                             <div class="banderol">
                                 <h3>
@@ -191,7 +191,7 @@
                                     </button>
 
                                         <div class="carousel-card">
-                                            {% for item in watchlist_content %}
+                                            {% for item in watchlist_media %}
                                             {% include "partials/card_item.html" %}
                                             {% endfor %}
                                         </div>
@@ -202,12 +202,12 @@
                                 </div>
 
                             <!-- </div> -->
-                        </div>
+                        </section>
                         {% endif %}
 
                         <!--------- Displaying the Media coming soon ------------>
                         {% if movies_coming_soon or new_series %}
-                        <div class="media-sample-row">
+                        <section class="media-sample-row" aria-label="Coming soon">
 
                             <div class="banderol">
                                 <h3>Upcoming</h3>
@@ -216,7 +216,7 @@
                             {% if movies_coming_soon %}
                             <!-- <div class="row" style="padding: 0 1.5%;"> -->
                                 
-                                <div style="margin-bottom: 1.25rem; text-align: center;">
+                                <div style="margin: 0.5rem 0 0.1rem 0; text-align: center;">
                                     <h4 style="margin: 0;">Movies</h4>
                                     <div style="width: 80%; margin: auto;">
                                         <hr style="color: gray; margin: 0;">
@@ -247,7 +247,7 @@
                             <!-- displaying Series being released soon -->
                             {% if new_series %}
                             <!-- <div class="row" style="padding: 0 1.5%;"> -->
-                                <div style="margin-bottom: 1.25rem; text-align: center;">
+                                <div style="margin: 0.5rem 0 0.1rem 0; text-align: center;">
                                     <h4 style="margin: 0;">Series</h4>
                                     <div style="width: 80%; margin: auto;">
                                         <hr style="color: gray; margin: 0;">
@@ -269,19 +269,19 @@
                             <!-- </div> -->
                             {% endif %}
 
-                        </div>
+                        </section>
                         {% endif %}
 
                         <!------ Displaying Randmom pick  --------->
                         {% if random_movies or random_series %}
-                        <div class="media-sample-row">
+                        <section class="media-sample-row" aria-label="Random picks">
 
                             <div class="banderol">
                                 <h3>Random Pick</h3>
                             </div>
 
                             {% if random_movies %}
-                            <div style="margin-bottom: 1.25rem; text-align: center;">
+                            <div style="margin: 0.5rem 0 0.1rem 0; text-align: center;">
                                 <h4 style="margin: 0.25rem 0 0 0;">Movies</h4>
                                 <div style="width: 80%; margin: auto;">
                                     <hr style="color: gray; margin: 0;">
@@ -305,29 +305,35 @@
 
                             <!-- displaying Random pick series -->
                             {% if random_series %}
-                            <div style="margin-bottom: 1.25rem; text-align: center;">
+                            <div style="margin: 0.5rem 0 0.1rem 0; text-align: center;">
                                 <h4 style="margin: 0.25rem 0 0 0;">Series</h4>
                                 <div style="width: 80%; margin: auto;">
                                     <hr style="color: gray; margin: 0;">
                                 </div>
                             </div>
                             
-                            <div class="carousel-scroll-wrapper">
+                            <div class="carousel-scroll-wrapper" id="carousel-random-serie">
                                 <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 383)" aria-label="Scroll left">
                                     &#8249;
                                 </button>
-                                <div class="carousel-card">
+
+                                <ul class="carousel-card">
                                     {% for item in random_series %}
                                         {% include "partials/card_item.html" %}
                                     {% endfor %}
-                                </div>
+                                </ul>
+
                                 <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.previousElementSibling, 383)" aria-label="Scroll right">
                                     &#8250;
                                 </button>
                             </div>
+
+                            <!-- Dots to track where in the carousel -->
+                            <div class="carousel-dots" id="dot-random-serie"></div>
+
                             {% endif %}
 
-                        </div>
+                        </section>
                         {% endif %}
 
 
@@ -394,7 +400,7 @@
     </div>
 
 
-
+<!-- change the hover with a active/inactive or onClick on Mobile screen -->
 <script>
     // Create scrollable carousel for the media samples. How to make it responsive and adapt the scroll distance to the screen size?
     // How to assume the size one card and use it as the scroll distance?
@@ -419,8 +425,8 @@
         const hasOverflow = scroller.scrollWidth > scroller.clientWidth;
 
         if (!hasOverflow) {
-            leftBtn.classList.add('carousel-arrow--hidden');
-            rightBtn.classList.add('carousel-arrow--hidden');
+            // leftBtn.classList.add('carousel-arrow--hidden');
+            // rightBtn.classList.add('carousel-arrow--hidden');
             return;
         }
 
@@ -435,19 +441,29 @@
 
     // ======  TEST ==================
     // Create the dots links to track where in the carousel the user is. 
-    // totalPages() {
+    function getTotalPages(card) {
     // How many full page-widths fit in scrollWidth
-//     return Math.ceil(this.track.scrollWidth / this.pageWidth());
-//    }
-
-
+    return Math.ceil(this.track.scrollWidth / this.pageWidth());
+    }
+    // END TEST  
 
     
 
     document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.querySelector('.carousel-scroll-wrapper');
         if (!wrapper) return;
-    
+
+        // =============== TEST NEW IMPLEMENTATION DOT tracking + AUTOPLAY  ============0
+        // implementing the dots
+        // const carouselTrack = document.querySelector('#carousel-random-serie')
+        // const dots = carouselTrack.querySelector('.carousel-dots')
+
+        // if (!carouselTrack || dots) return;
+
+        //==== END TEST NEW IMPLEMENTATION DOT tracking + AUTOPLAY ========
+
+
+
         const scroller = wrapper.querySelector('.carousel-card');
     
         // Initial state
@@ -459,6 +475,7 @@
         // Update on resize (e.g. screen resize, responsive breakpoint changes)
         const ro = new ResizeObserver(() => updateItemsArrows(wrapper));
         ro.observe(scroller);
+
     });
 
 
