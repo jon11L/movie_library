@@ -5,21 +5,20 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.cache import cache
 # from django.http import JsonResponse
-# from django.contrib.auth.decorators import user_passes_test
 
+# tooling
 from core.context import get_user_watchlist,  get_user_review
 from core.tools.wrappers import timer, num_queries
 # models
 from media_library.models import Media
 from review.models import Review
 from watchlist.models import WatchList
-# tooling
+# forms
 from review.forms import ReviewForm
 from watchlist.forms import WatchListForm
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
-
 
 def about_page(request):
     return render(request, "main/about.html")
@@ -158,7 +157,7 @@ def home(request):
             }
 
             # Set further timing when correctly setup
-            cache.set(key='home_samples_media', value=shared, timeout=300)
+            cache.set(key='home_samples_media', value=shared, timeout=18000)
 
         else:
             print('Cache is set up for home samples media.\n')
@@ -255,7 +254,7 @@ def home(request):
                 {
                     "user_reviews": user_reviews,
                     "user_watchlist": user_watchlist,
-                    "watchlist_content": watchlist_media,
+                    "watchlist_media": watchlist_media,
                 }
             )
 
