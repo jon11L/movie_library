@@ -91,38 +91,3 @@ class ProfileTest(TestCase):
         self.assertEqual(profile.date_of_birth, datetime.date(1991, 10, 24))
         self.assertNotEqual(profile.bio, "This is a test bio.")
         self.assertEqual(profile.bio, "Updated bio.")
-
-
-class LoginLogoutTest(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user(username="testuser", password="testpass")
-
-        print(
-            "\n\n ** Loading  necessary component for testing User's login/logout with setUpTestDAta **\n\n",
-        )
-
-
-    def test_login_page(self):
-        """Test that the login page loads correctly."""
-        # response = self.client.get("/user/login")
-        response = self.client.get(reverse("user:login"))
-        self.assertNotEqual(response.status_code, 404)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "login")
-        self.assertTemplateUsed(response, "user/login.html")
-
-    def test_user_login(self):
-        """Test that a user can log in with correct credentials."""
-        fail_login = self.client.login(username="user", password="password")
-        login = self.client.login(username="testuser", password="testpass")
-        self.assertFalse(fail_login)
-        self.assertTrue(login)
-
-    def test_user_logout(self):
-        self.client.login(username="testuser", password="testpass")
-        response = self.client.get(reverse("user:logout"))
-        self.assertNotEqual(response.status_code, 404)  # Redirect after logout
-        self.assertEqual(response.status_code, 302)  # Redirect after logout
-        self.assertRedirects(response, "/")

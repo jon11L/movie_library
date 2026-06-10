@@ -26,3 +26,10 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 
 STATIC_URL = "/static/"
+
+# Use dummy in-memory cache, no Redis needed
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    }
+}
