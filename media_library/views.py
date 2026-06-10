@@ -1,5 +1,8 @@
+import traceback
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -78,11 +81,25 @@ def media_list(request, media_type):
     '''
     base_url = f'/media_library/{media_type}'
 
-    list_media = [] # list to hold the content (movies, series)
+    list_media_cards = [] # list to hold the content (movies, series)
     sort_by = None
     user_watchlist = set()
     user_reviews = set()
     list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
+
+
+    MEDIA_FIELDS = [
+        "id",
+        "title",
+        "genre",
+        "release_date",
+        "popularity",
+        "vote_average",
+        "vote_count",
+        "poster_images",
+        "slug",
+        "media_type",
+    ]
 
     try:
         if Media:
@@ -121,148 +138,89 @@ def media_list(request, media_type):
             # send the url parameters for sort-by, to keep the selection when user change page
             query_sort_url = query_params.urlencode() 
 
-            # list_fields = ["id",
-            #             "title",
-            #             "genre",
-            #             "release_date",
-            #             "popularity",
-            #             "vote_average",
-            #             "vote_count",
-            #             "poster_images",
-            #             "slug",
-            #             "media_type",
-            #             ]
 
             if media_type == 'movies':
-
                 media = (
                     Media.objects.filter(media_type="movie")
-                    .only(
-                        "id",
-                        "title",
-                        "genre",
-                        "release_date",
-                        "popularity",
-                        "vote_average",
-                        "vote_count",
-                        "poster_images",
-                        "slug",
-                        "media_type",
-                    )
+                    .only(*MEDIA_FIELDS)
                     .exclude(is_active=False)
                     .exclude(release_date__isnull=True)
-                    .exclude(
-                        movie__length__range=(1, 45)
-                    )  # how to remove them with media as they are in the child model Movie
-                    # .order_by(f"{sel_order}")
+                    .exclude(movie__length__range=(1, 45))  
+                    # how to remove them with media as they are in the child model Movie
                 )
 
             elif media_type == 'series':
-
                 media = (
-                    Media.objects.filter(media_type='serie').only(
-                        "id",
-                        "title",
-                        "genre",
-                        "release_date",
-                        "popularity",
-                        "vote_average",
-                        "vote_count",
-                        "poster_images",
-                        "slug",
-                        "media_type",
-
-                    )
+                    Media.objects.filter(media_type='serie').only(*MEDIA_FIELDS)
                     .exclude(is_active=False)
                     .exclude(release_date__isnull=True)
-                    # .exclude(movie__length__range=(1, 45)) # how to remove them with media as they are in the child model Movie
-                    # .order_by(f"{sel_order}")
                 )
 
             elif media_type == "documentaries":
                 # Check in Media if genre contains 'documentary' then load them for templating
                 media = (
                     Media.objects.filter(genre__icontains="documentary")
-                    .only(
-                        "id",
-                        "title",
-                        "genre",
-                        'release_date',
-                        'popularity',
-                        "vote_average",
-                        "vote_count",
-                        "poster_images",
-                        "slug",
-                        "media_type",
-                    )
+                    .only(*MEDIA_FIELDS)
+                    .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
-                    # .order_by("-vote_count")
                 )
 
             elif media_type == "short-films":
                 # Check if they are short Movies under 45 minutes
                 media = (
                     Media.objects.filter(media_type='movie', movie__length__range=(0, 44))
-                    .only(
-                        "id",
-                        "title",
-                        "genre",
-                        'release_date',
-                        'popularity',
-                        "poster_images",
-                        "vote_average",
-                        "vote_count",
-                        "slug",
-                        "media_type",
-                    )
+                    .only(*MEDIA_FIELDS)
+                    .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
-                    .order_by("-vote_count")
                 )  # length between 0 and 45 minutes
 
             elif media_type == "animes":
                 # Check if they are Anime Movies and Series
                 media = (
                     Media.objects.filter(genre__icontains="Animation")
-                    .only(
-                        "id",
-                        "title",
-                        "genre",
-                        'release_date',
-                        'popularity',
-                        "poster_images",
-                        "vote_average",
-                        "vote_count",
-                        "slug",
-                        "media_type",
-                    )
+                    .only(*MEDIA_FIELDS)
+                    .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
-                    # .order_by("-vote_count")
                 )
 
             media = media.order_by(sel_order)
 
-            # paginates over the pre loaded query
+            # -- paginates over the pre loaded query --
             paginator = Paginator(media, 24)
             # Get the current page number from the GET request
             page = request.GET.get('page')
             page_obj = paginator.get_page(page)
             print(f"\n-- {page_obj} --\n")
 
-            # create a standardized data stack to pass in templates.
-            # Avoiding any extra hidden queries on the frontend
-            for item in page_obj:
-                list_media.append({
-                    "id": item.pk, 
-                    "title": item.title,
-                    # "release_date": item.release_date.year, 
-                    "genre": item.render_genre(), 
-                    "render_vote_average": item.render_vote_average(), 
-                    "vote_count": item.vote_count, 
-                    "render_poster": item.render_poster(),
-                    "slug": item.slug,
-                    "type": item.media_type,
-                    })
-            # print(list_media[0:2], '\n')
+            # -- Set or create Cache for list media with media_type, page, sort-by --
+            page_num = page_obj.number
+            cache_key = f"media_list_{media_type}_{sel_order}_p{page_num}"
+            list_media = cache.get(cache_key)
+
+            # If caching is empty, then set it with the media_cards requested
+            if list_media is None:
+                print(f"\nNo cache set up for {media_type} -- Setting up** \n")
+
+                for item in page_obj:
+                    list_media_cards.append({
+                        "id": item.pk, 
+                        "title": item.title,
+                        #below will be use to display the year on the media_card
+                        "release_date": item.release_date.year if item.release_date else None, 
+                        "genre": item.render_genre(), 
+                        "render_vote_average": item.render_vote_average(), 
+                        "vote_count": item.vote_count, 
+                        "render_poster": item.render_poster(),
+                        "slug": item.slug,
+                        "type": item.media_type,
+                        })
+                
+                if page_num <= 5:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=3600)
+                elif page_num > 5 and page_num >= 10:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=600)
+
+            print(f"Cache setup for:\n{cache_key}")
 
             # present the watchlist and review form in the modal,
             #  when not logged in, will display a message to invite user to register/log in
@@ -276,7 +234,8 @@ def media_list(request, media_type):
                 'query_sort_url': query_sort_url, # send the url parameters for sort-by
                 'current_order': sel_order,
                 'base_url': base_url,
-                'list_media': list_media,
+                # 'list_media': list_media,
+                'list_media': cache.get(cache_key),
                 "media_type": media_type.capitalize(),
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
@@ -297,8 +256,10 @@ def media_list(request, media_type):
 
             if request.user.is_authenticated:
                 # Collect the media ids to check if user has watchlist or reviews
-                list_media_ids.update(media["id"] for media in list_media)
+                list_media_ids.update(media["id"] for media in cache.get(cache_key))
+                print(f"\n --length media: {len(list_media_ids)}\n")
 
+                # Retrieve the ids that are with the request.user watchlist and reviews.
                 user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)
                 user_reviews = get_user_review(request.user.pk, media_ids=list_media_ids)
 
@@ -323,6 +284,8 @@ def media_list(request, media_type):
     except Exception as e:
         messages.error(request, "the page seems to experience some issue, please try again later")
         print(f" error :\n{e}")
+        traceback.print_exc()
+
         return redirect('main:home')
 
 
