@@ -3,6 +3,7 @@ from django.core.paginator import Paginator
 from django.db.models import Case, When, Value, IntegerField
 
 # tooling
+from core.context import get_user_review, get_user_watchlist
 from core.tools.paginator import page_window # Temporary placement for paginator design
 from core.tools.wrappers import timer, num_queries
 # models
@@ -51,7 +52,7 @@ def search(request):
     user_liked_series = set()
     user_watchlist = set()
     # results = [] # Will hold the mixed list query (Movie+Serie)
-    
+    list_media_ids = set()
     # Determine which content type to display, Default to 'all'
     # content_type = request.GET.get('content_type', 'all')
 
@@ -153,10 +154,6 @@ def search(request):
             results = filtered_media
             sel_order = '-id'
 
-        # create two query_urls parameters holder
-        # one for the sort-by: without page and no order_by parameters
-        # second for paginator: without page but keep order_by
-
         # Preserve all GET parameters except 'page' for the Paginator system
         query_params = request.GET.copy()
         print(f"-- Query params: {query_params}\n")  # Debug print
@@ -200,7 +197,7 @@ def search(request):
                 "slug": item.slug,
                 "type": item.media_type,
                 })
-
+            
         # Display watchlist form in the modal When user click 
         watchlist_form = WatchListForm() 
         review_form = ReviewForm() 
@@ -234,17 +231,11 @@ def search(request):
         )
 
         if request.user.is_authenticated:
-            # Get the user's watchlist and like media's ID.
-            user_watchlist = set(
-                WatchList.objects.filter(
-                    user=request.user.id
-                    ).values_list('media_id', flat=True)
-            )
+            # Collect the media ids to check if user has watchlist or reviews
+            list_media_ids.update(media["id"] for media in list_media)
 
-            # -------- Get the user's reviewed media  ----------
-            user_reviews = set(
-                Review.objects.filter(user=request.user.id).values_list("media_id", flat=True)
-            )
+            user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)
+            user_reviews = get_user_review(request.user.pk, media_ids=list_media_ids)
 
             context.update(
                 {

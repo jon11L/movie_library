@@ -6,6 +6,7 @@ from django.contrib import messages
 # from django.http import JsonResponse
 # from django.contrib.auth.decorators import user_passes_test
 
+from core.context import get_user_watchlist,  get_user_review
 from core.tools.wrappers import timer, num_queries
 # models
 from media_library.models import Media
@@ -14,7 +15,6 @@ from watchlist.models import WatchList
 # tooling
 from review.forms import ReviewForm
 from watchlist.forms import WatchListForm
-
 
 # def admin_check(user):
 #     return user.is_superuser  # or user.is_staff for staff users
@@ -39,6 +39,20 @@ def home(request):
     - generally added to watchlist
     """
 
+    # initialize variables
+    list_media_ids = set()  # to track the media ids already included in the context, to avoid duplicates.
+    user_reviews = set()
+    user_watchlist = set()
+    # list of the sample media being displayed
+    recent_movies = None
+    upcoming_movies = None
+    random_movies = None
+    ongoing_series = None
+    new_series = None
+    random_series = None
+    movies_count = None
+    series_count = None
+
     try:
         # to display movies & series that are coming soon or recently released
         today = datetime.date.today()
@@ -54,14 +68,7 @@ def home(request):
         )  # Monday of the current week
         week_end = week_start + datetime.timedelta(days=6)  # Sunday of the current week
 
-        recent_movies = None
-        upcoming_movies = None
-        random_movies = None
-        ongoing_series = None
-        new_series = None
-        random_series = None
-        movies_count = None
-        series_count = None
+
 
         # display the amount of Movies & Series available from the database
         series_count = Media.objects.filter(media_type='serie').count()
@@ -126,7 +133,6 @@ def home(request):
             .order_by("?")[:12]
         )
 
-        # if Serie.objects.exists():
 
         ongoing_series = (
             Media.objects.filter(
@@ -144,6 +150,8 @@ def home(request):
             .order_by("?")[:12]
         )
 
+
+
         new_series = (
             Media.objects.filter(
                 media_type='serie',
@@ -153,10 +161,12 @@ def home(request):
             .order_by("?")[:12]
         )
 
+
         # Perhaps remove later and create a one Random pick media sample
         random_series = Media.objects.filter(media_type='serie').only(
             "id", "title", "genre", "vote_average", "vote_count", "poster_images", "slug"
         ).order_by("?")[:12] 
+
 
         # ------ add side content , from other user's Watchlist or like movies/series ------
         discover_media = []  # list to hold the media saved in watchlist from other users
@@ -168,6 +178,7 @@ def home(request):
         else:
             # list to hold any watchlist instances
             discover_list = WatchList.objects.all().order_by("?")[:12].select_related("media")
+
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
@@ -183,6 +194,7 @@ def home(request):
                     "slug": media_obj.slug,
                     "type": media_obj.media_type,
                     })
+                # list_media_ids.add(media_obj.pk)
 
         # print(f"discover_media: {discover_media[0:2]}\n") # debug print
 
@@ -202,23 +214,22 @@ def home(request):
             "series_count": series_count,
             'watchlist_form': watchlist_form,
             'review_form': review_form
-
         }
 
         if request.user.is_authenticated:
             # --------- Get the user's watchlist content (movies, series)  -----------
             user = request.user
-            print(f"user: {user}\n")  # debug print
+            # print(f"user: {user}\n")  # debug print
 
             watchlist = WatchList.objects.filter(user=user).select_related("media")
             print(f"user's Watchlist:\n{watchlist[:3]}...\n")  # debug print
 
-            watchlist_content = []
+            watchlist_media = []
             # initialize the list watchlist sample
             for item in watchlist.order_by("?")[:12]:
                 media_obj = item.media
                 if media_obj:
-                    watchlist_content.append({
+                    watchlist_media.append({
                         "title": media_obj.title, 
                         "id": media_obj.pk, 
                         "genre": media_obj.render_genre(), 
@@ -229,21 +240,24 @@ def home(request):
                         "type": media_obj.media_type,
                         })
 
-            # Get a set of the watchlist media_id to check if media list items exist. 
-            user_watchlist = set(
-                watchlist.filter(user=request.user.id).values_list("media_id", flat=True)
-            )
+            # Collect the media ids to check if user has watchlist or reviews
+            for qs in (recent_movies, upcoming_movies, random_movies, 
+                       ongoing_series, new_series, random_series):
+                list_media_ids.update(media.pk for media in qs)
 
-            # -------- Get the user's reviewed media  ----------
-            user_reviews = set(
-                Review.objects.filter(user=user).values_list("media_id", flat=True)
-            )
+            list_media_ids.update(media["id"] for media in discover_media)
+            list_media_ids.update(media["id"] for media in watchlist_media)
+            print(f"\n --length media: {len(list_media_ids)}\n")
+
+                # -------- Check if the user media exist in the watchlist/review of current user --------
+            user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)
+            user_reviews = get_user_review(request.user.pk, media_ids=list_media_ids)
 
             context.update(
                 {
                     "user_reviews": user_reviews,
                     "user_watchlist": user_watchlist,
-                    "watchlist_content": watchlist_content,
+                    "watchlist_content": watchlist_media,
                 }
             )
 
