@@ -219,6 +219,8 @@ def media_list(request, media_type):
                     cache.set(key=cache_key, value=list_media_cards, timeout=3600)
                 elif page_num > 5 and page_num >= 10:
                     cache.set(key=cache_key, value=list_media_cards, timeout=600)
+                elif page_num > 10 and page_num >= 15:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=300)
 
             print(f"Cache setup for:\n{cache_key}")
 

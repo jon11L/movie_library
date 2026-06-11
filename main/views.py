@@ -157,7 +157,7 @@ def home(request):
             }
 
             # Set further timing when correctly setup
-            cache.set(key='home_samples_media', value=shared, timeout=18000)
+            cache.set(key='home_samples_media', value=shared, timeout=1800)
 
         else:
             print('Cache is set up for home samples media.\n')
