@@ -86,7 +86,7 @@ def media_list(request, media_type):
     user_watchlist = set()
     user_reviews = set()
     list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
-
+    cache_key = None
 
     MEDIA_FIELDS = [
         "id",
@@ -194,13 +194,42 @@ def media_list(request, media_type):
 
             # -- Set or create Cache for list media with media_type, page, sort-by --
             page_num = page_obj.number
-            cache_key = f"media_list_{media_type}_{sel_order}_p{page_num}"
-            list_media = cache.get(cache_key)
 
-            # If caching is empty, then set it with the media_cards requested
-            if list_media is None:
-                print(f"\nNo cache set up for {media_type} -- Setting up** \n")
+            if page_num < 15:
+                cache_key = f"media_list_{media_type}_{sel_order}_p{page_num}"
+                list_media = cache.get(cache_key)
 
+                # If caching is empty, then set it with the media_cards requested
+                if list_media is None:
+                    print(f"\nNo cache set up for {media_type} -- Setting up** \n")
+
+                    for item in page_obj:
+                        list_media_cards.append({
+                            "id": item.pk, 
+                            "title": item.title,
+                            # below will be use to display the year on the media_card
+                            "release_date": item.release_date.year if item.release_date else None, 
+                            "genre": item.render_genre(), 
+                            "render_vote_average": item.render_vote_average(), 
+                            "vote_count": item.vote_count, 
+                            "render_poster": item.render_poster(),
+                            "slug": item.slug,
+                            "type": item.media_type,
+                            })
+
+                    if page_num <= 5:
+                        cache.set(key=cache_key, value=list_media_cards, timeout=3600)
+                    elif page_num > 5 and page_num <= 10:
+                        cache.set(key=cache_key, value=list_media_cards, timeout=600)
+                    elif page_num > 10 and page_num <= 15:
+                        cache.set(key=cache_key, value=list_media_cards, timeout=300)
+
+                print(f"Cache setup for:\n{cache_key}")
+                # list_media = cache.get(cache_key)
+            
+            else:
+                # page over 15, not setting up cache
+                print(f"Over page 15. Not setting cache on this.")
                 for item in page_obj:
                     list_media_cards.append({
                         "id": item.pk, 
@@ -214,15 +243,9 @@ def media_list(request, media_type):
                         "slug": item.slug,
                         "type": item.media_type,
                         })
-                
-                if page_num <= 5:
-                    cache.set(key=cache_key, value=list_media_cards, timeout=3600)
-                elif page_num > 5 and page_num >= 10:
-                    cache.set(key=cache_key, value=list_media_cards, timeout=600)
-                elif page_num > 10 and page_num >= 15:
-                    cache.set(key=cache_key, value=list_media_cards, timeout=300)
 
-            print(f"Cache setup for:\n{cache_key}")
+            # Send the list of media either from direct looping or from caching set up.
+            list_media = cache.get(cache_key) if cache.get(cache_key) != None else list_media_cards
 
             # present the watchlist and review form in the modal,
             #  when not logged in, will display a message to invite user to register/log in
@@ -236,8 +259,8 @@ def media_list(request, media_type):
                 'query_sort_url': query_sort_url, # send the url parameters for sort-by
                 'current_order': sel_order,
                 'base_url': base_url,
-                # 'list_media': list_media,
-                'list_media': cache.get(cache_key),
+                'list_media': list_media,
+                # 'list_media': cache.get(cache_key),
                 "media_type": media_type.capitalize(),
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
@@ -258,7 +281,7 @@ def media_list(request, media_type):
 
             if request.user.is_authenticated:
                 # Collect the media ids to check if user has watchlist or reviews
-                list_media_ids.update(media["id"] for media in cache.get(cache_key))
+                list_media_ids.update(media["id"] for media in list_media)
                 print(f"\n --length media: {len(list_media_ids)}\n")
 
                 # Retrieve the ids that are with the request.user watchlist and reviews.
@@ -302,6 +325,7 @@ def media_detail(request, slug):
     '''
     try:
         if Media:
+            # Fetch the media and it's related model for extra fields
             media = Media.objects.select_related("movie", "serie").get(slug=slug)
 
             # get the comments related to the media
