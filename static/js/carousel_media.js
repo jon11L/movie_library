@@ -1,12 +1,11 @@
+let hoverTimer = null;
+
 document.querySelectorAll('.carousel-card .media-card').forEach(card => {
     // initialize hover timer
-    let hoverTimer = null;
 
     card.addEventListener('mouseenter', () => {
         // Cancel any pending timer from a previous card
         clearTimeout(hoverTimer);
-
-        // console.log('card being hovered')
 
         // Set a timer befor the hovered transition/animation starts
         hoverTimer = setTimeout(() => {
@@ -28,10 +27,10 @@ document.querySelectorAll('.carousel-card .media-card').forEach(card => {
             card.classList.remove('is-hovered');
         }
             else {
+                clearTimeout(hoverTimer); // cancel if moved away before 2s
                 hoverTimer = setTimeout(() => {
                     card.classList.add('is-hovered');
                 }, 1250);
-
             }
     });
 
