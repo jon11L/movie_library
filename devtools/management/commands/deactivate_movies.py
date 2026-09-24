@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from movie.models import Movie
+from media_library.models import Media
 
 class Command(BaseCommand):
     help = "Delete selected movies from the database"
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         black_list_ids = [
             # Add the list of movie IDs or titles you want to delete
             # using the id
-
+            
         ]
 
         # from this list of ID, get the TMDB_ID and store them into a new file. 
@@ -23,12 +23,12 @@ class Command(BaseCommand):
         deactivated = 0
         for id in black_list_ids:
             try:
-                movie = Movie.objects.get(pk=id)
+                media = Media.objects.get(pk=id)
                 print("-------------\n")
-                print(f"Deactivating movie: {movie.title} -- ID: {movie.pk}")
-                print(f"\nDescription: {movie.overview}")
-                print(f"Tagline:{movie.tagline}")
-                print(f"is_active:{movie.is_active}")
+                print(f"Deactivating media: {media.title} -- ID: {media.pk}")
+                print(f"\nDescription: {media.overview}")
+                print(f"Tagline:{media.tagline}")
+                print(f"is_active:{media.is_active}")
                 
                 # input_confirmation = input("\nAre you sure you want to delete this movie? (y/n): ")
                 input_confirmation = input("\nAre you sure you want to deactivate this movie? (y/n): ")
@@ -37,23 +37,23 @@ class Command(BaseCommand):
 
                 if input_confirmation.lower() == 'y':
                     # self.stdout.write(self.style.SUCCESS(f'Deletion for movie: {movie.title}'))
-                    self.stdout.write(self.style.SUCCESS(f'Deactivated movie: {movie.title}'))
-                    movie.is_active = False
-                    movie.save()
+                    self.stdout.write(self.style.SUCCESS(f'Deactivated movie: {media.title}'))
+                    media.is_active = False
+                    media.save()
                     # movie.delete()
                     # self.stdout.write(self.style.WARNING(f'Successfully deleted movie: {id}'))
-                    self.stdout.write(self.style.WARNING(f'Successfully deactivated movie: {id} -- active? {movie.is_active} '))
+                    self.stdout.write(self.style.WARNING(f'Successfully deactivated media: {id} -- active? {media.is_active} '))
                     deactivated += 1
                 elif input_confirmation.lower() == 'n':
-                    self.stdout.write(self.style.SUCCESS(f'Skipping deletion for movie: {movie.title}'))
+                    self.stdout.write(self.style.SUCCESS(f'Skipping deletion for movie: {media.title}'))
 
 
-            except Movie.DoesNotExist:
+            except Media.DoesNotExist:
                 self.stdout.write(self.style.ERROR(f'Movie not found: {id}'))
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f'Error deleting movie {id}: {str(e)}'))
+                self.stdout.write(self.style.ERROR(f'Error deleting media {id}: {str(e)}'))
 
-        print(f"Deactivated {deactivated} movies.")
+        print(f"Deactivated {deactivated} media.")
 
 
 # tmdb_id of the movies that i deleted or do not want on my database
