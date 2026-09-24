@@ -121,6 +121,7 @@ def media_list(request, media_type):
                 ('highest rating', '-vote_average'),
             )
 
+            # ========== Getting the current Url query parameter  ==========================
             query_params = request.GET.copy()
             print(f"-- Query params: {query_params}\n")  # Debug print
 
@@ -137,7 +138,6 @@ def media_list(request, media_type):
             print(f"selected order: {sel_order}")
             # send the url parameters for sort-by, to keep the selection when user change page
             query_sort_url = query_params.urlencode() 
-
 
             if media_type == 'movies':
                 media = (
@@ -195,46 +195,19 @@ def media_list(request, media_type):
             # -- Set or create Cache for list media with media_type, page, sort-by --
             page_num = page_obj.number
 
-            if page_num < 15:
-                cache_key = f"media_list_{media_type}_{sel_order}_p{page_num}"
-                list_media = cache.get(cache_key)
+            # if page_num < 15:
+            cache_key = f"media_list_{media_type}_{sel_order}_p{page_num}"
+            list_media = cache.get(cache_key)
 
-                # If caching is empty, then set it with the media_cards requested
-                if list_media is None:
-                    print(f"\nNo cache set up for {media_type} -- Setting up** \n")
+            # If caching is empty for page < 15 , then set it with the media_cards requested
+            if list_media is None:
+                print(f"\nNo cache set up for {media_type} p.{page_num}")
 
-                    for item in page_obj:
-                        list_media_cards.append({
-                            "id": item.pk, 
-                            "title": item.title,
-                            # below will be use to display the year on the media_card
-                            "release_date": item.release_date.year if item.release_date else None, 
-                            "genre": item.render_genre(), 
-                            "render_vote_average": item.render_vote_average(), 
-                            "vote_count": item.vote_count, 
-                            "render_poster": item.render_poster(),
-                            "slug": item.slug,
-                            "type": item.media_type,
-                            })
-
-                    if page_num <= 5:
-                        cache.set(key=cache_key, value=list_media_cards, timeout=3600)
-                    elif page_num > 5 and page_num <= 10:
-                        cache.set(key=cache_key, value=list_media_cards, timeout=600)
-                    elif page_num > 10 and page_num <= 15:
-                        cache.set(key=cache_key, value=list_media_cards, timeout=300)
-
-                print(f"Cache setup for:\n{cache_key}")
-                # list_media = cache.get(cache_key)
-            
-            else:
-                # page over 15, not setting up cache
-                print(f"Over page 15. Not setting cache on this.")
                 for item in page_obj:
                     list_media_cards.append({
                         "id": item.pk, 
                         "title": item.title,
-                        #below will be use to display the year on the media_card
+                        # below will be use to display the year on the media_card
                         "release_date": item.release_date.year if item.release_date else None, 
                         "genre": item.render_genre(), 
                         "render_vote_average": item.render_vote_average(), 
@@ -244,8 +217,27 @@ def media_list(request, media_type):
                         "type": item.media_type,
                         })
 
-            # Send the list of media either from direct looping or from caching set up.
-            list_media = cache.get(cache_key) if cache.get(cache_key) != None else list_media_cards
+                if page_num <= 15:
+                    print(f"** Setting up Cache for {cache_key}: **")
+
+                if page_num <= 5:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=3600)
+                elif page_num > 5 and page_num <= 10:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=600)
+                elif page_num > 10 and page_num <= 15:
+                    cache.set(key=cache_key, value=list_media_cards, timeout=300)
+
+                # Prooful, even if cache fail to load for some reason, data from list_media_cards used
+                list_media = (
+                    cache.get(cache_key)
+                    if cache.get(cache_key) != None
+                    else list_media_cards
+                )
+
+            else:
+                print(f'Cache already set up, key: {cache_key}')
+
+            print(f'list_media: {list_media[0:1]}')
 
             # present the watchlist and review form in the modal,
             #  when not logged in, will display a message to invite user to register/log in
@@ -260,7 +252,6 @@ def media_list(request, media_type):
                 'current_order': sel_order,
                 'base_url': base_url,
                 'list_media': list_media,
-                # 'list_media': cache.get(cache_key),
                 "media_type": media_type.capitalize(),
                 'watchlist_form': watchlist_form,
                 'review_form': review_form,
