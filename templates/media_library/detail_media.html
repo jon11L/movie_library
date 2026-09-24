@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/detail_media.css' %}">
+{% endblock %}
+
 {% block content %}
 
     <div class="custom-wide">
@@ -39,17 +43,26 @@
 
                     <section id="media-detail-section">
 
-                        <div class="background-media-img rounded" style="background-image: url('{{ media.render_banner }}');">
+                        <!-- <div class="background-media-img rounded"> -->
+                            <div class="banner-image-wrapper">
 
-                            <!-- <div class="banner" style="width: fit-content; ">
-                                {% if movie.banner_images %}
-                                <img src="{{ movie.render_banner }}" class="img-fluid rounded" style="width: max-content; height: max-content;" alt="Profile photo">
+                                {% if media.render_banner %}
+                                <!-- <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 383)" aria-label="Scroll left">
+                                    &#8249;
+                                </button> -->
+
+                                <!-- <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.nextElementSibling, 383)" aria-label="Scroll left">
+                                    &#8250;
+                                </button> -->
+
+                                <img src="{{ media.render_banner }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
                                 {% else %}
-                                <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded" style="width: 1280px; height: 720px;" alt="Profile photo">
+
+
+                                <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded detail-banner-img" alt="Default banner">
                                 {% endif %}
-                            </div> -->
-                        
-                            <div class="detail-vote-buttons">
+
+                                <div class="detail-vote-buttons">
                             
                                 <p class="detail-vote-avg-count">
                                     {{ media.render_vote_average }}/10 ({{media.vote_count}} votes)
@@ -67,7 +80,7 @@
                             
 
                                     <!-- reviews button feature -->
-                                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0;";
+                                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0"
                                         data-id="{{ media.id }}"
                                         data-title="{{ media.title|slice:':45'}}"
                                         data-reviewed="{% if media.id in user_reviews %}true{% else %}false{% endif %}">
@@ -78,10 +91,11 @@
                                     </button>
                                 </div>
                             
+                                </div>
                             </div>
 
-                            <!-- To give space between the backcground image and the next parts -->
-                            <div class="banner-space"></div>
+                            <!-- To give space between the background image and the next parts -->
+                            <!-- <div class="banner-space"></div> -->
 
                             <div class="row">
                                 <!-- ROW 1 = Poster/title/tagline/overview -->
@@ -111,10 +125,10 @@
                                         
                                     </div>
                                 
-                                    <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-0">
-                                        <p class="card-text"><strong>Overview:</strong></p>
+                                    <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-2">
+                                        <strong>Overview:</strong>
                                         {% if media.overview %}
-                                        <p style="min-height: 100px; max-height: 200px; overflow-y: auto; padding: 0 0.5rem 0 0.5rem;">{{ media.overview }}</p>
+                                        <p style="">{{ media.overview }}</p>
                                         {% else %}
                                         <p>No description available.</p>
                                         {% endif %}
@@ -195,6 +209,7 @@
                                             
                                             <!-- if Media is a Movie -->
                                             {% if media.media_type == 'movie' %}
+                                            {% if director != writer %}
 
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="margin: 0;"><strong>director:</strong></p>
@@ -203,6 +218,11 @@
                                             
                                             <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
                                                 <p style="margin: 0;"><strong>Writer:</strong></p>
+                                                <p>{{ writer }}</p>
+                                            </li>
+                                            {% elif director == writer %}
+                                            <li class="list-group-item" style="padding: 0.5em 0.5em 0 0.5em; margin: 0;">
+                                                <p style="margin: 0;"><strong>Director & Writer:</strong></p>
                                                 <p>{{ writer }}</p>
                                             </li>
                                             {% endif %}
@@ -215,6 +235,7 @@
                                                 <p>{{ created_by }}</p>
                                             </li>
                                             {% endif %}
+                                            {% endif %}
 
                                         </ul>
                                     </div>
@@ -224,12 +245,13 @@
                             </div>
                             <!-- End of rows -->
                             
-                        </div>
+                        <!-- </div> -->
 
                     </section>
 
                     <section id="trailers">
-                        {% if movie.trailers %}
+                        {% if media.media_type == 'movie' %}
+                        {% if media.movie.trailers %}
 
                         <div style="text-align: center; margin: auto; padding-top: 1rem; width: fit-content;">
                             <h5 style="color: inherit; border-bottom: solid 1px black; margin-left: auto;">Trailers:</h5>
@@ -241,7 +263,7 @@
                             <div class="display-trailer">
 
     
-                                {% for trailer in movie.trailers|slice:"0:4" %}
+                                {% for trailer in media.movie.trailers|slice:"0:4" %}
                                 
                                 <div class="trailer-wrapper">
                                     <iframe 
@@ -257,6 +279,8 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% endif %}
+
                     </section>
 
 
