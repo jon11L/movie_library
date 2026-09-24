@@ -56,4 +56,6 @@ correct_trailers.py
 add_status_watchlist.py
 # import_data/management/commands/
 
+devtools/management/commands/migrate_likes_to_review.py
+
 api_test.py
