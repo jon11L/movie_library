@@ -20,6 +20,7 @@
 
 .banner-image-wrapper {
     position: relative;
+    
 }
 
 .background-media-img .detail-banner-img {
@@ -28,6 +29,58 @@
     display: block;
     object-fit: cover;
 }
+
+.banners-img-list {
+    display: flex; 
+    gap: 4px; 
+    justify-content: right; 
+    margin-right: 2rem;
+    padding: 0;
+    margin-left: auto;
+    /* flex-wrap: wrap; */
+}
+
+.banners-img-list div{
+    border: solid 2px black; 
+    border-radius: 0.5em; 
+    opacity: 0.6;
+}
+
+@media (max-width: 474px) {
+    .banners-img-list {
+        gap: 2px;
+        margin-top: -3rem; 
+        margin-right: 0.1rem;
+        /* max-width: 250px; */
+    }
+    .banners-img-list div {
+        width: 70px;
+    }
+}
+
+@media (min-width: 475px) {
+    .banners-img-list {
+        gap: 3px;
+        margin-top: -4.5rem; 
+        margin-right: 0.25rem;
+    }
+    .banners-img-list div {
+        width: 115px;
+    }
+}
+
+@media (min-width: 1220px) {
+    .banners-img-list {
+        margin-top: -5.25rem; 
+        margin-right: 1rem;
+    }
+    .banners-img-list div {
+        width: 140px;
+    }
+}
+
+/* Create an overflow for the banner imgs in small screens */
+
 
 .detail-media-user-btns {
     display: inline-flex;

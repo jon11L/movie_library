@@ -46,50 +46,58 @@
                         <!-- <div class="background-media-img rounded"> -->
                             <div class="banner-image-wrapper">
 
-                                {% if media.render_banner %}
+                                {% if media.render_banner  %}
                                 <!-- <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 383)" aria-label="Scroll left">
                                     &#8249;
                                 </button> -->
 
-                                <!-- <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.nextElementSibling, 383)" aria-label="Scroll left">
+                                <img src="{{ media.render_banner }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
+                                
+                                <div class="banners-img-list">
+                                    {% for banners in media.banner_images %}
+                                    <div>
+                                        <img src="https://image.tmdb.org/t/p/w1280/{{ banners }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+
+                                <!-- <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.nextElementSibling, 383)" aria-label="Scroll right">
                                     &#8250;
                                 </button> -->
 
-                                <img src="{{ media.render_banner }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
                                 {% else %}
-
-
                                 <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded detail-banner-img" alt="Default banner">
                                 {% endif %}
 
                                 <div class="detail-vote-buttons">
                             
-                                <p class="detail-vote-avg-count">
-                                    {{ media.render_vote_average }}/10 ({{media.vote_count}} votes)
-                                </p>
-                            
-                                <div class="detail-media-user-btns">
-                                    <!-- watchlist button feature -->
-                                    <button class="watchlist-button" 
-                                        data-type="{% if media.media_type == 'movies' %}movie{% else %}serie{% endif %}" 
-                                        data-id="{{ media.id }}" 
-                                        data-title="{{ media.title }}"
-                                        data-bookmarked="{% if media.id in user_watchlist %}true{% else %}false{% endif %}">
-                                        <i class="{% if media.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
-                                    </button>
-                            
+                                    <p class="detail-vote-avg-count">
+                                        {{ media.render_vote_average }}/10 ({{media.vote_count}} votes)
+                                    </p>
+                                
+                                    <div class="detail-media-user-btns">
+                                        <!-- watchlist button feature -->
+                                        <button class="watchlist-button" 
+                                            data-type="{% if media.media_type == 'movies' %}movie{% else %}serie{% endif %}" 
+                                            data-id="{{ media.id }}" 
+                                            data-title="{{ media.title }}"
+                                            data-bookmarked="{% if media.id in user_watchlist %}true{% else %}false{% endif %}">
+                                            <i class="{% if media.id in user_watchlist %}fa fa-bookmark {% else %}far fa-bookmark {% endif %}"></i>
+                                        </button>
+                                    
 
-                                    <!-- reviews button feature -->
-                                    <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0"
-                                        data-id="{{ media.id }}"
-                                        data-title="{{ media.title|slice:':45'}}"
-                                        data-reviewed="{% if media.id in user_reviews %}true{% else %}false{% endif %}">
-                                        <i class="{% if media.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
-                                            aria-hidden="true"
-                                            style="color: rgb(51, 98, 99);">
-                                        </i>
-                                    </button>
-                                </div>
+                                        <!-- reviews button feature -->
+                                        <button class="review-button" style="border: none; background-color: inherit; padding: 0.15rem 0.25rem 0 0"
+                                            data-id="{{ media.id }}"
+                                            data-title="{{ media.title|slice:':45'}}"
+                                            data-reviewed="{% if media.id in user_reviews %}true{% else %}false{% endif %}">
+                                            <i class="{% if media.id in user_reviews %}fas fa-star fa-lg{% else %}far fa-star fa-lg{% endif %}" 
+                                                aria-hidden="true"
+                                                style="color: rgb(51, 98, 99);">
+                                            </i>
+                                        </button>
+                                    </div>
                             
                                 </div>
                             </div>
@@ -128,7 +136,7 @@
                                     <div class="media-overview-detail col-11 col-md-12 mx-auto mt-3 mt-md-5 mb-3 mb-md-2">
                                         <strong>Overview:</strong>
                                         {% if media.overview %}
-                                        <p style="">{{ media.overview }}</p>
+                                        <p>{{ media.overview }}</p>
                                         {% else %}
                                         <p>No description available.</p>
                                         {% endif %}
