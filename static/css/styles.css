@@ -538,7 +538,7 @@ Need to reorganize the name or call a parent custom class
 /* behind the poster image */
 .watchlist-button {
     anchor-name: --my-watchlist-btn;
-    padding: 0.15rem 0.35rem 0.1rem 0.35rem;
+    padding: 0.15rem 0.35rem 0.05rem 0.35rem;
     cursor: pointer;
     transition: transform 0.5s, background-color 1s;
     border-radius: 0.25em;
@@ -559,6 +559,13 @@ Need to reorganize the name or call a parent custom class
     opacity: 1;
     /* z-index: 5; */
     background-color: whitesmoke;
+}
+
+
+@media (max-width: 767px) {
+.watchlist-button {
+    padding: 0.2rem 0.35rem 0rem 0.35rem;
+}
 }
 
 /* Prepare the Watchlist form as a popover/modal */

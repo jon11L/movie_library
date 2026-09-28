@@ -126,9 +126,9 @@ class Media(BaseModel):
             else:
                 banner = f"https://image.tmdb.org/t/p/w1280{self.banner_images[0]}"  # for a width1280
             return banner
-        return static(
-            "images/default_banner_photo.jpg"
-        )  # default banner image if None set.
+        # return static(
+        #     "images/default_banner_photo.jpg"
+        # )  # default banner image if None set.
         # as it uses as a background image on the frontend.
 
     def render_poster(self):
