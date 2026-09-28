@@ -314,6 +314,8 @@ def media_detail(request, slug):
     - Check if logged user has a watchlist or like entry with this Media
     - add the comment form and list entries with reference to that Media. 
     '''
+
+    
     try:
         if Media:
             # Fetch the media and it's related model for extra fields
@@ -323,10 +325,9 @@ def media_detail(request, slug):
             comments = media.comments.all().order_by('-created_at')
             print(f"\nNumber of comments: {(comments.count())}")
 
+            watchlist_form = WatchListForm() # open modal form When user click icon btn
+            review_form = ReviewForm() # same as above
             comment_form = CommentForm() # present the Comment block form
-            # present the watchlist form in the modal When user click 
-            watchlist_form = WatchListForm() 
-            review_form = ReviewForm()
 
             context = {
                 'media': media,

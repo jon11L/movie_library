@@ -9,21 +9,83 @@
 } */
 
 /* Banner image wrapper for the detail page */
-.background-media-img {
+/* .background-media-img {
     background-repeat: no-repeat; 
     background-size: contain; 
     position: relative;
     width: 100%;
     max-width: 100%;
-    /* overflow: scroll; */
-}
+    overflow: scroll;
+} */
 
 .banner-image-wrapper {
     position: relative;
+    width: unset;
     
 }
 
-.background-media-img .detail-banner-img {
+.banner-arrow {
+    position: absolute;
+    top: 50%;
+    flex-shrink: 0;
+    
+    /* background-color: rgb(89, 85, 85); */
+    background-color: rgba(30, 28, 28, 0.55);
+    border: solid black 1px;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    font-size: xx-large;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.35rem;
+    z-index: 5;
+    transition: background-color 0.3s ease;
+    transition: transform 0.5s ease-in;
+    opacity: 45%;
+    backdrop-filter: blur(4px);
+    color: whitesmoke;
+} 
+
+
+.banner-arrow span {
+    opacity: 100%;
+}
+
+
+.banner-arrow:hover  {
+    background-color: rgb(85, 82, 82);
+    color: rgb(224, 185, 57);
+    border: solid 1px rgb(224, 185, 57);
+    transform: scale(1.4);
+    opacity: 95%;
+}
+
+.banner-arrow--left {
+    padding-right: 2px;
+    position: absolute;
+    z-index: 5;
+    left: 4px;
+}
+.banner-arrow--right {
+    padding-left: 2px;
+    position: absolute;
+    z-index: 5;
+    right: 4px;
+}
+
+.banner-arrow--left:hover {
+    left: 0.3rem;
+}
+.banner-arrow--right:hover {
+    right: 0.3rem;
+}
+
+
+.detail-banner-img {
     width: 100%;
     height: auto;
     display: block;
@@ -34,17 +96,32 @@
     display: flex; 
     gap: 4px; 
     justify-content: right; 
-    margin-right: 2rem;
+    /* margin-right: 2rem; */
     padding: 0;
-    margin-left: auto;
+    /* margin-left: auto; */
     /* flex-wrap: wrap; */
+    /* overflow: scroll; */
+    /* position: absolute; */
+    /* top: 45%; */
+    /* right: 0%; */
+    
 }
 
-.banners-img-list div{
+
+.banner-thumb {
+    cursor: pointer;
+    transition: outline 0.4s ease, opacity 0.4s ease;
     border: solid 2px black; 
     border-radius: 0.5em; 
     opacity: 0.6;
 }
+
+.banner-thumb.active {
+    /* display: none; */
+    outline: 2px solid rgb(224, 185, 57);
+    opacity: 1;
+}
+
 
 @media (max-width: 474px) {
     .banners-img-list {
@@ -69,6 +146,13 @@
     }
 }
 
+
+@media (max-width: 768px) {
+    .banner-arrow {
+        top: 40%;
+    }
+}
+
 @media (min-width: 1220px) {
     .banners-img-list {
         margin-top: -5.25rem; 
@@ -78,8 +162,6 @@
         width: 140px;
     }
 }
-
-/* Create an overflow for the banner imgs in small screens */
 
 
 .detail-media-user-btns {
@@ -103,12 +185,6 @@
     /* right: 0; */
 }
 
-@media (min-width: 768px) {
-    .detail-vote-buttons {
-        padding-top: 0.5rem;
-    }
-}
-
 
 /* ------ Media detail page ---- */
 .detail-vote-avg-count {
@@ -122,7 +198,7 @@
 
 
 
-/*  Rows below the banner img */
+/* -- Rows below the banner img -- */
 .media-info-row-1 {
     text-align: center;
 
@@ -143,8 +219,9 @@
 
 .detail-title-poster {
     text-align: center;
-    z-index: 6;
+    z-index: 4;
     margin-top: -25%;
+    pointer-events: none; 
 }
 
 .detail-poster {
@@ -267,14 +344,14 @@
 }
 
 .season-arrow--left {
-    padding-left: 4px;
+    padding-right: 2px;
     position: relative;
     z-index: 5;
     left: 20px;
     /* opacity: 75%; */
 }
 .season-arrow--right {
-    padding-right: 4px;
+    padding-left: 2px;
     position: relative;
     z-index: 5;
     right: 20px;
@@ -367,6 +444,11 @@
         width: 50%;
         margin: auto;
     }
+
+    .detail-vote-buttons {
+        padding: 0.5rem 0.5rem;
+    }
+
     .vote-average-detail {
         font-size: 90%;
     }

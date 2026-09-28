@@ -46,29 +46,41 @@
                         <!-- <div class="background-media-img rounded"> -->
                             <div class="banner-image-wrapper">
 
-                                {% if media.render_banner  %}
-                                <!-- <button class="carousel-arrow carousel-arrow--left" onclick="previousItems(this.nextElementSibling, 383)" aria-label="Scroll left">
-                                    &#8249;
-                                </button> -->
-
-                                <img src="{{ media.render_banner }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
-                                
-                                <div class="banners-img-list">
-                                    {% for banners in media.banner_images %}
-                                    <div>
-                                        <img src="https://image.tmdb.org/t/p/w1280/{{ banners }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
+                                <!-- <div> -->
+                                    
+                                    {% if media.render_banner  %}
+                                    <button class="banner-arrow banner-arrow--left" aria-label="Previous banner">
+                                        &#8249;
+                                    </button>
+                                    
+                                    <div class="background-media-img">
+                                        <img data-url="{{ media.render_banner }}" id="mainBannerImg" src="{{ media.render_banner }}" class="img-fluid rounded detail-banner-img" alt="{{ media.title }} banner">
                                     </div>
-                                    {% endfor %}
-                                </div>
+                                    
+                                    <div class="banners-img-list" id="bannerThumbList">
+                                        {% for banners in media.banner_images %}
+                                        <!-- {% if media.render_banner != 'https://image.tmdb.org/t/p/w1280{{ banners }}' %} -->
 
+                                            <div class="banner-thumb" data-full="https://image.tmdb.org/t/p/w1280{{ banners }}">
+                                                <img src="https://image.tmdb.org/t/p/w1280{{ banners }}" class="img-fluid rounded" alt="{{ media.title }} banner">
+                                            </div>
+                                        <!-- {% endif %} -->
+                                        {% endfor %}
+                                    </div>
+    
+    
+                                    <button class="banner-arrow banner-arrow--right" aria-label="Next banner">
+                                        &#8250;
+                                    </button>
+    
+    
+                                    {% else %}
+                                    <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded detail-banner-img" alt="Default banner">
+                                    
+                                    {% endif %}
+                                <!-- </div> -->
 
-                                <!-- <button class="carousel-arrow carousel-arrow--right" onclick="nextItems(this.nextElementSibling, 383)" aria-label="Scroll right">
-                                    &#8250;
-                                </button> -->
-
-                                {% else %}
-                                <img src="{% static 'images/default_banner_photo.jpg' %}" class="img-fluid rounded detail-banner-img" alt="Default banner">
-                                {% endif %}
+                                <!-- <div style="padding: 3rem;"></div> -->
 
                                 <div class="detail-vote-buttons">
                             
@@ -76,7 +88,7 @@
                                         {{ media.render_vote_average }}/10 ({{media.vote_count}} votes)
                                     </p>
                                 
-                                    <div class="detail-media-user-btns">
+                                    <di0v class="detail-media-user-btns">
                                         <!-- watchlist button feature -->
                                         <button class="watchlist-button" 
                                             data-type="{% if media.media_type == 'movies' %}movie{% else %}serie{% endif %}" 
@@ -97,7 +109,7 @@
                                                 style="color: rgb(51, 98, 99);">
                                             </i>
                                         </button>
-                                    </div>
+                                    </di0v>
                             
                                 </div>
                             </div>
@@ -388,6 +400,51 @@
 <script src="{% static 'js/create_comment.js' %}"></script>
 <script src="{% static 'js/edit_comment.js' %}"></script>
 <script src="{% static 'js/delete_comment.js' %}"></script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.querySelector('.banner-image-wrapper');
+    if (!wrapper) return; // no banner section rendered (media has no banner_images)
+
+    const mainImg   = wrapper.querySelector('#mainBannerImg');
+    const thumbs    = Array.from(wrapper.querySelectorAll('.banner-thumb'));
+    const leftArrow = wrapper.querySelector('.banner-arrow--left');
+    const rightArrow= wrapper.querySelector('.banner-arrow--right');
+
+    // const bannerUrl = mainImg.data('url');
+    // console.log(`the url banner: ${bannerUrl}`)
+    console.log(`the mainImg: ${mainImg.src}`)
+
+    console.log(`${thumbs}`)
+
+    if (!mainImg || thumbs.length === 0) return;
+
+    let currentIndex = thumbs.findIndex(t => t.dataset.full === mainImg.src);
+    if (currentIndex === -1) currentIndex = 0;
+
+    function updateActiveThumb() {
+        thumbs.forEach((t, i) => t.classList.toggle('active', i === currentIndex));
+    }
+
+    function showBanner(index) {
+        // wrap around in both directions so prev/next cycle endlessly
+        currentIndex = (index + thumbs.length) % thumbs.length;
+        mainImg.src = thumbs[currentIndex].dataset.full;
+        updateActiveThumb();
+    }
+
+    leftArrow?.addEventListener('click', () => showBanner(currentIndex - 1));
+    rightArrow?.addEventListener('click', () => showBanner(currentIndex + 1));
+
+    thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => showBanner(i)));
+
+    updateActiveThumb(); // hide the initially-shown image from the thumb row on load
+});
+
+</script>
+
 
 {% if media.media_type == 'serie' %}
 <script>
