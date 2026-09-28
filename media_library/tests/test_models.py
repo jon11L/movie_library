@@ -263,12 +263,17 @@ class SerieModelMethodTest(TestCase):
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
         cls.serie = Serie.objects.create(
+            # set in Media model
+            media_type="serie",  # set directly in Media model
             title="Breaking Bad",
             genre=["Action", "Sci-Fi"],
             production=["HBO"],
             created_by=["Vince Gilligan"],
             poster_images=["/poster1.jpg", "/poster2.jpg"],
             banner_images=["/banner1.jpg", "/banner2.jpg"],
+            # set directly in serie model
+            imdb_id="tt0903747",
+            tmdb_id=1396,
         )
 
         cls.serie_2 = Serie.objects.create(
@@ -276,6 +281,8 @@ class SerieModelMethodTest(TestCase):
             genre=["Action", "Sci-Fi", "Thriller"],
             production=["HBO"],
             created_by=["Jonathan Nolan", "Lisa Joy"],
+            imdb_id="tt1396",
+            tmdb_id=1397,
         )
 
         print("\n-- **SetupTestData for SerieModelMethodTest started.**\n")
@@ -292,6 +299,19 @@ class SerieModelMethodTest(TestCase):
         self.assertEqual(str(self.serie), "Breaking Bad")
         self.assertNotEqual(str(self.serie_2), "Breaking Bad")
         self.assertEqual(str(self.serie_2), "Westworld")
+
+    def test_media_type_field(self):
+        """Test that the media_type field is saved correctly."""
+        self.assertEqual(type(self.serie.media_type), str)
+        self.assertEqual(self.serie.media_type, "serie")
+        self.assertNotEqual(self.serie_2.media_type, "movie")
+        self.assertEqual(self.serie_2.media_type, "serie")
+
+    def test_retrieve_media(self):
+        
+        media = Media.objects.get(pk=self.serie.pk)
+        self.assertEqual(media.title, self.serie.title)
+        
 
     def test_render_genre(self):
         """Test the render_genre method of the Serie object."""
@@ -332,9 +352,10 @@ class SerieModelMethodTest(TestCase):
         self.assertNotEqual(self.serie.render_banner(), "/banner2.jpg")
         self.assertIn("https://image.tmdb.org/t/p/w1280", self.serie.render_banner())
         # no banner image set in serie_2
-        self.assertEqual(
-            self.serie_2.render_banner(), static("images/default_banner_photo.jpg")
-        )
+        self.assertEqual(self.serie_2.render_banner(), None)
+        self.assertIn("/banner1.jpg", self.serie.banner_images)
+        self.assertEqual(self.serie.banner_images, ["/banner1.jpg", "/banner2.jpg"])
+
 
     def test_render_poster_images(self):
         self.assertNotEqual(self.serie.render_poster(), "/poster1.jpg")

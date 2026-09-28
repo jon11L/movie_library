@@ -26,11 +26,11 @@
 
 .banner-arrow {
     position: absolute;
-    top: 50%;
+    top: 40%;
     flex-shrink: 0;
     
     /* background-color: rgb(89, 85, 85); */
-    background-color: rgba(30, 28, 28, 0.55);
+    background-color: rgba(30, 28, 28, 0.25);
     border: solid black 1px;
     border-radius: 50%;
     width: 3rem;
@@ -43,25 +43,22 @@
     justify-content: center;
     padding-bottom: 0.35rem;
     z-index: 5;
-    transition: background-color 0.3s ease;
-    transition: transform 0.5s ease-in;
-    opacity: 45%;
-    backdrop-filter: blur(4px);
+    transition: transform 0.5s ease-in, opacity 0.6s ease, background-color 0.7s ease, backdrop-filter 0.5s ease-in-out;
     color: whitesmoke;
 } 
 
 
 .banner-arrow span {
-    opacity: 100%;
+    color: rgb(0, 0, 0, 0.8);  /* dark */
 }
 
-
 .banner-arrow:hover  {
-    background-color: rgb(85, 82, 82);
+    /* background-color: rgb(85, 82, 82); */
     color: rgb(224, 185, 57);
-    border: solid 1px rgb(224, 185, 57);
-    transform: scale(1.4);
+    border: solid 1px rgb(224, 185, 57, 0.75);
+    transform: scale(1.1);
     opacity: 95%;
+    backdrop-filter: blur(2px);
 }
 
 .banner-arrow--left {
@@ -77,12 +74,12 @@
     right: 4px;
 }
 
-.banner-arrow--left:hover {
+/* .banner-arrow--left:hover {
     left: 0.3rem;
 }
 .banner-arrow--right:hover {
     right: 0.3rem;
-}
+} */
 
 
 .detail-banner-img {
