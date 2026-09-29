@@ -1,8 +1,8 @@
 {% load static %}
 <!-- Display the content of a comment. -->
 <!-- Use to list existing ones and to place a new one -->
-<div id="comment-{{ comment.pk }}" class="card comment-block">
-    <div style="display: flex; justify-content: space-between; padding: 0.4rem 0 0.6rem 0; flex-wrap: wrap; background-color: black; border-top-left-radius: 0.2em; border-top-right-radius: 0.2em;">
+<div id="comment-{{ comment.pk }}" class="comment-block">
+    <div style="display: flex; justify-content: space-between; padding: 0.4rem 0 0.6rem 0; flex-wrap: wrap; background-color: #171623;; border-top-left-radius: 0.2em; border-top-right-radius: 0.2em;">
         <!-- Show user who posted the comment -->
         <div style="flex:0 0 42%;">
             <div class="d-flex" style="margin-left: 1%;">
@@ -29,12 +29,12 @@
     </div>
 
     <!-- Border to separate user info and comment -->
-    <div style="background-color: rgb(57, 56, 55);">
+    <div style="background-color: #171623;">
         <p style="width: 90%; margin: 0 auto; background-color: whitesmoke; border:rgb(216, 202, 202) solid 0.175rem; height: 3px; border-radius: 100%; position: relative; translate: 0 -50%;">
     </div>
 
 
-    <div  class="comment-text" style="display: flex; flex-wrap: wrap; justify-content:space-between; padding-top: 0.4rem; background-color: rgb(57, 56, 55); border-bottom-left-radius: 0.2em; border-bottom-right-radius: 0.2em;">
+    <div  class="comment-text" style="display: flex; flex-wrap: wrap; justify-content:space-between; padding: 0.4rem 0 1rem 0; background-color: #171623; border-bottom-left-radius: 0.2em; border-bottom-right-radius: 0.2em;">
         <!-- Comment Body here -->
         <div class="comment-body">
             <p class="mb-1 mb-md-3">{{ comment.body|linebreaksbr }}</p>
