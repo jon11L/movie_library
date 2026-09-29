@@ -1,52 +1,53 @@
-let hoverTimer = null;
+(function () {
+    
+    let hoverTimer = null;
+    const CARD = '.media-grid .media-card';
 
-document.querySelectorAll('.media-grid .media-card').forEach(card => {
-    // initialize hover timer
+    // true on mouse/trackpad devices, false on touch-only devices
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-    card.addEventListener('mouseenter', () => {
-        // Cancel any pending timer from a previous card
+    document.addEventListener('mouseover', (e) => {
+        if (!canHover.matches) return;  // ignore emulated mouse events on touch
+
+        const card = e.target.closest(CARD);
+        if (!card || card.contains(e.relatedTarget)) return;
+
         clearTimeout(hoverTimer);
-
-        // Set a timer befor the hovered transition/animation starts
-        hoverTimer = setTimeout(() => {
-            card.classList.add('is-hovered');
-            console.log(`mouse hover, adding attr: is-hovered`)
-        }, 0);
+        card.classList.add('is-hovered');
+        console.log(`mouse hover, adding attr: is-hovered`)
     });
 
-    // When mouse leave the hovered item. Reset all transition to 'normal'
-    card.addEventListener('mouseleave', () => {
+
+    document.addEventListener('mouseout', (e) => {
+        const card = e.target.closest(CARD);
+        if (!card || card.contains(e.relatedTarget)) return;
+
         clearTimeout(hoverTimer);
-        card.classList.remove('is-hovered');
-        card.classList.remove('is-active');
+        card.classList.remove('is-hovered', 'is-active');
         console.log(`remove cls attr: is-active & is-hovered`)
     });
 
-    // For mobile screen and click instead of hover 
-    // Also allow cancelling transition/animation on Larger screen when clickking on the hovered card
-    card.addEventListener("click", () => {
-        if (card.classList.contains("is-hovered")) {
-        // -- removing the is_active if clicked again --
-            if (card.classList.contains("is-active")) {
-                console.log(`class contains: is-active cls attr -- Removing attr.`);
-                // adding the 2nd step focus on an image, separating is-hovered with is-active
-                card.classList.remove("is-active");
 
-            // clearTimeout(hoverTimer);
-            // card.classList.remove('is-hovered');
+    // Click: mobile support + 2nd-step focus on desktop
+    document.addEventListener('click', (e) => {
+        const card = e.target.closest(CARD);
+        if (!card) return;
+
+        if (card.classList.contains('is-hovered')) {
+            if (card.classList.contains('is-active')) {
+                console.log(`class contains: is-active cls attr -- Removing attr.`);
+                card.classList.remove('is-active');
             } else {
-                clearTimeout(hoverTimer); // cancel if moved away before 2s
-                hoverTimer = setTimeout(() => {
-                card.classList.add("is-active");
+                clearTimeout(hoverTimer);
+                hoverTimer = setTimeout(() => card.classList.add('is-active'), 250);
                 console.log(`adding cls attr: is-active`);
-                }, 250);
             }
+
         } else {
-            clearTimeout(hoverTimer); // cancel if moved away before 2s
+            clearTimeout(hoverTimer);
+            hoverTimer = setTimeout(() => card.classList.add('is-hovered'), 250);
             console.log(`adding cls attr: is-hovered`);
-            hoverTimer = setTimeout(() => {
-                card.classList.add("is-hovered");
-            }, 1000);
         }
     });
-});
+    
+})();
