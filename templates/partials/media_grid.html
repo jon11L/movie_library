@@ -1,17 +1,16 @@
 {% load static %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'css/media_grid.css' %}">
+{% endblock %}
+
 <div class="row media-grid">
-
     {% for item in list_media %}
-
         {% include "partials/card_item.html" %}
-
     {% endfor %}
-
 </div>
 
 <!----- Pagination system ------->
 {% include "partials/paginator.html" %}
-
 
 <script src="{% static 'js/media_grid_animation.js' %}"></script>
