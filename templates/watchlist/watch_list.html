@@ -19,7 +19,7 @@
 
                 <div style="text-align: center; margin-bottom: 0.25rem;">
                     {% if request.user.username == user %}
-                    <h1 style="margin-bottom: 0;">Your watch list:</h1>
+                    <h1 style="margin-bottom: 0;">Your watchlist:</h1>
                     {% else %}
                     <h1 style="margin-bottom: 0;">{{ user }}'s watch list:</h1>
                     {% endif %}
@@ -58,5 +58,7 @@
         </div>
     </div>
 
+
+<script src="{% static 'js/media_grid_animation.js' %}"></script>
 
 {% endblock %}
