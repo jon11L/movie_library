@@ -1,6 +1,4 @@
-
 /* =============== Detail movie / Serie pages ================= */
-
 
 /* .banner {
     width: fit-content;
@@ -445,7 +443,6 @@
     .detail-vote-buttons {
         padding: 0.5rem 0.5rem;
     }
-
     .vote-average-detail {
         font-size: 90%;
     }
@@ -558,3 +555,73 @@
     margin-bottom: 10px;
 }
 
+
+
+
+/*  comment part */
+/* =================== Comment form / block entries ============================= */
+.comment-post-section, .comment-list-section {
+    width: 96%;
+    max-width: 900px;
+    margin: auto;
+}
+
+.comment-form {
+    background-color: black;
+    color: white;
+    border: 1px solid darkgray;
+    padding: 10px;
+    border-radius: 0.75em;
+}
+
+.comment-block {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 0.5em auto;
+    /* border: solid 4px rgb(21, 49, 49);  */
+    border-radius: 0.5em; 
+}
+
+.comment-body {
+    width: 94%; 
+    margin: auto;
+    text-align: left; 
+    padding-left: 0.25rem; 
+    color: antiquewhite;
+}
+
+.comment-buttons{
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto; 
+    padding: 0.25rem 0.25rem;
+    margin-left: auto; 
+    min-width: 3.25rem;
+    justify-content: right;
+    border: solid 1px lightgrey;
+    border-radius: 0.25em;
+    border-bottom: none; 
+    border-right: none;
+}
+
+.edit-comment-button i, .delete-comment-btn i {
+    color: lightgray;
+}
+
+.edit-comment-button i:hover, .delete-comment-btn i:hover {
+    transform: scale(1.2);
+}
+
+
+@media (max-width:475px) {
+    .comment-block .created-at p {
+        font-size: 94%;
+    }
+}
+
+@media (min-width:475px) {
+    .comment-body {
+        width: 90%; 
+        padding-left: 1rem; 
+    }
+}

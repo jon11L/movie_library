@@ -56,7 +56,7 @@ function initWatchlistForm() {
         // const contentType = button.data('type'); // e.g. Model 'serie'
         const objectId = button.data('id'); // primary key
         const icon = button.find('i');
-        const isExisting  = button.data('bookmarked') === true; // check if the instance already exist
+        const isExisting = button.data('bookmarked') === true; // check if the instance already exist
         const title = button.data('title'); // get the content title from the button data attribute to set the modal title
 
         // set the media title in the modal header
