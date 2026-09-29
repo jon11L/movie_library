@@ -1,0 +1,73 @@
+/* ==== Only for lists pages. Different from sample like home page. ==== */
+.media-grid {
+    justify-content: center;
+    border: solid grey 2px;
+    border-radius: 2em;
+    padding: 1.25rem 1.5% 1rem 1.5%;
+    gap: 0.75rem;
+}
+
+/* Only affect media card on list pages. */
+.media-grid .media-card{
+    transition: opacity 1.5s ease-in, transform 1.5s ease-in-out, filter 1.25s ease-in;
+    /* transition-delay: 0s; */
+    /* the effect need to go back sudden not 2s, where to ? */
+}
+
+/* create a delay before it happens if possible */
+/* .media-grid .media-card.is-hovered{
+    transform: translateY(4%) scale(1.125);
+    z-index: 4;
+    transition: transform 2.5s ease-in-out;
+} */
+
+/* Trying to add a 2 steps focus on the movie */
+.media-grid .media-card.is-active{
+    /* box-shadow: 0.25rem 0.25rem 0.25rem rgba(4, 100, 100, 0.2), -0.25rem -0.25rem 0.25rem wheat; */
+    transform: translateY(2%) scale(1.15);
+    z-index: 4;
+    transition: transform 2.2s ease-in-out;
+}
+
+/*  Try to darken all media card non hovered when one is  */
+/* .media-grid:has(.media-card.is-active) ~ .media-card:not(:hover){ */
+.media-grid:has(.media-card.is-active) .media-card:not(.is-hovered){
+    opacity: 0.3;
+    filter: blur(2px);
+    transition: opacity 2.5s ease-in, filter 2.5s ease-in;
+}
+
+@media (max-width: 475px) {
+    /* on Grid 2 per row */
+    .media-grid .media-card {
+        flex: 0 0 calc(50% - 0.6rem); 
+    }
+    .media-grid .media-card.is-active{
+        transform: translateY(4%) scale(1.1);
+    }
+}
+
+@media (min-width: 476px) {
+    .media-grid .media-card {
+        flex: 0 0 calc(33.33% - 0.75rem); 
+    }
+}
+
+@media (min-width: 768px) {
+    .media-grid .media-card {
+        flex: 0 0 calc(25% - 0.75rem); 
+    }
+}
+
+@media (min-width: 1224px) {
+    /* on grid 6 per row */
+    .media-grid .media-card {
+        flex: 0 0 calc(16% - 0.3rem); 
+    }
+}
+
+@media (min-width: 1440px) {
+    .carousel-card {
+        margin: 0 3rem;
+    }
+}
