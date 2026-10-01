@@ -65,9 +65,3 @@
         flex: 0 0 calc(16% - 0.3rem); 
     }
 }
-
-@media (min-width: 1440px) {
-    .carousel-card {
-        margin: 0 3rem;
-    }
-}

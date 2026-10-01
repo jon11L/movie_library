@@ -309,7 +309,7 @@ Need to reorganize the name or call a parent custom class
 
 .carousel-arrow {
     flex-shrink: 0;
-    background-color: rgb(89, 85, 85);
+    background-color: rgb(89, 85, 85, 0.15);
     border: solid black 1px;
     border-radius: 50%;
     width: 3rem;
@@ -323,24 +323,23 @@ Need to reorganize the name or call a parent custom class
     padding-bottom: 0.35rem;
     /* position: relative;
     z-index: 2; */
-    transition: background-color 0.3s ease;
-    transition: transform 0.5s ease-in;
-    opacity: 45%;
-    backdrop-filter: blur(4px);
+    transition: transform 0.5s ease-in, opacity 0.6s ease, background-color 0.7s ease, backdrop-filter 0.5s ease-in-out;
+    /* backdrop-filter: blur(4px); */
     color: whitesmoke;
 }
 
 .carousel-arrow span {
-    opacity: 100%;
+    color: rgb(0, 0, 0, 0.8);  /* dark */
 }
 
 
-.carousel-arrow:hover  {
-    background-color: rgb(85, 82, 82);
+.carousel-arrow:hover {
+    /* background-color: rgb(85, 82, 82); */
     color: rgb(224, 185, 57);
     border: solid 1px rgb(224, 185, 57);
-    transform: scale(1.4);
+    transform: scale(1.25);
     opacity: 95%;
+    backdrop-filter: blur(2px);
 }
 
 .carousel-arrow--left {
@@ -363,12 +362,12 @@ Need to reorganize the name or call a parent custom class
     right: 0.3rem;
 }
 
-.carousel-dots {
+/* .carousel-dots {
     display: flex;
     justify-content: center;
     gap: 0.4rem;
     margin-top: 0.5rem;
-}
+} */
 
 .carousel-arrow--hidden {
     opacity: 0%;
@@ -378,7 +377,7 @@ Need to reorganize the name or call a parent custom class
 
 
 /* ==== list & sample carousel media cards ==  */
-.media-card{
+.media-card {
     position: relative;
     /* overflow: hidden; */
     margin: 0.5rem 0;
@@ -392,7 +391,7 @@ Need to reorganize the name or call a parent custom class
     /* transition: transform 0.8s ease-in-out; */
 }
 
-.media-card:hover {
+.media-card.is-hovered {
     opacity: 1;
 }
 
@@ -400,16 +399,19 @@ Need to reorganize the name or call a parent custom class
 .carousel-card .media-card {
     /* flex: 0 0 calc(20.5% - 0.7rem); */
     scroll-snap-align: start; 
-    transition: opacity 0.8s ease-in, transform 0.8s ease-in-out;
+    transition: transform 1.2s ease-in-out, opacity 2s ease-in, filter 2s ease-in; 
+
 }
 
-.carousel-card .media-card.is-hovered {
-    transform: translateY(1%) scale(1.05);
+.carousel-card .media-card.is-active {
+    transform: translateY(1%) scale(1.075);
     z-index: 4;
 }
 /* Only target all siblings of the media being hovered */
-.carousel-card:has(.media-card.is-hovered) .media-card:not(.is-hovered){
-    opacity: 0.45;    
+.carousel-card:has(.media-card.is-active) .media-card:not(.is-hovered){
+    opacity: 0.45;
+    filter: blur(2px);
+    transition: opacity 2.5s ease-in, filter 2.5s ease-in; 
 }
 
 
@@ -452,7 +454,6 @@ Need to reorganize the name or call a parent custom class
         flex: 0 0 calc(33.33% - 0.5rem); 
     }
 }
-
 
 @media (min-width: 768px) {
     /* on Carousel 4 per row */
