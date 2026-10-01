@@ -18,10 +18,11 @@
 
 .banner-image-wrapper {
     position: relative;
-    width: unset;
+    /* width: unset; */
     
 }
 
+/* Carousel style + arrows navig for scrolling through banners */
 .banner-arrow {
     position: absolute;
     top: 40%;
@@ -208,9 +209,9 @@
 }
 
 /* Space left for the background image and poster/content below */
-.banner-space {
+/* .banner-space {
     height: 1rem;
-}
+} */
 
 .detail-title-poster {
     text-align: center;
@@ -229,6 +230,8 @@
     max-height: 200px;
     overflow-y: auto;
     padding: 0 0.5rem 0 0.5rem;
+    pointer-events:all; 
+
 }
 
 /* .media-overview-detail p::-webkit-scrollbar { */
