@@ -4,10 +4,33 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.templatetags.static import static
+from django.utils.text import slugify
 
 from core.models import BaseModel
 
 # Create your models here.
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
+
+
+    class Meta:
+        db_table            = "genre"
+        verbose_name        = "Genre"
+        verbose_name_plural = "Genres"
+        ordering            = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
 class Media(BaseModel):
 
     MOVIE = "movie"
@@ -21,6 +44,11 @@ class Media(BaseModel):
     overview = models.TextField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
     genre = models.JSONField(blank=True, null=True)  # will be a list of strings
+    genres = models.ManyToManyField(
+        'Genre',
+        related_name="media",
+        blank=True,
+    )
 
     release_date = models.DateField(blank=True, null=True)
     origin_country = models.JSONField(blank=True, null=True)  # list of strings
