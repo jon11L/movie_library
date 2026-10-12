@@ -315,7 +315,6 @@ def media_detail(request, slug):
     - add the comment form and list entries with reference to that Media. 
     '''
 
-    
     try:
         if Media:
             # Fetch the media and it's related model for extra fields
@@ -418,8 +417,8 @@ def load_season_data(request, season_id):
     # get the correct season
     season = Season.objects.get(id=season_id)
     print(f"seasons: {season}")
+    
     # get the data and episodes from it
-
     episode_content = season.episodes.all()
 
     # episode_content = Episode.objects.filter(season_id=season_id).only(
