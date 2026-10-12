@@ -16,17 +16,18 @@ class SharedMediaFilter(django_filters.FilterSet):
     
     GENRE_CHOICES = (
         ('action', 'Action'), ('adventure', 'Adventure'),
-        ('animation', 'Animation'),
-        ('comedy', 'Comedy'), ('crime', 'Crime'),
-        ('documentary', 'Documentary'), ('drama', 'Drama'),
-        ('family', 'Family'), ('fantasy', 'Fantasy'),
-        ('history', 'History'), ('horror', 'Horror'),
+        ('animation', 'Animation'), ('comedy', 'Comedy'),
+        ('crime', 'Crime'), ('documentary', 'Documentary'),
+        ('drama', 'Drama'), ('family', 'Family'),
+        ('fantasy', 'Fantasy'), ('history', 'History'),
+        ('horror', 'Horror'), ('kids', 'Kids'),
         ('music', 'Music'), ('mystery', 'Mystery'),
         ("news", "News"), ("reality", "Reality Show"),
         ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
-        ("soap", "Soap"), ("talk", "Talk"),
-        ('thriller', 'Thriller'), ('tv movie', 'TV Movie'),
-        ('war', 'War'), ('western', 'Western')
+        ("soap", "Soap"), ('tv movie', 'TV Movie'),
+        ("talk", "Talk"), ('thriller', 'Thriller'),
+        ('war', 'War'), ('western', 'Western'),
+        ('politics', 'Politics'), 
     )
     # ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
 

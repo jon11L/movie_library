@@ -97,12 +97,13 @@ class Media(BaseModel):
     # The below functions are to format the fields for a better human readable display.
     def render_genre(self):
         """
-        return the Media.genre attribute in without quotes and [],
+        return the Media.genres from the M2M Genre model without quotes and [],
         only comma-separated string.
         """
-        if self.genre:
-            genre = " - ".join(self.genre)
-            return genre
+        list_genres = self.genres.values_list('name', flat=True)
+        if list_genres:
+            genres = " - ".join(list_genres)
+            return genres
         return "N/a"
 
     def render_production(self):
