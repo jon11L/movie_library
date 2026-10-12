@@ -9,8 +9,9 @@ from django.utils.text import slugify
 from core.models import BaseModel
 
 # Create your models here.
-
 class Genre(models.Model):
+    '''
+    ### Genre model to store media genres.'''
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
 
@@ -24,7 +25,6 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -32,7 +32,36 @@ class Genre(models.Model):
 
 
 class Media(BaseModel):
+    '''
+    ### Media model to store common information for both movies and series.
 
+    <br/>
+
+    #### This Media model is Parent model in a Multi-Table Inheritance and is inherited by Movie and Serie models.
+    Media will create a one-to-one relationship with the child models.
+    
+    <br/>
+
+    - Model inherits from BaseModel, which provides these fields:
+        - created_at
+        - updated_at
+        - is_active
+        - slug
+
+        <br>
+    
+    - The Media model contains fields that are common to both movies and series, such as:
+        - title -- charfield
+        - original_title -- charfield
+        - release_date -- datefield
+        - origin_country -- jsonfield
+        - original_language -- charfield
+        - production -- jsonfield
+        - vote_average -- floatfield
+        - vote_count -- integerfield
+        - popularity floatfield
+        - overview -- textfield      
+    '''
     MOVIE = "movie"
     SERIE = "serie"
     MEDIA_TYPE_CHOICES = [(MOVIE, "Movie"), (SERIE, "Serie")]
@@ -185,7 +214,10 @@ class Media(BaseModel):
 
 
 class Movie(Media):
-    
+    '''
+    ### Movie model to store movie information.
+    # Inherits from Media model, with additional fields specific to movies.
+    # '''
     # Cast and Prod
     director = models.JSONField(blank=True, null=True)  # list of dicts
     writer = models.JSONField(blank=True, null=True)  # list of strings
@@ -255,6 +287,10 @@ class Movie(Media):
 
 
 class Serie(Media):
+    '''
+    ### Serie model to store TV series information.
+    - Inherits from Media model, with additional fields specific to series.
+    '''
     first_air_date = models.DateField(blank=True, null=True)  # ["first_air_date"]
     last_air_date = models.DateField(blank=True, null=True)  # ["last_air_date"]
     created_by = models.JSONField(blank=True, null=True)  # ["created_by"]
