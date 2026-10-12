@@ -16,17 +16,18 @@ class SharedMediaFilter(django_filters.FilterSet):
     
     GENRE_CHOICES = (
         ('action', 'Action'), ('adventure', 'Adventure'),
-        ('animation', 'Animation'),
-        ('comedy', 'Comedy'), ('crime', 'Crime'),
-        ('documentary', 'Documentary'), ('drama', 'Drama'),
-        ('family', 'Family'), ('fantasy', 'Fantasy'),
-        ('history', 'History'), ('horror', 'Horror'),
+        ('animation', 'Animation'), ('comedy', 'Comedy'),
+        ('crime', 'Crime'), ('documentary', 'Documentary'),
+        ('drama', 'Drama'), ('family', 'Family'),
+        ('fantasy', 'Fantasy'), ('history', 'History'),
+        ('horror', 'Horror'), ('kids', 'Kids'),
         ('music', 'Music'), ('mystery', 'Mystery'),
         ("news", "News"), ("reality", "Reality Show"),
-        ('romance', 'Romance'), ('sci-fi', 'Sci-Fi'),
-        ("soap", "Soap"), ("talk", "Talk"),
-        ('thriller', 'Thriller'), ('tv movie', 'TV Movie'),
-        ('war', 'War'), ('western', 'Western')
+        ('romance', 'Romance'), ('science-fiction', 'Science Fiction'),
+        ("soap", "Soap"), ('tv movie', 'TV Movie'),
+        ("talk", "Talk"), ('thriller', 'Thriller'),
+        ('war', 'War'), ('western', 'Western'),
+        ('politics', 'Politics'), 
     )
     # ('sport', 'Sport'),('superhero', 'Superhero'), ('short', 'Short'), 
 
@@ -243,15 +244,11 @@ class SharedMediaFilter(django_filters.FilterSet):
             
             # For each selected genre, filter the queryset
             # to include only those that contain the genre in their genre list
-            for genre in value:
-                print(f"Filtering for genre: '{genre}'")
-                # check content_type Movie or Serie , and change Sci-Fi to Science Fiction if model is Movie
-                if genre == "sci-fi":
-                    genre = "sci" # fit for both movie and serie type
-                    print(f"value sci-fi changed to: '{genre}'\n.")
-                
+            for slug in value:
+                print(f"Filtering for genre: '{slug}'")
+                                
                 # Return only media containing the genre data
-                filtered_queryset = filtered_queryset.filter(genre__icontains=genre)
+                filtered_queryset = filtered_queryset.filter(genres__slug=slug)
             return filtered_queryset
 
 

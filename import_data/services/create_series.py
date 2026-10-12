@@ -7,9 +7,10 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.db import IntegrityError
 
-from import_data.tools.check_media_validity import check_serie_validity
 # from import_data.api_clients.TMDB.fetch_series import get_serie_data, get_season_data
 from import_data.api_clients.TMDB.fetch_data import get_api_data
+from import_data.tools.check_media_validity import check_serie_validity
+from import_data.tools.build_genre_field import sync_genres
 
 from media_library.models import Serie, Season, Episode
 
@@ -49,11 +50,10 @@ def save_or_update_series(tmdb_id):
 
     # fetch and prepare the Serie's data fields.
     created_by = [creator["name"] for creator in serie_data.get("created_by", [])]
-    genre = [genre["name"] for genre in serie_data.get("genres", [])]
     spoken_languages = [
         language["english_name"] for language in serie_data.get("spoken_languages", [])
     ]
-
+    
     production = [
         prod["name"] for prod in serie_data.get("production_companies", [])
         ]
@@ -120,7 +120,7 @@ def save_or_update_series(tmdb_id):
     # store in a Dict to pass in the check_serie_validity function
     processed_data = {
         "production": production,
-        "genre": genre,
+        "genre": [genre["name"] for genre in serie_data.get("genres", [])],
         "created_by": created_by,
         "first_air_date" : first_air_date,
         "spoken_languages" : spoken_languages,
@@ -147,7 +147,6 @@ def save_or_update_series(tmdb_id):
                 "original_title": serie_data.get('original_name'), 
                 "title": serie_data.get('name'),
                 "overview": serie_data.get('overview'),
-                "genre": genre,
                 "origin_country": serie_data.get('origin_country'),
                 "original_language": serie_data.get('original_language'),
                 "spoken_languages": spoken_languages,
@@ -164,6 +163,9 @@ def save_or_update_series(tmdb_id):
                 "status": serie_data.get('status'),
             }
         )
+
+        sync_genres(serie, serie_data.get("genres", []))
+
 
     except Exception as e:
         print(f"An error occurred while saving/updating serie: {str(e)}")

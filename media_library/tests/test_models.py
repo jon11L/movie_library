@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 import datetime
 
-from media_library.models import Media, Movie, Serie, Season, Episode
+from media_library.models import Media, Movie, Serie, Season, Episode, Genre
 
 
 class MediaModelSaveTest(TestCase):
@@ -22,7 +22,7 @@ class MediaModelSaveTest(TestCase):
             title="Breaking Bad",
             overview="A high school chemistry teacher turned methamphetamine producer navigates the dangers of the drug trade while battling personal demons.",
             tagline="All bad things must come to an end.",
-            genre=["Drama", "Crime", "Thriller"],
+            # genre=["Drama", "Crime", "Thriller"],
             # first_air_date=datetime.datetime.strptime("2008-07-05 ", '%Y-%m-%d').date(),
             first_air_date=datetime.date(2008, 7, 5),
             last_air_date=datetime.datetime.strptime("2013-08-05", "%Y-%m-%d").date(),
@@ -42,15 +42,33 @@ class MediaModelSaveTest(TestCase):
 
         cls.serie_2 = Serie.objects.create(
             title="Westworld",
-            genre=["Action", "Sci-Fi", "Thriller"],
+            # genre=["Action", "Science Fiction", "Thriller"],
             production=["HBO"],
             created_by=["Jonathan Nolan", "Lisa Joy"],
         )
 
+        # Create Genre instances for testing
+        drama, _     = Genre.objects.get_or_create(name="Drama",   defaults={"slug": "drama"})
+        crime, _     = Genre.objects.get_or_create(name="Crime",   defaults={"slug": "crime"})
+        thriller, _  = Genre.objects.get_or_create(name="Thriller",defaults={"slug": "thriller"})
+        action, _    = Genre.objects.get_or_create(name="Action",  defaults={"slug": "action"})
+        sci_fi, _    = Genre.objects.get_or_create(name="Science Fiction", defaults={"slug": "science-fiction"})
+
+        # Set genres via M2M relationship
+        cls.serie.genres.set([drama, crime, thriller])
+        cls.serie_2.genres.set([action, sci_fi, thriller])
+
+
+    def test_genre_model(self):
+        """ Test that the instance of genre model saved correctly and can be retrieved."""
+        all_genres = Genre.objects.all()
+        self.assertEqual(all_genres.count(), 5)
+
     def test_serie_created(self):
         """Test that the serie is created successfully."""
+        serie_count = Serie.objects.count()
+        self.assertEqual(serie_count, 2)
         self.assertIsNotNone(self.serie)
-        self.assertIsNotNone(self.serie_2)
         self.assertEqual(self.serie.title, "Breaking Bad")
         self.assertEqual(self.serie_2.title, "Westworld")
 
@@ -59,6 +77,20 @@ class MediaModelSaveTest(TestCase):
         """Test that all fields are saved and retrieved correctly."""
         self.assertEqual(self.serie.vote_count, 12000)
         self.assertEqual(self.serie.popularity, 45.0)
+
+    def test_media_type_field(self):
+        """Test that the media_type field is saved correctly."""
+        self.assertEqual(type(self.serie.media_type), str)
+        self.assertEqual(self.serie.media_type, "serie")
+        self.assertNotEqual(self.serie_2.media_type, "movie")
+        self.assertEqual(self.serie_2.media_type, "serie")
+
+    def test_media_serie_relation(self):
+        """Test that the serie can be retrieved from the Media model."""
+        media = Media.objects.get(pk=self.serie.pk)
+        self.assertEqual(media.title, self.serie.title)
+        self.assertEqual(media.media_type, self.serie.media_type)
+        self.assertIsInstance(media.serie, Serie)  # confirms the child relation exists
 
     def test_original_title_field(self):
         """Test that original_title is saved correctly."""
@@ -95,14 +127,17 @@ class MediaModelSaveTest(TestCase):
         self.assertIsNotNone(self.serie.status)
         self.assertTrue(self.serie.status == "Released")
 
-    def test_serie_genre_field(self):
-        """Test that the genre field can store a list of strings."""
-        self.assertIsInstance(self.serie.genre, list)
-        self.assertIsNotNone(self.serie.genre)
-        if self.serie.genre:
-            self.assertIn("Drama", self.serie.genre)
-            self.assertIn("Thriller", self.serie.genre)
-            self.assertEqual(len(self.serie.genre), 3)
+
+    # -- Update the Genre testing has it got now an ext Model with M2M relationship with Media model
+    def test_serie_genres_field_set_m2m(self):
+        """Test that the genres field set M2M relationship is saved correctly."""
+        # Get genre names as a list
+        genres = self.serie.genres.all().values_list('name', flat=True)
+        self.assertIsNotNone(genres)
+
+        if genres:
+            self.assertIn("Drama", genres)
+            self.assertIn("Thriller", genres)
 
     def test_serie_created_by_field(self):
         """Test that the created_by field can store a list of strings."""
@@ -191,18 +226,19 @@ class MediaModelSaveTest(TestCase):
 
     # -------- Testing empty fields -----------------------------
     def test_vote_average_accepts_none(self):
-        """-- Test that vote_average can be None (blank=True, null=True)."""
+        """Test that vote_average can be None (blank=True, null=True)."""
         serie = Serie(title="untitled", media_type="serie", vote_average=None)
         serie.full_clean()
         serie.save()
         self.assertIsNone(serie.vote_average)
 
     def test_genre_accepts_none(self):
-        """-- Test that vote_average can be None (blank=True, null=True)."""
-        serie = Serie(title="untitled", media_type="serie", genre=None)
+        """Test that genres M2M can be empty (no genres assigned)."""
+        serie = Serie(title="untitled", media_type="serie", imdb_id=12345, tmdb_id=67890)
         serie.full_clean()
         serie.save()
-        self.assertIsNone(serie.genre)
+
+        self.assertEqual(serie.genres.count(), 0)
 
     # -------- Testing validation -----------------------------
     def test_vote_average_below_value_limits(self):
@@ -233,10 +269,8 @@ class MediaModelSaveTest(TestCase):
     def test_serie_creation_with_required_fields_only(self):
         """Test creating a movie with only the title (required field)."""
         serie = Serie.objects.create(title="Serie test 1", media_type="serie", tmdb_id=12405)
-
         self.assertEqual(serie.title, "Serie test 1")
         self.assertIsNotNone(serie.pk)  # Has a database ID
-
 
     def test_movie_create_without_title(self):
         """
@@ -266,7 +300,7 @@ class SerieModelMethodTest(TestCase):
             # set in Media model
             media_type="serie",  # set directly in Media model
             title="Breaking Bad",
-            genre=["Action", "Sci-Fi"],
+            # genre=["Action", "Science Fiction"],
             production=["HBO"],
             created_by=["Vince Gilligan"],
             poster_images=["/poster1.jpg", "/poster2.jpg"],
@@ -278,21 +312,25 @@ class SerieModelMethodTest(TestCase):
 
         cls.serie_2 = Serie.objects.create(
             title="Westworld",
-            genre=["Action", "Sci-Fi", "Thriller"],
+            # genre=["Action", "Science Fiction", "Thriller"],
             production=["HBO"],
             created_by=["Jonathan Nolan", "Lisa Joy"],
             imdb_id="tt1396",
             tmdb_id=1397,
         )
 
-        print("\n-- **SetupTestData for SerieModelMethodTest started.**\n")
+        # Create Genre instances for testing
+        action, _    = Genre.objects.get_or_create(name="Action",  defaults={"slug": "action"})
+        sci_fi, _    = Genre.objects.get_or_create(name="Science Fiction", defaults={"slug": "science-fiction"})
+        # drama, _     = Genre.objects.get_or_create(name="Drama",   defaults={"slug": "drama"})
+        # crime, _     = Genre.objects.get_or_create(name="Crime",   defaults={"slug": "crime"})
+        thriller, _  = Genre.objects.get_or_create(name="Thriller",defaults={"slug": "thriller"})
 
-    # def test_serie_exists(self):
-    #     """Test that the serie exists in the database."""
-    #     serie_count = Serie.objects.count()
-    #     self.assertEqual(serie_count, 2)
-    #     for serie in Serie.objects.all():
-    #         print(f"{serie} -- {serie.pk}")
+        # Set genres via M2M relationship
+        cls.serie.genres.set([action, sci_fi])
+        cls.serie_2.genres.set([action, sci_fi, thriller])
+
+        print("\n-- **SetupTestData for SerieModelMethodTest started.**\n")
 
     def test_serie_str_method(self):
         """Test the __str__ method of the Serie object."""
@@ -300,25 +338,14 @@ class SerieModelMethodTest(TestCase):
         self.assertNotEqual(str(self.serie_2), "Breaking Bad")
         self.assertEqual(str(self.serie_2), "Westworld")
 
-    def test_media_type_field(self):
-        """Test that the media_type field is saved correctly."""
-        self.assertEqual(type(self.serie.media_type), str)
-        self.assertEqual(self.serie.media_type, "serie")
-        self.assertNotEqual(self.serie_2.media_type, "movie")
-        self.assertEqual(self.serie_2.media_type, "serie")
-
-    def test_retrieve_media(self):
-        
-        media = Media.objects.get(pk=self.serie.pk)
-        self.assertEqual(media.title, self.serie.title)
-        
-
     def test_render_genre(self):
         """Test the render_genre method of the Serie object."""
         self.assertEqual(type(self.serie.render_genre()), str)
-        self.assertEqual(self.serie.render_genre(), "Action - Sci-Fi")
-        self.assertNotEqual(self.serie_2.render_genre(), "Horror - Sci-Fi")
-        self.assertEqual(self.serie_2.render_genre(), "Action - Sci-Fi - Thriller")
+        self.assertEqual(self.serie.render_genre(), "Action - Science Fiction")
+        self.assertIn("Science Fiction", self.serie_2.render_genre())
+        self.assertNotEqual(self.serie_2.render_genre(), "Horror - Science Fiction")
+        self.assertEqual(self.serie_2.render_genre(), "Action - Science Fiction - Thriller")
+
 
     def test_render_production(self):
         """Test the render_production method of the Serie object."""

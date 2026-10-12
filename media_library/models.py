@@ -4,12 +4,64 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.templatetags.static import static
+from django.utils.text import slugify
 
 from core.models import BaseModel
 
 # Create your models here.
-class Media(BaseModel):
+class Genre(models.Model):
+    '''
+    ### Genre model to store media genres.'''
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
 
+
+    class Meta:
+        db_table            = "genre"
+        verbose_name        = "Genre"
+        verbose_name_plural = "Genres"
+        ordering            = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Media(BaseModel):
+    '''
+    ### Media model to store common information for both movies and series.
+
+    <br/>
+
+    #### This Media model is Parent model in a Multi-Table Inheritance and is inherited by Movie and Serie models.
+    Media will create a one-to-one relationship with the child models.
+    
+    <br/>
+
+    - Model inherits from BaseModel, which provides these fields:
+        - created_at
+        - updated_at
+        - is_active
+        - slug
+
+        <br>
+    
+    - The Media model contains fields that are common to both movies and series, such as:
+        - title -- charfield
+        - original_title -- charfield
+        - release_date -- datefield
+        - origin_country -- jsonfield
+        - original_language -- charfield
+        - production -- jsonfield
+        - vote_average -- floatfield
+        - vote_count -- integerfield
+        - popularity floatfield
+        - overview -- textfield      
+    '''
     MOVIE = "movie"
     SERIE = "serie"
     MEDIA_TYPE_CHOICES = [(MOVIE, "Movie"), (SERIE, "Serie")]
@@ -21,6 +73,11 @@ class Media(BaseModel):
     overview = models.TextField(blank=True, null=True)
     tagline = models.TextField(blank=True, null=True)  # Movie's tagline/slogan
     genre = models.JSONField(blank=True, null=True)  # will be a list of strings
+    genres = models.ManyToManyField(
+        'Genre',
+        related_name="media",
+        blank=True,
+    )
 
     release_date = models.DateField(blank=True, null=True)
     origin_country = models.JSONField(blank=True, null=True)  # list of strings
@@ -69,12 +126,13 @@ class Media(BaseModel):
     # The below functions are to format the fields for a better human readable display.
     def render_genre(self):
         """
-        return the Media.genre attribute in without quotes and [],
+        return the Media.genres from the M2M Genre model without quotes and [],
         only comma-separated string.
         """
-        if self.genre:
-            genre = " - ".join(self.genre)
-            return genre
+        list_genres = self.genres.values_list('name', flat=True)
+        if list_genres:
+            genres = " - ".join(list_genres)
+            return genres
         return "N/a"
 
     def render_production(self):
@@ -156,7 +214,10 @@ class Media(BaseModel):
 
 
 class Movie(Media):
-    
+    '''
+    ### Movie model to store movie information.
+    # Inherits from Media model, with additional fields specific to movies.
+    # '''
     # Cast and Prod
     director = models.JSONField(blank=True, null=True)  # list of dicts
     writer = models.JSONField(blank=True, null=True)  # list of strings
@@ -226,6 +287,10 @@ class Movie(Media):
 
 
 class Serie(Media):
+    '''
+    ### Serie model to store TV series information.
+    - Inherits from Media model, with additional fields specific to series.
+    '''
     first_air_date = models.DateField(blank=True, null=True)  # ["first_air_date"]
     last_air_date = models.DateField(blank=True, null=True)  # ["last_air_date"]
     created_by = models.JSONField(blank=True, null=True)  # ["created_by"]

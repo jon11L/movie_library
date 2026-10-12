@@ -2,9 +2,12 @@ import datetime
 import traceback
 import random
 
+
 from import_data.api_clients.TMDB.fetch_data import get_api_data
 from import_data.tools.check_media_validity import check_movie_validity
+from import_data.tools.build_genre_field import sync_genres
 from media_library.models import Movie
+
 
 
 def save_or_update_movie(tmdb_id: int):
@@ -135,7 +138,10 @@ def save_or_update_movie(tmdb_id: int):
 
         banner_images = select_banners # set to save in the object
 
-        genre = [genre["name"] for genre in movie_data.get("genres", [])]
+
+
+        # genre = [genre["name"] for genre in movie_data.get("genres", [])]
+
 
         # ------ Will check if the movie fetched has enough data to be saved --------
         # store in a Dict to pass in the check_movie_validity function
@@ -144,7 +150,8 @@ def save_or_update_movie(tmdb_id: int):
             "director": director,
             "writers": writers,
             "cast": cast,
-            "genre": genre,
+            # "genre": genre,
+            "genre": [genre["name"] for genre in movie_data.get("genres", [])],
             "release_date" : release_date,
             "spoken_languages" : spoken_languages,
             "poster_images": poster_images,
@@ -182,7 +189,6 @@ def save_or_update_movie(tmdb_id: int):
 
                     "vote_average" : movie_data.get("vote_average"),
                     "overview" : movie_data.get("overview"),
-                    "genre" : genre,
                     "budget" : movie_data.get("budget"),
                     "revenue" : movie_data.get("revenue"),
                     "tagline" : movie_data.get("tagline"),
@@ -196,6 +202,9 @@ def save_or_update_movie(tmdb_id: int):
                     "trailers" : yt_trailer
                     }
                 )
+
+        # Sync genres after save — M2M requires the object to have a pk first
+        sync_genres(movie, movie_data.get("genres", []))
 
         print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
         return (movie, created)
