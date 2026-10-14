@@ -192,10 +192,6 @@ def toggle_review(request, object_id: int):
     #         )
 
 
-
-
-
-
 @timer
 @num_queries
 def list_view(request, user_pk: int):
@@ -239,7 +235,7 @@ def list_view(request, user_pk: int):
     ):
 
         if request.method == "GET":
-            # present the watchlist form in the modal When user click 
+            # present the watchlist form in the modal When user click
             watchlist_form = WatchListForm() 
             review_form = ReviewForm()
 
@@ -277,12 +273,16 @@ def list_view(request, user_pk: int):
             print(f"selected order: {select_order}")
             query_sort_url = query_params.urlencode()
 
-            reviews = Review.objects.filter(user=user_pk).select_related("media")
+            reviews = (
+                Review.objects.filter(user=user_pk)
+                .select_related("media")
+                .prefetch_related("media__genres")
+            )
 
             list_review = []
-            
+
             is_desc_order = '-' if '-' in select_order else ''
-            # Need to specify the field name for sorting 
+            # Need to specify the field name for sorting
             # when select_order is not based on the Review model's field but on the related Media model's field.
             field_name = f'media__{select_order.strip('-')}'
 
@@ -290,7 +290,7 @@ def list_view(request, user_pk: int):
             if 'id' in select_order:
                 list_review = reviews.order_by(select_order)
 
-            # sort by the select_related media_field 
+            # sort by the select_related media_field
             elif is_desc_order:
                 list_review = reviews.order_by(F(field_name).desc(nulls_last=True))
             else:
@@ -309,7 +309,7 @@ def list_view(request, user_pk: int):
                 list_media.append({
                     "id": item.media.pk, 
                     "title": item.media.title, 
-                    "genre": item.media.render_genre(), 
+                    "render_genre": item.media.render_genre(), 
                     "release_date": item.media.release_date,
                     "render_vote_average": item.media.render_vote_average(), 
                     "vote_count": item.media.vote_count, 
@@ -318,7 +318,7 @@ def list_view(request, user_pk: int):
                     "slug": item.media.slug,
                     "type": item.media.media_type,
                     })
-                
+
                 list_media_ids.add(item.media.pk)
 
             total_content = reviews.count()
@@ -326,7 +326,6 @@ def list_view(request, user_pk: int):
             # Collect the media ids to check if user has watchlist or reviews
             user_watchlist = get_user_watchlist(request.user, media_ids=list_media_ids)
             user_reviews = get_user_review(request.user, media_ids=list_media_ids)
-
 
             context = {
                 'page_obj': page_obj,
@@ -368,4 +367,3 @@ def list_view(request, user_pk: int):
         # user is not authenticated. No access to Watchlist, private or public. Must be registered
         messages.error(request, "You must be logged in to view watchlist .")
         return redirect('user:login')
-

@@ -42,7 +42,6 @@ def home(request):
     MEDIA_FIELDS = [
         "id",
         "title",
-        "genre",
         "release_date",
         "popularity",
         "vote_average",
@@ -99,6 +98,7 @@ def home(request):
                 .only(*MEDIA_FIELDS)
                 .exclude(adult=True)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             # retrieve the movies coming out soon.
@@ -111,6 +111,7 @@ def home(request):
                 .only(*MEDIA_FIELDS)
                 .exclude(adult=True)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             random_movies = (
@@ -118,6 +119,7 @@ def home(request):
                 .only(*MEDIA_FIELDS)
                 .exclude(is_active=False)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             ongoing_series = (
@@ -126,6 +128,7 @@ def home(request):
                 )
                 .only(*MEDIA_FIELDS)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             new_series = (
@@ -135,6 +138,7 @@ def home(request):
                 )
                 .only(*MEDIA_FIELDS)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             # Perhaps remove later and create a one Random pick media sample
@@ -142,12 +146,14 @@ def home(request):
                 Media.objects.filter(media_type="serie")
                 .only(*MEDIA_FIELDS)
                 .order_by("?")[:12]
+                .prefetch_related("genres",)
             )
 
             shared = {
                 # display the amount of Movies & Series available from the database
                 "series_count": Media.objects.filter(media_type='serie').count(),
                 "movies_count": Media.objects.filter(media_type='movie').count(),
+                # different media samples to display on the homepage
                 "recent_movies": recent_movies,
                 "movies_coming_soon": upcoming_movies,
                 "random_movies": random_movies,
@@ -156,7 +162,6 @@ def home(request):
                 "random_series": random_series,
             }
 
-            # Set further timing when correctly setup
             cache.set(key='home_samples_media', value=shared, timeout=1200)
 
         else:
@@ -164,15 +169,23 @@ def home(request):
 
         print(f"Cache setup for:\n{[key for key in cache.get('home_samples_media')]}")
 
-        # ------ add side content , from other user's Watchlist or like movies/series ------
+        # Media sample from other users Watchlist
         # discover_list = None  # list to hold the user ids already processed
         if request.user.is_authenticated:
-            discover_list = WatchList.objects.exclude(user=request.user).order_by("?")[
-                :12
-            ].select_related("media") 
+            discover_list = (
+                WatchList.objects.exclude(user=request.user)
+                .order_by("?")[:12]
+                .select_related("media")
+                .prefetch_related("media__genres",)
+            )
         else:
             # list to hold any watchlist instances
-            discover_list = WatchList.objects.all().order_by("?")[:12].select_related("media")
+            discover_list = (
+                WatchList.objects.all()
+                .order_by("?")[:12]
+                .select_related("media")
+                .prefetch_related("media__genres",)
+            )
 
         # load some item saved in watchlist by different users.
         for item in discover_list:
@@ -181,7 +194,7 @@ def home(request):
                 discover_media.append({
                     "title": media_obj.title, 
                     "id": media_obj.pk, 
-                    "genre": media_obj.render_genre(), 
+                    "render_genre": media_obj.render_genre(), 
                     "render_vote_average": media_obj.render_vote_average(), 
                     "vote_count": media_obj.vote_count, 
                     "render_poster": media_obj.render_poster(),
@@ -197,7 +210,7 @@ def home(request):
         review_form = ReviewForm() 
 
         context = {
-            **shared,
+            **shared, # contains the cached media samples and counts
             "discover_media": discover_media,
             'watchlist_form': watchlist_form,
             'review_form': review_form
@@ -208,7 +221,11 @@ def home(request):
             user = request.user
             # print(f"user: {user}\n")  # debug print
 
-            watchlist = WatchList.objects.filter(user=user).select_related("media")
+            watchlist = (
+                WatchList.objects.filter(user=user)
+                .select_related("media")
+                .prefetch_related("media__genres",)
+            )
             print(f"user's Watchlist:\n{watchlist[:3]}...\n")  # debug print
 
             watchlist_media = []
@@ -219,7 +236,7 @@ def home(request):
                     watchlist_media.append({
                         "title": media_obj.title, 
                         "id": media_obj.pk, 
-                        "genre": media_obj.render_genre(), 
+                        "render_genre": media_obj.render_genre(), 
                         "render_vote_average": media_obj.render_vote_average(), 
                         "vote_count": media_obj.vote_count, 
                         "render_poster": media_obj.render_poster(),
@@ -237,14 +254,12 @@ def home(request):
                 cache.get("home_samples_media")['random_series'],
             ]
 
+            # Collect the media ids to check if user has watchlist or reviews
             for qs in list_sample:
                 list_media_ids.update(media.pk for media in qs)
-
-            # print(f'recent movies cached:\n{cache.get("home_samples_media")['recent_movies']}')
-
             list_media_ids.update(media["id"] for media in discover_media)
             list_media_ids.update(media["id"] for media in watchlist_media)
-            print(f"\n --length media: {len(list_media_ids)}\n")
+            print(f"\n --length media: {len(list_media_ids)} ids being checked and displayed\n")
 
             # -------- Check if the user media exist in the watchlist/review of current user --------
             user_watchlist = get_user_watchlist(request.user.pk, media_ids=list_media_ids)

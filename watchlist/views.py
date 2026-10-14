@@ -112,6 +112,7 @@ def list_view(request, user_pk: int):
     user_reviews = set()
     list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
 
+    print(f"\n-- Media list_view called --\n")
     # retrieve the profile being requested
     try:
         t_user = User.objects.get(pk=user_pk)
@@ -140,7 +141,7 @@ def list_view(request, user_pk: int):
     ):
 
         if request.method == "GET":
-            # present the watchlist form in the modal When user click 
+            # present the watchlist form in the modal When user click
             watchlist_form = WatchListForm() 
             review_form = ReviewForm()
 
@@ -178,10 +179,14 @@ def list_view(request, user_pk: int):
             print(f"selected order: {select_order}")
             query_sort_url = query_params.urlencode()
 
-            watchlist = WatchList.objects.filter(user=user_pk).select_related("media")
+            watchlist = (
+                WatchList.objects.filter(user=user_pk)
+                .select_related("media")
+                .prefetch_related("media__genres")
+            )
 
             list_watchlist = []
-            
+
             is_desc_order = '-' if '-' in select_order else ''
             field_name = f'media__{select_order.strip('-')}'
 
@@ -207,7 +212,7 @@ def list_view(request, user_pk: int):
                 list_media.append({
                     "id": item.media.pk, 
                     "title": item.media.title, 
-                    "genre": item.media.render_genre(), 
+                    "render_genre": item.media.render_genre(), 
                     "release_date": item.media.release_date,
                     "render_vote_average": item.media.render_vote_average(), 
                     "vote_count": item.media.vote_count, 
@@ -216,7 +221,7 @@ def list_view(request, user_pk: int):
                     "slug": item.media.slug,
                     "type": item.media.media_type,
                     })
-                
+
                 list_media_ids.add(item.media.pk)
 
             total_content = watchlist.count()

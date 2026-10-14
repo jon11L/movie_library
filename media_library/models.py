@@ -129,9 +129,12 @@ class Media(BaseModel):
         return the Media.genres from the M2M Genre model without quotes and [],
         only comma-separated string.
         """
-        list_genres = self.genres.values_list('name', flat=True)
+        # list_genres = self.genres.values_list('name', flat=True)
+        # hit stored prefect cache while values_list creates a new query to the database
+        list_genres = self.genres.all()
+
         if list_genres:
-            genres = " - ".join(list_genres)
+            genres = " - ".join(g.name for g in list_genres)
             return genres
         return "N/a"
 

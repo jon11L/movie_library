@@ -11,8 +11,7 @@ GENRE_NAME_MAP = {
 
 def sync_genres(media, raw_genres):
     """
-    raw_genres = [{"id": 28, "name": "Action"}, {"id": 878, "name": "Science Fiction"}]
-    Finds or creates each Genre, then sets them on the media object.
+    Finds or creates Genre instance from the raw_genres, then sets them on the media object.
     """
     genre_objects = []
     for item in raw_genres:

@@ -159,6 +159,8 @@ def save_or_update_movie(tmdb_id: int):
             "youtube_trailer": yt_trailer
         }
 
+        # Check if the movie has enough data to be saved in the database
+        # if not valid, it will not be saved and return None, False
         is_valid = check_movie_validity(movie_data, processed_data)
 
         if is_valid:
@@ -186,7 +188,6 @@ def save_or_update_movie(tmdb_id: int):
                     "casting" : cast[:18],
                     "length" : movie_data.get("runtime"),
                     "status": movie_data.get('status'),
-
                     "vote_average" : movie_data.get("vote_average"),
                     "overview" : movie_data.get("overview"),
                     "budget" : movie_data.get("budget"),
@@ -204,12 +205,15 @@ def save_or_update_movie(tmdb_id: int):
                 )
 
         # Sync genres after save — M2M requires the object to have a pk first
+        # Media created, Pk attribute is available, associating genres with the serie instance.
         sync_genres(movie, movie_data.get("genres", []))
 
         print(f"movie: '{movie.title}' {'-- Created.' if created else '-- Updated.'}")
         return (movie, created)
 
     except Exception as e:
+        print(traceback.format_exc() ,'\n')
+
         # print(f"an error occurred while saving/updating movie: '{movie_data.get('id')}-{movie_data.get('title')}' ", str(e))
         print(f"an error occurred while saving/updating movie: '{tmdb_id}' ", str(e))
         return None, False

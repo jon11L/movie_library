@@ -113,8 +113,12 @@ def profile_page(request, pk):
         # Displaying the comment posted by the user
         comments = Comment.objects.filter(user=pk).select_related("media")[0:3]
         # load the last 3 Watchlist added by the user
-        watchlist_items = WatchList.objects.filter(user=pk).select_related("media")[0:3]
-        
+        watchlist_items = (
+            WatchList.objects.filter(user=pk)
+            .select_related("media")
+            .prefetch_related("media__genres")[0:3]
+        )
+
         print(f"\nwatchlist_items: {watchlist_items}\n\n") # debug print
 
         # get the content (movie/serie) related to each comment.
@@ -123,7 +127,6 @@ def profile_page(request, pk):
         for item in watchlist_items:
             if item.media:
                 last_watchlist.append({
-                    # 'object': item.content_object, # retrieve the whole object through foreign key
                     'added_on': item.created_at.strftime("%d %B %Y"),
                     'type': item.media.media_type,
                     'poster': item.media.render_poster(),
@@ -131,10 +134,7 @@ def profile_page(request, pk):
                     'genre': item.media.render_genre(),
                     'slug': item.media.slug,
                 })
-        # print(f"\nlast_watchlist: {last_watchlist}\n") # debug print
-
-        # Templates for future fav movies display
-        # fav_movies = (1, 2, 3)
+        print(f"\nlast_watchlist: {last_watchlist[0:2]}\n") # debug print
 
         # fetch the movies and series that are commented by the user
         comment_list = []
@@ -152,7 +152,7 @@ def profile_page(request, pk):
                     'slug': comment.media.slug,
                 })
 
-        print(f"comment_list: {comment_list[0:3]}\n") # debug print
+        print(f"comment_list: {comment_list[0:2]}\n") # debug print
 
         profile_card = {
             'user_id': user.profile.user,
@@ -175,7 +175,7 @@ def profile_page(request, pk):
         }
 
         return render(request, 'user/profile_page.html', context=context)
-    
+
     else:
         messages.error(request, ("You must be logged in to access this page"))
         return redirect(to='user:login')

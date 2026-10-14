@@ -186,13 +186,15 @@
                                                 {% if casting %}
                                                 <div style="max-height: 200px; overflow-y: auto;">
                                                     {% for cast in casting %}
-                                                        {% if not cast.role %}
-                                                        <p style="margin: auto;">{{ cast.name }}</p>
-                                                        {% else  %}
-                                                        <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:600;">{{ cast.role }}</i></p>
-                                                        {% endif %}
+                                                    {% if not cast.role %}
+                                                    <p style="margin: auto;">{{ cast.name }}</p>
+                                                    {% else  %}
+                                                    <p style="margin: auto;">{{ cast.name }} as <i style="font-weight:600;">{{ cast.role }}</i></p>
+                                                    {% endif %}
                                                     {% endfor %}
                                                 </div>
+                                                {% else %}
+                                                <p>N/a</p>
                                                 {% endif %}
                                             </li>
                                             
