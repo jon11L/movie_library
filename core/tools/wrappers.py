@@ -39,7 +39,11 @@ def num_queries(func):
             )
 
             for query in connection.queries:
-                print(f"--> {query['sql']}")
+                if 'django_session' in query['sql']:
+                    print(" -- XXXXX Django session query detected, skipping print XXXXX --\n")
+                    continue  # Skip printing session queries
+
+                print(f"--> {query['sql']}\n")
             print("=======================\n")
 
         return result # Return first the result of the wrapped function
