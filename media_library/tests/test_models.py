@@ -22,8 +22,6 @@ class MediaModelSaveTest(TestCase):
             title="Breaking Bad",
             overview="A high school chemistry teacher turned methamphetamine producer navigates the dangers of the drug trade while battling personal demons.",
             tagline="All bad things must come to an end.",
-            # genre=["Drama", "Crime", "Thriller"],
-            # first_air_date=datetime.datetime.strptime("2008-07-05 ", '%Y-%m-%d').date(),
             first_air_date=datetime.date(2008, 7, 5),
             last_air_date=datetime.datetime.strptime("2013-08-05", "%Y-%m-%d").date(),
             origin_country=["US"],

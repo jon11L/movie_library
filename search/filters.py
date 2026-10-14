@@ -6,12 +6,12 @@ from media_library.models import Media
 
 import datetime
 
-class SharedMediaFilter(django_filters.FilterSet):
+class MediaFilter(django_filters.FilterSet):
     '''Filter through both Media model'''
     CONTENT_CHOICES = (
             ('all', 'All Content'),
             ('movie', 'Movies Only'),
-            ('serie', 'Series Only'),
+            ('serie', 'Tv-Show Only'),
         )
     
     GENRE_CHOICES = (
@@ -236,8 +236,8 @@ class SharedMediaFilter(django_filters.FilterSet):
 
     def filter_genres(self, queryset, name, value):
             """
-            Custom filter method for JSONField 'genre'
-            This will filter content that have the specified genre in their genre list
+            Custom filter method for the M2M field 'genres'
+            This will filter content media that have the specified genre associated with them.
             """
             print(f"Filtering by genre: {value}")
             filtered_queryset = queryset

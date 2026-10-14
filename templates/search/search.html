@@ -24,7 +24,7 @@
                 <!------------- Result Query Result Found or no items found -------------->
                 <section id="search-results-section">
 
-                    <div style="text-align: center;">
+                    <div style="text-align: center; align-items: center;">
                         <!-- click on search button in Navbar without search given // same with search filter button without any filter applied-->
                         {% if not total_found and not query_params %}
                         <h3 style="color: green;">Start your search</h3>
@@ -33,7 +33,20 @@
                         <!-- filter form button clicked with filters and results -->
                         {% elif query_params and total_found %}
                         <h3 style="color: green;">Search results for your query.</h3>
-                        <h6 style="color: darkgreen; margin-bottom: 1rem;">{{ total_found }} items match your query.</h6>        
+                        <div class="d-block d-sm-flex" style="gap: 0.75rem; color: darkgreen; margin-bottom: 1rem; justify-content: center;">
+                            <h5 style="color: inherit;">{{ total_found }} items match your query.</h5>        
+                            <h5 style="color: inherit;">
+                                {% if content_type == 'all' or content_type == 'movie' %}
+                                {{ movie_count }}
+                                Movies 
+                                {% endif %}
+                                {% if content_type == 'all' %}
+                                & 
+                                {% endif %}
+                                {% if content_type == 'all' or content_type == 'serie' %}
+                                {{serie_count }} TV-Show</h5>
+                                {% endif %}
+                        </div>
 
                         <!-- ---- Sort-by selector ---- -->
                         {% include "partials/sort_by.html" %}

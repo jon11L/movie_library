@@ -79,19 +79,22 @@ def media_list(request, media_type):
     '''retrieve the movies from newer to older and display them in the template
     page's goal is to display up to 24 content pieces per page
     '''
+
+    SORT_BY = None
     base_url = f'/media_library/{media_type}'
 
     list_media_cards = [] # list to hold the content (movies, series)
-    sort_by = None
     user_watchlist = set()
     user_reviews = set()
     list_media_ids = set() # to track the media ids being displayed and correlate with user data, to avoid larger queries.
     cache_key = None
 
+    # pre select only the Media's fields necessary to optimize the query 
+    # and avoid loading all fields from the model
     MEDIA_FIELDS = [
         "id",
         "title",
-        "genre",
+        # "genre",
         "release_date",
         "popularity",
         "vote_average",
@@ -101,26 +104,27 @@ def media_list(request, media_type):
         "media_type",
     ]
 
+    # setting values for the sorting-by feature
+    # allow to reorder the List of media by different sorting selection,
+    # and keep the selection when user change page. 
+    SORT_BY = (
+        # ('display name', 'django field')
+        ('first added', 'id'),
+        ('last added', '-id'),
+        ('A-z title', 'title'), 
+        ('Z-a title', '-title'),
+        ('newest first', '-release_date'), 
+        ('oldest first', 'release_date'),
+        ('least popular', 'popularity'),
+        ('most popular', '-popularity'),
+        ('least voted', 'vote_count'),
+        ('most voted', '-vote_count'),
+        ('lowest rating', 'vote_average'),
+        ('highest rating', '-vote_average'),
+    )
+
     try:
         if Media:
-
-            # ========== setting values for the sorting-by feature ==========================
-            sort_by = (
-                # ('display name', 'django field')
-                ('first added', 'id'),
-                ('last added', '-id'),
-                ('A-z title', 'title'), 
-                ('Z-a title', '-title'),
-                ('newest first', '-release_date'), 
-                ('oldest first', 'release_date'),
-                ('least popular', 'popularity'),
-                ('most popular', '-popularity'),
-                ('least voted', 'vote_count'),
-                ('most voted', '-vote_count'),
-                ('lowest rating', 'vote_average'),
-                ('highest rating', '-vote_average'),
-            )
-
             # ========== Getting the current Url query parameter  ==========================
             query_params = request.GET.copy()
             print(f"-- Query params: {query_params}\n")  # Debug print
@@ -146,6 +150,7 @@ def media_list(request, media_type):
                     .exclude(is_active=False)
                     .exclude(release_date__isnull=True)
                     .exclude(movie__length__range=(1, 45))  
+                    .prefetch_related("genres")  # Prefetch genres for movies
                     # how to remove them with media as they are in the child model Movie
                 )
 
@@ -154,6 +159,7 @@ def media_list(request, media_type):
                     Media.objects.filter(media_type='serie').only(*MEDIA_FIELDS)
                     .exclude(is_active=False)
                     .exclude(release_date__isnull=True)
+                    .prefetch_related("genres")  # Prefetch genres for series
                 )
 
             elif media_type == "documentaries":
@@ -163,6 +169,8 @@ def media_list(request, media_type):
                     .only(*MEDIA_FIELDS)
                     .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
+                    .prefetch_related("genres")  # Prefetch genres of media
+
                 )
 
             elif media_type == "short-films":
@@ -172,6 +180,7 @@ def media_list(request, media_type):
                     .only(*MEDIA_FIELDS)
                     .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
+                    .prefetch_related("genres")  # Prefetch genres
                 )  # length between 0 and 45 minutes
 
             elif media_type == "animes":
@@ -181,6 +190,7 @@ def media_list(request, media_type):
                     .only(*MEDIA_FIELDS)
                     .exclude(release_date__isnull=True)
                     .exclude(is_active=False)
+                    .prefetch_related("genres")  # Prefetch genres for movies
                 )
 
             media = media.order_by(sel_order)
@@ -209,7 +219,7 @@ def media_list(request, media_type):
                         "title": item.title,
                         # below will be use to display the year on the media_card
                         "release_date": item.release_date.year if item.release_date else None, 
-                        "genre": item.render_genre(), 
+                        "render_genre": item.render_genre(), 
                         "render_vote_average": item.render_vote_average(), 
                         "vote_count": item.vote_count, 
                         "render_poster": item.render_poster(),
@@ -246,7 +256,7 @@ def media_list(request, media_type):
 
             context = {
                 'page_obj' : page_obj,
-                'sort_by': sort_by, # the list of sorting-by option
+                'sort_by': SORT_BY, # the list of sorting-by option
                 'query_pagin_url': query_pagin_url, # send the url parameters for pagination
                 'query_sort_url': query_sort_url, # send the url parameters for sort-by
                 'current_order': sel_order,
@@ -314,15 +324,19 @@ def media_detail(request, slug):
     - Check if logged user has a watchlist or like entry with this Media
     - add the comment form and list entries with reference to that Media. 
     '''
-
+    print(f"\n-- media_detail view called with slug: {slug} --\n")
     try:
         if Media:
             # Fetch the media and it's related model for extra fields
-            media = Media.objects.select_related("movie", "serie").prefetch_related('genres').get(slug=slug)
+            media = (
+                Media.objects.select_related("movie", "serie")
+                .prefetch_related("genres")
+                .get(slug=slug)
+            )
 
             # get the comments related to the media
             comments = media.comments.all().order_by('-created_at')
-            print(f"\nNumber of comments: {(comments.count())}")
+            # print(f"\nNumber of comments: {(comments.count())}")
 
             watchlist_form = WatchListForm() # open modal form When user click icon btn
             review_form = ReviewForm() # same as above
@@ -369,7 +383,8 @@ def media_detail(request, slug):
 
             # display the Comment form if user is connected
             if request.user.is_authenticated:
-                # Get the user's watchlist content (movies, series)
+                # Get the user's watchlist content (media)
+                # add in a Set() even if a single Id is passed, to avoid query error
                 media_id = set()
                 media_id.add(media.pk)
 
@@ -390,7 +405,7 @@ def media_detail(request, slug):
                         
                     }
                 )
-            
+
             return render(request,'media_library/detail_media.html', context=context)
 
         else:
@@ -401,7 +416,8 @@ def media_detail(request, slug):
     except Exception as e:
         messages.error(
             request,
-            "the media requested does not exist or the page experiences some issue, please try again later",
+            "the media requested does not exist or the page experiences some issue,"
+            " please try again later",
         )
         print(f" error :{e}")
         return redirect('main:home')
@@ -414,23 +430,21 @@ def load_season_data(request, season_id):
     Will pass the season data being requested via HTMX.
     Prevent detail_serie view from overloading too much content at once in the DOM.
     '''
-    # get the correct season
+    # get the correct season from the id passed on the parameters
     season = Season.objects.get(id=season_id)
     print(f"seasons: {season}")
     
     # get the data and episodes from it
-    episode_content = season.episodes.all()
+    episodes_content = season.episodes.all()
 
     # episode_content = Episode.objects.filter(season_id=season_id).only(
     #     "title", "number", "overview", "release_date", "v"
     # )
+    print(f" season_content: {episodes_content} \n")
 
-    print(f" season_content: {episode_content} \n")
-
-    episode = None
     episode_card = []
 
-    for item in episode_content:
+    for item in episodes_content:
         episode_card.append({
             # "id": item.pk, 
             "title": item.title,

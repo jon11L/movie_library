@@ -36,14 +36,9 @@ def save_or_update_series(tmdb_id):
         print(f"\n\nAn error occurred: {str(e)}")
         return (None, False)
 
-        # check if te API was called correctly and returned the datas
+    # check if te API was called correctly and returned the datas
     if not serie_data:
         print(f"Failed to fetch serie data from TMDB api with ID: {tmdb_id}")
-        # return  {
-        #         'status': 'error',
-        #         'tmdb_status_code': 34,
-        #         'message': f'No serie found with TMDB ID: {tmdb_id}',
-        #     } # Handle failure case
         return None, False
 
     print(f"Passing the new serie's instance name: {serie_data.get('original_name')}") # debug print
@@ -129,6 +124,8 @@ def save_or_update_series(tmdb_id):
         "imdb_id": imdb_id,
     }
 
+    # Check if the movie has enough data to be saved in the database
+    # if not valid, it will not be saved and return None, False
     is_valid = check_serie_validity(serie_data, processed_data)
 
     if is_valid:
@@ -164,8 +161,8 @@ def save_or_update_series(tmdb_id):
             }
         )
 
+        # Media created, Pk attribute is available, associating genres with the serie instance.
         sync_genres(serie, serie_data.get("genres", []))
-
 
     except Exception as e:
         print(f"An error occurred while saving/updating serie: {str(e)}")
@@ -285,7 +282,7 @@ def get_seasons(serie: object, number_of_seasons: list[int], tmdb_id: int):
                 for i in second_trailer[:need]:
                     yt_trailer.append(i)
 
-            # Fetch and store images
+            # -- Fetch and store images
             posters = [] # will append the images to it an keep the urls only to
             images = season_data["images"]
 
